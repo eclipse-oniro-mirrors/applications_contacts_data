@@ -18,6 +18,7 @@
 
 #include "data_ability_predicates.h"
 #include "data_ability_helper.h"
+#include "napi/native_api.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
 #include "rdb_helper.h"
