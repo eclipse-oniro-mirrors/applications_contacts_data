@@ -1,36 +1,44 @@
-# applications_contactsdata
+# applications_contactsdata<a name="ZH-CN_TOPIC_0000001122925147"></a>
 
-#### Description
-{**When you're done, you can delete the content in this README and update the file with details for others getting started with your repository**}
+-   [Introduction](#section1166054159366)
+-   [Image architecture](#section1619419895966)
+-   [Directory Structure](#section161941989596)
+-   [Repositories Involved](#section1371113476307)
 
-#### Software Architecture
-Software architecture description
+## Introduction<a name="section1166054159366"></a>
 
-#### Installation
+The contact database application is an indispensable management information application for every user to manage the contact database.
+Its content is very important for user managers, so the contact database should be able to provide sufficient information and quick 
+query means for each user's management, which greatly facilitates users to reasonably manage the contact database information.
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## Image architecture<a name="section1619419895966"></a>
 
-#### Instructions
+![](figures/Image_architecture.png)
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## Directory Structure<a name="section161941989596"></a>
 
-#### Contribution
+```
+/foundation/contactsdataability/
+├── ability
+│   ├── account                        #Account Management
+│   ├── checkpermission                #Permission Check
+│   ├── common                         #Public Method
+│   ├── datadisasterrecovery           #Data Corruption Recovery
+│   ├── merge                          #Contacts Merge
+│   └── sinicization                   #Chinese Characters to Pinyin Related
+├── contacts                            #NAPI
+├── dataBusiness
+│   ├── calllog                        #Call Records
+│   ├── contacts                       #Contacts Person
+│   ├── quicksearch                    #Quick Search
+│   └── voicemail                      #Voicemail
+├── test                               #Test Catalog
+├── BUILD.gn
+└── ohos.build
+```
 
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
+## Repositories Involved<a name="section1371113476307"></a>
 
+system applications
 
-#### Gitee Feature
-
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+applications_contactsdata

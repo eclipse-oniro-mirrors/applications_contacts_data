@@ -1,0 +1,148 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//build/lite/config/component/lite_component.gni")
+
+## Build Contacts_DataAbility.hap
+ohos_hap("Contacts_DataAbility") {
+  hap_profile = "./config.json"
+  shared_libraries = [
+    ":contactsdataability",
+  ]
+  certificate_profile = "./signature/contactsdata.p7b"
+  hap_name = "Contacts_DataAbility"
+  part_name = "contactsdata_hap"
+  subsystem_name = "applications"
+}
+
+## Build contactsdataability.so {{{
+config("contactsdataability_public_config") {
+ visibility = [ ":*" ]
+  include_dirs = [ 
+    "//third_party/node/src",
+    "ability/common/include",
+    "ability/common/utils/include/",
+    "dataBusiness/voicemail/include",
+    "dataBusiness/calllog/include",
+    "dataBusiness/contacts/include",
+    "ability/account/include",
+    "dataBusiness/quicksearch/include",
+    "ability/sinicization/include",
+    "ability/account/include",
+    "ability/merge/include",
+    "ability/datadisasterrecovery/include",
+  ]
+  cflags = [ ]
+}
+ 
+ohos_shared_library("contactsdataability") {
+  sources = [
+    "dataBusiness/calllog/src/calllog_ability.cpp",
+    "dataBusiness/calllog/src/calllog_database.cpp",
+    "dataBusiness/voicemail/src/voicemail_ability.cpp",
+    "dataBusiness/voicemail/src/voicemail_database.cpp",
+    "dataBusiness/contacts/src/contacts_database.cpp",
+    "dataBusiness/contacts/src/contacts_account.cpp",
+    "dataBusiness/contacts/src/contacts_type.cpp",
+    "dataBusiness/contacts/src/contacts_data_ability.cpp",
+    "ability/common/utils/src/merge_utils.cpp",
+    "ability/common/utils/src/uri_utils.cpp",
+    "ability/common/utils/src/file_utils.cpp",
+    "ability/common/utils/src/contacts_path.cpp",
+    "ability/common/utils/src/predicates_convert.cpp",
+    "ability/merge/src/candidate_status.cpp",
+    "ability/merge/src/merger_contacts.cpp",
+    "ability/merge/src/match_candidate.cpp",
+    "ability/merge/src/candidate.cpp",
+    "ability/common/utils/src/contacts_json_utils.cpp",
+    "ability/common/utils/src/contacts_common_event.cpp",
+    "ability/common/utils/src/sql_analyzer.cpp",
+    "dataBusiness/contacts/src/contacts_update_helper.cpp",
+    "dataBusiness/contacts/src/raw_contacts.cpp",
+    "dataBusiness/contacts/src/contacts.cpp",
+    "dataBusiness/quicksearch/src/contacts_search.cpp",
+    "ability/sinicization/src/construction_name.cpp",
+    "ability/sinicization/src/character_transliterate.cpp",
+    "ability/common/utils/src/contacts_string_utils.cpp",
+    "ability/account/src/account_data_collection.cpp",
+    "ability/account/src/account_sync.cpp",
+    "ability/account/src/account_manager.cpp",
+    "dataBusiness/contacts/src/profile_database.cpp",
+    "ability/datadisasterrecovery/src/database_disaster_recovery.cpp"
+ ]
+include_dirs=[
+    "//utils/native/base/include",
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
+    "//third_party/jsoncpp",
+    "//third_party/jsoncpp/include/json",
+    "//base/account/os_account/interfaces/innerkits/ohosaccount/native/include/",
+    "//base/account/os_account/interfaces/kits/napi/distributedaccount/include/",
+    "//base/account/os_account/interfaces/innerkits/include",
+    "//foundation/aafwk/standard/interfaces/innerkits/want/include",
+    "//foundation/appexecfwk/standard/kits/appkit/native/app",
+    "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
+    "//foundation/aafwk/standard/services/abilitymgr/include",
+    "//foundation/appexecfwk/standard/common/log/include",
+    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
+    "//base/notification/ces_standard/interfaces/innerkits/native/include/"
+   ]
+
+deps = [
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
+    "//utils/native/base:utils",
+    "//foundation/ace/napi:ace_napi",
+    "//third_party/jsoncpp:jsoncpp",
+    "//base/notification/ces_standard/frameworks/core:cesfwk_core",
+    "//base/notification/ces_standard/frameworks/native:cesfwk_innerkits",
+    "//base/notification/ces_standard/services:cesfwk_services",
+    "//foundation/aafwk/standard/interfaces/innerkits/want/:want",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:dummy_classes",
+    "//foundation/appexecfwk/standard/common:libappexecfwk_common",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
+    "//utils/native/base:utilsbase",
+  ]
+
+  public_configs = [ ":contactsdataability_public_config" ]
+  external_deps = [
+    "ability_runtime:ability_manager",
+    "ability_runtime:want",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
+    "eventhandler:libeventhandler",
+    "ipc:ipc_core",
+    "ces_standard:cesfwk_innerkits",
+    "native_appdatamgr:native_appdatafwk",
+    "native_appdatamgr:native_dataability",
+    "native_appdatamgr:native_preferences",
+    "native_appdatamgr:native_rdb",
+  ]
+  if (is_standard_system) {
+    external_deps += [ "hiviewdfx_hilog_native:libhilog" ]
+  } else {
+    external_deps += [ "hilog:libhilog" ]
+  }
+
+  public_deps = []
+  relative_install_dir = "module"
+  part_name = "contactsdata_hap"
+  subsystem_name = "applications"
+}
+## Build contactsdataability.so }}}

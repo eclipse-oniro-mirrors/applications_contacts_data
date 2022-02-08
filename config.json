@@ -1,0 +1,66 @@
+{
+	"app": {
+		"bundleName": "com.ohos.contactsdataability",
+		"vendor": "ohos",
+		"version": {
+			"code": 1,
+			"name": "1.0"
+		},
+		"apiVersion": {
+			"compatible": 3,
+			"target": 3
+		}
+	},
+	"deviceConfig": {},
+	"module": {
+		"package": "com.ohos.contactsdataability",
+		"name": ".ContactsDataAbility",
+		
+		"deviceType": [
+			"smartVision"
+		],
+		"distro": {
+			"deliveryWithInstall": true,
+			"moduleName": "entry",
+			"moduleType": "entry"
+		},
+		"abilities": [
+			{
+				"permissions": [
+					"com.ohos.contactsdataability.DataAbilityShellProvider.PROVIDER"
+				],
+				"name": "ContactsDataAbility",
+				"icon": "$media:icon",
+				"description": "dataability_description",
+				"type": "data",
+				"uri": "dataability://com.ohos.contactsdataability",
+				"visible":true,
+				"srcLanguage":"c++"
+			},
+		    {
+				"permissions": [
+					"com.ohos.voicemailability.DataAbilityShellProvider.PROVIDER"
+				],
+				"name": "VoiceMailAbility",
+				"icon": "$media:icon",
+				"description": "dataability_description",
+				"type": "data",
+				"uri": "dataability://com.ohos.voicemailability",
+				"visible":true,
+				"srcLanguage":"c++"
+			},
+			{
+				"permissions": [
+					"com.ohos.calllogability.DataAbilityShellProvider.PROVIDER"
+				],
+				"name": "CallLogAbility",
+				"icon": "$media:icon",
+				"description": "dataability_description",
+				"type": "data",
+				"uri": "dataability://com.ohos.calllogability",
+				"visible":true,
+				"srcLanguage":"c++"
+			}
+		]
+	}
+}

@@ -1,0 +1,11 @@
+//require('./ObjectInterface_test.js');
+//require('./ObjectCallback.js');
+//require('./Calllog_test.js');
+//require('./Voicemail_test.js');
+//require('./Groups_test.js');
+//require('./Contacts_test.js');
+//require('./ContactCard_test.js');
+require('./ContactMerge_test.js');
+require('./Performance_test.js');
+require('./Stability_test.js');
+require('./recovery_test.js');
