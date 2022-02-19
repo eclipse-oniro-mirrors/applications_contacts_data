@@ -190,8 +190,6 @@ describe('ContactsTest', function() {
         }
     });
 
-    var f = { add:function(){}, add:function(){}}
-
     /**
      * @tc.number  contact_insert_test_400
      * @tc.name    Insert contact details (name, company, position, mobile phone number)

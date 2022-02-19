@@ -94,7 +94,6 @@ void AccountSync::SyncUpdateAccount(std::vector<OHOS::AccountSA::OhosAccountInfo
     }
     std::vector<AccountDataCollection> accounts = g_contactsAccount->GetAccountFromLoacl(store);
     std::vector<AccountDataCollection> notInSysAccounts;
-    std::vector<AccountDataCollection> needAddAccount;
     for (size_t i = 0; i < accounts.size(); i++) {
         auto iter = accounts[i];
         // if account is not default and not in sysAccounts then this should remove

@@ -49,8 +49,8 @@ class AsyncTaskMutex {
 public:
     void lock()
     {
-        while (flag.test_and_set(std::memory_order_acquire))
-            ;
+        while (flag.test_and_set(std::memory_order_acquire)) {
+        }
     }
 
     void unlock()
@@ -98,14 +98,14 @@ public:
         return threads;
     }
 
-    bool Push(AsyncItem *item)
+    bool Push(std::unique_ptr<AsyncItem> &task)
     {
         std::lock_guard<AsyncTaskMutex> lk(mtx);
         if (maxSize > 0 && que.size() >= maxSize) {
             HILOG_ERROR("AsyncTask maxSize error");
             return false;
         }
-        que.push(item);
+        que.push(task.release());
         return true;
     }
 

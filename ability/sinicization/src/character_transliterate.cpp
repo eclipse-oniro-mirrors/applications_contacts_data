@@ -23,7 +23,8 @@
 
 namespace OHOS {
 namespace Contacts {
-ChineseTable CharacterTransliterate::chineseTable_[411] = {{"a", "a", "吖阿呵啊腌锕錒嗄厑"},
+ChineseTable CharacterTransliterate::chineseTable_[411] = {
+    {"a", "a", "吖阿呵啊腌锕錒嗄厑"},
     {"a", "ao",
         "凹柪梎軪熬爊敖厫隞蔜遨廒嗷嗸獓"
         "嶅滶獒摮璈磝螯聱翱翶謷謸鳌翺嚣"
@@ -1951,7 +1952,8 @@ ChineseTable CharacterTransliterate::chineseTable_[411] = {{"a", "a", "吖阿呵
     {"z", "zuo",
         "作嘬穝昨莋秨笮捽琢筰鈼稓左佐撮繓"
         "阼坐怍岞岝侳祚胙袏座唑做葃葄飵糳"
-        "咗"}};
+        "咗"}
+};
 
 CharacterTransliterate::CharacterTransliterate(void)
 {

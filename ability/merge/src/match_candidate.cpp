@@ -47,8 +47,7 @@ int MatchCandidate::FindMatchContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> 
     // Query candidates
     Candidate candidate = candidateStatus.QueryAllForMerge(store, rawId);
     if (candidate.autoIds_.size() > 1) {
-        int minAutoid = -1;
-        minAutoid = *candidate.autoIds_.begin();
+        int minAutoid = *candidate.autoIds_.begin();
         if (minAutoid != -1) {
             std::string updateMergeTarget = "UPDATE ";
             updateMergeTarget.append(ContactTableName::RAW_CONTACT)

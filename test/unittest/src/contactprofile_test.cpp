@@ -1591,7 +1591,6 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_2700, testing::ext::Test
     blocklistValues.Clear();
     predicates.Clear();
     int64_t blocklistIdThree = ContactBlocklistInsert("772501", blocklistValues);
-    ;
     EXPECT_GT(blocklistIdThree, 0);
     predicates.EqualTo("id", std::to_string(blocklistIdThree));
     QueryAndExpectResult(contactBlocklist, predicates, blocklistValues, "contactProfile_Insert_test_2700");

@@ -103,27 +103,23 @@ include_dirs=[
 
 deps = [
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
-    "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
     "//utils/native/base:utils",
     "//foundation/ace/napi:ace_napi",
     "//third_party/jsoncpp:jsoncpp",
     "//base/notification/ces_standard/frameworks/core:cesfwk_core",
     "//base/notification/ces_standard/frameworks/native:cesfwk_innerkits",
     "//base/notification/ces_standard/services:cesfwk_services",
-    "//foundation/aafwk/standard/interfaces/innerkits/want/:want",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:dummy_classes",
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//utils/native/base:utilsbase",
   ]
 
   public_configs = [ ":contactsdataability_public_config" ]
   external_deps = [
+    "ability_base:want",
     "ability_runtime:ability_manager",
-    "ability_runtime:want",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "eventhandler:libeventhandler",

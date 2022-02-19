@@ -26,9 +26,6 @@
 		},
 		"abilities": [
 			{
-				"permissions": [
-					"com.ohos.contactsdataability.DataAbilityShellProvider.PROVIDER"
-				],
 				"name": "ContactsDataAbility",
 				"icon": "$media:icon",
 				"description": "dataability_description",
@@ -37,10 +34,7 @@
 				"visible":true,
 				"srcLanguage":"c++"
 			},
-		    {
-				"permissions": [
-					"com.ohos.voicemailability.DataAbilityShellProvider.PROVIDER"
-				],
+			{
 				"name": "VoiceMailAbility",
 				"icon": "$media:icon",
 				"description": "dataability_description",
@@ -50,9 +44,6 @@
 				"srcLanguage":"c++"
 			},
 			{
-				"permissions": [
-					"com.ohos.calllogability.DataAbilityShellProvider.PROVIDER"
-				],
 				"name": "CallLogAbility",
 				"icon": "$media:icon",
 				"description": "dataability_description",

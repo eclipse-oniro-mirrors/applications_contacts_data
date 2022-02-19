@@ -16,7 +16,6 @@
 #include <napi/native_api.h>
 
 #include "contacts_api.h"
-#include "hilog_wrapper_api.h"
 
 namespace OHOS {
 namespace ContactsApi {

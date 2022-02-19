@@ -25,7 +25,7 @@
 namespace OHOS {
 namespace Contacts {
 namespace {
-std::mutex mtx_;
+std::mutex g_mtx;
 }
 
 const std::string DataBaseDisasterRecovery::BACKUP_LINK_SYMBOL = "_";
@@ -52,7 +52,7 @@ DataBaseDisasterRecovery::~DataBaseDisasterRecovery()
 
 int DataBaseDisasterRecovery::SQLliteCheckDb()
 {
-    mtx_.lock();
+    g_mtx.lock();
     int ret = OPERATION_ERROR;
     HILOG_INFO("DataBaseDisasterRecovery SQLliteCheck start.");
     redbStoreMap.clear();
@@ -72,11 +72,11 @@ int DataBaseDisasterRecovery::SQLliteCheckDb()
         ret = SQLliteCheckDb(store_, kv.first);
         if (ret != OHOS::NativeRdb::E_OK) {
             HILOG_ERROR("DataBaseDisasterRecovery SQLliteCheckDb ERROR.");
-            mtx_.unlock();
+            g_mtx.unlock();
             return ret;
         }
     }
-    mtx_.unlock();
+    g_mtx.unlock();
     HILOG_INFO("DataBaseDisasterRecovery SQLliteCheck end.");
     return RDB_EXECUTE_OK;
 }
@@ -130,7 +130,7 @@ int DataBaseDisasterRecovery::BackDatabase()
 
 int DataBaseDisasterRecovery::BackDatabase(std::string dataBaseName)
 {
-    mtx_.lock();
+    g_mtx.lock();
     auto iter = redbStoreMap.find(dataBaseName);
     HILOG_INFO("DataBaseDisasterRecovery BackDatabase redbStoreMap size is %{public}d", redbStoreMap.size());
     if (iter != redbStoreMap.end()) {
@@ -146,18 +146,18 @@ int DataBaseDisasterRecovery::BackDatabase(std::string dataBaseName)
         int ret = store_->Insert(outRowId, ContactTableName::DATABASE_BACKUP_TASK, values);
         if (ret != OHOS::NativeRdb::E_OK) {
             HILOG_ERROR("DataBaseDisasterRecovery Insert filed, status is %{public}d.", ret);
-            mtx_.unlock();
+            g_mtx.unlock();
             return RDB_EXECUTE_FAIL;
         }
         OHOS::NativeRdb::RdbHelper::DeleteRdbStore(dbPath);
         ret = store_->Backup(dbPath, std::vector<uint8_t>());
         if (ret != OHOS::NativeRdb::E_OK) {
             HILOG_ERROR("DataBaseDisasterRecovery Backup filed, status is %{public}d.", ret);
-            mtx_.unlock();
+            g_mtx.unlock();
             return RDB_EXECUTE_FAIL;
         }
     }
-    mtx_.unlock();
+    g_mtx.unlock();
     return RDB_EXECUTE_OK;
 }
 

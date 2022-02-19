@@ -51,8 +51,7 @@ int MergerContacts::ContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> stor
     HILOG_INFO("MergerContacts::ContactMerge is starting");
     // query all ids with merge_mode = 2
     std::vector<std::set<int>> candidates = QueryMergeContacts(store, MERGE_MODE_AUTO);
-    int ret = RDB_EXECUTE_FAIL;
-    ret = MergeCircle(store, candidates);
+    int ret = MergeCircle(store, candidates);
     return ret;
 }
 

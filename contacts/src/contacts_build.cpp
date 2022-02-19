@@ -54,10 +54,6 @@ void ContactsBuild::GetContactData(napi_env env, napi_callback_info info,
     size_t argc = MAX_PARAMS;
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     ContactsBuild contactsBuild;
-    if (argc < 0) {
-        HILOG_ERROR("GetContactData napi_callback_info is nullptr");
-        return;
-    }
     Contacts contact;
     GetContactDataByObject(env, argv[0], contact);
     BuildValueContact(contact, valueContact);
@@ -829,12 +825,11 @@ std::string ContactsBuild::NapiGetValueString(napi_env env, napi_value value)
         HILOG_ERROR("ContactsBuild NapiGetValueString value is nullptr");
         return "";
     }
-    std::string resultValue = "";
     char valueString[NAPI_GET_STRING_SIZE];
     size_t valueSize = NAPI_GET_STRING_SIZE;
     size_t resultSize = 0;
     napi_get_value_string_utf8(env, value, valueString, valueSize, &resultSize);
-    resultValue = valueString;
+    std::string resultValue = valueString;
     if (resultValue == "") {
         HILOG_ERROR("ContactsBuild NapiGetValueString Data error");
         return "";

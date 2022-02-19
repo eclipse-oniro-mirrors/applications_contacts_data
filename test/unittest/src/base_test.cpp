@@ -95,9 +95,9 @@ void BaseTest::CheckData(OHOS::NativeRdb::ValuesBucket &values,
     // Compare values and resultSet column value  equality
     if (columnType == OHOS::NativeRdb::ColumnType::TYPE_INTEGER) {
         int resultSetIntValue = 0;
-        int valuesIntValue = 0;
         resultSet->GetInt(columnIndex, resultSetIntValue);
         if (values.HasColumn(typeValue)) {
+            int valuesIntValue = 0;
             OHOS::NativeRdb::ValueObject valuesObject;
             values.GetObject(typeValue, valuesObject);
             valuesObject.GetInt(valuesIntValue);

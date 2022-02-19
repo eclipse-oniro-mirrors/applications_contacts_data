@@ -576,10 +576,9 @@ void ContactsDataAbility::SwitchProfile(Uri &uri)
 
 int ContactsDataAbility::BackUp()
 {
-    int retCode = Contacts::RDB_EXECUTE_FAIL;
     std::shared_ptr<OHOS::Contacts::DataBaseDisasterRecovery> instance =
         OHOS::Contacts::DataBaseDisasterRecovery::GetInstance();
-    retCode = instance->SQLliteCheckDb();
+    int retCode = instance->SQLliteCheckDb();
     if (retCode == 0) {
         retCode = instance->BackDatabase();
     }

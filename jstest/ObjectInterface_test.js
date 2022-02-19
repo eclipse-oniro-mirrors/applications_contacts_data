@@ -15,7 +15,6 @@
 
 import contactsapi from "@ohos.contactsapi";
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
-import common from './common.js';
 
 const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
 const groupUri = "dataability:///com.ohos.contactsdataability/contacts/groups";

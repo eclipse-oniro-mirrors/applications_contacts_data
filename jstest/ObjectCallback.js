@@ -14,8 +14,7 @@
  */
 
 import contactsapi from "@ohos.contactsapi";
-import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
-import common from './common.js';
+import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index';
 
 const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
 const rawContactUri = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
@@ -590,9 +589,11 @@ describe('ObjectInterfaceTest', function() {
         contactsapi.queryContacts(ContactAttributes, (data) => {
             if (data == null) {
                 console.info("abnormal_contactsApi_query_contacts_test_3200 is null");
+				return;
             }
             if (data == undefined) {
                 console.info("abnormal_contactsApi_query_contacts_test_3200 is undefined");
+				return;
             }
             console.info("abnormal_contactsApi_query_contacts_test_3200 : query resultSet = " + JSON.stringify(data));
             expect(data.length == 0).assertTrue();

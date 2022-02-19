@@ -1592,7 +1592,6 @@ HWTEST_F(ContactAbilityTest, contact_Insert_test_2700, testing::ext::TestSize.Le
     blocklistValues.Clear();
     predicates.Clear();
     int64_t blocklistIdThree = ContactBlocklistInsert("772501", blocklistValues);
-    ;
     EXPECT_GT(blocklistIdThree, 0);
     predicates.EqualTo("id", std::to_string(blocklistIdThree));
     QueryAndExpectResult(contactBlocklist, predicates, blocklistValues, "contact_Insert_test_2700");
@@ -2726,7 +2725,6 @@ HWTEST_F(ContactAbilityTest, contact_BatchInsert_test_5500, testing::ext::TestSi
     EXPECT_GT(rawContactId, 0);
 
     std::vector<OHOS::NativeRdb::ValuesBucket> listAddBluk = GetBatchList(rawContactId);
-    ;
     int batchInserCode = contactsDataAbility.BatchInsert(uriContactData, listAddBluk);
     EXPECT_EQ(batchInserCode, 0);
 

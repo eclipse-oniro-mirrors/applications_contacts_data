@@ -43,10 +43,10 @@ std::shared_ptr<ContactsDataBase> ContactsDataBase::contactDataBase_ = nullptr;
 std::shared_ptr<CallLogDataBase> ContactsDataBase::callLogDataBase_ = nullptr;
 std::shared_ptr<OHOS::NativeRdb::RdbStore> ContactsDataBase::store_ = nullptr;
 std::shared_ptr<OHOS::NativeRdb::RdbStore> ContactsDataBase::contactStore_ = nullptr;
-static AsyncTaskQueue *ASYNC_TASK_QUEUE;
+static AsyncTaskQueue *g_asyncTaskQueue;
 static std::string g_databaseName;
 namespace {
-std::mutex mtx_;
+std::mutex g_mtx;
 }
 
 ContactsDataBase::ContactsDataBase()
@@ -78,7 +78,7 @@ ContactsDataBase::ContactsDataBase()
     ContactsType contactsType;
     contactsType.PrepopulateCommonTypes(store_);
     callLogDataBase_ = CallLogDataBase::GetInstance();
-    ASYNC_TASK_QUEUE = AsyncTaskQueue::Instance();
+    g_asyncTaskQueue = AsyncTaskQueue::Instance();
 }
 
 ContactsDataBase::ContactsDataBase(const ContactsDataBase &)
@@ -634,8 +634,9 @@ int ContactsDataBase::DeleteContact(OHOS::NativeRdb::RdbPredicates &rdbPredicate
 void ContactsDataBase::DeletedAsyncTask(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &store, std::vector<OHOS::NativeRdb::ValuesBucket> &queryValuesBucket)
 {
-    ASYNC_TASK_QUEUE->Push(new AsyncDeleteContactsTask(store_, queryValuesBucket));
-    ASYNC_TASK_QUEUE->Start();
+    std::unique_ptr<AsyncItem> task = std::make_unique<AsyncDeleteContactsTask>(store_, queryValuesBucket);
+    g_asyncTaskQueue->Push(task);
+    g_asyncTaskQueue->Start();
 }
 
 int ContactsDataBase::DeleteExecute(std::vector<OHOS::NativeRdb::ValuesBucket> &queryValuesBucket)
@@ -675,7 +676,7 @@ int ContactsDataBase::DeleteExecute(std::vector<OHOS::NativeRdb::ValuesBucket> &
 void ContactsDataBase::DeleteRecordInsert(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &store, std::vector<OHOS::NativeRdb::ValuesBucket> &queryValuesBucket)
 {
-    mtx_.lock();
+    g_mtx.lock();
     int size = queryValuesBucket.size();
     for (int i = 0; i < size; i++) {
         OHOS::NativeRdb::ValuesBucket valuesElement = queryValuesBucket[i];
@@ -709,7 +710,7 @@ void ContactsDataBase::DeleteRecordInsert(
         ContactsUpdateHelper contactsUpdateHelper;
         contactsUpdateHelper.UpdateCallLogByPhoneNum(rawContactIdVector, store, true);
     }
-    mtx_.unlock();
+    g_mtx.unlock();
 }
 
 /**
@@ -888,9 +889,8 @@ int ContactsDataBase::DeleteLocal(int rawContactId, std::string contactId)
         HILOG_ERROR("ContactsDataBase DeleteLocal store is nullptr");
         return RDB_OBJECT_EMPTY;
     }
-    int retCode = RDB_EXECUTE_FAIL;
     std::string updateContactSql = "UPDATE contact SET name_raw_contact_id = NULL WHERE id = " + contactId;
-    retCode = store_->ExecuteSql(updateContactSql);
+    int retCode = store_->ExecuteSql(updateContactSql);
     if (retCode != OHOS::NativeRdb::E_OK) {
         HILOG_ERROR("DeleteLocal updateContactSql code:%{public}d", retCode);
         return retCode;
@@ -1141,17 +1141,17 @@ int SqliteOpenHelperContactCallback::OnDowngrade(OHOS::NativeRdb::RdbStore &stor
 
 void ContactsDataBase::DestroyInstanceAndRestore(std::string restorePath)
 {
-    mtx_.lock();
+    g_mtx.lock();
     if (access(restorePath.c_str(), F_OK) != 0) {
         HILOG_ERROR("Restore file %{public}s does not exist", restorePath.c_str());
-        mtx_.unlock();
+        g_mtx.unlock();
         return;
     }
     OHOS::NativeRdb::RdbHelper::DeleteRdbStore(g_databaseName);
     OHOS::NativeRdb::RdbHelper::ClearCache();
     contactDataBase_ = nullptr;
     Restore(restorePath);
-    mtx_.unlock();
+    g_mtx.unlock();
 }
 
 bool ContactsDataBase::Restore(std::string restorePath)
@@ -1259,8 +1259,9 @@ void ContactsDataBase::InsertMergeData(
 void ContactsDataBase::MergeUpdateTask(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &store, std::vector<int> &rawContactIdVector, bool isDeleted)
 {
-    ASYNC_TASK_QUEUE->Push(new AsyncTask(store_, rawContactIdVector, isDeleted));
-    ASYNC_TASK_QUEUE->Start();
+    std::unique_ptr<AsyncItem> task = std::make_unique<AsyncTask>(store_, rawContactIdVector, isDeleted);
+    g_asyncTaskQueue->Push(task);
+    g_asyncTaskQueue->Start();
 }
 
 void ContactsDataBase::MarkMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> &store)

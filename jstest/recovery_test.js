@@ -17,8 +17,6 @@ import featureAbility from '@ohos.ability.featureAbility';
 import ohos_data_ability from '@ohos.data.dataability';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
 
-import common from './common.js';
-
 const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
 const rawContactUri = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
 const backup = "dataability:///com.ohos.contactsdataability/contacts/backup";

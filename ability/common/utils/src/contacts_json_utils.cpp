@@ -16,7 +16,6 @@
 #include "contacts_json_utils.h"
 
 #include "contacts_columns.h"
-#include "hilog_wrapper.h"
 
 namespace OHOS {
 namespace Contacts {

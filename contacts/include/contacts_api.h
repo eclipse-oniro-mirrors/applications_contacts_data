@@ -60,6 +60,7 @@ NativeRdb::DataAbilityPredicates ConvertParamsSwitchSplit(
     int code, napi_env env, napi_value &key, napi_value &hold, napi_value &attr);
 std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_env env);
 void HolderPredicates(const Holder &holder, NativeRdb::DataAbilityPredicates &predicates);
+void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holder);
 void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredicates &predicates);
 NativeRdb::DataAbilityPredicates BuildQureyContactPredicates(
     napi_env env, std::string key, napi_value hold, napi_value attr);

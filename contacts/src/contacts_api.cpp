@@ -153,8 +153,7 @@ int GetType(napi_env env, napi_value value)
     }
 }
 
-std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper_ = nullptr;
-napi_env env_ = nullptr;
+std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> g_dataAbilityHelper = nullptr;
 /**
  * @brief Get dataAbilityHelper
  *
@@ -177,15 +176,11 @@ std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_e
         HILOG_ERROR("ability is nullptr!");
     }
     std::shared_ptr<OHOS::Uri> uriPtr = std::make_shared<OHOS::Uri>("dataability:///com.ohos.contactsdataability");
-    if (dataAbilityHelper_ == nullptr) {
-        HILOG_ERROR("dataAbilityHelper_ is not nullptr!");
-        env_ = env;
-        dataAbilityHelper_ = OHOS::AppExecFwk::DataAbilityHelper::Creator(ability->GetContext(), uriPtr);
+    if (g_dataAbilityHelper == nullptr) {
+        HILOG_ERROR("g_dataAbilityHelper is not nullptr!");
+        g_dataAbilityHelper = OHOS::AppExecFwk::DataAbilityHelper::Creator(ability->GetContext(), uriPtr);
     }
-    if (env_ == env) {
-        HILOG_ERROR("env_ is == !");
-    }
-    return dataAbilityHelper_;
+    return g_dataAbilityHelper;
 }
 
 /**
@@ -247,10 +242,6 @@ NativeRdb::DataAbilityPredicates BuildDeleteContactPredicates(napi_env env, napi
     size_t argc = MAX_PARAMS;
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     ContactsBuild contactsBuild;
-    if (argc < 0) {
-        HILOG_ERROR("BuildDeleteContactPredicates napi_callback_info is nullptr");
-        return predicates;
-    }
     std::string keyValue = contactsBuild.NapiGetValueString(env, argv[0]);
     if (!keyValue.empty()) {
         predicates.EqualTo("is_deleted", "0");
@@ -511,7 +502,6 @@ int GetRawIdByResultSet(const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSe
     if (resultSet == nullptr) {
         return -1;
     }
-    std::vector<OHOS::NativeRdb::ValuesBucket> vectorQueryData;
     int resultSetNum = resultSet->GoToFirstRow();
     int intValue = 0;
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -877,7 +867,6 @@ NativeRdb::DataAbilityPredicates ConvertParamsSwitchSplit(
             predicates = BuildQureyGroupsPredicates(env, hold);
             break;
         case QUERY_HOLDERS:
-            break;
             break;
         case QUERY_MY_CARD:
             predicates = BuildQueryMyCardPredicates(env, attr);

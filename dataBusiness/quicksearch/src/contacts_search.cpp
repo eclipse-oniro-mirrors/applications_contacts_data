@@ -59,14 +59,13 @@ int64_t ContactsSearch::Insert(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSto
 int ContactsSearch::UpdateSearchContact(int rawContactId, std::string type,
     std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, OHOS::NativeRdb::ValuesBucket searchContactValues)
 {
-    int ret = OHOS::NativeRdb::E_OK;
     std::string upWhereClause;
     upWhereClause.append(SearchContactColumns::RAW_CONTACT_ID).append(" = ?");
     std::vector<std::string> upWhereArgs;
     upWhereArgs.push_back(std::to_string(rawContactId));
     int changedRows;
     // update search_contact table name
-    ret = rdbStore->Update(
+    int ret = rdbStore->Update(
         changedRows, ContactTableName::SEARCH_CONTACT, searchContactValues, upWhereClause, upWhereArgs);
     if (ret != OHOS::NativeRdb::E_OK) {
         HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateSearchContact fail:%{public}d", ret);

@@ -74,8 +74,7 @@ void ContactsType::PrepopulateCommonTypes(std::shared_ptr<OHOS::NativeRdb::RdbSt
     for (int i = 0; i < size; i++) {
         std::string typeValue = vectorType[i];
         int error = LookupTypeId(rdbStore, typeValue);
-        char *typeChar = nullptr;
-        typeChar = (char *)typeValue.data();
+        char *typeChar = (char *)typeValue.data();
         if (error == RDB_EXECUTE_FAIL) {
             int typeId = i + 1;
             Insert(rdbStore, typeValue, typeId);

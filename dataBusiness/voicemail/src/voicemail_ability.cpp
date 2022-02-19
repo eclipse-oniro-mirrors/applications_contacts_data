@@ -212,7 +212,7 @@ int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::V
         }
     }
     int markRet = voiceMailDataBase_->Commit();
-    if (!IsCommitOK(markRet, g_mutex) ) {
+    if (!IsCommitOK(markRet, g_mutex)) {
         voiceMailDataBase_->RollBack();
         g_mutex.unlock();
         return Contacts::RDB_EXECUTE_FAIL;
@@ -349,7 +349,6 @@ std::shared_ptr<NativeRdb::AbsSharedResultSet> VoiceMailAbility::Query(
 void VoiceMailAbility::DataBaseNotifyChange(int code, Uri uri)
 {
     Contacts::ContactsCommonEvent::SendCallLogChange(code);
-    std::string path = uri.GetPath();
 }
 } // namespace AppExecFwk
 } // namespace OHOS
