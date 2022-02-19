@@ -1,0 +1,18 @@
+{
+  "subsystem": "applications",
+  "parts": {
+    "contactsdata_hap": {
+      "module_list": [
+          "//applications/standard/contactsdata:contactsdataability",
+          "//applications/standard/contactsdata/contacts:contactsapi",
+          "//applications/standard/contactsdata:Contacts_DataAbility"
+      ],
+      "system_capabilities":[
+          "SystemCapability.Data.DATA_APPDATAMGR"
+      ],
+      "test_list": [
+          "//applications/standard/contactsdata/test:contacts_test"
+      ]
+    }
+  }
+}

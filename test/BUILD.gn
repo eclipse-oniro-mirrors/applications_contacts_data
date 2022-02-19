@@ -1,0 +1,104 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+
+## UnitTest contacts_test {{{
+config("test_public_config") {
+  visibility = [ ":*" ]
+  include_dirs = [
+    "unittest/include",
+  ]
+  cflags = [ ]
+}
+
+ohos_unittest("contacts_test") {
+  module_out_path = "applications/prebuilt_hap"
+  sources = [
+      "unittest/src/base_test.cpp",
+      "unittest/src/contactability_test.cpp",
+      "unittest/src/contactgroup_test.cpp",
+      "unittest/src/contactpinyin_test.cpp",
+      "unittest/src/contactprofile_test.cpp",
+      "unittest/src/contactquery_test.cpp",
+      "unittest/src/mergecontact_test.cpp",
+      "unittest/src/performance_test.cpp",
+      "unittest/src/stability_test.cpp",
+      "unittest/src/calllogability_test.cpp",
+      "unittest/src/calllogfuzzyquery_test.cpp",
+      "unittest/src/voicemailability_test.cpp",
+      "unittest/src/recovery_test.cpp",
+  ]
+  deps = [
+      "//applications/standard/contactsdata:contactsdataability",
+      "//third_party/googletest:gtest_main",
+      "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+      "//foundation/ace/napi:ace_napi",
+      "//utils/native/base:utils",
+      "//third_party/jsoncpp:jsoncpp",
+      "//base/notification/ces_standard/frameworks/core:cesfwk_core",
+      "//base/notification/ces_standard/frameworks/native:cesfwk_innerkits",
+      "//base/notification/ces_standard/services:cesfwk_services",
+      "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+      "//foundation/aafwk/standard/frameworks/kits/ability/native:dummy_classes",
+      "//foundation/appexecfwk/standard/common:libappexecfwk_common",
+      "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
+      "//utils/native/base:utilsbase",
+  ]
+  include_dirs = [
+      "//utils/system/safwk/native/include",
+      "//utils/native/base/include",
+      "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
+      "//third_party/jsoncpp",
+      "//third_party/jsoncpp/include/json",
+      "//base/account/os_account/interfaces/innerkits/include",
+      "//foundation/aafwk/standard/interfaces/innerkits/want/include",
+      "//foundation/appexecfwk/standard/kits/appkit/native/app",
+      "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content",
+      "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
+      "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
+      "//foundation/aafwk/standard/services/abilitymgr/include",
+      "//foundation/appexecfwk/standard/common/log/include",
+      "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
+      "//foundation/aafwk/standard/interfaces/innerkits/base/include/ohos/aafwk/base",
+      "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
+  ]
+  public_configs = [ ":test_public_config" ]
+  external_deps = [
+      "hiviewdfx_hilog_native:libhilog",
+      "ability_base:want",
+      "ability_runtime:ability_manager",
+      "bundle_framework:appexecfwk_base",
+      "bundle_framework:appexecfwk_core",
+      "eventhandler:libeventhandler",
+      "ipc:ipc_core",
+      "native_appdatamgr:native_appdatafwk",
+      "native_appdatamgr:native_dataability",
+      "native_appdatamgr:native_preferences",
+      "native_appdatamgr:native_rdb",
+  ]
+}
+
+## UnitTest contacts_test }}}
+
+group("unittest") {
+  testonly = true
+
+  deps = []
+
+  deps += [ ":contacts_test" ]
+}
+
+
+
+
