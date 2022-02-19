@@ -587,10 +587,6 @@ describe('ObjectInterfaceTest', function() {
         var ContactAttributes = {attributes : [ 100 ]};
 
         contactsapi.queryContacts(ContactAttributes, (data) => {
-            if (data == undefined) {
-                console.info("abnormal_contactsApi_query_contacts_test_3200 is undefined");
-				return;
-            }
             if (data == null) {
                 console.info("abnormal_contactsApi_query_contacts_test_3200 is null");
 				return;
