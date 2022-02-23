@@ -4,7 +4,7 @@
     "contactsdata_hap": {
       "module_list": [
           "//applications/standard/contactsdata:contactsdataability",
-          "//applications/standard/contactsdata/contacts:contactsapi",
+          "//applications/standard/contactsdata/contacts:contact",
           "//applications/standard/contactsdata:Contacts_DataAbility"
       ],
       "system_capabilities":[
