@@ -137,7 +137,6 @@ deps = [
   }
 
   public_deps = []
-  relative_install_dir = "module"
   part_name = "contactsdata_hap"
   subsystem_name = "applications"
 }

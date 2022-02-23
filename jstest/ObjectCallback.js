@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import contactsapi from "@ohos.contactsapi";
+import contactsapi from "@ohos.contact";
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index';
 
 const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
@@ -589,7 +589,7 @@ describe('ObjectInterfaceTest', function() {
         contactsapi.queryContacts(ContactAttributes, (data) => {
             if (data == null) {
                 console.info("abnormal_contactsApi_query_contacts_test_3200 is null");
-				return;
+                return;
             }
             console.info("abnormal_contactsApi_query_contacts_test_3200 : query resultSet = " + JSON.stringify(data));
             expect(data.length == 0).assertTrue();

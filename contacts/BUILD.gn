@@ -23,7 +23,7 @@ config("contactsapi_public_config") {
   cflags = [ ]
 }
 
-ohos_shared_library("contactsapi") {
+ohos_shared_library("contact") {
   sources = [
     "src/native_module.cpp",
     "src/result_convert.cpp",
@@ -73,7 +73,7 @@ ohos_shared_library("contactsapi") {
       "native_appdatamgr:native_preferences",
       "native_appdatamgr:native_rdb",
   ]
-  
+
   if (is_standard_system) {
     external_deps += [ "hiviewdfx_hilog_native:libhilog" ]
   } else {
