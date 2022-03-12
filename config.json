@@ -27,6 +27,8 @@
 		"abilities": [
 			{
 				"name": "ContactsDataAbility",
+				"readPermission": "ohos.permission.READ_CONTACTS",
+				"writePermission": "ohos.permission.WRITE_CONTACTS",
 				"icon": "$media:icon",
 				"description": "dataability_description",
 				"type": "data",
@@ -36,6 +38,9 @@
 			},
 			{
 				"name": "VoiceMailAbility",
+				"permissions": [
+				    "ohos.permission.MANAGE_VOICEMAIL"
+				],
 				"icon": "$media:icon",
 				"description": "dataability_description",
 				"type": "data",
@@ -45,6 +50,8 @@
 			},
 			{
 				"name": "CallLogAbility",
+				"readPermission": "ohos.permission.READ_CALL_LOG",
+				"writePermission": "ohos.permission.WRITE_CALL_LOG",
 				"icon": "$media:icon",
 				"description": "dataability_description",
 				"type": "data",
