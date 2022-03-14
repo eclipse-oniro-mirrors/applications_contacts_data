@@ -64,7 +64,7 @@ std::set<std::string> MergeUtils::QueryDataExecute(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> store, std::set<int> rawIds, int typeId)
 {
     std::set<std::string> result;
-    int size = rawIds.size();
+    unsigned int size = rawIds.size();
     if (size <= 0) {
         return result;
     }
@@ -161,7 +161,7 @@ void MergeUtils::AddHasJudgeForRawId(
     types.push_back(phoneType);
     types.push_back(emailType);
     types.push_back(groupType);
-    int size = types.size();
+    unsigned int size = types.size();
     for (int i = 0; i < size; i++) {
         std::string sql = "SELECT 1 FROM contact_data WHERE type_id = " + std::to_string(types[i]);
         sql.append(" AND raw_contact_id = " + std::to_string(rawId)).append(" LIMIT 1");

@@ -46,7 +46,7 @@ void ContactsJsonUtils::ConvertResultSet(
     resultSet->GetAllColumnNames(columnNames);
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         Json::Value data;
-        int size = columnNames.size();
+        unsigned int size = columnNames.size();
         for (int i = 0; i < size; i++) {
             GetValue(columnNames, i, data, resultSet);
         }

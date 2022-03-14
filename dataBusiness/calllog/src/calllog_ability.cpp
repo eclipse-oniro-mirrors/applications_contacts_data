@@ -174,7 +174,7 @@ int CallLogAbility::InsertExecute(const Uri &uri, const NativeRdb::ValuesBucket 
 int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::ValuesBucket> &values)
 {
     int rowRet = Contacts::RDB_EXECUTE_FAIL;
-    int size = values.size();
+    unsigned int size = values.size();
     if (size <= 0) {
         HILOG_ERROR("BatchInsert value is error");
         return rowRet;

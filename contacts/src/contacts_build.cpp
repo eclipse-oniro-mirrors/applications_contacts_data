@@ -170,7 +170,7 @@ void ContactsBuild::TypeSwitchSplit(
  */
 void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int emailsSize = contact.emails.size();
+    unsigned int emailsSize = contact.emails.size();
     for (int i = 0; i < emailsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketEmail;
         valuesBucketEmail.PutString("detail_info", contact.emails[i].email);
@@ -190,7 +190,7 @@ void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<NativeRd
  */
 void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int eventsSize = contact.events.size();
+    unsigned int eventsSize = contact.events.size();
     for (int i = 0; i < eventsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketEvent;
         valuesBucketEvent.PutString("detail_info", contact.events[i].eventDate);
@@ -209,7 +209,7 @@ void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<NativeRd
  */
 void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int groupsSize = contact.groups.size();
+    unsigned int groupsSize = contact.groups.size();
     for (int i = 0; i < groupsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketGroup;
         valuesBucketGroup.PutString("detail_info", std::to_string(contact.groups[i].groupId));
@@ -227,7 +227,7 @@ void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<NativeRd
  */
 void ContactsBuild::GetValuesBucketImAddress(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int imAddressSize = contact.imAddresses.size();
+    unsigned int imAddressSize = contact.imAddresses.size();
     for (int i = 0; i < imAddressSize; i++) {
         NativeRdb::ValuesBucket valuesBucketImAddress;
         valuesBucketImAddress.PutString("detail_info", contact.imAddresses[i].imAddress);
@@ -263,7 +263,7 @@ void ContactsBuild::GetValuesBucketPortrait(Contacts &contact, std::vector<Nativ
 void ContactsBuild::GetValuesBucketPhoneNumber(
     Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int phoneNumbersSize = contact.phoneNumbers.size();
+    unsigned int phoneNumbersSize = contact.phoneNumbers.size();
     for (int i = 0; i < phoneNumbersSize; i++) {
         NativeRdb::ValuesBucket valuesBucketPhoneNumber;
         valuesBucketPhoneNumber.PutString("detail_info", contact.phoneNumbers[i].phoneNumber);
@@ -283,7 +283,7 @@ void ContactsBuild::GetValuesBucketPhoneNumber(
 void ContactsBuild::GetValuesBucketPostalAddress(
     Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int postalAddressesSize = contact.postalAddresses.size();
+    unsigned int postalAddressesSize = contact.postalAddresses.size();
     for (int i = 0; i < postalAddressesSize; i++) {
         NativeRdb::ValuesBucket valuesBucketPostalAddress;
         valuesBucketPostalAddress.PutString("detail_info", contact.postalAddresses[i].postalAddress);
@@ -327,7 +327,7 @@ void ContactsBuild::GetValuesBucketRelation(Contacts &contact, std::vector<Nativ
  */
 void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int sipAddressesSize = contact.sipAddresses.size();
+    unsigned int sipAddressesSize = contact.sipAddresses.size();
     for (int i = 0; i < sipAddressesSize; i++) {
         NativeRdb::ValuesBucket valuesBucketSipAddress;
         valuesBucketSipAddress.PutString("detail_info", contact.sipAddresses[i].sipAddress);
@@ -346,7 +346,7 @@ void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<Nat
  */
 void ContactsBuild::GetValuesBucketWebsite(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int websitesSize = contact.websites.size();
+    unsigned int websitesSize = contact.websites.size();
     for (int i = 0; i < websitesSize; i++) {
         NativeRdb::ValuesBucket valuesBucketWebsite;
         valuesBucketWebsite.PutString("detail_info", contact.websites[i].website);

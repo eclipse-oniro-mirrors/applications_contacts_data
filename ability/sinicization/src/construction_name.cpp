@@ -83,7 +83,7 @@ ConstructionName ConstructionName::GetPhotoFirstName(ConstructionName &construct
     if (!constructionName.disPlayName_.empty()) {
         CharacterTransliterate characterTransliterate;
         std::wstring nameWstr = characterTransliterate.StringToWstring(constructionName.disPlayName_);
-        int len = nameWstr.size();
+        unsigned int len = nameWstr.size();
         for (int index = 0; index < len; index++) {
             if (characterTransliterate.IsChineseCharacter(nameWstr[index])) {
                 std::wstring childwChineseCharacter = nameWstr.substr(index, 1);

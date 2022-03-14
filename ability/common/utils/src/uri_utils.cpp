@@ -35,7 +35,7 @@ std::map<std::string, std::string> UriUtils::getQueryParameter(OHOS::Uri &uri)
         return mapQuery;
     }
     std::vector<std::string> tempVector = split(query, "&");
-    int size = tempVector.size();
+    unsigned int size = tempVector.size();
     for (int i = 0; i < size; i++) {
         std::vector<std::string> childTempVector = split(tempVector[i], "=");
         size_t size = childTempVector.size();

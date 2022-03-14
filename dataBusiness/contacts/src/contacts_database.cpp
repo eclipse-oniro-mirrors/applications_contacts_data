@@ -641,7 +641,7 @@ void ContactsDataBase::DeletedAsyncTask(
 
 int ContactsDataBase::DeleteExecute(std::vector<OHOS::NativeRdb::ValuesBucket> &queryValuesBucket)
 {
-    int size = queryValuesBucket.size();
+    unsigned int size = queryValuesBucket.size();
     if (size == 0) {
         return RDB_EXECUTE_FAIL;
     }
@@ -677,7 +677,7 @@ void ContactsDataBase::DeleteRecordInsert(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &store, std::vector<OHOS::NativeRdb::ValuesBucket> &queryValuesBucket)
 {
     g_mtx.lock();
-    int size = queryValuesBucket.size();
+    unsigned int size = queryValuesBucket.size();
     for (int i = 0; i < size; i++) {
         OHOS::NativeRdb::ValuesBucket valuesElement = queryValuesBucket[i];
         bool hasId = valuesElement.HasColumn(ContactColumns::ID);
@@ -771,7 +771,7 @@ std::vector<OHOS::NativeRdb::ValuesBucket> ContactsDataBase::DeleteContactQuery(
         resultSetNum = resultSet->GoToNextRow();
     }
     resultSet->Close();
-    int size = whereArgs.size();
+    unsigned int size = whereArgs.size();
     OHOS::NativeRdb::RdbPredicates rawContactQueryRdbPredicates(ViewName::VIEW_RAW_CONTACT);
     std::string whereClause;
     for (int i = 0; i < size; i++) {
@@ -842,7 +842,7 @@ int ContactsDataBase::CompletelyDelete(OHOS::NativeRdb::RdbPredicates &rdbPredic
     }
     resultSet->Close();
     int retCode = RDB_EXECUTE_FAIL;
-    int size = contactIds.size();
+    unsigned int size = contactIds.size();
     for (int index = 0; index < size; index++) {
         std::string queryViewContact =
             "SELECT id FROM view_raw_contact WHERE is_deleted = 1 AND contact_id = " + contactIds[index];
@@ -961,7 +961,7 @@ std::vector<int> ContactsDataBase::QueryContactDataRawContactId(
         resultSetNum = resultSet->GoToNextRow();
     }
     resultSet->Close();
-    int typeIdSize = typeIdVector.size();
+    unsigned int typeIdSize = typeIdVector.size();
     ContactsType contactsType;
     for (int i = 0; i < typeIdSize; i++) {
         std::string typeText = contactsType.GetTypeText(store_, typeIdVector[i]);
@@ -1003,7 +1003,7 @@ std::vector<OHOS::NativeRdb::ValuesBucket> ContactsDataBase::ResultSetToValuesBu
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         OHOS::NativeRdb::ValuesBucket valuesBucketElement;
-        int size = columnNames.size();
+        unsigned int size = columnNames.size();
         for (int i = 0; i < size; i++) {
             std::string typeValue = columnNames[i];
             int columnIndex = 0;
@@ -1058,7 +1058,7 @@ std::string ContactsDataBase::StructureDeleteContactJson(
     std::string queryWhereClause = DeleteRawContactColumns::RAW_CONTACT_ID;
     queryWhereClause.append(" = ? ");
     std::string sql = "SELECT ";
-    int size = contentColumns.size();
+    unsigned int size = contentColumns.size();
     for (int i = 0; i < size; i++) {
         sql.append(contentColumns[i]);
         if (i != size - 1) {
@@ -1244,7 +1244,7 @@ int ContactsDataBase::ReContactMerge(OHOS::NativeRdb::DataAbilityPredicates pred
 void ContactsDataBase::InsertMergeData(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &store, std::vector<int> &rawContactIdVector)
 {
-    int size = rawContactIdVector.size();
+    unsigned int size = rawContactIdVector.size();
     for (int i = 0; i < size; i++) {
         OHOS::NativeRdb::ValuesBucket mergeInfoValues;
         mergeInfoValues.PutInt(MergeInfo::RAW_CONTACT_ID, rawContactIdVector[i]);

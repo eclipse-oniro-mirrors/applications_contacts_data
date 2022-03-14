@@ -86,7 +86,7 @@ struct ExecuteHelper {
     napi_deferred deferred;
     napi_value dataValue;
     int sync;
-    int argc;
+    unsigned int argc;
     int actionCode;
     napi_ref callBack;
     napi_callback_info info;
