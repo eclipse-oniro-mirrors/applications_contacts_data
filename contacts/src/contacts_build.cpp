@@ -170,8 +170,8 @@ void ContactsBuild::TypeSwitchSplit(
  */
 void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int emailsSize = contact.emails.size();
-    for (int i = 0; i < emailsSize; i++) {
+    unsigned int emailsSize = contact.emails.size();
+    for (unsigned int i = 0; i < emailsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketEmail;
         valuesBucketEmail.PutString("detail_info", contact.emails[i].email);
         valuesBucketEmail.PutString("extend7", std::to_string(contact.emails[i].labelId));
@@ -190,8 +190,8 @@ void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<NativeRd
  */
 void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int eventsSize = contact.events.size();
-    for (int i = 0; i < eventsSize; i++) {
+    unsigned int eventsSize = contact.events.size();
+    for (unsigned int i = 0; i < eventsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketEvent;
         valuesBucketEvent.PutString("detail_info", contact.events[i].eventDate);
         valuesBucketEvent.PutString("extend7", std::to_string(contact.events[i].labelId));
@@ -209,8 +209,8 @@ void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<NativeRd
  */
 void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int groupsSize = contact.groups.size();
-    for (int i = 0; i < groupsSize; i++) {
+    unsigned int groupsSize = contact.groups.size();
+    for (unsigned int i = 0; i < groupsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketGroup;
         valuesBucketGroup.PutString("detail_info", std::to_string(contact.groups[i].groupId));
         valuesBucketGroup.PutString("alias_detail_info", contact.groups[i].title);
@@ -227,8 +227,8 @@ void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<NativeRd
  */
 void ContactsBuild::GetValuesBucketImAddress(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int imAddressSize = contact.imAddresses.size();
-    for (int i = 0; i < imAddressSize; i++) {
+    unsigned int imAddressSize = contact.imAddresses.size();
+    for (unsigned int i = 0; i < imAddressSize; i++) {
         NativeRdb::ValuesBucket valuesBucketImAddress;
         valuesBucketImAddress.PutString("detail_info", contact.imAddresses[i].imAddress);
         valuesBucketImAddress.PutString("extend7", std::to_string(contact.imAddresses[i].labelId));
@@ -263,8 +263,8 @@ void ContactsBuild::GetValuesBucketPortrait(Contacts &contact, std::vector<Nativ
 void ContactsBuild::GetValuesBucketPhoneNumber(
     Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int phoneNumbersSize = contact.phoneNumbers.size();
-    for (int i = 0; i < phoneNumbersSize; i++) {
+    unsigned int phoneNumbersSize = contact.phoneNumbers.size();
+    for (unsigned int i = 0; i < phoneNumbersSize; i++) {
         NativeRdb::ValuesBucket valuesBucketPhoneNumber;
         valuesBucketPhoneNumber.PutString("detail_info", contact.phoneNumbers[i].phoneNumber);
         valuesBucketPhoneNumber.PutString("extend7", std::to_string(contact.phoneNumbers[i].labelId));
@@ -283,8 +283,8 @@ void ContactsBuild::GetValuesBucketPhoneNumber(
 void ContactsBuild::GetValuesBucketPostalAddress(
     Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int postalAddressesSize = contact.postalAddresses.size();
-    for (int i = 0; i < postalAddressesSize; i++) {
+    unsigned int postalAddressesSize = contact.postalAddresses.size();
+    for (unsigned int i = 0; i < postalAddressesSize; i++) {
         NativeRdb::ValuesBucket valuesBucketPostalAddress;
         valuesBucketPostalAddress.PutString("detail_info", contact.postalAddresses[i].postalAddress);
         valuesBucketPostalAddress.PutString("extend7", std::to_string(contact.postalAddresses[i].labelId));
@@ -327,8 +327,8 @@ void ContactsBuild::GetValuesBucketRelation(Contacts &contact, std::vector<Nativ
  */
 void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int sipAddressesSize = contact.sipAddresses.size();
-    for (int i = 0; i < sipAddressesSize; i++) {
+    unsigned int sipAddressesSize = contact.sipAddresses.size();
+    for (unsigned int i = 0; i < sipAddressesSize; i++) {
         NativeRdb::ValuesBucket valuesBucketSipAddress;
         valuesBucketSipAddress.PutString("detail_info", contact.sipAddresses[i].sipAddress);
         valuesBucketSipAddress.PutString("extend7", std::to_string(contact.sipAddresses[i].labelId));
@@ -346,8 +346,8 @@ void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<Nat
  */
 void ContactsBuild::GetValuesBucketWebsite(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int websitesSize = contact.websites.size();
-    for (int i = 0; i < websitesSize; i++) {
+    unsigned int websitesSize = contact.websites.size();
+    for (unsigned int i = 0; i < websitesSize; i++) {
         NativeRdb::ValuesBucket valuesBucketWebsite;
         valuesBucketWebsite.PutString("detail_info", contact.websites[i].website);
         valuesBucketWebsite.PutString("content_type", "website");

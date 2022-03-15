@@ -249,8 +249,8 @@ std::vector<OHOS::NativeRdb::ValuesBucket> MatchCandidate::ResultSetToValuesBuck
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         OHOS::NativeRdb::ValuesBucket valuesBucketElement;
-        int size = columnNames.size();
-        for (int i = 0; i < size; i++) {
+        unsigned int size = columnNames.size();
+        for (unsigned int i = 0; i < size; i++) {
             std::string typeValue = columnNames[i];
             int columnIndex = 0;
             resultSet->GetColumnIndex(typeValue, columnIndex);

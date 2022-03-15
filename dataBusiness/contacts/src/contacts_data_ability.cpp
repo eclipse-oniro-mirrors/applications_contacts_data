@@ -220,7 +220,7 @@ int ContactsDataAbility::InsertExecute(int &code, const NativeRdb::ValuesBucket 
  */
 int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::ValuesBucket> &values)
 {
-    int size = values.size();
+    unsigned int size = values.size();
     if (size <= 0) {
         return Contacts::RDB_EXECUTE_FAIL;
     }
