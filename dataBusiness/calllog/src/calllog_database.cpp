@@ -98,7 +98,7 @@ int SqliteOpenHelperCallLogCallback::OnCreate(OHOS::NativeRdb::RdbStore &store)
     judgeSuccess.push_back(store.ExecuteSql(CREATE_INSERT_BACKUP_TIME));
     judgeSuccess.push_back(store.ExecuteSql(CALL_LOG_PHONE_NUMBER_INDEX));
     unsigned int size = judgeSuccess.size();
-    for (int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < size; i++) {
         if (judgeSuccess[i] != OHOS::NativeRdb::E_OK) {
             HILOG_ERROR("SqliteOpenHelperCallLogCallback create table error : %{public}d", judgeSuccess[i]);
         }

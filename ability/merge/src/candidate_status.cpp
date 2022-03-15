@@ -54,7 +54,7 @@ Candidate CandidateStatus::QueryAllForMerge(std::shared_ptr<OHOS::NativeRdb::Rdb
     std::set<int> autoIds;
     std::set<int> manualIds;
     unsigned int size = nameIds.size();
-    for (int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < size; i++) {
         if (!IsNeedMerge(store, nameIds[i]) || !IsMergeStatus(store, nameIds[i])) {
             continue;
         }
@@ -209,7 +209,7 @@ bool CandidateStatus::JudgeDataDifferent(
     std::set<std::string> names = mergeUtils.QueryRawContactByType(store, rawId, nameType);
     std::set<std::string> phones = mergeUtils.QueryRawContactByType(store, rawId, phoneType);
     unsigned int size = ids.size();
-    for (int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < size; i++) {
         MergeUtils mergeIdUtils;
         std::set<std::string> idNames = mergeIdUtils.QueryRawContactByType(store, ids[i], nameType);
         std::set<std::string> idPhones = mergeIdUtils.QueryRawContactByType(store, ids[i], phoneType);

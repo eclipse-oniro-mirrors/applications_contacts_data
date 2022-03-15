@@ -162,7 +162,7 @@ void MergeUtils::AddHasJudgeForRawId(
     types.push_back(emailType);
     types.push_back(groupType);
     unsigned int size = types.size();
-    for (int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < size; i++) {
         std::string sql = "SELECT 1 FROM contact_data WHERE type_id = " + std::to_string(types[i]);
         sql.append(" AND raw_contact_id = " + std::to_string(rawId)).append(" LIMIT 1");
         std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sql);

@@ -167,7 +167,7 @@ void ContactsUpdateHelper::UpdateCallLogByPhoneNum(
         return;
     }
     unsigned int count = rawContactIdVector.size();
-    for (int i = 0; i < count; i++) {
+    for (unsigned int i = 0; i < count; i++) {
         std::string queryContactIdSql;
         queryContactIdSql.append(" SELECT ")
             .append(RawContactColumns::CONTACT_ID)

@@ -959,12 +959,14 @@ int GetMethodType(napi_env env, napi_callback_info info)
 napi_value AddContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, ADD_CONTACT);
+        result = Scheduling(env, info, executeHelper, ADD_CONTACT);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -978,12 +980,14 @@ napi_value AddContact(napi_env env, napi_callback_info info)
 napi_value DeleteContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, DELETE_CONTACT);
+        result = Scheduling(env, info, executeHelper, DELETE_CONTACT);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -997,12 +1001,14 @@ napi_value DeleteContact(napi_env env, napi_callback_info info)
 napi_value UpdateContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, UPDATE_CONTACT);
+        result = Scheduling(env, info, executeHelper, UPDATE_CONTACT);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1016,12 +1022,14 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
 napi_value QueryContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, QUERY_CONTACT);
+        result = Scheduling(env, info, executeHelper, QUERY_CONTACT);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1035,12 +1043,14 @@ napi_value QueryContact(napi_env env, napi_callback_info info)
 napi_value QueryContacts(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, QUERY_CONTACTS);
+        result = Scheduling(env, info, executeHelper, QUERY_CONTACTS);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1054,12 +1064,14 @@ napi_value QueryContacts(napi_env env, napi_callback_info info)
 napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_EMAIL);
+        result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_EMAIL);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1073,12 +1085,14 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
 napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_PHONE_NUMBER);
+        result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_PHONE_NUMBER);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1092,12 +1106,14 @@ napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
 napi_value QueryGroups(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, QUERY_GROUPS);
+        result = Scheduling(env, info, executeHelper, QUERY_GROUPS);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1111,12 +1127,14 @@ napi_value QueryGroups(napi_env env, napi_callback_info info)
 napi_value QueryHolders(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, QUERY_HOLDERS);
+        result = Scheduling(env, info, executeHelper, QUERY_HOLDERS);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1130,12 +1148,14 @@ napi_value QueryHolders(napi_env env, napi_callback_info info)
 napi_value QueryKey(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, QUERY_KEY);
+        result = Scheduling(env, info, executeHelper, QUERY_KEY);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1149,12 +1169,14 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
 napi_value QueryMyCard(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, QUERY_MY_CARD);
+        result = Scheduling(env, info, executeHelper, QUERY_MY_CARD);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1168,12 +1190,14 @@ napi_value QueryMyCard(napi_env env, napi_callback_info info)
 napi_value IsMyCard(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, IS_MY_CARD);
+        result = Scheduling(env, info, executeHelper, IS_MY_CARD);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 /**
@@ -1187,12 +1211,14 @@ napi_value IsMyCard(napi_env env, napi_callback_info info)
 napi_value IsLocalContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    if(executeHelper != nullptr){
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
         executeHelper->sync = GetMethodType(env, info);
-        napi_value result = Scheduling(env, info, executeHelper, IS_LOCAL_CONTACT);
+        result = Scheduling(env, info, executeHelper, IS_LOCAL_CONTACT);
         return result;
     }
-    return 0;
+    napi_create_int64(env, ERROR, &result);
+    return result;
 }
 
 void Init(napi_env env, napi_value exports)

@@ -2027,7 +2027,7 @@ std::vector<std::vector<std::wstring>> CharacterTransliterate::GetCombinedVector
     targetVector.push_back(sourceVector[0]);
     // start the traversal from the second set of attributes in the sourcevector collection
     unsigned int size = sourceVector.size();
-    for (int i = 1; i < size; i++) {
+    for (unsigned int i = 1; i < size; i++) {
         std::vector<std::wstring> nextVector = sourceVector[i];
         // traverse the combination of the second set of attributes and the first set of attributes
         // set an intermediate array to store the data after attribute combination
