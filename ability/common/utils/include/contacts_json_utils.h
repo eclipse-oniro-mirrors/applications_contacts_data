@@ -32,7 +32,7 @@ public:
     ~ContactsJsonUtils();
     std::string GetDeleteData(std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
     void ConvertResultSet(Json::Value &arrayValue, std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
-    void GetValue(std::vector<std::string> &columnNames, int &index, Json::Value &data,
+    void GetValue(std::vector<std::string> &columnNames, unsigned int &index, Json::Value &data,
         std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
 };
 } // namespace Contacts
