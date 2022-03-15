@@ -55,7 +55,7 @@ void ContactsJsonUtils::ConvertResultSet(
     }
 }
 
-void ContactsJsonUtils::GetValue(std::vector<std::string> &columnNames, int &index, Json::Value &data,
+void ContactsJsonUtils::GetValue(std::vector<std::string> &columnNames, unsigned int &index, Json::Value &data,
     std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
 {
     std::string typeValue = columnNames[index];

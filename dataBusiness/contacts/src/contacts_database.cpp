@@ -646,7 +646,7 @@ int ContactsDataBase::DeleteExecute(std::vector<OHOS::NativeRdb::ValuesBucket> &
         return RDB_EXECUTE_FAIL;
     }
     int ret = RDB_EXECUTE_FAIL;
-    for (int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < size; i++) {
         OHOS::NativeRdb::ValuesBucket valuesElement = queryValuesBucket[i];
         bool hasId = valuesElement.HasColumn(ContactColumns::ID);
         if (!hasId) {

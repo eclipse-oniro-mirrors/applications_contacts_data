@@ -53,7 +53,7 @@ int ContactsUpdateHelper::UpdateDisplay(std::vector<int> rawContactIdVector, std
     ContactsSearch contactsSearch;
     RawContacts rawContacts;
     Contacts contactsContact;
-    for (int i = 0; i < count; i++) {
+    for (unsigned int i = 0; i < count; i++) {
         int rawContactId = rawContactIdVector[i];
         std::string type = types[i];
         if (strcmp(type.c_str(), ContentTypeData::ORGANIZATION) == 0) {
