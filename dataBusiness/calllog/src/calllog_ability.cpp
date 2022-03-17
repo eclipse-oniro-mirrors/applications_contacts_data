@@ -187,7 +187,7 @@ int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::Val
         return Contacts::RDB_EXECUTE_FAIL;
     }
     int count = 0;
-    for (int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < size; i++) {
         ++count;
         OHOS::NativeRdb::ValuesBucket rawContactValues = values[i];
         int code = InsertExecute(uri, rawContactValues);

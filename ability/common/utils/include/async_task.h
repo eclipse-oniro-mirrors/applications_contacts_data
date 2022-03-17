@@ -148,6 +148,7 @@ private:
     AsyncTaskQueue()
     {
         this->maxSize = 0;
+        this->threads = 0;
     }
 
     bool Pop(AsyncItem **item)
