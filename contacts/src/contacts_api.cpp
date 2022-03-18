@@ -213,12 +213,12 @@ void HolderPredicates(Holder &holder, NativeRdb::DataAbilityPredicates &predicat
  */
 void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredicates &predicates)
 {
-    int size = attrs.attributes.size();
+    unsigned int size = attrs.attributes.size();
     if (size > 0) {
         predicates.And();
         predicates.BeginWrap();
     }
-    for (int i = 0; i < size; ++i) {
+    for (unsigned int i = 0; i < size; ++i) {
         predicates.EqualTo("type_id", std::to_string(attrs.attributes[i]));
         if (i != size - 1) {
             predicates.Or();
@@ -305,8 +305,8 @@ NativeRdb::DataAbilityPredicates BuildQureyContactsPredicates(napi_env env, napi
     NativeRdb::DataAbilityPredicates predicates;
     std::map<std::string, std::string> holders;
     HoldersStructure(holders, holder);
-    int size = attrs.attributes.size();
-    int mapSize = holders.size();
+    unsigned int size = attrs.attributes.size();
+    unsigned int mapSize = holders.size();
     std::map<std::string, std::string>::iterator it;
     for (it = holders.begin(); it != holders.end(); ++it) {
         predicates.EqualTo(it->first, it->second);
@@ -320,7 +320,7 @@ NativeRdb::DataAbilityPredicates BuildQureyContactsPredicates(napi_env env, napi
     if (size > 0) {
         predicates.BeginWrap();
     }
-    for (int i = 0; i < size; ++i) {
+    for (unsigned int i = 0; i < size; ++i) {
         predicates.EqualTo("type_id", std::to_string(attrs.attributes[i]));
         if (i != size - 1) {
             predicates.Or();
@@ -406,7 +406,7 @@ NativeRdb::DataAbilityPredicates BuildQureyGroupsPredicates(napi_env env, napi_v
     std::map<std::string, std::string> holders;
     HoldersStructure(holders, holder);
     predicates.EqualTo("is_deleted", "0");
-    int size = holders.size();
+    unsigned int size = holders.size();
     if (size > 0) {
         predicates.And();
     }
@@ -453,12 +453,12 @@ NativeRdb::DataAbilityPredicates BuildQueryMyCardPredicates(napi_env env, napi_v
     ContactsBuild contactsBuild;
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
     NativeRdb::DataAbilityPredicates predicates;
-    int size = attrs.attributes.size();
+    unsigned int size = attrs.attributes.size();
     predicates.EqualTo("is_deleted", "0");
     if (size > 0) {
         predicates.And();
     }
-    for (int i = 0; i < size; ++i) {
+    for (unsigned int i = 0; i < size; ++i) {
         predicates.EqualTo("type_id", std::to_string(attrs.attributes[i]));
         if (i != size - 1) {
             predicates.Or();
@@ -483,8 +483,8 @@ NativeRdb::DataAbilityPredicates BuildQuerytContactData(napi_env env, napi_value
         predicates.EqualTo("contact_id", std::to_string(contact.id));
         predicates.GroupBy(fields);
     }
-    int size = attrs.attributes.size();
-    for (int i = 0; i < size; i++) {
+    unsigned int size = attrs.attributes.size();
+    for (unsigned int i = 0; i < size; i++) {
         contactsBuild.BuildValueContactDataByType(contact, attrs.attributes[i], valueContactData);
     }
     return predicates;
@@ -523,8 +523,8 @@ void BuildUpdateContactConvertParams(napi_env env, napi_value &contact, napi_val
         contactsControl.ContactDataQuery(GetDataAbilityHelper(env), executeHelper->columns, predicates);
     int rawId = GetRawIdByResultSet(resultSet);
     std::vector<NativeRdb::ValuesBucket> value = executeHelper->valueContactData;
-    int size = value.size();
-    for (int i = 0; i < size; ++i) {
+    unsigned int size = value.size();
+    for (unsigned int i = 0; i < size; ++i) {
         (executeHelper->valueContactData)[i].PutInt("raw_contact_id", rawId);
     }
     executeHelper->predicates = BuildDeleteContactDataPredicates(env, rawId, attr);
@@ -636,8 +636,8 @@ void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper, napi_val
     int64_t rawId =
         contactsControl.RawContactInsert(executeHelper->dataAbilityHelper, (executeHelper->valueContact)[0]);
     std::vector<NativeRdb::ValuesBucket> value = executeHelper->valueContactData;
-    int size = value.size();
-    for (int i = 0; i < size; ++i) {
+    unsigned int size = value.size();
+    for (unsigned int i = 0; i < size; ++i) {
         (executeHelper->valueContactData)[i].PutInt("raw_contact_id", rawId);
     }
     int code = contactsControl.ContactDataInsert(executeHelper->dataAbilityHelper, executeHelper->valueContactData);
@@ -888,8 +888,8 @@ void SetChildActionCodeAndConvertParams(napi_env env, napi_callback_info info, E
     napi_value argv[MAX_PARAMS];
     size_t argc = MAX_PARAMS;
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    int size = argc;
-    for (int i = 0; i < size; i++) {
+    unsigned int size = argc;
+    for (unsigned int i = 0; i < size; i++) {
         ObjectInitId(env, argv[i], id);
         ObjectInitString(env, argv[i], key);
         ObjectInit(env, argv[i], hold, attr, contact);
@@ -959,8 +959,13 @@ int GetMethodType(napi_env env, napi_callback_info info)
 napi_value AddContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, ADD_CONTACT);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, ADD_CONTACT);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -975,8 +980,13 @@ napi_value AddContact(napi_env env, napi_callback_info info)
 napi_value DeleteContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, DELETE_CONTACT);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, DELETE_CONTACT);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -991,8 +1001,13 @@ napi_value DeleteContact(napi_env env, napi_callback_info info)
 napi_value UpdateContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, UPDATE_CONTACT);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, UPDATE_CONTACT);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1007,8 +1022,13 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
 napi_value QueryContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, QUERY_CONTACT);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, QUERY_CONTACT);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1023,8 +1043,13 @@ napi_value QueryContact(napi_env env, napi_callback_info info)
 napi_value QueryContacts(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, QUERY_CONTACTS);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, QUERY_CONTACTS);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1039,8 +1064,13 @@ napi_value QueryContacts(napi_env env, napi_callback_info info)
 napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_EMAIL);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_EMAIL);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1055,8 +1085,13 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
 napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_PHONE_NUMBER);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_PHONE_NUMBER);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1071,8 +1106,13 @@ napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
 napi_value QueryGroups(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, QUERY_GROUPS);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, QUERY_GROUPS);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1087,8 +1127,13 @@ napi_value QueryGroups(napi_env env, napi_callback_info info)
 napi_value QueryHolders(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, QUERY_HOLDERS);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, QUERY_HOLDERS);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1103,8 +1148,13 @@ napi_value QueryHolders(napi_env env, napi_callback_info info)
 napi_value QueryKey(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, QUERY_KEY);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, QUERY_KEY);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1119,8 +1169,13 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
 napi_value QueryMyCard(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, QUERY_MY_CARD);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, QUERY_MY_CARD);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1135,8 +1190,13 @@ napi_value QueryMyCard(napi_env env, napi_callback_info info)
 napi_value IsMyCard(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, IS_MY_CARD);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, IS_MY_CARD);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 
@@ -1151,8 +1211,13 @@ napi_value IsMyCard(napi_env env, napi_callback_info info)
 napi_value IsLocalContact(napi_env env, napi_callback_info info)
 {
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
-    executeHelper->sync = GetMethodType(env, info);
-    napi_value result = Scheduling(env, info, executeHelper, IS_LOCAL_CONTACT);
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        executeHelper->sync = GetMethodType(env, info);
+        result = Scheduling(env, info, executeHelper, IS_LOCAL_CONTACT);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
     return result;
 }
 

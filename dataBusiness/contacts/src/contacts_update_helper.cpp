@@ -43,8 +43,8 @@ int ContactsUpdateHelper::UpdateDisplay(std::vector<int> rawContactIdVector, std
     bool isDelete)
 {
     int ret = RDB_EXECUTE_OK;
-    int count = rawContactIdVector.size();
-    int countType = types.size();
+    unsigned int count = rawContactIdVector.size();
+    unsigned int countType = types.size();
     if (countType != count) {
         HILOG_ERROR("ContactsUpdateHelper UpdateDisplay Illegal rawContactId size type:%{public}d", count);
         HILOG_ERROR("ContactsUpdateHelper UpdateDisplay Illegal type size :%{public}d", countType);
@@ -53,7 +53,7 @@ int ContactsUpdateHelper::UpdateDisplay(std::vector<int> rawContactIdVector, std
     ContactsSearch contactsSearch;
     RawContacts rawContacts;
     Contacts contactsContact;
-    for (int i = 0; i < count; i++) {
+    for (unsigned int i = 0; i < count; i++) {
         int rawContactId = rawContactIdVector[i];
         std::string type = types[i];
         if (strcmp(type.c_str(), ContentTypeData::ORGANIZATION) == 0) {
@@ -166,8 +166,8 @@ void ContactsUpdateHelper::UpdateCallLogByPhoneNum(
         HILOG_ERROR("UpdateCallLogByPhoneNum rdbStore is profile, not need update");
         return;
     }
-    int count = rawContactIdVector.size();
-    for (int i = 0; i < count; i++) {
+    unsigned int count = rawContactIdVector.size();
+    for (unsigned int i = 0; i < count; i++) {
         std::string queryContactIdSql;
         queryContactIdSql.append(" SELECT ")
             .append(RawContactColumns::CONTACT_ID)

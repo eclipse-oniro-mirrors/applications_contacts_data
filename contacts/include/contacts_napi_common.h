@@ -81,12 +81,12 @@ constexpr int SIP_ADDRESS = 17;
 struct ExecuteHelper {
     ExecuteHelper()
         : work(nullptr), deferred(nullptr), dataValue(nullptr), sync(1), argc(0), actionCode(-1), callBack(nullptr),
-          info(nullptr), childActionCode(0) {};
+          info(nullptr), childActionCode(0), promise(nullptr) {};
     napi_async_work work;
     napi_deferred deferred;
     napi_value dataValue;
     int sync;
-    int argc;
+    unsigned int argc;
     int actionCode;
     napi_ref callBack;
     napi_callback_info info;
