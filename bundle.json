@@ -1,0 +1,52 @@
+{
+    "name": "@ohos/contactsdata",
+    "version": "3.1.0",
+    "description": "contacts data ability",
+    "publishAs": "code-segment",
+    "homePage": "https://gitee.com/openharmony",
+    "repository": "https://gitee.com/openharmony/applications_contactsdata",
+    "license": "Apache License 2.0",
+    "language": "",
+    "private": false,
+    "scripts": {},
+    "envs": [],
+    "dirs": [],
+    "author": {},
+    "contributors": [],
+    "segment": {
+        "destPath": "//applications/standard/contactsdata"
+    },
+    "component": {
+        "name": "contactsdata_hap",
+        "subsystem": "applications",
+        "syscap": [
+            "SystemCapability.Applications.ContactsData"
+        ],
+        "features": [],
+        "adapted_system_type": [
+            "standard"
+        ],
+        "rom": "400KB",
+        "ram": "7MB",
+        "deps": {
+            "components": [
+                "ability_base",
+                "ability_runtime",
+                "appexecfwk_standard",
+                "ces_standard",
+                "ipc",
+                "utils_base"
+            ]
+        },
+        "build": {
+            "sub_component": [
+                "//applications/standard/contactsdata:contactsdataability",
+                "//applications/standard/contactsdata/contacts:contact",
+                "//applications/standard/contactsdata:Contacts_DataAbility"
+            ],
+            "test": [
+                "//applications/standard/contactsdata/test:contacts_test"
+            ]
+        }
+    }
+}
