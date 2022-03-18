@@ -70,8 +70,8 @@ void ContactsType::PrepopulateCommonTypes(std::shared_ptr<OHOS::NativeRdb::RdbSt
     vectorType.push_back(ContentTypeData::HICALL_DEVICE);
     vectorType.push_back(ContentTypeData::CAMCARD);
     vectorType.push_back(ContentTypeData::SIP_ADDRESS);
-    unsigned int size = vectorType.size();
-    for (int i = 0; i < (int)size; i++) {
+    int size = (int)vectorType.size();
+    for (int i = 0; i < size; i++) {
         std::string typeValue = vectorType[i];
         int error = LookupTypeId(rdbStore, typeValue);
         if (error == RDB_EXECUTE_FAIL) {
