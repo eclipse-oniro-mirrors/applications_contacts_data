@@ -308,8 +308,8 @@ void ContactsBuild::GetValuesBucketPostalAddress(
  */
 void ContactsBuild::GetValuesBucketRelation(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    int relationsSize = contact.relations.size();
-    for (int i = 0; i < relationsSize; i++) {
+    unsigned int relationsSize = contact.relations.size();
+    for (unsigned int i = 0; i < relationsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketRelation;
         valuesBucketRelation.PutString("detail_info", contact.relations[i].relationName);
         valuesBucketRelation.PutString("extend7", std::to_string(contact.relations[i].labelId));
