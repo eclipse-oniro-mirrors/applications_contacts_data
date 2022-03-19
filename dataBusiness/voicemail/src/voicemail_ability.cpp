@@ -180,7 +180,7 @@ int VoiceMailAbility::InsertExecute(const OHOS::Uri &uri, const NativeRdb::Value
  */
 int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::ValuesBucket> &values)
 {
-    int size = values.size();
+    unsigned int size = values.size();
     if (size <= 0) {
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -192,7 +192,7 @@ int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::V
         return Contacts::RDB_EXECUTE_FAIL;
     }
     int count = 0;
-    for (int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < size; i++) {
         ++count;
         OHOS::NativeRdb::ValuesBucket rawContactValues = values[i];
         int code = InsertExecute(uri, rawContactValues);

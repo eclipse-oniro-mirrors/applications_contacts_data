@@ -46,8 +46,8 @@ void ContactsJsonUtils::ConvertResultSet(
     resultSet->GetAllColumnNames(columnNames);
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         Json::Value data;
-        int size = columnNames.size();
-        for (int i = 0; i < size; i++) {
+        unsigned int size = columnNames.size();
+        for (unsigned int i = 0; i < size; i++) {
             GetValue(columnNames, i, data, resultSet);
         }
         arrayValue.append(data);
@@ -55,7 +55,7 @@ void ContactsJsonUtils::ConvertResultSet(
     }
 }
 
-void ContactsJsonUtils::GetValue(std::vector<std::string> &columnNames, int &index, Json::Value &data,
+void ContactsJsonUtils::GetValue(std::vector<std::string> &columnNames, unsigned int &index, Json::Value &data,
     std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
 {
     std::string typeValue = columnNames[index];

@@ -220,7 +220,7 @@ int ContactsDataAbility::InsertExecute(int &code, const NativeRdb::ValuesBucket 
  */
 int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::ValuesBucket> &values)
 {
-    int size = values.size();
+    unsigned int size = values.size();
     if (size <= 0) {
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -235,7 +235,7 @@ int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb
         return Contacts::RDB_EXECUTE_FAIL;
     }
     int count = 0;
-    for (int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < size; i++) {
         ++count;
         OHOS::NativeRdb::ValuesBucket rawContactValues = values[i];
         int rowRet = InsertExecute(code, rawContactValues);
