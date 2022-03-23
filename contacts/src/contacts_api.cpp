@@ -1012,6 +1012,21 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
 }
 
 /**
+ * @brief Test interface SELECT_CONTACT
+ *
+ * @param env Conditions for resolve object interface operation
+ * @param info Conditions for resolve object interface operation
+ *
+ * @return The result returned by test
+ */
+napi_value SelectContact(napi_env env, napi_callback_info info)
+{
+    napi_value result = nullptr;
+    napi_create_int64(env, ERROR, &result);
+    return result;
+}
+
+/**
  * @brief Test interface QUERY_CONTACT
  *
  * @param env Conditions for resolve object interface operation
@@ -1227,6 +1242,7 @@ void Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("addContact", OHOS::ContactsApi::AddContact),
         DECLARE_NAPI_FUNCTION("deleteContact", OHOS::ContactsApi::DeleteContact),
         DECLARE_NAPI_FUNCTION("updateContact", OHOS::ContactsApi::UpdateContact),
+        DECLARE_NAPI_FUNCTION("selectContact", OHOS::ContactsApi::SelectContact),
         DECLARE_NAPI_FUNCTION("queryContact", OHOS::ContactsApi::QueryContact),
         DECLARE_NAPI_FUNCTION("queryContacts", OHOS::ContactsApi::QueryContacts),
         DECLARE_NAPI_FUNCTION("queryContactsByEmail", OHOS::ContactsApi::QueryContactsByEmail),

@@ -25,6 +25,7 @@ void Init(napi_env env, napi_value exports);
 napi_value AddContact(napi_env env, napi_callback_info info);
 napi_value DeleteContact(napi_env env, napi_callback_info info);
 napi_value UpdateContact(napi_env env, napi_callback_info info);
+napi_value SelectContact(napi_env env, napi_callback_info info);
 napi_value QueryContact(napi_env env, napi_callback_info info);
 napi_value QueryContacts(napi_env env, napi_callback_info info);
 napi_value QueryContactsByEmail(napi_env env, napi_callback_info info);
