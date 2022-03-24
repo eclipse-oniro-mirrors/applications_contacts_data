@@ -9,9 +9,6 @@
       ],
       "system_capabilities":[
           "SystemCapability.Data.DATA_APPDATAMGR"
-      ],
-      "test_list": [
-          "//applications/standard/contactsdata/test:contacts_test"
       ]
     }
   }
