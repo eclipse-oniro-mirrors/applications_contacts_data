@@ -43,9 +43,6 @@
                 "//applications/standard/contactsdata:contactsdataability",
                 "//applications/standard/contactsdata/contacts:contact",
                 "//applications/standard/contactsdata:Contacts_DataAbility"
-            ],
-            "test": [
-                "//applications/standard/contactsdata/test:contacts_test"
             ]
         }
     }

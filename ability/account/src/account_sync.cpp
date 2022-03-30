@@ -62,8 +62,7 @@ void AccountSync::getShouldUpdateAndAddAccounts(std::vector<OHOS::AccountSA::Oho
 {
     for (size_t i = 0; i < systemAccounts.size(); i++) {
         for (size_t j = 0; j < localAccounts.size(); j++) {
-            if (systemAccounts[i].uid_ == localAccounts[j].uid_ &&
-                systemAccounts[i].GetcAccountType() == localAccounts[j].GetcAccountType()) {
+            if (systemAccounts[i].uid_ == localAccounts[j].GetcAccountType()) {
                 break;
             }
             if (j == localAccounts.size() - 1) {
