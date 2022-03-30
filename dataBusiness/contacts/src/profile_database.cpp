@@ -71,7 +71,7 @@ void ProfileDatabase::DestroyInstanceAndRestore(std::string restorePath)
 {
     g_mtx.lock();
     if (access(restorePath.c_str(), F_OK) != 0) {
-        HILOG_ERROR("Restore file %{public}s does not exist", restorePath.c_str());
+        HILOG_ERROR("Restore file %{private}s does not exist", restorePath.c_str());
         g_mtx.unlock();
         return;
     }
@@ -85,7 +85,7 @@ void ProfileDatabase::DestroyInstanceAndRestore(std::string restorePath)
 bool ProfileDatabase::Restore(std::string restorePath)
 {
     if (rename(restorePath.c_str(), g_databaseName.c_str())) {
-        HILOG_ERROR("Restore rename oldFileName = %{public}s to newFileName  %{public}s", restorePath.c_str(),
+        HILOG_ERROR("Restore rename oldFileName = %{private}s to newFileName  %{private}s", restorePath.c_str(),
             g_databaseName.c_str());
         return true;
     }

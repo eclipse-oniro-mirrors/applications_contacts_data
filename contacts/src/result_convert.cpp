@@ -406,8 +406,8 @@ void ResultConvert::ConvertName(
         napi_value nameSuffixValue = GetResultValue(env, nameSuffixKey, resultSet);
         napi_value napiFullNameKey = CreateNapiStringValue(env, "fullName");
         napi_set_property(env, objectElement, napiFullNameKey, fullNameValue);
-        napi_value napifamilyNameKey = CreateNapiStringValue(env, "familyName");
-        napi_set_property(env, objectElement, napifamilyNameKey, familyNameValue);
+        napi_value napiFamilyNameKey = CreateNapiStringValue(env, "familyName");
+        napi_set_property(env, objectElement, napiFamilyNameKey, familyNameValue);
         napi_value napiFamilyNamePhoneticKey = CreateNapiStringValue(env, "phonetic_name");
         napi_set_property(env, objectElement, napiFamilyNamePhoneticKey, familyNamePhoneticValue);
         napi_value napiGivenNameKey = CreateNapiStringValue(env, "givenName");

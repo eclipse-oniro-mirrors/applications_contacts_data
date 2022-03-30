@@ -91,7 +91,7 @@ int RawContacts::GetDeleteContactIdByAccountId(std::shared_ptr<OHOS::NativeRdb::
         HILOG_ERROR("RawContacts GetDeleteContactIdByAccountId store_ is  nullptr or accountId illegal");
         return RDB_OBJECT_EMPTY;
     }
-    if (accountId < ID_EMPTITY) {
+    if (accountId < ID_EMPTY) {
         HILOG_ERROR("RawContacts GetDeleteContactIdByAccountId accountId illegal");
         return OPERATION_ERROR;
     }
@@ -143,7 +143,7 @@ int RawContacts::GetDeleteRawContactIdByAccountId(std::shared_ptr<OHOS::NativeRd
         HILOG_ERROR("RawContacts GetDeleteRawContactIdByAccountId store_ is nullptr");
         return RDB_OBJECT_EMPTY;
     }
-    if (accountId < ID_EMPTITY) {
+    if (accountId < ID_EMPTY) {
         HILOG_ERROR("RawContacts GetDeleteContactIdByAccountId accountId illegal");
         return OPERATION_ERROR;
     }
@@ -182,7 +182,7 @@ int RawContacts::DeleteRawcontactByRawId(
         HILOG_ERROR("RawContacts DeleteRawcontactByRawId store_ is nullptr");
         return RDB_OBJECT_EMPTY;
     }
-    if (needDeleteRawContactId < ID_EMPTITY) {
+    if (needDeleteRawContactId < ID_EMPTY) {
         HILOG_ERROR("RawContacts DeleteRawcontactByRawId needDeleteRawContactId illegal");
         return OPERATION_ERROR;
     }

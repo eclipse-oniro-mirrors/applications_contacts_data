@@ -45,7 +45,7 @@ MergerContacts::~MergerContacts()
 int MergerContacts::ContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> store)
 {
     if (store == nullptr) {
-        HILOG_ERROR("stroe is empty");
+        HILOG_ERROR("store is empty");
         return RDB_OBJECT_EMPTY;
     }
     HILOG_INFO("MergerContacts::ContactMerge is starting");
@@ -594,7 +594,7 @@ bool MergerContacts::isNameMatch(std::shared_ptr<OHOS::NativeRdb::RdbStore> stor
 int MergerContacts::ForceContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, std::set<int> ids)
 {
     if (store == nullptr) {
-        HILOG_ERROR("stroe is empty");
+        HILOG_ERROR("store is empty");
         return RDB_OBJECT_EMPTY;
     }
     int minId = 0;

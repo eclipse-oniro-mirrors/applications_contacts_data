@@ -129,7 +129,7 @@ bool CandidateStatus::IsNeedMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> sto
 }
 
 /**
- * @brief Query operation for ensure if candidate has ture merge_status
+ * @brief Query operation for ensure if candidate has true merge_status
  *
  * @param store Conditions for query operation
  * @param rawId Contacts's raw_contact_id to query

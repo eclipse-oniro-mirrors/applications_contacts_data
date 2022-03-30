@@ -26,7 +26,7 @@ class DataBaseDisasterRecovery {
 public:
     static std::shared_ptr<DataBaseDisasterRecovery> GetInstance();
     ~DataBaseDisasterRecovery();
-    int SQLliteCheckDb();
+    int SQLiteCheckDb();
     int BackDatabase();
     int BackDatabase(std::string dataBaseName);
     std::string GetBackUpDatabase(const std::shared_ptr<OHOS::NativeRdb::RdbStore> &store_);
@@ -36,7 +36,7 @@ private:
     DataBaseDisasterRecovery();
     static std::shared_ptr<DataBaseDisasterRecovery> instance_;
     static std::map<std::string, std::shared_ptr<OHOS::NativeRdb::RdbStore>> redbStoreMap;
-    int SQLliteCheckDb(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, std::string dataBaseName);
+    int SQLiteCheckDb(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, std::string dataBaseName);
     static const std::string BACKUP_LINK_SYMBOL;
     static const std::string BACKUP_SUFFIX;
     static const std::string DB_OK;

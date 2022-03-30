@@ -108,13 +108,13 @@ int ContactsAccount::LookupAccountTypeId(
     return accountId;
 }
 
-std::vector<AccountDataCollection> ContactsAccount::GetAccountFromLoacl(
+std::vector<AccountDataCollection> ContactsAccount::GetAccountFromLocal(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore)
 {
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &store_ = rdbStore;
     std::vector<AccountDataCollection> values;
     if (store_ == nullptr) {
-        HILOG_ERROR("ContactsAccount GetAccountFromLoacl store_ is nullptr");
+        HILOG_ERROR("ContactsAccount GetAccountFromLocal store_ is nullptr");
         return values;
     }
     std::string buildQuery = "";
@@ -203,7 +203,7 @@ int ContactsAccount::DeleteAccountByAccountId(std::shared_ptr<OHOS::NativeRdb::R
         HILOG_ERROR("ContactsAccount DeleteAccountByAccountId store_ is nullptr");
         return RDB_OBJECT_EMPTY;
     }
-    if (accountId < ID_EMPTITY) {
+    if (accountId < ID_EMPTY) {
         return OPERATION_ERROR;
     }
     int rowId = 0;
@@ -222,7 +222,7 @@ int ContactsAccount::DeleteDataByRawId(std::shared_ptr<OHOS::NativeRdb::RdbStore
         HILOG_ERROR("ContactsAccount DeleteDataByRawId store_ is nullptr");
         return RDB_OBJECT_EMPTY;
     }
-    if (needDeleteRawContactId < ID_EMPTITY) {
+    if (needDeleteRawContactId < ID_EMPTY) {
         return OPERATION_ERROR;
     }
     int rowId = 0;
@@ -241,7 +241,7 @@ int ContactsAccount::DeleteGroupsByAccountId(std::shared_ptr<OHOS::NativeRdb::Rd
         HILOG_ERROR("ContactsAccount DeleteGroupsByAccountId store_ is  nullptr");
         return RDB_OBJECT_EMPTY;
     }
-    if (accountId < ID_EMPTITY) {
+    if (accountId < ID_EMPTY) {
         return OPERATION_ERROR;
     }
     int rowId = 0;

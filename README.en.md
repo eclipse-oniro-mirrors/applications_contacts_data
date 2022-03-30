@@ -21,7 +21,6 @@ query means for each user's management, which greatly facilitates users to reaso
 /foundation/contactsdataability/
 ├── ability
 │   ├── account                        #Account Management
-│   ├── checkpermission                #Permission Check
 │   ├── common                         #Public Method
 │   ├── datadisasterrecovery           #Data Corruption Recovery
 │   ├── merge                          #Contacts Merge

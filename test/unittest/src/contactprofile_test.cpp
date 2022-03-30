@@ -182,29 +182,25 @@ void ContactProfileTest::QueryAndExpectResult(std::string &tableName, OHOS::Nati
 int64_t ContactProfileTest::RawContactInsertValues(OHOS::NativeRdb::ValuesBucket &values)
 {
     OHOS::Uri uriRawContact(ProfileUri::RAW_CONTACT);
-    int64_t code = contactsDataAbility.Insert(uriRawContact, values);
-    return code;
+    return contactsDataAbility.Insert(uriRawContact, values);
 }
 
 int64_t ContactProfileTest::ContactDataInsertValues(OHOS::NativeRdb::ValuesBucket &values)
 {
     OHOS::Uri uriContactData(ProfileUri::CONTACT_DATA);
-    int64_t code = contactsDataAbility.Insert(uriContactData, values);
-    return code;
+    return contactsDataAbility.Insert(uriContactData, values);
 }
 
 int64_t ContactProfileTest::GroupsInsertValues(OHOS::NativeRdb::ValuesBucket &values)
 {
     OHOS::Uri uriGroups(ProfileUri::GROUPS);
-    int64_t code = contactsDataAbility.Insert(uriGroups, values);
-    return code;
+    return contactsDataAbility.Insert(uriGroups, values);
 }
 
 int64_t ContactProfileTest::ContactBlocklistInsertValues(OHOS::NativeRdb::ValuesBucket &values)
 {
     OHOS::Uri uriContactBolcklist(ProfileUri::BLOCKLIST);
-    int64_t code = contactsDataAbility.Insert(uriContactBolcklist, values);
-    return code;
+    return contactsDataAbility.Insert(uriContactBolcklist, values);
 }
 
 void ContactProfileTest::GetAllRawContactColumns(

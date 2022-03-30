@@ -15,7 +15,7 @@
 
 import featureAbility from '@ohos.ability.featureAbility';
 import ohos_data_ability from '@ohos.data.dataability';
-import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
+import {afterAll, describe, expect, it} from 'deccjsunit/index'
 
 const URI_CALLLOG = "dataability:///com.ohos.calllogability";
 const calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";

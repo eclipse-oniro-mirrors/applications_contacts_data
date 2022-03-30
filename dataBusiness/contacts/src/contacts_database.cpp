@@ -945,9 +945,9 @@ std::vector<int> ContactsDataBase::QueryContactDataRawContactId(
     std::vector<int> typeIdVector;
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
-        std::string colummName = ContactDataColumns::RAW_CONTACT_ID;
+        std::string columnName = ContactDataColumns::RAW_CONTACT_ID;
         int columnIndex = 0;
-        resultSet->GetColumnIndex(colummName, columnIndex);
+        resultSet->GetColumnIndex(columnName, columnIndex);
         int rawContactId = 0;
         resultSet->GetInt(columnIndex, rawContactId);
         std::string typeIdKey = ContactDataColumns::TYPE_ID;
@@ -1047,8 +1047,8 @@ std::string ContactsDataBase::StructureDeleteContactJson(
     contentColumns.push_back(ContactDataColumns::EXTEND3);
     contentColumns.push_back(ContactDataColumns::EXTEND4);
     contentColumns.push_back(ContactDataColumns::ALPHA_NAME);
-    contentColumns.push_back(ContactDataColumns::OTHRE_LAN_LAST_NAME);
-    contentColumns.push_back(ContactDataColumns::OTHRE_LAN_FIRST_NAME);
+    contentColumns.push_back(ContactDataColumns::OTHER_LAN_LAST_NAME);
+    contentColumns.push_back(ContactDataColumns::OTHER_LAN_FIRST_NAME);
     contentColumns.push_back(ContactDataColumns::EXTEND5);
     contentColumns.push_back(ContactDataColumns::LAN_STYLE);
     contentColumns.push_back(ContactDataColumns::CUSTOM_DATA);
@@ -1143,7 +1143,7 @@ void ContactsDataBase::DestroyInstanceAndRestore(std::string restorePath)
 {
     g_mtx.lock();
     if (access(restorePath.c_str(), F_OK) != 0) {
-        HILOG_ERROR("Restore file %{public}s does not exist", restorePath.c_str());
+        HILOG_ERROR("Restore file %{private}s does not exist", restorePath.c_str());
         g_mtx.unlock();
         return;
     }

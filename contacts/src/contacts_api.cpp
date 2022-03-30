@@ -259,7 +259,7 @@ NativeRdb::DataAbilityPredicates BuildDeleteContactPredicates(napi_env env, napi
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyContactPredicates(
+NativeRdb::DataAbilityPredicates BuildQueryContactPredicates(
     napi_env env, napi_value key, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
@@ -297,7 +297,7 @@ void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holde
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyContactsPredicates(napi_env env, napi_value hold, napi_value attr)
+NativeRdb::DataAbilityPredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
     Holder holder = contactsBuild.GetHolder(env, hold);
@@ -344,7 +344,7 @@ NativeRdb::DataAbilityPredicates BuildQureyContactsPredicates(napi_env env, napi
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyContactsByEmailPredicates(
+NativeRdb::DataAbilityPredicates BuildQueryContactsByEmailPredicates(
     napi_env env, napi_value emailobject, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
@@ -372,7 +372,7 @@ NativeRdb::DataAbilityPredicates BuildQureyContactsByEmailPredicates(
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyContactsByPhoneNumberPredicates(
+NativeRdb::DataAbilityPredicates BuildQueryContactsByPhoneNumberPredicates(
     napi_env env, napi_value number, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
@@ -398,7 +398,7 @@ NativeRdb::DataAbilityPredicates BuildQureyContactsByPhoneNumberPredicates(
  * @param env Conditions for resolve object interface operation
  * @param hold Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyGroupsPredicates(napi_env env, napi_value hold)
+NativeRdb::DataAbilityPredicates BuildQueryGroupsPredicates(napi_env env, napi_value hold)
 {
     ContactsBuild contactsBuild;
     Holder holder = contactsBuild.GetHolder(env, hold);
@@ -427,7 +427,7 @@ NativeRdb::DataAbilityPredicates BuildQureyGroupsPredicates(napi_env env, napi_v
  * @param id Conditions for resolve object interface operation
  * @param hold Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyKeyPredicates(napi_env env, napi_value id, napi_value hold)
+NativeRdb::DataAbilityPredicates BuildQueryKeyPredicates(napi_env env, napi_value id, napi_value hold)
 {
     ContactsBuild contactsBuild;
     int value = contactsBuild.GetInt(env, id);
@@ -467,7 +467,7 @@ NativeRdb::DataAbilityPredicates BuildQueryMyCardPredicates(napi_env env, napi_v
     return predicates;
 }
 
-NativeRdb::DataAbilityPredicates BuildQuerytContactData(napi_env env, napi_value &contactObject, napi_value &attrObject,
+NativeRdb::DataAbilityPredicates BuildQueryContactData(napi_env env, napi_value &contactObject, napi_value &attrObject,
     std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
     ContactsBuild contactsBuild;
@@ -516,7 +516,7 @@ void BuildUpdateContactConvertParams(napi_env env, napi_value &contact, napi_val
 {
     executeHelper->valueContactData.clear();
     NativeRdb::DataAbilityPredicates predicates =
-        BuildQuerytContactData(env, contact, attr, executeHelper->valueContactData);
+        BuildQueryContactData(env, contact, attr, executeHelper->valueContactData);
     executeHelper->columns = BuildUpdateContactColumns();
     ContactsControl contactsControl;
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
@@ -852,19 +852,19 @@ NativeRdb::DataAbilityPredicates ConvertParamsSwitchSplit(
     NativeRdb::DataAbilityPredicates predicates;
     switch (code) {
         case QUERY_CONTACT:
-            predicates = BuildQureyContactPredicates(env, key, hold, attr);
+            predicates = BuildQueryContactPredicates(env, key, hold, attr);
             break;
         case QUERY_CONTACTS:
-            predicates = BuildQureyContactsPredicates(env, hold, attr);
+            predicates = BuildQueryContactsPredicates(env, hold, attr);
             break;
         case QUERY_CONTACTS_BY_EMAIL:
-            predicates = BuildQureyContactsByEmailPredicates(env, key, hold, attr);
+            predicates = BuildQueryContactsByEmailPredicates(env, key, hold, attr);
             break;
         case QUERY_CONTACTS_BY_PHONE_NUMBER:
-            predicates = BuildQureyContactsByPhoneNumberPredicates(env, key, hold, attr);
+            predicates = BuildQueryContactsByPhoneNumberPredicates(env, key, hold, attr);
             break;
         case QUERY_GROUPS:
-            predicates = BuildQureyGroupsPredicates(env, hold);
+            predicates = BuildQueryGroupsPredicates(env, hold);
             break;
         case QUERY_HOLDERS:
             break;
@@ -912,7 +912,7 @@ void SetChildActionCodeAndConvertParams(napi_env env, napi_callback_info info, E
             executeHelper->predicates = BuildIsMyCardPredicates(env, id);
             break;
         case QUERY_KEY:
-            executeHelper->predicates = BuildQureyKeyPredicates(env, id, hold);
+            executeHelper->predicates = BuildQueryKeyPredicates(env, id, hold);
             break;
         default:
             executeHelper->predicates = ConvertParamsSwitchSplit(executeHelper->actionCode, env, key, hold, attr);

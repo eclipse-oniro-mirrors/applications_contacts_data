@@ -533,17 +533,17 @@ Portrait ContactsBuild::GetUri(napi_env env, napi_value object)
 std::vector<Email> ContactsBuild::GetEmails(napi_env env, napi_value object)
 {
     std::vector<Email> emailVec;
-    napi_value EamilArray = GetArrayByKey(env, object, "emails");
-    if (EamilArray == nullptr) {
-        HILOG_ERROR("ContactsBuild GetEmail napiValueEamil is null ");
+    napi_value EmailArray = GetArrayByKey(env, object, "emails");
+    if (EmailArray == nullptr) {
+        HILOG_ERROR("ContactsBuild GetEmail napiValueEmail is null ");
         return emailVec;
     }
     uint32_t size = 0;
-    napi_get_array_length(env, EamilArray, &size);
+    napi_get_array_length(env, EmailArray, &size);
     for (uint32_t i = 0; i < size; i++) {
         Email email;
         napi_value object;
-        napi_get_element(env, EamilArray, i, &object);
+        napi_get_element(env, EmailArray, i, &object);
         email.email = GetStringValueByKey(env, object, "email");
         email.labelName = GetStringValueByKey(env, object, "labelName");
         email.displayName = GetStringValueByKey(env, object, "displayName");
@@ -785,7 +785,7 @@ Holder ContactsBuild::GetHolder(napi_env env, napi_value object)
 {
     Holder holder;
     if (object == nullptr) {
-        HILOG_ERROR("GetHolder Holoder is null ");
+        HILOG_ERROR("GetHolder Holder is null ");
         return holder;
     }
     holder.bundleName = GetStringValueByKey(env, object, "bundleName");

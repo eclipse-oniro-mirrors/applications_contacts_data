@@ -615,7 +615,7 @@ export default {
             ]);
             return map;
         },
-    getvoiceMailBatchInsert:
+    getVoiceMailBatchInsert:
         function() {
             var map = new Map([ [ "phone_number", "1600" ], [ "display_name", "xiaoming" ], [ "voice_status", "0" ] ]);
             var map2 = new Map([ [ "phone_number", "1600" ], [ "display_name", "xiaohei" ], [ "voice_status", "1" ] ]);

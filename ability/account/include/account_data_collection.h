@@ -29,7 +29,7 @@ public:
     ~AccountDataCollection();
     AccountDataCollection(std::string accountName, std::string accountType, std::string dataColletion);
     // Judge whether local account
-    bool IsDefualtAccount();
+    bool IsDefaultAccount();
     // Judge whether the system account
     bool ContainSysAccounts(std::vector<OHOS::AccountSA::OhosAccountInfo> sysAccounts);
     std::string GetcAccountName();

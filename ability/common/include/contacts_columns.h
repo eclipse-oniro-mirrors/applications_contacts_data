@@ -183,8 +183,8 @@ public:
     static constexpr const char *EXTEND3 = "extend3";
     static constexpr const char *EXTEND4 = "extend4";
     static constexpr const char *ALPHA_NAME = "alpha_name";
-    static constexpr const char *OTHRE_LAN_LAST_NAME = "other_lan_last_name";
-    static constexpr const char *OTHRE_LAN_FIRST_NAME = "other_lan_first_name";
+    static constexpr const char *OTHER_LAN_LAST_NAME = "other_lan_last_name";
+    static constexpr const char *OTHER_LAN_FIRST_NAME = "other_lan_first_name";
     static constexpr const char *EXTEND5 = "extend5";
     static constexpr const char *PHONETIC_NAME = "phonetic_name";
     static constexpr const char *LAN_STYLE = "lan_style";

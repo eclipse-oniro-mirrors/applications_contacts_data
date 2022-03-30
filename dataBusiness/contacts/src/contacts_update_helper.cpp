@@ -212,8 +212,8 @@ void ContactsUpdateHelper::DataToUpdateCallLog(
         if (!isDelete) {
             resultSet->GetString(0, name);
         }
-        resultSet->GetString(RESEULT_GET_ONE, phoneNumber);
-        resultSet->GetString(RESEULT_GET_TWO, quickSearch);
+        resultSet->GetString(RESULT_GET_ONE, phoneNumber);
+        resultSet->GetString(RESULT_GET_TWO, quickSearch);
         UpdateCallLog(phoneNumber, name, quickSearch, isDelete, true);
         UpdateCallLog(phoneNumber, name, quickSearch, isDelete, false);
         resultSetNum = resultSet->GoToNextRow();
@@ -403,11 +403,11 @@ OHOS::NativeRdb::ValuesBucket ContactsUpdateHelper::GetUpdateCompanyValuesBucket
         return valuesBucket;
     }
     if (linkDataDataValues.HasColumn(ContactDataColumns::DETAIL_INFO)) {
-        std::string commpany;
+        std::string company;
         OHOS::NativeRdb::ValueObject typeValue;
         linkDataDataValues.GetObject(ContactDataColumns::DETAIL_INFO, typeValue);
-        typeValue.GetString(commpany);
-        valuesBucket.PutString(RawContactColumns::COMPANY, commpany);
+        typeValue.GetString(company);
+        valuesBucket.PutString(RawContactColumns::COMPANY, company);
     }
     if (linkDataDataValues.HasColumn(ContactDataColumns::POSITION)) {
         std::string position;
