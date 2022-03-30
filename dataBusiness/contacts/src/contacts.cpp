@@ -33,7 +33,7 @@ Contacts::~Contacts()
  * @brief Insert the raw_contact table at the same time as the contact table
  *
  * @param rdbStore Database operation object
- * @param outRawContactId raw_conatct table id
+ * @param outRawContactId raw_contact table id
  * @param rawContactValues insert raw_contact values
  * @param contactId contact_id address
  *
@@ -126,7 +126,7 @@ int Contacts::DeleteContactById(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSt
         HILOG_ERROR("ContactsAccount DeletecontactById store is  nullptr");
         return RDB_OBJECT_EMPTY;
     }
-    if (needDeleteContactId < ID_EMPTITY) {
+    if (needDeleteContactId < ID_EMPTY) {
         HILOG_ERROR("ContactsAccount DeleteDataByRawId needDeleteContactId illegal");
         return OPERATION_ERROR;
     }

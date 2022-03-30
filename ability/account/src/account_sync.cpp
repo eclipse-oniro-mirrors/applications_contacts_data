@@ -62,8 +62,8 @@ void AccountSync::getShouldUpdateAndAddAccounts(std::vector<OHOS::AccountSA::Oho
 {
     for (size_t i = 0; i < systemAccounts.size(); i++) {
         for (size_t j = 0; j < localAccounts.size(); j++) {
-            if (systemAccounts[i].uid_ == localAccounts[j].GetcAccountType() &&
-                systemAccounts[i].uid_ == localAccounts[j].GetcAccountType()) {
+            if (systemAccounts[i].uid_ == localAccounts[j].uid_ &&
+                systemAccounts[i].GetcAccountType() == localAccounts[j].GetcAccountType()) {
                 break;
             }
             if (j == localAccounts.size() - 1) {
@@ -78,6 +78,7 @@ void AccountSync::SyncUpdateAccount(std::vector<OHOS::AccountSA::OhosAccountInfo
     g_mtx.lock();
     if (sysAccounts.empty()) {
         HILOG_ERROR("AccountSync::SyncUpdateAccount sysAccounts is null");
+        g_mtx.unlock();
         return;
     }
     std::shared_ptr<OHOS::NativeRdb::RdbStore> store = nullptr;
@@ -90,14 +91,15 @@ void AccountSync::SyncUpdateAccount(std::vector<OHOS::AccountSA::OhosAccountInfo
     }
     if (store == nullptr) {
         HILOG_ERROR("SyncUpdateAccount isProfile values is %{public}d this database store ponit is null", isProfile);
+        g_mtx.unlock();
         return;
     }
-    std::vector<AccountDataCollection> accounts = g_contactsAccount->GetAccountFromLoacl(store);
+    std::vector<AccountDataCollection> accounts = g_contactsAccount->GetAccountFromLocal(store);
     std::vector<AccountDataCollection> notInSysAccounts;
     for (size_t i = 0; i < accounts.size(); i++) {
         auto iter = accounts[i];
         // if account is not default and not in sysAccounts then this should remove
-        if (!iter.IsDefualtAccount() && !iter.ContainSysAccounts(sysAccounts)) {
+        if (!iter.IsDefaultAccount() && !iter.ContainSysAccounts(sysAccounts)) {
             notInSysAccounts.push_back(iter);
         }
     }
@@ -129,27 +131,27 @@ int AccountSync::ClearData(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int
 {
     RawContacts contactsRawContact;
     Contacts contactsContact;
-    if (accountId > ID_EMPTITY) {
+    if (accountId > ID_EMPTY) {
         int needDeleteRawContactId = contactsRawContact.GetDeleteRawContactIdByAccountId(store, accountId);
-        HILOG_INFO("GetDeleteRawContactIdByAccountId successfuly , needDeleteRawContactId is %{public}d",
+        HILOG_INFO("GetDeleteRawContactIdByAccountId successfully, needDeleteRawContactId is %{public}d",
             needDeleteRawContactId);
         int needDeleteContactId = contactsRawContact.GetDeleteContactIdByAccountId(store, accountId);
-        HILOG_INFO("GetDeleteContactIdByAccountId successfuly needDeleteContactId is %{public}d", needDeleteContactId);
+        HILOG_INFO("GetDeleteContactIdByAccountId successfully needDeleteContactId is %{public}d", needDeleteContactId);
         g_contactsAccount->DeleteDataByRawId(store, needDeleteRawContactId);
         int ret = store->Commit();
-        HILOG_INFO("DeleteDataByRawId successfuly commit ret %{public}d", ret);
+        HILOG_INFO("DeleteDataByRawId successfully commit ret %{public}d", ret);
         contactsRawContact.DeleteRawcontactByRawId(store, needDeleteRawContactId);
         ret = store->Commit();
-        HILOG_INFO("DeleteRawcontactByRawId successfuly commit ret %{public}d", ret);
+        HILOG_INFO("DeleteRawcontactByRawId successfully commit ret %{public}d", ret);
         contactsContact.DeleteContactById(store, needDeleteContactId);
         ret = store->Commit();
-        HILOG_INFO("DeletecontactsById successfuly commit ret %{public}d", ret);
+        HILOG_INFO("DeletecontactsById successfully commit ret %{public}d", ret);
         g_contactsAccount->DeleteGroupsByAccountId(store, accountId);
         ret = store->Commit();
-        HILOG_INFO("DeleteGroupsByAccountId successfuly commit ret %{public}d", ret);
+        HILOG_INFO("DeleteGroupsByAccountId successfully commit ret %{public}d", ret);
         g_contactsAccount->DeleteAccountByAccountId(store, accountId);
         ret = store->Commit();
-        HILOG_INFO("DeleteAccountByAccountId successfuly commit ret %{public}d", ret);
+        HILOG_INFO("DeleteAccountByAccountId successfully commit ret %{public}d", ret);
     }
     return RDB_EXECUTE_OK;
 }

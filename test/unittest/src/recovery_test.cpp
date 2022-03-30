@@ -64,13 +64,13 @@ HWTEST_F(RecoveryTest, recovery_test_100, testing::ext::TestSize.Level1)
     std::shared_ptr<OHOS::Contacts::DataBaseDisasterRecovery> instance =
         OHOS::Contacts::DataBaseDisasterRecovery::GetInstance();
     std::shared_ptr<OHOS::Contacts::ContactsDataBase> contactDatabase = OHOS::Contacts::ContactsDataBase::GetInstance();
-    int result = instance->SQLliteCheckDb();
-    HILOG_INFO("--- recovery_test_100 SQLliteCheckDb ret ! --- %{public}d", result);
+    int result = instance->SQLiteCheckDb();
+    HILOG_INFO("--- recovery_test_100 SQLiteCheckDb ret ! --- %{public}d", result);
     if (result == 0) {
         instance->BackDatabase();
     }
     std::string backupPath = instance->GetBackUpDatabase(contactDatabase->contactStore_);
-    HILOG_INFO("--- recovery_test_100 is end! --- %{public}s ", backupPath.c_str());
+    HILOG_INFO("--- recovery_test_100 is end! --- %{private}s ", backupPath.c_str());
     ClearData();
 }
 

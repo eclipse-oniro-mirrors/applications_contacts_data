@@ -36,7 +36,7 @@ constexpr int CONTACT_DELETE = 2;
 
 class ContactsCommonEvent : public OHOS::EventFwk::CommonEventSubscriber {
 public:
-    ContactsCommonEvent(const OHOS::EventFwk::CommonEventSubscribeInfo &subscriberInfo)
+    explicit ContactsCommonEvent(const OHOS::EventFwk::CommonEventSubscribeInfo &subscriberInfo)
         : CommonEventSubscriber(subscriberInfo)
     {
     }

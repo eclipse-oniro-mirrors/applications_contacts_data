@@ -50,7 +50,7 @@ DataBaseDisasterRecovery::~DataBaseDisasterRecovery()
 {
 }
 
-int DataBaseDisasterRecovery::SQLliteCheckDb()
+int DataBaseDisasterRecovery::SQLiteCheckDb()
 {
     g_mtx.lock();
     int ret = OPERATION_ERROR;
@@ -65,13 +65,14 @@ int DataBaseDisasterRecovery::SQLliteCheckDb()
     }
     if (redbStoreMap.empty()) {
         HILOG_ERROR("DataBaseDisasterRecovery SQLliteCheck redbStoreMap is empty");
+        g_mtx.unlock();
         return RDB_OBJECT_EMPTY;
     }
     for (auto &kv : redbStoreMap) {
         std::shared_ptr<OHOS::NativeRdb::RdbStore> store_ = kv.second;
-        ret = SQLliteCheckDb(store_, kv.first);
+        ret = SQLiteCheckDb(store_, kv.first);
         if (ret != OHOS::NativeRdb::E_OK) {
-            HILOG_ERROR("DataBaseDisasterRecovery SQLliteCheckDb ERROR.");
+            HILOG_ERROR("DataBaseDisasterRecovery SQLiteCheckDb ERROR.");
             g_mtx.unlock();
             return ret;
         }
@@ -81,7 +82,7 @@ int DataBaseDisasterRecovery::SQLliteCheckDb()
     return RDB_EXECUTE_OK;
 }
 
-int DataBaseDisasterRecovery::SQLliteCheckDb(
+int DataBaseDisasterRecovery::SQLiteCheckDb(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, std::string dataBaseName)
 {
     // default switch
@@ -137,6 +138,7 @@ int DataBaseDisasterRecovery::BackDatabase(std::string dataBaseName)
         std::shared_ptr<OHOS::NativeRdb::RdbStore> store_ = iter->second;
         if (store_ == nullptr) {
             HILOG_ERROR("DataBaseDisasterRecovery BackDatabase %{public}s store_ is nullptr", dataBaseName.c_str());
+            g_mtx.unlock();
             return RDB_OBJECT_EMPTY;
         }
         std::string dbPath = ContactsPath::RDB_BACKUP_PATH + dataBaseName + BACKUP_SUFFIX;
@@ -182,11 +184,11 @@ std::string DataBaseDisasterRecovery::GetBackUpDatabase(const std::shared_ptr<OH
 int DataBaseDisasterRecovery::RecoveryDatabase(std::string dataBaseName)
 {
     if (dataBaseName == PROFILE_DATABASE_NAME) {
-        std::string buckupPath = ContactsPath::RDB_BACKUP_PATH + dataBaseName + BACKUP_SUFFIX;
-        ProfileDatabase::DestroyInstanceAndRestore(buckupPath);
+        std::string backupPath = ContactsPath::RDB_BACKUP_PATH + dataBaseName + BACKUP_SUFFIX;
+        ProfileDatabase::DestroyInstanceAndRestore(backupPath);
     } else if (dataBaseName == CONTACT_DATABASE_NAME) {
-        std::string buckupPath = ContactsPath::RDB_BACKUP_PATH + dataBaseName + BACKUP_SUFFIX;
-        ContactsDataBase::DestroyInstanceAndRestore(buckupPath);
+        std::string backupPath = ContactsPath::RDB_BACKUP_PATH + dataBaseName + BACKUP_SUFFIX;
+        ContactsDataBase::DestroyInstanceAndRestore(backupPath);
     }
     return RDB_EXECUTE_OK;
 }

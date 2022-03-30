@@ -578,7 +578,7 @@ int ContactsDataAbility::BackUp()
 {
     std::shared_ptr<OHOS::Contacts::DataBaseDisasterRecovery> instance =
         OHOS::Contacts::DataBaseDisasterRecovery::GetInstance();
-    int retCode = instance->SQLliteCheckDb();
+    int retCode = instance->SQLiteCheckDb();
     if (retCode == 0) {
         retCode = instance->BackDatabase();
     }

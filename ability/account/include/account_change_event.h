@@ -24,7 +24,7 @@ namespace Contacts {
 class AccountChangeEvent : public OHOS::EventFwk::CommonEventSubscriber {
 public:
     ~AccountChangeEvent();
-    AccountChangeEvent(const OHOS::EventFwk::CommonEventSubscribeInfo &sp);
+    explicit AccountChangeEvent(const OHOS::EventFwk::CommonEventSubscribeInfo &sp);
     void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
 private:
     const static std::string SPLIT_SYMBOL_VERTICAL = "||";

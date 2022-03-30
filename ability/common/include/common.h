@@ -31,12 +31,12 @@ constexpr int RDB_OBJECT_EMPTY = -1;
 constexpr int PARAMETER_EMPTY = -1;
 
 constexpr int DELETE_MARK = 1;
-constexpr int ID_EMPTITY = 0;
+constexpr int ID_EMPTY = 0;
 constexpr int BATCH_INSERT_COUNT = 40;
 
 // ResultSet get Num
-constexpr int RESEULT_GET_ONE = 1;
-constexpr int RESEULT_GET_TWO = 2;
+constexpr int RESULT_GET_ONE = 1;
+constexpr int RESULT_GET_TWO = 2;
 
 // contact table has Judge
 constexpr int HAS_NAME = 1;

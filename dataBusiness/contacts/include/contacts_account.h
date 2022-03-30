@@ -33,7 +33,7 @@ public:
     int LookupAccountTypeId(
         std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, std::string accountName, std::string accountType);
     void PrepopulateCommonAccountTypes(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore);
-    std::vector<AccountDataCollection> GetAccountFromLoacl(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore);
+    std::vector<AccountDataCollection> GetAccountFromLocal(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore);
     int GetNotExistAccount(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, AccountDataCollection collection);
     int DeleteDataByRawId(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, int needDeleteRawContactId);
     int DeleteGroupsByAccountId(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, int accountId);

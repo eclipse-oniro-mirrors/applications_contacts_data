@@ -22,7 +22,6 @@
 /foundation/contactsdataability/
 ├── ability
 │   ├── account                        #账户管理
-│   ├── checkpermission                #权限检测
 │   ├── common                         #公共方法:log,utils等
 │   ├── datadisasterrecovery           #数据损坏恢复
 │   ├── merge                          #联系人合并

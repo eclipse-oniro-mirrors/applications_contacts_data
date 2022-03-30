@@ -437,7 +437,7 @@ describe('VoicemailTest', function() {
             var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
             console.info("logMessage voicemail_batchInsert_test_1700: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == 0).assertTrue();
-            var array = common.getvoiceMailBatchInsert();
+            var array = common.getVoiceMailBatchInsert();
             await voicemailQueryForBatchInsert(array, "voicemail_batchInsert_test_1700");
             await voiceMailDelete("voicemail_batchInsert_test_1700");
             done();

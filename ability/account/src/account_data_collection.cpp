@@ -52,7 +52,7 @@ std::string AccountDataCollection::GetcDataCollection()
     return this->cDataCollection_;
 }
 
-bool AccountDataCollection::IsDefualtAccount()
+bool AccountDataCollection::IsDefaultAccount()
 {
     return AccountData::ACCOUNT_NAME == this->cAccountName_ && AccountData::ACCOUNT_TYPE == this->cAccountType_;
 }

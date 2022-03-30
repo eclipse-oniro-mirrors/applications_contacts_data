@@ -21,7 +21,7 @@
 
 namespace Contacts {
 namespace Test {
-namespace {
+namespace Lock {
 std::mutex mtx_;
 }
 
@@ -38,11 +38,14 @@ public:
     {
         this->values = values;
         this->result = result;
+        this->predicatesId = -1;
+        this->predicatesDeleteId = -1;
     }
     CallLogAsync(OHOS::NativeRdb::ValuesBucket &updateValues, int &predicatesId)
     {
         this->updateValues = updateValues;
         this->predicatesId = predicatesId;
+        this->predicatesDeleteId = -1;
     }
 
     CallLogAsync(std::vector<std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet>> resultSet,
@@ -50,10 +53,13 @@ public:
     {
         this->resultSet = resultSet;
         this->predicatesQueryId = predicatesQueryId;
+        this->predicatesId = -1;
+        this->predicatesDeleteId = -1;
     }
 
-    CallLogAsync(int &predicatesDeleteId)
+    explicit CallLogAsync(int &predicatesDeleteId)
     {
+        this->predicatesId = -1;
         this->predicatesDeleteId = predicatesDeleteId;
     }
     void Insert()

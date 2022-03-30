@@ -63,21 +63,21 @@ std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_e
 void HolderPredicates(const Holder &holder, NativeRdb::DataAbilityPredicates &predicates);
 void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holder);
 void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredicates &predicates);
-NativeRdb::DataAbilityPredicates BuildQureyContactPredicates(
+NativeRdb::DataAbilityPredicates BuildQueryContactPredicates(
     napi_env env, std::string key, napi_value hold, napi_value attr);
 NativeRdb::DataAbilityPredicates BuildUpdateContactPredicates(napi_env env, napi_value contacts, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildQuerytContactData(napi_env env, napi_value &contactsObject,
+NativeRdb::DataAbilityPredicates BuildQueryContactData(napi_env env, napi_value &contactsObject,
     napi_value &attrObject, std::vector<NativeRdb::ValuesBucket> &valueContactData);
 std::vector<std::string> BuildUpdateContactColumns();
 void BuildUpdateContactConvertParams(
     napi_env env, napi_value &contacts, napi_value &attr, ExecuteHelper &executeHelper);
-NativeRdb::DataAbilityPredicates BuildQureyContactsPredicates(napi_env env, napi_value hold, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildQureyContactsByEmailPredicates(
+NativeRdb::DataAbilityPredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr);
+NativeRdb::DataAbilityPredicates BuildQueryContactsByEmailPredicates(
     napi_env env, std::string email, napi_value hold, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildQureyContactsByPhoneNumberPredicates(
+NativeRdb::DataAbilityPredicates BuildQueryContactsByPhoneNumberPredicates(
     napi_env env, std::string phoneNumber, napi_value hold, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildQureyGroupsPredicates(napi_env env, napi_value hold);
-NativeRdb::DataAbilityPredicates BuildQureyKeyPredicates(napi_env env, int id, napi_value hold);
+NativeRdb::DataAbilityPredicates BuildQueryGroupsPredicates(napi_env env, napi_value hold);
+NativeRdb::DataAbilityPredicates BuildQueryKeyPredicates(napi_env env, int id, napi_value hold);
 NativeRdb::DataAbilityPredicates BuildQueryMyCardPredicates(napi_env env, napi_value attr);
 NativeRdb::DataAbilityPredicates BuildIsLocalContactPredicates(napi_env env, napi_value id);
 NativeRdb::DataAbilityPredicates BuildIsMyCardPredicates(napi_env env, napi_value id);
