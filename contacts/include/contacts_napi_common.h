@@ -81,7 +81,7 @@ constexpr int SIP_ADDRESS = 17;
 struct ExecuteHelper {
     ExecuteHelper()
         : work(nullptr), deferred(nullptr), dataValue(nullptr), sync(1), argc(0), actionCode(-1), callBack(nullptr),
-          info(nullptr), childActionCode(0), promise(nullptr) {};
+          info(nullptr), childActionCode(0), promise(nullptr) {}
     napi_async_work work;
     napi_deferred deferred;
     napi_value dataValue;
@@ -104,7 +104,7 @@ struct ExecuteHelper {
     std::vector<NativeRdb::ValuesBucket> valueContactData;
     // dataAbilityHelper
     std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper;
-}
+};
 } // namespace ContactsApi
 } // namespace OHOS
 #endif // CONTACT_NAPI_COMMON_H
