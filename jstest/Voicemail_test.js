@@ -164,15 +164,15 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
-
-        var stringValue = {"phone_number" : "1557254", "voice_status" : 1};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var stringValue = {"phone_number" : phoneNumber, "voice_status" : 1};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
             console.info("logMessage voicemail_insert_test_200: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             var map = new Map();
             map.set("id", voicemailId.toString());
-            map.set("phone_number", "1557254");
+            map.set("phone_number", phoneNumber);
             map.set("voice_status", "1");
             await voicemailQuery(map, "voicemail_insert_test_200");
             await voiceMailDelete("voicemail_insert_test_200");
@@ -193,15 +193,15 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
-
-        var stringValue = {"phone_number" : "1557254", "voice_status" : 0};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
             console.info("logMessage voicemail_insert_test_100000: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             var map = new Map();
             map.set("id", voicemailId.toString());
-            map.set("phone_number", "1557254");
+            map.set("phone_number", phoneNumber);
             map.set("voice_status", "0");
             await voicemailQuery(map, "voicemail_insert_test_100000");
             await voiceMailDelete("voicemail_insert_test_100000");
@@ -261,8 +261,8 @@ describe('VoicemailTest', function() {
         console.info("------------logMessage voicemail_update_test_900 is starting!----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "18862013", "voice_status" : 0};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,7)) + (1 * Math.pow(10,7)));
+        var insertValues = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_update_test_900: voicemailId = " + voicemailId);
@@ -304,8 +304,8 @@ describe('VoicemailTest', function() {
         console.info("-------------logMessage voicemail_delete_test_500 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "100578615", "display_name" : "zhangming"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,8)) + (1 * Math.pow(10,8)));
+        var insertValues = {"phone_number" : phoneNumber, "display_name" : "zhangming"};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_delete_test_500: voicemailId = " + voicemailId);
@@ -345,8 +345,8 @@ describe('VoicemailTest', function() {
         console.info("-------------logMessage voicemail_update_test_600 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues1 = {"phone_number" : "100578615", "voice_status" : 1};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,8)) + (1 * Math.pow(10,8)));
+        var insertValues1 = {"phone_number" : phoneNumber, "voice_status" : 1};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues1);
             console.info("logMessage voicemail_update_test_600: voicemailId = " + voicemailId);
@@ -388,12 +388,12 @@ describe('VoicemailTest', function() {
         console.info("-------------logMessage voicemail_batchInsert_test_1800 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValuesOne = {"phone_number" : "10086", "display_name" : "xiaoming"};
-        var insertValuesTwo = {"phone_number" : "12580", "display_name" : "xiaohei"};
-        var insertValuesThree = {"phone_number" : "123456", "display_name" : "xiaohong"};
-        var insertValuesFour = {"phone_number" : "9996325", "display_name" : "xiaohei"};
-        var insertValuesFive = {"phone_number" : "18862013", "display_name" : "xiaofen"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,4)) + (1 * Math.pow(10,4)));
+        var insertValuesOne = {"phone_number" : phoneNumber, "display_name" : "xiaoming"};
+        var insertValuesTwo = {"phone_number" : phoneNumber, "display_name" : "xiaohei"};
+        var insertValuesThree = {"phone_number" : phoneNumber, "display_name" : "xiaohong"};
+        var insertValuesFour = {"phone_number" : phoneNumber, "display_name" : "xiaohei"};
+        var insertValuesFive = {"phone_number" : phoneNumber, "display_name" : "xiaofen"};
         var listAddBluk = [];
         listAddBluk[0] = insertValuesOne;
         listAddBluk[1] = insertValuesTwo;
@@ -421,12 +421,12 @@ describe('VoicemailTest', function() {
         console.info("-------------logMessage voicemail_batchInsert_test_1700 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValuesOne = {"phone_number" : "1600", "display_name" : "xiaoming", "voice_status" : 0};
-        var insertValuesTwo = {"phone_number" : "1600", "display_name" : "xiaohei", "voice_status" : 1};
-        var insertValuesThree = {"phone_number" : "1600", "display_name" : "xiaohong", "voice_status" : 0};
-        var insertValuesFour = {"phone_number" : "1600", "display_name" : "xiaohei", "voice_status" : 0};
-        var insertValuesFive = {"phone_number" : "1600", "display_name" : "xiaofen", "voice_status" : 1};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,3)) + (1 * Math.pow(10,3)));
+        var insertValuesOne = {"phone_number" : phoneNumber, "display_name" : "xiaoming", "voice_status" : 0};
+        var insertValuesTwo = {"phone_number" : phoneNumber, "display_name" : "xiaohei", "voice_status" : 1};
+        var insertValuesThree = {"phone_number" : phoneNumber, "display_name" : "xiaohong", "voice_status" : 0};
+        var insertValuesFour = {"phone_number" : phoneNumber, "display_name" : "xiaohei", "voice_status" : 0};
+        var insertValuesFive = {"phone_number" : phoneNumber, "display_name" : "xiaofen", "voice_status" : 1};
         var listAddBluk = [];
         listAddBluk[0] = insertValuesOne;
         listAddBluk[1] = insertValuesTwo;
@@ -456,8 +456,8 @@ describe('VoicemailTest', function() {
         console.info("------------voicemail_query_test_1400 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "8855220011", "display_name" : "daming"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,9)) + (1 * Math.pow(10,9)));
+        var insertValues = {"phone_number" : phoneNumber, "display_name" : "daming"};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_query_test_1400: voicemailId = " + voicemailId);
@@ -483,7 +483,7 @@ describe('VoicemailTest', function() {
                         console.info('voicemail_query_test_1400 display_name = ' + resultSet.getString(1));
                         expect(resultSet.getString(1) == "daming").assertTrue();
                         console.info('voicemail_query_test_1400 phone_number = ' + resultSet.getString(2));
-                        expect(resultSet.getString(2) == "8855220011").assertTrue();
+                        expect(resultSet.getString(2) == phoneNumber).assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -503,7 +503,8 @@ describe('VoicemailTest', function() {
         console.info("------------voicemail_query_test_1300  is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {"phone_number" : "1158220165", "display_name" : "xiaoming", "voice_status" : 1};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,9)) + (1 * Math.pow(10,9)));
+        var insertValues = {"phone_number" : phoneNumber, "display_name" : "xiaoming", "voice_status" : 1};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_query_test_1300: voicemailId = " + voicemailId);
@@ -521,7 +522,7 @@ describe('VoicemailTest', function() {
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("voice_status", "1");
             condition.and();
-            condition.equalTo("phone_number", "1158220165");
+            condition.equalTo("phone_number", phoneNumber);
             try {
                 var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
@@ -531,7 +532,7 @@ describe('VoicemailTest', function() {
                         console.info('voicemail_query_test_1300 display_name = ' + resultSet.getString(1));
                         expect(resultSet.getString(1) == "xiaoming").assertTrue();
                         console.info('voicemail_query_test_1300 phone_number = ' + resultSet.getString(2));
-                        expect(resultSet.getString(2) == "1158220165").assertTrue();
+                        expect(resultSet.getString(2) == phoneNumber).assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -551,8 +552,8 @@ describe('VoicemailTest', function() {
         console.info("------------abnormal_voicemail_insert_test_300 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_numbers" : "18942010321", "display_name" : "xiaoming"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,10)) + (1 * Math.pow(10,10)));
+        var insertValues = {"phone_numbers" : phoneNumber, "display_name" : "xiaoming"};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_insert_test_300: voicemialId = " + voicemailId);
@@ -574,14 +575,15 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/voicemails";
-
-        var insertValues = {"phone_number" : "18942010321", "display_name" : "xiaoming"};
+        
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,9)) + (1 * Math.pow(10,9)));
+        var insertValues = {"phone_number" : phoneNumber, "display_name" : "xiaoming"};
         try {
             var voicemialId = await DAHelper.insert(errorUri, insertValues)
             console.info("logMessage abnormal_voicemail_insert_test_400: voicemialId = " + voicemialId);
             expect(voicemialId == -1).assertTrue();
             var map = new Map();
-            map.set("phone_number", "18942010321");
+            map.set("phone_number", phoneNumber);
             await voicemailQueryError(map, "abnormal_voicemail_insert_test_400");
             done();
         } catch (error) {
@@ -599,8 +601,8 @@ describe('VoicemailTest', function() {
         console.info("------------abnormal_voicemail_update_test_1100 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "18942010321"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,10)) + (1 * Math.pow(10,10)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_update_test_1100: voicemailId = " + voicemailId);
@@ -614,7 +616,8 @@ describe('VoicemailTest', function() {
         }
         async function AbnormalUpdate()
         {
-            var updateValues = {"phone_numbers" : "11111111111111111"};
+            var phoneNumber_Test = toString(Math.random() * (9 * Math.pow(10,15)) + (1 * Math.pow(10,15)));
+            var updateValues = {"phone_numbers" : phoneNumber_Test};
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", voicemailId.toString());
             try {
@@ -622,7 +625,7 @@ describe('VoicemailTest', function() {
                 console.info("logMessage abnormal_voicemail_update_test_1100: updataCode = " + updataCode);
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
-                map.set("phone_number", "11111111111111111");
+                map.set("phone_number", phoneNumber_Test);
                 await voicemailQueryError(map, "abnormal_voicemail_update_test_1100");
             } catch (error) {
                 console.info("logMessage abnormal_voicemail_update_test_1100: update error = " + error);
@@ -641,8 +644,8 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/voicemails";
-
-        var insertValues = {"phone_number" : "9952364"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_update_test_1200: voicemailId = " + voicemailId);
@@ -657,7 +660,8 @@ describe('VoicemailTest', function() {
 
         async function AbnormalUpdate()
         {
-            var updateValues = {"phone_number" : "22001122"};
+            var phoneNumber_Test = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+            var updateValues = {"phone_number" : phoneNumber_Test};
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
@@ -665,7 +669,7 @@ describe('VoicemailTest', function() {
                 console.info("logMessage abnormal_voicemail_update_test_1200: updataCode = " + updataCode);
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
-                map.set("phone_number", "22001122");
+                map.set("phone_number", phoneNumber_Test);
                 await voicemailQueryError(map, "abnormal_voicemail_update_test_1200");
             } catch (error) {
                 console.info("logMessage abnormal_voicemail_update_test_1200: update error = " + error);
@@ -683,8 +687,8 @@ describe('VoicemailTest', function() {
         console.info("------------abnormal_voicemail_delete_test_700 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "789130"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_delete_test_700: voicemailId = " + voicemailId);
@@ -722,8 +726,8 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/voicemails";
-
-        var insertValues = {"phone_number" : "1564721"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_delete_test_800: voicemailId = " + voicemailId);
@@ -760,8 +764,8 @@ describe('VoicemailTest', function() {
         console.info("------------abnormal_voicemail_query_test_1500 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "1564721"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_query_test_1500: voicemailId = " + voicemailId);
@@ -801,12 +805,13 @@ describe('VoicemailTest', function() {
         console.info("--------logMessage abnormal_voicemail_batchinsert_test_1900 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var addBulk_value1 = {"phone_number" : "5555555555", "ring_duration" : "500"};
-        var addBulk_value2 = {"phone_number" : "1511002", "ring_duration" : "100"};
-        var addBulk_value3 = {"phone_numbers" : "1521003", "ring_duration" : "100"};
-        var addBulk_value4 = {"phone_number" : "1521004", "ring_durations" : "100"};
-        var addBulk_value5 = {"phone_number" : "1521005", "ring_duration" : "100"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,9)) + (1 * Math.pow(10,9)));
+        var phoneNumber_Test = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var addBulk_value1 = {"phone_number" : phoneNumber, "ring_duration" : "500"};
+        var addBulk_value2 = {"phone_number" : phoneNumber_Test, "ring_duration" : "100"};
+        var addBulk_value3 = {"phone_numbers" : phoneNumber_Test, "ring_duration" : "100"};
+        var addBulk_value4 = {"phone_number" : phoneNumber_Test, "ring_durations" : "100"};
+        var addBulk_value5 = {"phone_number" : phoneNumber_Test, "ring_duration" : "100"};
         var listAddBluk = [];
         listAddBluk[0] = addBulk_value1;
         listAddBluk[1] = addBulk_value2;
@@ -891,7 +896,8 @@ describe('VoicemailTest', function() {
         }
         async function executeBatch()
         {
-            var updateValues = {"phone_number" : "123456789"};
+            var phoneNumber = toString(Math.random() * (9 * Math.pow(10,8)) + (1 * Math.pow(10,8)));
+            var updateValues = {"phone_number" : phoneNumber};
             console.info("logMessage voiceMail_update_test_2100:  executeBatch start ");
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voiceMailId.toString());
@@ -924,15 +930,15 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
-
-        var stringValue = {"phone_number" : "1557544452542200", "voice_status" : 0};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,15)) + (1 * Math.pow(10,15)));
+        var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
             console.info("logMessage voicemail_insert_test_2200: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             var map = new Map();
             map.set("id", voicemailId.toString());
-            map.set("phone_number", "1557544452542200");
+            map.set("phone_number", phoneNumber);
             map.set("voice_status", "0");
             await voicemailQuery(map, "voicemail_insert_test_2200");
             await voiceMailDelete("voicemail_insert_test_2200");
@@ -954,8 +960,8 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
-
-        var stringValue = {"phone_number" : "155754445254", "voice_status" : 0};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,11)) + (1 * Math.pow(10,11)));
+        var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
             var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue)
@@ -989,8 +995,8 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
-
-        var stringValue = {"phone_number" : "155754445254", "voice_status" : 0};
+        var phoneNumber_Test = toString(Math.random() * (9 * Math.pow(10,8)) + (1 * Math.pow(10,8)));
+        var stringValue = {"phone_number" : phoneNumber_Test, "voice_status" : 0};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
             var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue)
@@ -999,19 +1005,20 @@ describe('VoicemailTest', function() {
             condition.equalTo("id", voicemailId.toString());
             condition.or();
             condition.equalTo("id", voicemailIdOne.toString());
-            var updateValue = {"phone_number" : "14541555754445254", "voice_status" : 1};
+            var phoneNumber = toString(Math.random() * (9 * Math.pow(10,13)) + (1 * Math.pow(10,13)));
+            var updateValue = {"phone_number" : phoneNumber, "voice_status" : 1};
             var updateCode = await DAHelper.update(voicemailUri, updateValue, condition);
             console.info("logMessage voicemail_insert_test_2400: deleteCode = " + updateCode);
 
             var map = new Map();
             map.set("id", voicemailId.toString());
-            map.set("phone_number", "14541555754445254");
+            map.set("phone_number", phoneNumber);
             map.set("voice_status", "1");
             await voicemailQuery(map, "voicemail_insert_test_2400");
 
             var mapOne = new Map();
             mapOne.set("id", voicemailIdOne.toString());
-            mapOne.set("phone_number", "14541555754445254");
+            mapOne.set("phone_number", phoneNumber);
             mapOne.set("voice_status", "1");
             await voicemailQuery(mapOne, "voicemail_insert_test_2400");
             await voiceMailDelete("voicemail_insert_test_2400");
@@ -1032,7 +1039,8 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
-        var stringValue = {"phone_number" : "4454445254", "voice_status" : 0};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,10)) + (1 * Math.pow(10,10)));
+        var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
             var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue)
@@ -1066,7 +1074,8 @@ describe('VoicemailTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
-        var stringValue = {"phone_number" : "445444445254", "voice_status" : 0};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,12)) + (1 * Math.pow(10,12)));
+        var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue);
             console.info('voicemail_query_test_2600 voicemailId = ' + voicemailId);

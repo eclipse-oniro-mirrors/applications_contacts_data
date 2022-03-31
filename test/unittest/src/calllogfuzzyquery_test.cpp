@@ -71,13 +71,15 @@ HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_100, testing::ext::TestSize.L
 {
     HILOG_INFO("----calllog_Query_test_100 is starting!----");
     OHOS::NativeRdb::ValuesBucket valuesBucket;
-    valuesBucket.PutString("phone_number", "123456789");
+    string phoneNumber = random_number_utils.Generating(9);
+    valuesBucket.PutString("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
     valuesBucket.PutInt("id", rawId);
     OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", "1842794123");
+    string phoneNumber_test = random_number_utils.Generating(10);
+    valuesBucketTwo.PutString("phone_number", phoneNumber_test);
     rawId = CalllogInsertValues(valuesBucketTwo);
     valuesBucketTwo.PutInt("id", rawId);
     EXPECT_GT(rawId, 0);
@@ -114,12 +116,13 @@ HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_200, testing::ext::TestSize.L
 {
     HILOG_INFO("----calllog_Query_test_200 is starting!----");
     OHOS::NativeRdb::ValuesBucket valuesBucket;
-    valuesBucket.PutString("phone_number", "1854250750");
+    string phoneNumber = random_number_utils.Generating(11);
+    valuesBucket.PutString("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
     valuesBucket.PutInt("id", rawId);
     OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", "17542368015");
+    valuesBucketTwo.PutString("phone_number", phoneNumber);
     rawId = CalllogInsertValues(valuesBucketTwo);
     valuesBucketTwo.PutInt("id", rawId);
     EXPECT_GT(rawId, 0);
@@ -152,12 +155,13 @@ HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_300, testing::ext::TestSize.L
 {
     HILOG_INFO("----calllog_Query_test_300 is starting!----");
     OHOS::NativeRdb::ValuesBucket valuesBucket;
-    valuesBucket.PutString("phone_number", "12378418910");
+    string phoneNumber = random_number_utils.Generating(11);
+    valuesBucket.PutString("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
     valuesBucket.PutInt("id", rawId);
     OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", "12374589961");
+    valuesBucketTwo.PutString("phone_number", phoneNumber);
     rawId = CalllogInsertValues(valuesBucketTwo);
     valuesBucketTwo.PutInt("id", rawId);
     EXPECT_GT(rawId, 0);
@@ -165,7 +169,8 @@ HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_300, testing::ext::TestSize.L
     columns.push_back("id");
     columns.push_back("phone_number");
     OHOS::NativeRdb::DataAbilityPredicates predicates;
-    predicates.Like("phone_number", "1238910516156465%");
+    string phoneNumber_test = random_number_utils.Generating(17);
+    predicates.Like("phone_number", phoneNumber_test);
     predicates.OrderByAsc("id");
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count 0
@@ -188,12 +193,13 @@ HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_400, testing::ext::TestSize.L
 {
     HILOG_INFO("----calllog_Query_test_400 is starting!----");
     OHOS::NativeRdb::ValuesBucket valuesBucket;
-    valuesBucket.PutString("phone_number", "17778418910");
+    string phoneNumber = random_number_utils.Generating(11);
+    valuesBucket.PutString("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
     valuesBucket.PutInt("id", rawId);
     OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", "12378451245");
+    valuesBucketTwo.PutString("phone_number", phoneNumber);
     rawId = CalllogInsertValues(valuesBucketTwo);
     valuesBucketTwo.PutInt("id", rawId);
     EXPECT_GT(rawId, 0);
@@ -225,13 +231,14 @@ HWTEST_F(CalllogFuzzyQueryTest, abnormal_calllog_Query_test_500, testing::ext::T
 {
     HILOG_INFO("----abnormal_calllog_Query_test_500 is starting!----");
     OHOS::NativeRdb::ValuesBucket valuesBucket;
-    valuesBucket.PutString("phone_number", "12378418910");
+    string phoneNumber = random_number_utils.Generating(11);
+    valuesBucket.PutString("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
     valuesBucket.PutInt("id", rawId);
     OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", "12374589961");
+    valuesBucketTwo.PutString("phone_number", phoneNumber);
     rawId = CalllogInsertValues(valuesBucketTwo);
     valuesBucketTwo.PutInt("id", rawId);
     EXPECT_GT(rawId, 0);
@@ -239,8 +246,9 @@ HWTEST_F(CalllogFuzzyQueryTest, abnormal_calllog_Query_test_500, testing::ext::T
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
+    string phoneNumber_test = random_number_utils.Generating(17);
     OHOS::NativeRdb::DataAbilityPredicates predicates;
-    predicates.Like("phone_numbers", "1238910516156465%");
+    predicates.Like("phone_numbers", phoneNumber_test);
     predicates.OrderByAsc("id");
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
     int rowCount = 0;

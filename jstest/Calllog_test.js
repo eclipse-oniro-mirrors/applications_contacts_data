@@ -186,8 +186,8 @@ describe('CalllogTest', function() {
         console.info("--------logMessage calllog_update_test_500 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "1122445566", "ring_duration" : "500"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,12)) + (1 * Math.pow(10,12)));
+        var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "500"};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_update_test_500: calllogId = " + calllogId);
@@ -207,7 +207,7 @@ describe('CalllogTest', function() {
                 var updateCode = await DAHelper.update(calllogUri, updateValues, condition)
                 console.info("logMessage calllog_update_test_500: updateCode = " + updateCode);
                 expect(updateCode == 0).assertTrue();
-                var map = new Map([ [ "phone_number", "1122445566" ], [ "ring_duration", "500" ] ])
+                var map = new Map([ [ "phone_number", phoneNumber ], [ "ring_duration", "500" ] ])
                 map.set("id", calllogId.toString());
                 map.set("answer_state", "1");
                 await calllogQueryForALL(map, "calllog_update_test_500");
@@ -228,8 +228,8 @@ describe('CalllogTest', function() {
         console.info("--------logMessage calllog_delete_test_1300 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "123456", "ring_duration" : "200"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,5)) + (1 * Math.pow(10,5)));
+        var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "200"};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_delete_test_1300: calllogId = " + calllogId);
@@ -268,12 +268,12 @@ describe('CalllogTest', function() {
         console.info("--------logMessage calllog_batchInset_test_1600 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var addBulk_value1 = {"phone_number" : "1600", "ring_duration" : "333"};
-        var addBulk_value2 = {"phone_number" : "1600", "ring_duration" : "600"};
-        var addBulk_value3 = {"phone_number" : "1600", "ring_duration" : "600"};
-        var addBulk_value4 = {"phone_number" : "1600", "ring_duration" : "600"};
-        var addBulk_value5 = {"phone_number" : "1600", "ring_duration" : "600"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,3)) + (1 * Math.pow(10,3)));
+        var addBulk_value1 = {"phone_number" : phoneNumber, "ring_duration" : "333"};
+        var addBulk_value2 = {"phone_number" : phoneNumber, "ring_duration" : "600"};
+        var addBulk_value3 = {"phone_number" : phoneNumber, "ring_duration" : "600"};
+        var addBulk_value4 = {"phone_number" : phoneNumber, "ring_duration" : "600"};
+        var addBulk_value5 = {"phone_number" : phoneNumber, "ring_duration" : "600"};
         var listAddBluk = [];
         listAddBluk[0] = addBulk_value1;
         listAddBluk[1] = addBulk_value2;
@@ -302,13 +302,13 @@ describe('CalllogTest', function() {
         console.info("------------calllog_query_test_1200  is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "123566456", "ring_duration" : "200"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,5)) + (1 * Math.pow(10,5)));
+        var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "200"};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_query_test_1200: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            var map = new Map([ [ "phone_number", "123566456" ], [ "ring_duration", "200" ] ]);
+            var map = new Map([ [ "phone_number", phoneNumber ], [ "ring_duration", "200" ] ]);
             map.set("id", calllogId.toString());
             await calllogQueryForALL(map, "calllog_query_test_1200");
             await calllogDelete("calllog_query_test_1200");
@@ -327,7 +327,8 @@ describe('CalllogTest', function() {
         console.info("------------calllog_query_test_1100 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {"phone_number" : "44325008", "ring_duration" : "100"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,7)) + (1 * Math.pow(10,7)));
+        var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "100"};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_query_test_1100: calllogId = " + calllogId);
@@ -356,7 +357,7 @@ describe('CalllogTest', function() {
                         console.info('logMessage calllog_query_test_1100: id = ' + resultSet.getString(0));
                         expect(resultSet.getString(0) == calllogId.toString()).assertTrue();
                         console.info('logMessage calllog_query_test_1100: phone_number = ' + resultSet.getString(1));
-                        expect(resultSet.getString(1) == "44325008").assertTrue();
+                        expect(resultSet.getString(1) == phoneNumber).assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -376,8 +377,8 @@ describe('CalllogTest', function() {
         console.info("------------calllog_query_test_800 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "88888888888", "ring_duration" : "100"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,10)) + (1 * Math.pow(10,10)));
+        var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "100"};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_query_test_800: calllogId = " + calllogId);
@@ -404,7 +405,7 @@ describe('CalllogTest', function() {
                         console.info('logMessage calllog_query_test_800: id = ' + resultSet.getString(0));
                         expect(resultSet.getString(0) == calllogId.toString()).assertTrue();
                         console.info('logMessage calllog_query_test_800: phone_number = ' + resultSet.getString(1));
-                        expect(resultSet.getString(1) == "88888888888").assertTrue();
+                        expect(resultSet.getString(1) == phoneNumber).assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -424,8 +425,9 @@ describe('CalllogTest', function() {
         console.info("------------calllog_fuzzyquery_test_100 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "196320147"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,8)) + (1 * Math.pow(10,8)));
+        var phoneNumber_Test = phoneNumber.substring(0,3);
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_fuzzyquery_test_100: calllogId = " + calllogId);
@@ -442,7 +444,7 @@ describe('CalllogTest', function() {
         {
             var resultColumns = [ "id", "phone_number" ];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.like("phone_number", "196%");
+            condition.like("phone_number", phoneNumber_Test + "%");
             try {
                 var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
@@ -453,7 +455,7 @@ describe('CalllogTest', function() {
                         expect(resultSet.getString(0) == calllogId.toString()).assertTrue();
                         console.info(
                             'logMessage calllog_fuzzyquery_test_100: phone_number = ' + resultSet.getString(1));
-                        expect(resultSet.getString(1) == "196320147").assertTrue();
+                        expect(resultSet.getString(1) == phoneNumber).assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -473,8 +475,9 @@ describe('CalllogTest', function() {
         console.info("------------calllog_fuzzyquery_test_200 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "126467821"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,8)) + (1 * Math.pow(10,8)));
+        var phoneNumber_Test = phoneNumber.substring(6,9);
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_fuzzyquery_test_200: calllogId = " + calllogId);
@@ -491,7 +494,7 @@ describe('CalllogTest', function() {
         {
             var resultColumns = [ "id", "phone_number" ];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.like("phone_number", "%821");
+            condition.like("phone_number", phoneNumber_Test + "%");
             try {
                 var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
@@ -502,7 +505,7 @@ describe('CalllogTest', function() {
                         expect(resultSet.getString(0) == calllogId.toString()).assertTrue();
                         console.info(
                             'logMessage calllog_fuzzyquery_test_200: phone_number = ' + resultSet.getString(1));
-                        expect(resultSet.getString(1) == "126467821").assertTrue();
+                        expect(resultSet.getString(1) == phoneNumber).assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -522,8 +525,8 @@ describe('CalllogTest', function() {
         console.info("------------calllog_fuzzyquery_test_300 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "1234567855557568"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,15)) + (1 * Math.pow(10,15)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_fuzzyquery_test_300: calllogId = " + calllogId);
@@ -540,7 +543,8 @@ describe('CalllogTest', function() {
         {
             var resultColumns = [ "id", "phone_number" ];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.like("phone_number", "%555%");
+            var phoneNumber_Test = phoneNumber.substring(7,10);
+            condition.like("phone_number", "%" + phoneNumber_Test + "%");
             try {
                 var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
@@ -551,7 +555,7 @@ describe('CalllogTest', function() {
                         expect(resultSet.getString(0) == calllogId.toString()).assertTrue();
                         console.info(
                             'logMessage calllog_fuzzyquery_test_300: phone_number = ' + resultSet.getString(1));
-                        expect(resultSet.getString(1) == "1234567855557568").assertTrue();
+                        expect(resultSet.getString(1) == phoneNumber).assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -571,8 +575,8 @@ describe('CalllogTest', function() {
         console.info("------------abnormal_calllog_insert_test_200 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_numbers" : "1111111111"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,9)) + (1 * Math.pow(10,9)));
+        var insertValues = {"phone_numbers" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_insert_test_200: calllogId = " + calllogId);
@@ -594,8 +598,8 @@ describe('CalllogTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/calllogs";
-
-        var insertValues = {"phone_number" : "456789410"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,8)) + (1 * Math.pow(10,8)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(errorUri, insertValues);
             console.info("logMessage abnormal_calllog_insert_test_300: calllogId = " + calllogId);
@@ -616,8 +620,8 @@ describe('CalllogTest', function() {
         console.info("------------abnormal_calllog_update_test_600 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "1020202020"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,9)) + (1 * Math.pow(10,9)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_update_test_600: calllogId = " + calllogId);
@@ -632,7 +636,8 @@ describe('CalllogTest', function() {
 
         async function abnormalUpdate()
         {
-            var updateValues = {"phone_numbers" : "22001122"};
+            var phoneNumber_Test = toString(Math.random() * (9 * Math.pow(10,7)) + (1 * Math.pow(10,7)));
+            var updateValues = {"phone_numbers" : phoneNumber_Test};
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", calllogId.toString());
             try {
@@ -641,7 +646,7 @@ describe('CalllogTest', function() {
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
                 map.set("id", calllogId.toString());
-                map.set("phone_number", "1020202020");
+                map.set("phone_number", phoneNumber);
                 await calllogQueryForALL(map, "abnormal_calllog_update_test_600");
             } catch (error) {
                 console.info("logMessage abnormal_calllog_update_test_600: update error = " + error);
@@ -660,8 +665,8 @@ describe('CalllogTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/calllogs";
-
-        var insertValues = {"phone_number" : "9952364"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_update_test_700: calllogId = " + calllogId);
@@ -676,7 +681,8 @@ describe('CalllogTest', function() {
 
         async function abnormalUpdate()
         {
-            var updateValues = {"phone_numbers" : "22001122"};
+            var phoneNumber_Test = toString(Math.random() * (9 * Math.pow(10,7)) + (1 * Math.pow(10,7)));
+            var updateValues = {"phone_numbers" : phoneNumber_Test};
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", calllogId.toString());
             try {
@@ -685,7 +691,7 @@ describe('CalllogTest', function() {
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
                 map.set("id", calllogId.toString());
-                map.set("phone_number", "9952364");
+                map.set("phone_number", phoneNumber);
                 await calllogQueryForALL(map, "abnormal_calllog_update_test_700");
                 done();
             } catch (error) {
@@ -704,8 +710,8 @@ describe('CalllogTest', function() {
         console.info("------------abnormal_calllog_delete_test_1400 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "789130"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,5)) + (1 * Math.pow(10,5)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_delete_test_1400: calllogId = " + calllogId);
@@ -728,7 +734,7 @@ describe('CalllogTest', function() {
                 expect(deleteCode == -1).assertTrue();
                 var map = new Map();
                 map.set("id", calllogId.toString());
-                map.set("phone_number", "789130");
+                map.set("phone_number", phoneNumber);
                 await calllogQueryForALL(map, "abnormal_calllog_delete_test_1400");
             } catch (error) {
                 console.info("logMessage abnormal_calllog_delete_test_1400: delete error = " + error);
@@ -747,8 +753,8 @@ describe('CalllogTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/calllogs";
-
-        var insertValues = {"phone_number" : "1564721"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_delete_test_1500: calllogId = " + calllogId);
@@ -772,7 +778,7 @@ describe('CalllogTest', function() {
                 done()
                 var map = new Map();
                 map.set("id", calllogId.toString());
-                map.set("phone_number", "1564721");
+                map.set("phone_number", phoneNumber);
                 await calllogQueryForALL(map, "abnormal_calllog_delete_test_1500");
             } catch (error) {
                 console.info("logMessage abnormal_calllog_delete_test_1500: delete error = " + error);
@@ -790,8 +796,8 @@ describe('CalllogTest', function() {
         console.info("------------abnormal_calllog_query_test_900 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var insertValues = {"phone_number" : "1564721"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_query_test_900: calllogId = " + calllogId);
@@ -830,12 +836,13 @@ describe('CalllogTest', function() {
         console.info("--------logMessage abnormal_calllog_batchinsert_test_1700 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-
-        var addBulk_value1 = {"phone_number" : "5555555555", "ring_duration" : "500"};
-        var addBulk_value2 = {"phone_number" : "1511002", "ring_duration" : "100"};
-        var addBulk_value3 = {"phone_numbers" : "1521003", "ring_duration" : "100"};
-        var addBulk_value4 = {"phone_number" : "1521004", "ring_durations" : "100"};
-        var addBulk_value5 = {"phone_number" : "1521005", "ring_duration" : "100"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,9)) + (1 * Math.pow(10,9)));
+        var phoneNumber_Test = toString(Math.random() * (9 * Math.pow(10,6)) + (1 * Math.pow(10,6)));
+        var addBulk_value1 = {"phone_number" : phoneNumber, "ring_duration" : "500"};
+        var addBulk_value2 = {"phone_number" : phoneNumber_Test, "ring_duration" : "100"};
+        var addBulk_value3 = {"phone_numbers" : phoneNumber_Test, "ring_duration" : "100"};
+        var addBulk_value4 = {"phone_number" : phoneNumber_Test, "ring_durations" : "100"};
+        var addBulk_value5 = {"phone_number" : phoneNumber_Test, "ring_duration" : "100"};
         var listAddBluk = [];
         listAddBluk[0] = addBulk_value1;
         listAddBluk[1] = addBulk_value2;
@@ -922,7 +929,8 @@ describe('CalllogTest', function() {
 
         async function executeBatch()
         {
-            var updateValues = {"phone_number" : "123456789"};
+            var phoneNumber = toString(Math.random() * (9 * Math.pow(10,8)) + (1 * Math.pow(10,8)));
+            var updateValues = {"phone_number" : phoneNumber};
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", calllogId.toString());
             DAHelper.executeBatch(URI_CALLLOG, [ {
@@ -953,7 +961,8 @@ describe('CalllogTest', function() {
         console.info("--------logMessage calllog_Delete_test_2000 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {"phone_number" : "123456", "ring_duration" : "200"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,5)) + (1 * Math.pow(10,5)));
+        var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "200"};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
@@ -1030,7 +1039,9 @@ describe('CalllogTest', function() {
         console.info("--------logMessage calllog_queryContains_test_2200 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {"phone_number" : "123456789220099999"}
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,17)) + (1 * Math.pow(10,17)));
+        var phoneNumber_Test = phoneNumber.substring(13,18);
+        var insertValues = {"phone_number" : phoneNumber}
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_queryContains_test_2200: calllogId = " + calllogId);
@@ -1038,14 +1049,14 @@ describe('CalllogTest', function() {
 
             var resultColumns = [ "phone_number" ];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.contains("phone_number", "99999");
+            condition.contains("phone_number", phoneNumber_Test);
             var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
                         var phone = resultSet.getString(resultSet.getColumnIndex("phone_number"));
                         console.info("logMessage calllog_queryContains_test_2200: phone is = " + phone);
-                        expect(phone == "123456789220099999").assertEqual(true);
+                        expect(phone == phoneNumber).assertEqual(true);
                     } while (resultSet.goToNextRow());
                 }
             }
@@ -1067,7 +1078,8 @@ describe('CalllogTest', function() {
         console.info("--------logMessage abnormal_calllog_update_test_2300 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {phone_number : "15748646546", display_name : "name2300"}
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,10)) + (1 * Math.pow(10,10)));
+        var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
@@ -1082,7 +1094,7 @@ describe('CalllogTest', function() {
         async function UpdateOneCalllog()
         {
             try {
-                var insertValues = {phone_number : "15748646546", display_names : "nameUpdateError2300"};
+                var insertValues = {phone_number : phoneNumber, display_names : "nameUpdateError2300"};
                  var condition =
                     new ohos_data_ability.DataAbilityPredicates();
                 var updateCode = await DAHelper.update(calllogUri, insertValues, condition);
@@ -1112,7 +1124,8 @@ describe('CalllogTest', function() {
         console.info("--------logMessage abnormal_calllog_query_test_2400 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {phone_number : "15748646546", display_name : "name2300"}
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,10)) + (1 * Math.pow(10,10)));
+        var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
@@ -1143,7 +1156,8 @@ describe('CalllogTest', function() {
         console.info("--------logMessage abnormal_calllog_query_test_2500 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {phone_number : "15748646546", display_name : "name2300"}
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,10)) + (1 * Math.pow(10,10)));
+        var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info('abnormal_calllog_query_test_2500 calllogId = ' + calllogId);
@@ -1175,7 +1189,8 @@ describe('CalllogTest', function() {
         console.info("--------logMessage abnormal_calllog_delete_test_2600 is starting!------------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {phone_number : "15748646546", display_name : "name2300"}
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,10)) + (1 * Math.pow(10,10)));
+        var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
@@ -1210,7 +1225,8 @@ describe('CalllogTest', function() {
     it("abnormal_calllog_delete_test_2700", 0, async function(done) {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {phone_number : "270015748646546", display_name : "name2700"}
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,14)) + (1 * Math.pow(10,14)));
+        var insertValues = {phone_number : phoneNumber, display_name : "name2700"}
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
@@ -1225,7 +1241,7 @@ describe('CalllogTest', function() {
         async function UpdateOneCalllog()
         {
             try {
-                var insertValues = {phone_number : "270015748646546", display_names : "nameUpdateError2700"};
+                var insertValues = {phone_number : phoneNumber, display_names : "nameUpdateError2700"};
                 var condition = new ohos_data_ability.DataAbilityPredicates();
                 condition.equalTo("ids", calllogIdTwo.toString());
                 condition.or();
@@ -1256,7 +1272,9 @@ describe('CalllogTest', function() {
         console.info("------------abnormal_calllog_query_test_2800 is starting!-----------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var insertValues = {"phone_number" : "196320147"};
+        var phoneNumber = toString(Math.random() * (9 * Math.pow(10,8)) + (1 * Math.pow(10,8)));
+        var phoneNumber_Test = phoneNumber.substring(0,3);
+        var insertValues = {"phone_number" : phoneNumber};
         try {
             var calllogId = await DAHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_query_test_2800: calllogId = " + calllogId);
@@ -1273,7 +1291,7 @@ describe('CalllogTest', function() {
         {
             var resultColumns = [ "id", "phone_number" ];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.like("phone_numbers", "196%");
+            condition.like("phone_numbers", phoneNumber_Test + "%");
             try {
                 var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 console.info("logMessage abnormal_calllog_query_test_2800: resultSet.rowCount = " + resultSet.rowCount);
