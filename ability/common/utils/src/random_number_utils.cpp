@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
- #include "random_number_utils.h"
+#include "random_number_utils.h"
 
 namespace OHOS {
 namespace Contacts {
-
 RandomNumberUtils::RandomNumberUtils(void)
 {
 }
@@ -37,6 +36,5 @@ string RandomNumberUtils::Generating(std::int number)
     }
     return phoneNumber;
 }
-
 } // namespace Contacts
 } // namespace OHOS
