@@ -26,7 +26,7 @@ describe('VoicemailTest', function() {
 
     async function voicemailQuery(map, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ':calllogInsertQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -53,7 +53,7 @@ describe('VoicemailTest', function() {
 
     async function voicemailQueryForDelete(map, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ': voicemailQueryForDelete start ! DAHelper = ' + DAHelper);
         var resultColumns = common.getCallLogResultColumns();
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -70,7 +70,7 @@ describe('VoicemailTest', function() {
 
     async function voicemailQueryError(map, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ': voicemailQueryError start ! DAHelper = ' + DAHelper);
         var resultColumns = common.getCallLogResultColumns();
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -87,7 +87,7 @@ describe('VoicemailTest', function() {
 
     async function voicemailQueryForBatchInsert(array, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ': voicemailQueryForBatchInsert start ! DAHelper = ' + DAHelper);
         var resultColumns = common.getCallLogResultColumns();
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -121,7 +121,7 @@ describe('VoicemailTest', function() {
 
     async function voiceMailDelete(tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         var condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(voicemailUri, condition);
@@ -136,7 +136,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_100", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_100 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
@@ -161,7 +161,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_200", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_200 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(6);
@@ -190,7 +190,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_100000", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_100000 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(6);
@@ -219,7 +219,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_update_test_1000", 0, async function(done) {
         console.info("------------logMessage voicemail_update_test_1000 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         try {
@@ -259,7 +259,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_update_test_900", 0, async function(done) {
         console.info("------------logMessage voicemail_update_test_900 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(7);
         var insertValues = {"phone_number" : phoneNumber, "voice_status" : 0};
@@ -302,7 +302,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_delete_test_500", 0, async function(done) {
         console.info("-------------logMessage voicemail_delete_test_500 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(8);
         var insertValues = {"phone_number" : phoneNumber, "display_name" : "zhangming"};
@@ -343,7 +343,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_update_test_600", 0, async function(done) {
         console.info("-------------logMessage voicemail_update_test_600 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(8);
         var insertValues1 = {"phone_number" : phoneNumber, "voice_status" : 1};
@@ -386,7 +386,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_batchInsert_test_1800", 0, async function(done) {
         console.info("-------------logMessage voicemail_batchInsert_test_1800 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(4);
         var insertValuesOne = {"phone_number" : phoneNumber, "display_name" : "xiaoming"};
@@ -419,7 +419,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_batchInsert_test_1700", 0, async function(done) {
         console.info("-------------logMessage voicemail_batchInsert_test_1700 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(3);
         var insertValuesOne = {"phone_number" : phoneNumber, "display_name" : "xiaoming", "voice_status" : 0};
@@ -454,7 +454,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_query_test_1400", 0, async function(done) {
         console.info("------------voicemail_query_test_1400 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(9);
         var insertValues = {"phone_number" : phoneNumber, "display_name" : "daming"};
@@ -501,7 +501,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_query_test_1300", 0, async function(done) {
         console.info("------------voicemail_query_test_1300  is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(9);
         var insertValues = {"phone_number" : phoneNumber, "display_name" : "xiaoming", "voice_status" : 1};
@@ -550,7 +550,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_insert_test_300", 0, async function(done) {
         console.info("------------abnormal_voicemail_insert_test_300 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {"phone_numbers" : phoneNumber, "display_name" : "xiaoming"};
@@ -572,7 +572,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_insert_test_400", 0, async function(done) {
         console.info("------------abnormal_voicemail_insert_test_400 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/voicemails";
         
@@ -599,7 +599,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_update_test_1100", 0, async function(done) {
         console.info("------------abnormal_voicemail_update_test_1100 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {"phone_number" : phoneNumber};
@@ -641,7 +641,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_update_test_1200", 0, async function(done) {
         console.info("------------abnormal_voicemail_update_test_1200 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/voicemails";
         var phoneNumber = randomNum(6);
@@ -685,7 +685,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_delete_test_700", 0, async function(done) {
         console.info("------------abnormal_voicemail_delete_test_700 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
@@ -723,7 +723,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_delete_test_800", 0, async function(done) {
         console.info("------------abnormal_voicemail_delete_test_800 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/voicemails";
         var phoneNumber = randomNum(6);
@@ -762,7 +762,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_query_test_1500", 0, async function(done) {
         console.info("------------abnormal_voicemail_query_test_1500 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
@@ -803,7 +803,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_batchinsert_test_1900", 0, async function(done) {
         console.info("--------logMessage abnormal_voicemail_batchinsert_test_1900 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(9);
         var phoneNumber_Test = randomNum(6);
@@ -836,7 +836,7 @@ describe('VoicemailTest', function() {
      */
     it("voiceMail_delete_test_2000", 0, async function(done) {
         console.info("--------logMessage voiceMail_delete_test_2000 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var voiceMailId = await DAHelper.insert(voicemailUri, common.getVoiceMail());
@@ -880,7 +880,7 @@ describe('VoicemailTest', function() {
      */
     it("voiceMail_update_test_2100", 0, async function(done) {
         console.info("--------logMessage voiceMail_update_test_2100 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var voiceMailId = await DAHelper.insert(voicemailUri, common.getVoiceMail());
@@ -927,7 +927,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_2200", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_2200 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(15);
@@ -957,7 +957,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_2300", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_2300 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(11);
@@ -992,7 +992,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_2400", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_2400 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber_Test = randomNum(8);
@@ -1036,7 +1036,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_query_test_2500", 0, async function(done) {
         console.info("---------logMessage voicemail_query_test_2500 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(10);
@@ -1071,7 +1071,7 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_query_test_2600", 0, async function(done) {
         console.info("---------logMessage voicemail_query_test_2600 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(12);
@@ -1101,7 +1101,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_insert_test_2700", 0, async function(done) {
         console.info("---------logMessage abnormal_voicemail_insert_test_2700 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
@@ -1126,7 +1126,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_delete_test_2800", 0, async function(done) {
         console.info("---------logMessage abnormal_voicemail_delete_test_2800 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
@@ -1157,7 +1157,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_update_test_2900", 0, async function(done) {
         console.info("---------logMessage abnormal_voicemail_update_test_2900 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
@@ -1188,7 +1188,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_update_test_3000", 0, async function(done) {
         console.info("---------logMessage abnormal_voicemail_update_test_3000 is starting!---------")
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
@@ -1215,7 +1215,7 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_batchInsert_test_3100", 0, async function(done) {
         console.info("-------------logMessage abnormal_voicemail_batchInsert_test_3100 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertValuesOne = {"voice_status" : "0", "display_name" : "xiaoming"};
@@ -1246,7 +1246,7 @@ describe('VoicemailTest', function() {
     });
 
     afterAll(async function() {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('voicemai afterAll logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");

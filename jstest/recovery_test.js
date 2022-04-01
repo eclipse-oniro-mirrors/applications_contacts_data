@@ -37,7 +37,7 @@ describe('RecoveryTest', function() {
 
     async function ContactsQuery(tag, uri, size)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': ContactsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -66,7 +66,7 @@ describe('RecoveryTest', function() {
     async function rawContactInsert(name)
     {
         console.info("------logMessage rawContactInsert is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var insertValue = {
             "display_name" : name,
@@ -84,7 +84,7 @@ describe('RecoveryTest', function() {
     async function deleteRawContact(tag)
     {
         try {
-            var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+            let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             condition.and();
@@ -106,7 +106,7 @@ describe('RecoveryTest', function() {
      */
     it("recovery_test_100", 0, async function(done) {
         await deleteRawContact("recovery_test_100");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var updateValues = {};
         var condition = new ohos_data_ability.DataAbilityPredicates();
         try {
@@ -130,7 +130,7 @@ describe('RecoveryTest', function() {
      */
     it("recovery_test_200", 0, async function(done) {
         await deleteRawContact("recovery_test_200");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var updateValues = {};
         var condition = new ohos_data_ability.DataAbilityPredicates();
         rawContactInsert("liming");

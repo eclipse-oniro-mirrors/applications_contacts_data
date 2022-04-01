@@ -26,7 +26,7 @@ describe('CalllogTest', function() {
 
     async function calllogQueryForALL(map, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info(tag + ': calllogQueryByInsert start ! DAHelper = ' + DAHelper);
         var resultColumns = common.getCallLogResultColumns();
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -55,7 +55,7 @@ describe('CalllogTest', function() {
 
     async function calllogQueryForDelete(map, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info(tag + ': calllogQueryForDelete start ! DAHelper = ' + DAHelper);
         var resultColumns = common.getCallLogResultColumns();
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -72,7 +72,7 @@ describe('CalllogTest', function() {
 
     async function calllogQueryForBatchInsert(array, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info(tag + ': calllogQueryForBatchInsert start ! DAHelper = ' + DAHelper);
         var resultColumns = common.getCallLogResultColumns();
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -105,7 +105,7 @@ describe('CalllogTest', function() {
 
     async function calllogDelete(tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         var condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(calllogUri, condition);
@@ -120,7 +120,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_insert_test_100", 0, async function(done) {
         console.info("--------logMessage calllog_insert_test_100 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var calllogId = await DAHelper.insert(calllogUri, common.getCallLogInsert());
@@ -144,7 +144,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_update_test_400", 0, async function(done) {
         console.info("--------logMessage calllog_update_test_400 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         try {
@@ -184,7 +184,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_update_test_500", 0, async function(done) {
         console.info("--------logMessage calllog_update_test_500 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(12);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "500"};
@@ -226,7 +226,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_delete_test_1300", 0, async function(done) {
         console.info("--------logMessage calllog_delete_test_1300 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(5);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "200"};
@@ -266,7 +266,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_batchInset_test_1600", 0, async function(done) {
         console.info("--------logMessage calllog_batchInset_test_1600 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(13);
         var addBulk_value1 = {"phone_number" : phoneNumber, "ring_duration" : "333"};
@@ -300,7 +300,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_query_test_1200", 0, async function(done) {
         console.info("------------calllog_query_test_1200  is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(5);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "200"};
@@ -325,7 +325,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_query_test_1100", 0, async function(done) {
         console.info("------------calllog_query_test_1100 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(7);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "100"};
@@ -375,7 +375,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_query_test_800", 0, async function(done) {
         console.info("------------calllog_query_test_800 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "100"};
@@ -423,7 +423,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_fuzzyquery_test_100", 0, async function(done) {
         console.info("------------calllog_fuzzyquery_test_100 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(8);
         var phoneNumber_Test = phoneNumber.substring(0,3);
@@ -473,7 +473,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_fuzzyquery_test_200", 0, async function(done) {
         console.info("------------calllog_fuzzyquery_test_200 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(8);
         var phoneNumber_Test = phoneNumber.substring(6,9);
@@ -523,7 +523,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_fuzzyquery_test_300", 0, async function(done) {
         console.info("------------calllog_fuzzyquery_test_300 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(15);
         var insertValues = {"phone_number" : phoneNumber};
@@ -573,7 +573,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_insert_test_200", 0, async function(done) {
         console.info("------------abnormal_calllog_insert_test_200 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(9);
         var insertValues = {"phone_numbers" : phoneNumber};
@@ -595,7 +595,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_insert_test_300", 0, async function(done) {
         console.info("------------abnormal_calllog_insert_test_300 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/calllogs";
         var phoneNumber = randomNum(8);
@@ -618,7 +618,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_update_test_600", 0, async function(done) {
         console.info("------------abnormal_calllog_update_test_600 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(9);
         var insertValues = {"phone_number" : phoneNumber};
@@ -662,7 +662,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_update_test_700", 0, async function(done) {
         console.info("------------abnormal_calllog_update_test_700 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/calllogs";
         var phoneNumber = randomNum(6);
@@ -708,7 +708,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_delete_test_1400", 0, async function(done) {
         console.info("------------abnormal_calllog_delete_test_1400 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(5);
         var insertValues = {"phone_number" : phoneNumber};
@@ -750,7 +750,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_delete_test_1500", 0, async function(done) {
         console.info("------------abnormal_calllog_delete_test_1500 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/calls/calllogs";
         var phoneNumber = randomNum(6);
@@ -794,7 +794,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_query_test_900", 0, async function(done) {
         console.info("------------abnormal_calllog_query_test_900 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
@@ -834,7 +834,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_batchinsert_test_1700", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_batchinsert_test_1700 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(9);
         var phoneNumber_Test = randomNum(6);
@@ -867,7 +867,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_delete_test_1800", 0, async function(done) {
         console.info("--------logMessage calllog_delete_test_1800 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var calllogId = await DAHelper.insert(calllogUri, common.getCallLogInsert());
@@ -912,7 +912,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_update_test_1900", 0, async function(done) {
         console.info("--------logMessage calllog_update_test_1900 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var calllogId = await DAHelper.insert(calllogUri, common.getCallLogInsert());
@@ -959,7 +959,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_Delete_test_2000", 0, async function(done) {
         console.info("--------logMessage calllog_Delete_test_2000 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(5);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "200"};
@@ -1007,7 +1007,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_Delete_test_2100", 0, async function(done) {
         console.info("--------logMessage calllog_Delete_test_2100 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var calllogId = await DAHelper.insert(calllogUri, common.getCallLogInsert());
@@ -1037,7 +1037,7 @@ describe('CalllogTest', function() {
      */
     it("calllog_queryContains_test_2200", 0, async function(done) {
         console.info("--------logMessage calllog_queryContains_test_2200 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(17);
         var phoneNumber_Test = phoneNumber.substring(13,18);
@@ -1076,7 +1076,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_update_test_2300", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_update_test_2300 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
@@ -1122,7 +1122,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_query_test_2400", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_query_test_2400 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
@@ -1154,7 +1154,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_query_test_2500", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_query_test_2500 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
@@ -1187,7 +1187,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_delete_test_2600", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_delete_test_2600 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
@@ -1223,7 +1223,7 @@ describe('CalllogTest', function() {
      * @tc.desc    Function test
      */
     it("abnormal_calllog_delete_test_2700", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(14);
         var insertValues = {phone_number : phoneNumber, display_name : "name2700"}
@@ -1270,7 +1270,7 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_query_test_2800", 0, async function(done) {
         console.info("------------abnormal_calllog_query_test_2800 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(8);
         var phoneNumber_Test = phoneNumber.substring(0,3);
@@ -1305,7 +1305,7 @@ describe('CalllogTest', function() {
     });
 
     afterAll(async function() {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('callllog afterAll logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");

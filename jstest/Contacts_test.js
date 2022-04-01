@@ -52,7 +52,7 @@ describe('ContactsTest', function() {
 
     async function contactsQuery(map, tag, uri)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': contactsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -80,7 +80,7 @@ describe('ContactsTest', function() {
 
     async function queryBatch(map, tag, size)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryBatch start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -98,7 +98,7 @@ describe('ContactsTest', function() {
 
     async function queryIdForDelete(map, tag, uri)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryIdForDelete start ! DAHelper = ' + DAHelper);
         var resultColumns = common.getCallLogResultColumns();
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -117,7 +117,7 @@ describe('ContactsTest', function() {
     async function deleteAll(uri, tag)
     {
         try {
-            var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+            let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             var deleteCode = await DAHelper.delete(uri, condition);
@@ -131,7 +131,7 @@ describe('ContactsTest', function() {
     async function deleteRawContact(tag)
     {
         try {
-            var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+            let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
             var condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             condition.and();
@@ -152,7 +152,7 @@ describe('ContactsTest', function() {
 
     async function insertData(rawContactId, type, value, position)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var contactDataValues1 =
             {"raw_contact_id" : rawContactId, "content_type" : type, "detail_info" : value, "position" : position};
         try {
@@ -172,7 +172,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_100", 0, async function(done) {
         console.info("------logMessage contact_insert_test_100 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
@@ -197,7 +197,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_400", 0, async function(done) {
         console.info("------logMessage contact_insert_test_400 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -293,7 +293,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_500", 0, async function(done) {
         console.info("------logMessage contact_insert_test_500 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -383,7 +383,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_600", 0, async function(done) {
         console.info("------logMessage contact_insert_test_600 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -469,7 +469,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_700", 0, async function(done) {
         console.info("------logMessage contact_insert_test_700 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -564,7 +564,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_800", 0, async function(done) {
         console.info("------logMessage contact_insert_test_800 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -612,7 +612,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_900", 0, async function(done) {
         console.info("------logMessage contact_update_test_900 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -672,7 +672,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1200", 0, async function(done) {
         console.info("------logMessage contact_update_test_1200 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
@@ -729,7 +729,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1300", 0, async function(done) {
         console.info("------logMessage contact_update_test_1300 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
@@ -792,7 +792,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1400", 0, async function(done) {
         console.info("------logMessage contact_update_test_1400 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
@@ -849,7 +849,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1500", 0, async function(done) {
         console.info("------logMessage contact_update_test_1500 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -911,7 +911,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1600", 0, async function(done) {
         console.info("------logMessage contact_update_test_1600 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -973,7 +973,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1700", 0, async function(done) {
         console.info("------logMessage contact_update_test_1700 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -1035,7 +1035,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1800", 0, async function(done) {
         console.info("------logMessage contact_update_test_1800 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -1093,7 +1093,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1900", 0, async function(done) {
         console.info("------logMessage contact_update_test_1900 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -1151,7 +1151,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2000", 0, async function(done) {
         console.info("------logMessage contact_update_test_2000 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -1213,7 +1213,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2100", 0, async function(done) {
         console.info("------logMessage contact_update_test_2100 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -1275,7 +1275,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2200", 0, async function(done) {
         console.info("------logMessage contact_update_test_2200 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -1336,7 +1336,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2300", 0, async function(done) {
         console.info("------logMessage contact_update_test_2300 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -1398,7 +1398,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2400", 0, async function(done) {
         console.info("------logMessage contact_update_test_2400 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
@@ -1461,7 +1461,7 @@ describe('ContactsTest', function() {
      */
     it("contact_favorite_test_2500", 0, async function(done) {
         console.info("-------logMessage contact_favorite_test_2500 is starting!------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaocai", "company" : "TT", "position" : "Testers"};
@@ -1507,7 +1507,7 @@ describe('ContactsTest', function() {
      */
     it("contact_unfavorite_test_2600", 0, async function(done) {
         console.info("-------logMessage contact_unfavorite_test_2600 is starting!------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var rawContactValues = {"display_name" : "xiaohong", "company" : "TT", "position" : "Testers", "favorite" : 1};
         try {
@@ -1552,7 +1552,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_2700", 0, async function(done) {
         console.info("-------logMessage contact_insert_test_2700 is starting!------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var blocklistId = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
@@ -1577,7 +1577,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_2800", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_2800 is starting!------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var blocklistId = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
@@ -1617,7 +1617,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_2900", 0, async function(done) {
         console.info("-------logMessage contact_insert_test_2900 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var groupValues = {"group_name" : "TestersThird"};
@@ -1680,7 +1680,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_3000", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_3000 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var groupValues = {"group_name" : "TestersFourth"};
@@ -1755,7 +1755,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3100", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3100 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoyu"};
@@ -1802,7 +1802,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3200", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3200 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues1 = {"display_name" : "xiaoyu"};
@@ -1864,7 +1864,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3300", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3300 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues1 = {"display_name" : "xiaoyu"};
@@ -1907,7 +1907,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3400", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3400 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {
@@ -1971,7 +1971,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3500", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3500 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var rawContactValues = {"display_name" : "xiaoyuzhou"};
         try {
@@ -2050,7 +2050,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3600", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3600 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var rawContactValues = {"display_name" : "xiaoyuzhou", "favorite" : 1};
         try {
@@ -2099,7 +2099,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3700", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3700 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var rawContactValues = {"display_name" : "xiaoyuzhou", "lastest_contacted_time" : 60};
         try {
@@ -2148,7 +2148,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3800", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3800 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var rawContactValues = {"display_name" : "xiaocai"};
         try {
@@ -2212,7 +2212,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3900", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3900 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var rawContactValues = {"display_name" : "xiaocai"};
         try {
@@ -2279,7 +2279,7 @@ describe('ContactsTest', function() {
     it("contact_query_test_4000", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_4000 is starting!------------");
 
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoyu"};
@@ -2348,7 +2348,7 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_4100", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_4100 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoyu"};
@@ -2437,7 +2437,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_4400", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_4400 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoming"};
@@ -2498,7 +2498,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_4700", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_4700 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaozhang", "company" : "OOOO", "position" : "TestManager"};
@@ -2580,7 +2580,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_4800", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_4800 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {"display_name" : "xiaopeng"};
@@ -2643,7 +2643,7 @@ describe('ContactsTest', function() {
      */
     it("contact_batchinsert_test_4900", 0, async function(done) {
         console.info("--------logMessage contact_batchinsert_test_4900 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var batchInsertCode = await DAHelper.batchInsert(rawContactUri, common.getContactBatchCompany());
@@ -2673,7 +2673,7 @@ describe('ContactsTest', function() {
      */
     it("contact_batchinsert_test_5000", 0, async function(done) {
         console.info("--------logMessage contact_batchinsert_test_5000  start!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var rawContactValues = {"display_name" : "xiaozhi"};
         try {
@@ -2713,7 +2713,7 @@ describe('ContactsTest', function() {
      */
     it("contact_batchinsert_test_5400", 0, async function(done) {
         console.info("--------logMessage contact_batchinsert_test_5400 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(13);
         try {
@@ -2770,7 +2770,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_5300", 0, async function(done) {
         console.info("--------logMessage contact_update_test_5300 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValuesOne = {"display_name" : "fengyuan", "favorite" : 1};
@@ -2847,7 +2847,7 @@ describe('ContactsTest', function() {
      */
     it("contact_batchinsert_test_5500", 0, async function(done) {
         console.info("--------logMessage contact_batchinsert_test_5500 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var groupValues = {"group_name" : "ManagerGroup"};
         try {
@@ -2970,7 +2970,7 @@ describe('ContactsTest', function() {
      */
     it("contact_pinyin_query_test_200", 0, async function(done) {
         console.info("--------logMessage contact_pinyin_query_test_200 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "小黄"};
@@ -3038,7 +3038,7 @@ describe('ContactsTest', function() {
      */
     it("contact_pinyin_query_test_100", 0, async function(done) {
         console.info("--------logMessage contact_pinyin_query_test_100 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "鍵盤"};
@@ -3100,7 +3100,7 @@ describe('ContactsTest', function() {
      */
     it("contact_pinyin_query_test_300", 0, async function(done) {
         console.info("--------logMessage contact_pinyin_query_test_300 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "Tom"};
@@ -3160,7 +3160,7 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_400", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_400 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "400xiaoming400"};
@@ -3210,7 +3210,7 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_500", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_500 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var rawContactValues = {"display_name" : "500xiaoming500", "phonetic_name" : "500xiaoming500||xm"};
         try {
             var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
@@ -3265,7 +3265,7 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_600", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_600 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoming", "company" : "TT600", "position" : "Testers600"};
@@ -3321,7 +3321,7 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_700", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_700 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
@@ -3393,7 +3393,7 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_800", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_800 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
@@ -3463,7 +3463,7 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_900", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_900 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
@@ -3534,7 +3534,7 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_1000", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_1000 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
@@ -3606,7 +3606,7 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_1100", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_1100 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
@@ -3677,7 +3677,7 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_1200", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_1200 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
@@ -3746,7 +3746,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insert_test_200", 0, async function(done) {
         console.info("------------abnormal_contact_insert_test_200 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_names" : "xiaoshan"};
@@ -3768,7 +3768,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insert_test_300", 0, async function(done) {
         console.info("------------abnormal_contact_insert_test_300 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/contacts/raw_contacts";
 
@@ -3791,7 +3791,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_update_test_1100", 0, async function(done) {
         console.info("------------abnormal_contact_update_test_1100 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaoshan"};
@@ -3834,7 +3834,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_update_test_1000", 0, async function(done) {
         console.info("------------abnormal_contact_update_test_1000 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/contacts/raw_contacts";
 
@@ -3878,7 +3878,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_4500", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_4500 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaozhi"};
@@ -3921,7 +3921,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_4600", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_4600 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var errorUri = "dataability:///com.ohos.calllogability/contacts/raw_contacts";
 
@@ -3965,7 +3965,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_4200", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_4200 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaozhicheng"};
@@ -4005,7 +4005,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_batchinsert_test_5100", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_batchinsert_test_5100 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var addBulk_value1 = {"display_name" : "zhangsan"};
@@ -4037,7 +4037,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insert_data_5300", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_insert_data_5300 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaotian"};
@@ -4075,7 +4075,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insert_data_5400", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_insert_data_5400 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "xiaotian"};
@@ -4112,7 +4112,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_5500", 0, async function(done) {
         console.info("--------logMessage contact_delete_test_5500 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
@@ -4155,7 +4155,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_5600", 0, async function(done) {
         console.info("--------logMessage contact_update_test_5600 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
@@ -4201,7 +4201,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_5700", 0, async function(done) {
         console.info("------logMessage contact_insert_test_5700 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
@@ -4240,7 +4240,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_5800", 0, async function(done) {
         console.info("------logMessage contact_insert_test_5800 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var name;
         for (var i = 0; i < 20000; i++) {
@@ -4271,7 +4271,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_5900", 0, async function(done) {
         console.info("------logMessage contact_insert_test_5900 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var contcatvalues = {"display_name" : "xiao5900"}
         try {
@@ -4326,7 +4326,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_6000", 0, async function(done) {
         console.info("------logMessage contact_insert_test_6000 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -4366,7 +4366,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insertData_test_6100", 0, async function(done) {
         console.info("------logMessage contact_insertData_test_6100 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -4403,7 +4403,7 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_6200", 0, async function(done) {
         console.info("--------logMessage contact_update_test_6200 is starting!------------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var insertRawContactValues = {
@@ -4449,7 +4449,7 @@ describe('ContactsTest', function() {
     async function queryUpdateThree(tag, DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo)
     {
 
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': contactsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "display_name" ];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -4482,7 +4482,7 @@ describe('ContactsTest', function() {
      */
     it("contact_UpdateRawContcat_test_6300", 0, async function(done) {
         console.info("------logMessage contact_UpdateRawContcat_test_6300 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
@@ -4514,7 +4514,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataUpdate_test_6400", 0, async function(done) {
         console.info("------logMessage contact_insertDataUpdate_test_6400 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -4559,7 +4559,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataUpdateAll_test_6500", 0, async function(done) {
         console.info("------logMessage contact_insertDataUpdateAll_test_6500 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -4601,7 +4601,7 @@ describe('ContactsTest', function() {
     async function queryUpdateAllData(tag, DAHelper, rawContactId)
     {
 
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': contactsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "detail_info" ];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -4629,7 +4629,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insertFavorite_test_6600", 0, async function(done) {
         console.info("------logMessage contact_insertFavorite_test_6600 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         try {
@@ -4659,7 +4659,7 @@ describe('ContactsTest', function() {
     async function queryThreeFavorite(tag, DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo, favoritevalue)
     {
 
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryThreeFavorite start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "favorite" ];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -4691,7 +4691,7 @@ describe('ContactsTest', function() {
      */
     it("contact_unFavorite_test_6700", 0, async function(done) {
         console.info("------logMessage contact_unFavorite_test_6700 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         try {
@@ -4734,7 +4734,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insertContactBlocklist_test_6800", 0, async function(done) {
         console.info("--------logMessage contact_insertContactBlocklist_test_6800 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var batchInsertCode = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
@@ -4781,7 +4781,7 @@ describe('ContactsTest', function() {
      */
     it("contact_removeContactBlocklist_test_6900", 0, async function(done) {
         console.info("--------logMessage contact_removeContactBlocklist_test_6900 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var batchInsertCode = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
@@ -4823,7 +4823,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insertGroup_test_7000", 0, async function(done) {
         console.info("------logMessage contact_insertGroup_test_7000 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         try {
@@ -4859,7 +4859,7 @@ describe('ContactsTest', function() {
 
     async function queryThreeGroup(tag, DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo, groupId)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryThreeGroup start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "detail_info" ];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -4891,7 +4891,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_7100", 0, async function(done) {
         console.info("---------logMessage contact_insert_test_7100 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
@@ -4915,7 +4915,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_7200", 0, async function(done) {
         console.info("------logMessage contact_delete_test_7200 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         try {
@@ -4953,7 +4953,7 @@ describe('ContactsTest', function() {
     async function queryZeroGroup(tag, DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo)
     {
 
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryZeroGroup start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "detail_info" ];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -4979,7 +4979,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_7300", 0, async function(done) {
         console.info("---------logMessage contact_delete_test_7300 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
@@ -5003,7 +5003,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_7400", 0, async function(done) {
         console.info("------logMessage contact_Delete_test_7400 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
@@ -5036,7 +5036,7 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_7500", 0, async function(done) {
         console.info("------logMessage contact_delete_test_7500 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -5071,7 +5071,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataAll_test_7600", 0, async function(done) {
         console.info("------logMessage contact_insertDataAll_test_7600 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -5140,7 +5140,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataAll_test_7700", 0, async function(done) {
         console.info("------logMessage contact_insertDataAll_test_7700 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues = {
@@ -5194,7 +5194,7 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataUpdateMore_test_7800", 0, async function(done) {
         console.info("------logMessage contact_insertDataUpdateMore_test_7800 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var insertRawContactValues = {"display_name" : "xiaocai"};
@@ -5259,7 +5259,7 @@ describe('ContactsTest', function() {
      */
     it("contact_deleterestore_test_7900", 0, async function(done) {
         console.info("------logMessage contact_deleterestore_test_7900 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var insertRawContactValues = {"display_name" : "xaioli7900"};
@@ -5305,7 +5305,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_updateData_test_8000", 0, async function(done) {
         console.info("------logMessage abnormal_contact_updateData_test_8000 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var insertRawContactValues = {"display_name" : "xaioli8000"};
@@ -5343,7 +5343,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_favorite_test_8100", 0, async function(done) {
         console.info("------logMessage abnormal_contact_favorite_test_8100 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var insertRawContactValues = {"display_name" : "xaioli8100", "favoriteeee" : 1};
@@ -5365,7 +5365,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_blocklist_test_8200", 0, async function(done) {
         console.info("------logMessage abnormal_contact_blocklist_test_8200 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var phoneNumber = randomNum(6);
         try {
@@ -5390,7 +5390,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_group_test_8300", 0, async function(done) {
         console.info("------logMessage abnormal_contact_group_test_8300 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var insertRawContactValues = {"display_name" : "xaioli8100"};
@@ -5419,7 +5419,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8400", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8400 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8400"};
@@ -5464,7 +5464,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8500", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8500 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8500"};
@@ -5507,7 +5507,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8600", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8600 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8600"};
@@ -5546,7 +5546,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8700", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8700 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8700"};
@@ -5588,7 +5588,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8800", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8800 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8700", "favorite" : 1};
@@ -5627,7 +5627,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8900", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8900 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaoyuzhou", "lastest_contacted_time" : 60};
@@ -5666,7 +5666,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_9000", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_9000 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian"};
@@ -5714,7 +5714,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_9100", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_9100 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9100"};
@@ -5758,7 +5758,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_9200", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_9200 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9100"};
@@ -5802,7 +5802,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_10000", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_10000 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9300"};
@@ -5840,7 +5840,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_9300", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_9300 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9300"};
@@ -5878,7 +5878,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_9400", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_9400 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9400"};
@@ -5912,7 +5912,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_favorite_test_9500", 0, async function(done) {
         console.info("------------abnormal_contact_favorite_test_9500 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9500", "favorite" : 0};
@@ -5947,7 +5947,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insertblocklist_test_9600", 0, async function(done) {
         console.info("------------abnormal_contact_insertblocklist_test_9600 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {
@@ -5987,7 +5987,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insertGroup_test_9700", 0, async function(done) {
         console.info("------------abnormal_contact_insertGroup_test_9700 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9700"};
@@ -6029,7 +6029,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_pinyinquery_test_9800", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_pinyinquery_test_9800 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "李bp玉成욱"};
@@ -6082,7 +6082,7 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_9900", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_query_test_9900 is starting!-------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var rawContactValues = {"display_name" : "键盘"};
@@ -6125,7 +6125,7 @@ describe('ContactsTest', function() {
         var tag = "Contacts_test_start_deleted";
         var condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
-        var DAHelperContact = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelperContact = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': start ! DAHelperContact = ' + DAHelperContact);
         var deleteBlockList = await DAHelperContact.delete(contactBlocklistUri, condition);
         console.info(tag + " : logMessage : deleteBlockList = " + deleteBlockList);
