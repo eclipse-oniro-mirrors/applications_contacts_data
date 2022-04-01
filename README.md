@@ -74,7 +74,7 @@ var  calllogDAhelperUri= "dataability:///com.ohos.calllogability";
 var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
 var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
 // 调用insert方法
 DAHelper.insert(calllogUri, value).then((data) => {
 	console.info("calllogId = " + data);
@@ -104,7 +104,7 @@ var  calllogDAhelperUri= "dataability:///com.ohos.calllogability";
 var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
 var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
 // 条件参数
 var condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
@@ -136,7 +136,7 @@ import ohos_data_ability from '@ohos.data.dataability';
 var  calllogDAhelperUri= "dataability:///com.ohos.calllogability";
 var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
 // 条件参数
 var condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
@@ -169,7 +169,7 @@ import ohos_data_ability from '@ohos.data.dataability';
 var  calllogDAhelperUri= "dataability:///com.ohos.calllogability";
 var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
 // 条件参数
 var condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
@@ -213,7 +213,7 @@ var  voicemailDAhelperUri= "dataability:///com.ohos.voicemailability";
 var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
 var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
 // 调用insert方法
 DAHelper.insert(voicemaiUri, value).then((data) => {
 	console.info("calllogId = " + data);
@@ -243,7 +243,7 @@ var  voicemailDAhelperUri= "dataability:///com.ohos.voicemailability";
 var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
 var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
 // 条件参数
 var condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
@@ -275,7 +275,7 @@ import ohos_data_ability from '@ohos.data.dataability';
 var  voicemailDAhelperUri= "dataability:///com.ohos.voicemailability";
 var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
 // 条件参数
 var condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
@@ -308,7 +308,7 @@ import ohos_data_ability from '@ohos.data.dataability';
 var  voicemailDAhelperUri= "dataability:///com.ohos.voicemailability";
 var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
 // 条件参数
 var condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
@@ -352,7 +352,7 @@ var rawContactUri  = "dataability:///com.ohos.contactsdataability/contacts/raw_c
 var contactDataUri  = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
 var value = {"display_name" : "xxx"};
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
 // 调用insert方法
 DAHelper.insert(rawContactUri, value).then((rawContactId) => {
 	console.info("rawContactId = " + rawContactId);
@@ -392,7 +392,7 @@ var rawContactUri  = "dataability:///com.ohos.contactsdataability/contacts/raw_c
 var contactDataUri  = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
 var value = {"display_name" : "xxx"};
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
 // 条件参数
 var condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
@@ -425,7 +425,7 @@ var  contactsUri= "dataability:///com.ohos.contactsdataability";
 var rawContactUri  = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
 var contactDataUri  = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
 // 条件参数
 var condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
@@ -457,7 +457,7 @@ import ohos_data_ability from '@ohos.data.dataability';
 var  contactsUri= "dataability:///com.ohos.contactsdataability";
 var rawContactUri  = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
 // 获取DAHelper
-var DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
+let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
 // 条件参数
 var condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");

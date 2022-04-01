@@ -114,7 +114,7 @@ describe('ContactMergeTest', function() {
 
     async function deleteAll(uri, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(uri, condition);
@@ -124,7 +124,7 @@ describe('ContactMergeTest', function() {
 
     async function ContactMergeQuery(map, tag, size)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ' : ContactMergeQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "contact_id" ];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -156,7 +156,7 @@ describe('ContactMergeTest', function() {
 
     async function updateContactData(updateDataValue, contactDataId, testName)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var updateValues = {"detail_info" : updateDataValue};
         var condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", contactDataId.toString());
@@ -226,7 +226,7 @@ describe('ContactMergeTest', function() {
      */
     it("contact_autoMerge_and_spilt_test_100", 0, async function(done) {
         console.info("------logMessage contact_autoMerge_and_spilt_test_100 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues1 = {"display_name" : "xiaoli"};
@@ -264,7 +264,7 @@ describe('ContactMergeTest', function() {
      */
     it("contact_manualMerge_test_200", 0, async function(done) {
         console.info("------logMessage contact_manualMerge_test_200 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues1 = {"display_name" : "xiaoming"};
@@ -341,7 +341,7 @@ describe('ContactMergeTest', function() {
      */
     it("contact_autoMerge_test_300", 0, async function(done) {
         console.info("------logMessage contact_autoMerge_test_300 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues1 = {"display_name" : "xiaohong"};
@@ -468,7 +468,7 @@ describe('ContactMergeTest', function() {
      */
     it("contact_manualMerge_test_400", 0, async function(done) {
         console.info("------logMessage contact_manualMerge_test_400 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues1 = {"display_name" : "xiaozhang"};
@@ -578,7 +578,7 @@ describe('ContactMergeTest', function() {
      */
     it("contact_manualMerge_test_500", 0, async function(done) {
         console.info("------logMessage contact_manualMerge_test_500 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertRawContactValues1 = {"display_name" : "xiaozhou"};
@@ -684,7 +684,7 @@ describe('ContactMergeTest', function() {
      */
     it("contact_autoMerge_test_600", 0, async function(done) {
         console.info("------logMessage contact_autoMerge_test_600 is starting!-----");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var insertRawContactValues1 = {"display_name" : "xiaoliu"};
@@ -768,7 +768,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_700", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_700 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "xiaowu"};
@@ -838,7 +838,7 @@ describe('ContactMergeTest', function() {
 
     async function queryMergeList(DAHelper, rawContactId1, rawContactId2, testName)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var columns = [];
         var predicates = new ohos_data_ability.DataAbilityPredicates();
@@ -873,7 +873,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_800", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_800 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "xiaowuu"};
@@ -914,7 +914,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_900", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_900 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "xiaowusu"};
@@ -975,7 +975,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_1000", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1000 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "xiaotiantian"};
@@ -1030,7 +1030,7 @@ describe('ContactMergeTest', function() {
        * @tc.desc    Function test
        */
     it("contact_query_merge_list_test_1100", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1100 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "wsxiuklkk"};
@@ -1070,7 +1070,7 @@ describe('ContactMergeTest', function() {
         * @tc.desc    Function test
         */
     it("contact_query_merge_list_test_1200", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1200 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "lwsxiuklkk"};
@@ -1110,7 +1110,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_1300", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1300 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "xiaowuuklkk"};
@@ -1151,7 +1151,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_1400", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1400 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "limingm"};
@@ -1193,7 +1193,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_1500", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1500 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "kplimingm"};
@@ -1235,7 +1235,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_1600", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1600 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "pkplimingm"};
@@ -1275,7 +1275,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_1700", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1700 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "llllllk"};
@@ -1328,7 +1328,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
         it("contact_query_merge_list_test_1800", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1800 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "jggbgbk"};
@@ -1396,7 +1396,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_1900", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_1900 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "owjiuh"};
@@ -1434,7 +1434,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("contact_query_merge_list_test_2000", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage contact_query_merge_list_test_2000 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "ollwjiuh"};
@@ -1475,7 +1475,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("abnormal_merge_Update_test_2100", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage abnormal_merge_Update_test_2100 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "2100mergeTest"};
@@ -1519,7 +1519,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("abnormal_merge_Update_test_2200", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage abnormal_merge_Update_test_2200 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "2200mergeTest"};
@@ -1554,7 +1554,7 @@ describe('ContactMergeTest', function() {
 
     async function queryMergeListError(DAHelper, rawContactId1, rawContactId2, testName)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var columns = [ "display_names" ];
         var predicates = new ohos_data_ability.DataAbilityPredicates();
@@ -1578,7 +1578,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("abnormal_merge_Update_test_2300", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage abnormal_merge_Update_test_2300 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "2300mergeTest"};
@@ -1618,7 +1618,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("abnormal_merge_Update_test_2400", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage abnormal_merge_Update_test_2400 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "2400mergeTest"};
@@ -1657,7 +1657,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("abnormal_merge_Update_test_2500", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage abnormal_merge_Update_test_2500 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "2500mergeTest"};
@@ -1707,7 +1707,7 @@ describe('ContactMergeTest', function() {
      * @tc.desc    Function test
      */
     it("abnormal_merge_Update_test_2600", 0, async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('before delete_all: start ! DAHelper = ' + DAHelper);
         console.info("------logMessage abnormal_merge_Update_test_2600 is starting!-----");
         var insertRawContactValues1 = {"display_name" : "2600mergeTest"};
@@ -1768,7 +1768,7 @@ describe('ContactMergeTest', function() {
     }
 
     afterAll(async function() {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('merge afterAll delete_All: start ! DAHelper = ' + DAHelper);
         var condition = new ohos_data_ability.DataAbilityPredicates();
         var deletedAll = await DAHelper.delete(deletedUri, condition);

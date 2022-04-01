@@ -28,7 +28,7 @@ describe('GroupsTest', function() {
 
     async function groupsQuery(map, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': groupsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -55,7 +55,7 @@ describe('GroupsTest', function() {
 
     async function queryIdForDelete(map, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryIdForDelete start ! DAHelper = ' + DAHelper);
         var resultColumns = common.getCallLogResultColumns();
         var condition = new ohos_data_ability.DataAbilityPredicates();
@@ -72,7 +72,7 @@ describe('GroupsTest', function() {
 
     async function deleteAll(uri, tag)
     {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(uri, condition);
@@ -87,7 +87,7 @@ describe('GroupsTest', function() {
      */
     it("group_insert_test_100", 0, async function(done) {
         console.info("---------logMessage group_insert_test_100 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
@@ -111,7 +111,7 @@ describe('GroupsTest', function() {
      */
     it("group_update_test_500", 0, async function(done) {
         console.info("---------logMessage group_update_test_500 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
@@ -150,7 +150,7 @@ describe('GroupsTest', function() {
      */
     it("group_delete_test_200", 0, async function(done) {
         console.info("---------logMessage group_delete_test_200 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
@@ -187,7 +187,7 @@ describe('GroupsTest', function() {
      */
     it("group_query_test_300", 0, async function(done) {
         console.info("------------logMessage group_query_test_300 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
@@ -212,7 +212,7 @@ describe('GroupsTest', function() {
     it("group_query_test_400", 0, async function(done) {
         console.info("------------logMessage group_query_test_400 is starting!-----------");
         console.info("---------logMessage getDbHelper start!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         console.info('logMessage uri = ' + URI_CONTACTS);
         var groupUri = "dataability:///com.ohos.contactsdataability/contacts/groups";
@@ -254,7 +254,7 @@ describe('GroupsTest', function() {
      */
     it("abnormal_group_insert_test_600", 0, async function(done) {
         console.info("---------logMessage abnormal_group_insert_test_600 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         const errorUri = "dataability:///com.ohos.contactsdataability/contacts/groupssss";
         try {
@@ -275,7 +275,7 @@ describe('GroupsTest', function() {
      */
     it("abnormal_group_update_test_700", 0, async function(done) {
         console.info("---------logMessage abnormal_group_update_test_700 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
@@ -315,7 +315,7 @@ describe('GroupsTest', function() {
      */
     it("abnormal_group_delete_test_800", 0, async function(done) {
         console.info("---------logMessage abnormal_group_delete_test_800 is starting!----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         try {
             var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
@@ -353,7 +353,7 @@ describe('GroupsTest', function() {
      */
     it("abnormal_group_query_test_900", 0, async function(done) {
         console.info("------------logMessage abnormal_group_query_test_900 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertValues = {"group_name" : "PersonnelDepartment"};
@@ -393,7 +393,7 @@ describe('GroupsTest', function() {
      */
     it("group_insert_test_1000", 0, async function(done) {
         console.info("------------logMessage group_insert_test_1000 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertValuesOne = {"group_name" : "test1000"};
@@ -440,7 +440,7 @@ describe('GroupsTest', function() {
      */
     it("group_delete_test_1100", 0, async function(done) {
         console.info("------------logMessage group_delete_test_1100 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertValuesOne = {"group_name" : "test1100"};
@@ -487,7 +487,7 @@ describe('GroupsTest', function() {
      */
     it("group_update_test_1200", 0, async function(done) {
         console.info("------------logMessage group_update_test_1200 is starting!-----------");
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var insertValuesOne = {"group_name" : "test1200"};
@@ -543,7 +543,7 @@ describe('GroupsTest', function() {
     }
 
     afterAll(async function(done) {
-        var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var condition = new ohos_data_ability.DataAbilityPredicates();
         condition.notEqualTo("id", "0");
         try {
