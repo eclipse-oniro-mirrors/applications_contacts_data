@@ -2947,11 +2947,12 @@ HWTEST_F(ContactAbilityTest, contact_BatchInsertAndDelete_test_5900, testing::ex
     HILOG_INFO("--- contact_BatchInsertAndDelete_test_5900 is starting! ---");
     OHOS::Uri uriContactBlacklist(ContactsUri::BLOCKLIST);
     OHOS::NativeRdb::ValuesBucket contactBlacklistValuesOne;
-    contactBlacklistValuesOne.PutString("phone_number", "147258369");
+    string phoneNumber = random_number_utils.Generating(9);
+    contactBlacklistValuesOne.PutString("phone_number", phoneNumber);
     OHOS::NativeRdb::ValuesBucket contactBlacklistValuesTwo;
-    contactBlacklistValuesTwo.PutString("phone_number", "963852741");
+    contactBlacklistValuesTwo.PutString("phone_number", phoneNumber);
     OHOS::NativeRdb::ValuesBucket contactBlacklistValuesThree;
-    contactBlacklistValuesThree.PutString("phone_number", "1234789602");
+    contactBlacklistValuesThree.PutString("phone_number", phoneNumber);
 
     std::vector<OHOS::NativeRdb::ValuesBucket> listAddBluk;
     listAddBluk.push_back(contactBlacklistValuesOne);
@@ -2961,9 +2962,9 @@ HWTEST_F(ContactAbilityTest, contact_BatchInsertAndDelete_test_5900, testing::ex
     EXPECT_EQ(batchInsertCode, 0);
 
     OHOS::NativeRdb::DataAbilityPredicates predicates;
-    predicates.EqualTo("phone_number", std::string("147258369"));
+    predicates.EqualTo("phone_number", std::string(phoneNumber));
     predicates.Or();
-    predicates.EqualTo("phone_number", std::string("963852741"));
+    predicates.EqualTo("phone_number", std::string(phoneNumber));
     std::string contactBlocklist = ContactTabName::CONTACT_BLOCKLIST;
     int deleteCode = ContactDelete(contactBlocklist, predicates);
     EXPECT_EQ(deleteCode, 0);

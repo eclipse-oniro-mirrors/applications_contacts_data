@@ -2719,6 +2719,7 @@ describe('ContactCardTest', function() {
         console.info("--------logMessage contactCard_batchinsert_test_5400 is starting!-------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        var phoneNumber = randomNum(13);
         try {
             var batchInsertCode = await DAHelper.batchInsert(profileBlocklistUri, common.getPhoneNumberBatch());
             sleep(sleep_one);
@@ -2735,7 +2736,7 @@ describe('ContactCardTest', function() {
         async function BlocklistDelete()
         {
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.equalTo("phone_number", "85525040585400");
+            condition.equalTo("phone_number", phoneNumber);
             try {
                 var deleteCode = await DAHelper.delete(profileBlocklistUri, condition);
                 console.info("logMessage contactCard_batchinsert_test_5400: deleteCode = " + deleteCode);
@@ -2752,7 +2753,7 @@ describe('ContactCardTest', function() {
         {
             var resultColumns = [];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.equalTo("phone_number", "85525040585400");
+            condition.equalTo("phone_number", phoneNumber);
             try {
                 var resultSet = await DAHelper.query(profileBlocklistUri, resultColumns, condition);
                 sleep(sleep_one);
@@ -4776,7 +4777,8 @@ describe('ContactCardTest', function() {
         {
             var resultColumns = [];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.equalTo("phone_number", "123456789");
+            var phoneNumber = randomNum(8);
+            condition.equalTo("phone_number", phoneNumber);
             try {
                 var resultSet = await DAHelper.query(profileBlocklistUri, resultColumns, condition);
                 sleep(sleep_one);
@@ -4822,7 +4824,8 @@ describe('ContactCardTest', function() {
         {
             var resultColumns = [];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.equalTo("phone_number", "123456789");
+            var phoneNumber = randomNum(8);
+            condition.equalTo("phone_number", phoneNumber);
             try {
                 var resultSet = await DAHelper.query(profileBlocklistUri, resultColumns, condition);
                 console.info('contactCard_removeContactBlocklist_test_6900 : resultSet  = ' + resultSet);
@@ -5339,3 +5342,8 @@ describe('ContactCardTest', function() {
         console.info(tag + " : logMessage : deleted = " + deleted);
     });
 });
+
+function randomNum (num) {
+    let number = toString(Math.floor(Math.random() * (9 * Math.pow(10, num))) + (1 * Math.pow(10, num)));
+    return number ;
+}

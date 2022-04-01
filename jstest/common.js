@@ -36,8 +36,9 @@ export default {
     data: {},
     getCallLogInsertMap:
         function() {
+            var phoneNumber = randomNum(8);
             var calllog_insert_100_map = new Map([
-                [ "phone_number", "123456789" ], [ "display_name", "xxw" ], [ "voicemail_uri", "uri" ],
+                [ "phone_number", phoneNumber ], [ "display_name", "xxw" ], [ "voicemail_uri", "uri" ],
                 [ "sim_type", "1" ], [ "is_hd", "2" ], [ "is_read", "1" ], [ "ring_duration", "900" ],
                 [ "talk_duration", "200" ], [ "format_number", "123 456 789" ], [ "quicksearch_key", "2" ],
                 [ "number_type", "2" ], [ "number_type_name", "tian" ], [ "begin_time", "200" ], [ "end_time", "300" ],
@@ -49,8 +50,9 @@ export default {
         },
     getCallLogInsert:
         function() {
+            var phoneNumber = randomNum(8);
             var calllog_insert_100 = {
-                "phone_number" : "123456789",
+                "phone_number" : phoneNumber,
                 "display_name" : "xxw",
                 "voicemail_uri" : "uri",
                 "sim_type" : 1,
@@ -91,8 +93,9 @@ export default {
         },
     getCallLogUpdate:
         function() {
+            var phoneNumber = randomNum(8);
             var updateValues = {
-                "phone_number" : "987654321",
+                "phone_number" : phoneNumber,
                 "display_name" : "6666",
                 "voicemail_uri" : "7777",
                 "sim_type" : 4,
@@ -123,8 +126,9 @@ export default {
         },
     getCallLogUpdateMap:
         function() {
+            var phoneNumber = randomNum(8);
             var calllog_insert_100_map = new Map([
-                [ "phone_number", "987654321" ], [ "display_name", "6666" ], [ "voicemail_uri", "7777" ],
+                [ "phone_number", phoneNumber ], [ "display_name", "6666" ], [ "voicemail_uri", "7777" ],
                 [ "sim_type", "4" ], [ "is_hd", "4" ], [ "is_read", "4" ], [ "ring_duration", "400" ],
                 [ "talk_duration", "400" ], [ "format_number", "987 654 321" ], [ "quicksearch_key", "4" ],
                 [ "number_type", "4" ], [ "number_type_name", "4tian" ], [ "begin_time", "400" ], [ "end_time", "400" ],
@@ -137,11 +141,12 @@ export default {
         },
     getCallLogBatchInsert:
         function() {
-            var map = new Map([ [ "phone_number", "1600" ], [ "ring_duration", "333" ] ]);
-            var map2 = new Map([ [ "phone_number", "1600" ], [ "ring_duration", "600" ] ]);
-            var map3 = new Map([ [ "phone_number", "1600" ], [ "ring_duration", "600" ] ]);
-            var map4 = new Map([ [ "phone_number", "1600" ], [ "ring_duration", "600" ] ]);
-            var map5 = new Map([ [ "phone_number", "1600" ], [ "ring_duration", "600" ] ]);
+            var phoneNumber = randomNum(3);
+            var map = new Map([ [ "phone_number", phoneNumber ], [ "ring_duration", "333" ] ]);
+            var map2 = new Map([ [ "phone_number", phoneNumber ], [ "ring_duration", "600" ] ]);
+            var map3 = new Map([ [ "phone_number", phoneNumber ], [ "ring_duration", "600" ] ]);
+            var map4 = new Map([ [ "phone_number", phoneNumber ], [ "ring_duration", "600" ] ]);
+            var map5 = new Map([ [ "phone_number", phoneNumber ], [ "ring_duration", "600" ] ]);
             var array = [ map, map2, map3, map4, map5 ];
             return array;
         },
@@ -407,13 +412,15 @@ export default {
         },
     getProfileBlockList:
         function() {
-            var blockList = {"phone_number" : "123456789", "content" : "heimingdan"};
+            var phoneNumber = randomNum(8);
+            var blockList = {"phone_number" : phoneNumber, "content" : "heimingdan"};
             return blockList;
         },
     getProfileBlockListMap:
         function() {
+            var phoneNumber = randomNum(8);
             var blockListMap = new Map([
-                [ "types", "0" ], [ "phone_number", "123456789" ], [ "content", "heimingdan" ], [ "time_stamp", "0" ]
+                [ "types", "0" ], [ "phone_number", phoneNumber ], [ "content", "heimingdan" ], [ "time_stamp", "0" ]
             ]);
             return blockListMap;
         },
@@ -558,23 +565,26 @@ export default {
         },
     getProfileUpdateBlockList:
         function() {
+            var phoneNumber = randomNum(8);
             var blockList = {
-                "phone_number" : "987654321",
+                "phone_number" : phoneNumber,
                 "content" : "danminghei",
             };
             return blockList;
         },
     getProfileUpdateBlockListMap:
         function() {
+            var phoneNumber = randomNum(8);
             var blockListMap = new Map([
-                [ "types", "0" ], [ "phone_number", "987654321" ], [ "content", "danminghei" ], [ "time_stamp", "0" ]
+                [ "types", "0" ], [ "phone_number", phoneNumber ], [ "content", "danminghei" ], [ "time_stamp", "0" ]
             ]);
             return blockListMap;
         },
     getVoiceMail:
         function() {
+            var phoneNumber = randomNum(4);
             var voicemail = {
-                "phone_number" : "66666",
+                "phone_number" : phoneNumber,
                 "quicksearch_key" : "777",
                 "display_name" : "xiaoli",
                 "voicemail_uri" : "XXXX",
@@ -585,8 +595,9 @@ export default {
         },
     getVoiceMailMap:
         function() {
+            var phoneNumber = randomNum(4);
             var map = new Map([
-                [ "phone_number", "66666" ], [ "quicksearch_key", "777" ], [ "display_name", "xiaoli" ],
+                [ "phone_number", phoneNumber ], [ "quicksearch_key", "777" ], [ "display_name", "xiaoli" ],
                 [ "voicemail_uri", "XXXX" ], [ "origin_type", "xxxxx" ], [ "create_time", "0" ],
                 [ "voicemail_type", "0" ], [ "voice_file_size", "0" ], [ "voice_duration", "0" ],
                 [ "voice_status", "0" ]
@@ -595,8 +606,9 @@ export default {
         },
     getVoiceMailUpdate:
         function() {
+            var phoneNumber = randomNum(6);
             var voicemail = {
-                "phone_number" : "9999999",
+                "phone_number" : phoneNumber,
                 "quicksearch_key" : "999",
                 "display_name" : "xiaocai",
                 "voicemail_uri" : "uuuu",
@@ -607,8 +619,9 @@ export default {
         },
     getVoiceMailUpdateMap:
         function() {
+            var phoneNumber = randomNum(6);
             var map = new Map([
-                [ "phone_number", "9999999" ], [ "quicksearch_key", "999" ], [ "display_name", "xiaocai" ],
+                [ "phone_number", phoneNumber ], [ "quicksearch_key", "999" ], [ "display_name", "xiaocai" ],
                 [ "voicemail_uri", "uuuu" ], [ "origin_type", "iiiii" ], [ "create_time", "999" ],
                 [ "voicemail_type", "0" ], [ "voice_file_size", "0" ], [ "voice_duration", "0" ],
                 [ "voice_status", "0" ]
@@ -617,11 +630,12 @@ export default {
         },
     getVoiceMailBatchInsert:
         function() {
-            var map = new Map([ [ "phone_number", "1600" ], [ "display_name", "xiaoming" ], [ "voice_status", "0" ] ]);
-            var map2 = new Map([ [ "phone_number", "1600" ], [ "display_name", "xiaohei" ], [ "voice_status", "1" ] ]);
-            var map3 = new Map([ [ "phone_number", "1600" ], [ "display_name", "xiaohong" ], [ "voice_status", "0" ] ]);
-            var map4 = new Map([ [ "phone_number", "1600" ], [ "display_name", "xiaohei" ], [ "voice_status", "0" ] ]);
-            var map5 = new Map([ [ "phone_number", "1600" ], [ "display_name", "xiaofen" ], [ "voice_status", "0" ] ]);
+            var phoneNumber = randomNum(3);
+            var map = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaoming" ], [ "voice_status", "0" ] ]);
+            var map2 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaohei" ], [ "voice_status", "1" ] ]);
+            var map3 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaohong" ], [ "voice_status", "0" ] ]);
+            var map4 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaohei" ], [ "voice_status", "0" ] ]);
+            var map5 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaofen" ], [ "voice_status", "0" ] ]);
             var array = [ map, map2, map3, map4, map5 ];
             return array;
         },
@@ -678,11 +692,12 @@ export default {
         },
     getPhoneNumberBatch:
         function() {
-            var contactBlacklistValuesOne = {"phone_number" : "85525040585400"};
-            var contactBlacklistValuesTwo = {"phone_number" : "85525040585400"};
-            var contactBlacklistValuesThree = {"phone_number" : "85525040585400"};
-            var contactBlacklistValuesFour = {"phone_number" : "85525040585400"};
-            var contactBlacklistValuesFive = {"phone_number" : "85525040585400"};
+            var phoneNumber = randomNum(13);
+            var contactBlacklistValuesOne = {"phone_number" : phoneNumber};
+            var contactBlacklistValuesTwo = {"phone_number" : phoneNumber};
+            var contactBlacklistValuesThree = {"phone_number" : phoneNumber};
+            var contactBlacklistValuesFour = {"phone_number" : phoneNumber};
+            var contactBlacklistValuesFive = {"phone_number" : phoneNumber};
             var listAddBluk = []
             listAddBluk[0] = contactBlacklistValuesOne;
             listAddBluk[1] = contactBlacklistValuesTwo;
@@ -700,4 +715,9 @@ export default {
             return map;
         }
 
+}
+
+function randomNum (num) {
+    let number = toString(Math.floor(Math.random() * (9 * Math.pow(10, num))) + (1 * Math.pow(10, num)));
+    return number ;
 }
