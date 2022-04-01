@@ -2719,7 +2719,7 @@ describe('ContactCardTest', function() {
         console.info("--------logMessage contactCard_batchinsert_test_5400 is starting!-------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 13)) + (1 * Math.pow(10, 13)));
+        var phoneNumber = randomNum(13);
         try {
             var batchInsertCode = await DAHelper.batchInsert(profileBlocklistUri, common.getPhoneNumberBatch());
             sleep(sleep_one);
@@ -4777,7 +4777,7 @@ describe('ContactCardTest', function() {
         {
             var resultColumns = [];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 8)) + (1 * Math.pow(10, 8)));
+            var phoneNumber = randomNum(8);
             condition.equalTo("phone_number", phoneNumber);
             try {
                 var resultSet = await DAHelper.query(profileBlocklistUri, resultColumns, condition);
@@ -4824,7 +4824,7 @@ describe('ContactCardTest', function() {
         {
             var resultColumns = [];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 8)) + (1 * Math.pow(10, 8)));
+            var phoneNumber = randomNum(8);
             condition.equalTo("phone_number", phoneNumber);
             try {
                 var resultSet = await DAHelper.query(profileBlocklistUri, resultColumns, condition);
@@ -5342,3 +5342,8 @@ describe('ContactCardTest', function() {
         console.info(tag + " : logMessage : deleted = " + deleted);
     });
 });
+
+function randomNum (num) {
+    let number = toString(Math.floor(Math.random() * (9 * Math.pow(10, num))) + (1 * Math.pow(10, num)));
+    return number ;
+}

@@ -331,7 +331,7 @@ describe('PerformanceTest', function() {
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var listAddBluk = [];
-        var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 6)) + (1 * Math.pow(10, 6)));
+        var phoneNumber = randomNum(6);
         for (var i = 0; i < 1000; i++) {
             var add = {"phone_number" : phoneNumber + i};
             listAddBluk[i] = add;
@@ -458,7 +458,7 @@ describe('PerformanceTest', function() {
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
 
         var listAddBluk = [];
-        var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 4)) + (1 * Math.pow(10, 4)));
+        var phoneNumber = randomNum(4);
         for (var i = 0; i < 1000; i++) {
             var add = {"phone_number" : phoneNumber + i};
             listAddBluk[i] = add;
@@ -603,3 +603,8 @@ describe('PerformanceTest', function() {
         }
     });
 })
+
+function randomNum (num) {
+    let number = toString(Math.floor(Math.random() * (9 * Math.pow(10, num))) + (1 * Math.pow(10, num)));
+    return number ;
+}

@@ -2715,7 +2715,7 @@ describe('ContactsTest', function() {
         console.info("--------logMessage contact_batchinsert_test_5400 is starting!-------");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 13)) + (1 * Math.pow(10, 13)));
+        var phoneNumber = randomNum(13);
         try {
             var batchInsertCode = await DAHelper.batchInsert(contactBlocklistUri, common.getPhoneNumberBatch());
             sleep(sleep_one);
@@ -4757,7 +4757,7 @@ describe('ContactsTest', function() {
         {
             var resultColumns = [];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 8)) + (1 * Math.pow(10, 8)));
+            var phoneNumber = randomNum(8);
             condition.equalTo("phone_number", phoneNumber);
             try {
                 var resultSet = await DAHelper.query(contactBlocklistUri, resultColumns, condition);
@@ -4803,7 +4803,7 @@ describe('ContactsTest', function() {
         {
             var resultColumns = [];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 8)) + (1 * Math.pow(10, 8)));
+            var phoneNumber = randomNum(8);
             condition.equalTo("phone_number", phoneNumber);
             try {
                 var resultSet = await DAHelper.query(contactBlocklistUri, resultColumns, condition);
@@ -5367,7 +5367,7 @@ describe('ContactsTest', function() {
         console.info("------logMessage abnormal_contact_blocklist_test_8200 is starting!-----");
         var DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 6)) + (1 * Math.pow(10, 6)));
+        var phoneNumber = randomNum(6);
         try {
             var insertValues = {
                 "phone_numberss" : phoneNumber,
@@ -5953,7 +5953,7 @@ describe('ContactsTest', function() {
             var rawContactValues = {
                 "display_name" : "xiaotian9600",
             };
-            var phoneNumber = toString(Math.random() * (9 * Math.pow(10, 12)) + (1 * Math.pow(10, 12)));
+            var phoneNumber = randomNum(12);
             var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_insertblocklist_test_9600: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -6142,3 +6142,8 @@ describe('ContactsTest', function() {
         console.info(tag + " : logMessage : deleted = " + deleted);
     });
 });
+
+function randomNum (num) {
+    let number = toString(Math.floor(Math.random() * (9 * Math.pow(10, num))) + (1 * Math.pow(10, num)));
+    return number ;
+}
