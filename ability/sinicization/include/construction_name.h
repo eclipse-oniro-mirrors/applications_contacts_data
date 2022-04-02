@@ -25,7 +25,7 @@ public:
     ConstructionName();
     ~ConstructionName();
     int sortFirstLetterCode_ = 0;
-    // The first letter
+    // The first letter of Pinyin
     std::string initials_;
     // Full-Pinyin
     std::string nameFullFight_;

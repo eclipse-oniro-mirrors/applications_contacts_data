@@ -94,12 +94,12 @@ void ContactsDataAbility::Dump(const std::string &extra)
 }
 
 /**
- * @brief ContactsDataAbility BeginTransaction emptiness problems
+ * @brief Check whether BeginTransaction of ContactsDataAbility is empty
  *
  * @param code the return number of BeginTransaction
  * @param mutex transmission parameter : lock
  *
- * @return BeginTransaction emptiness true or false
+ * @return True if BeginTransaction is empty; flase otherwise
  */
 bool ContactsDataAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
 {
@@ -113,12 +113,12 @@ bool ContactsDataAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
 }
 
 /**
- * @brief ContactsDataAbility Commit emptiness problems
+ * @brief  Check if ContactsDataAbility Commit is empty
  *
  * @param code the return number of Commit
  * @param mutex transmission parameter : lock
  *
- * @return Commit emptiness true or false
+ * @return True if ContactsDataAbility Commit is empty; flase otherwise
  */
 bool ContactsDataAbility::IsCommitOK(int code, std::mutex &mutex)
 {
@@ -132,10 +132,10 @@ bool ContactsDataAbility::IsCommitOK(int code, std::mutex &mutex)
 }
 
 /**
- * @brief ContactsDataAbility insert database
+ * @brief Insert ContactsDataAbility into the database
  *
- * @param uri Determine the data table name based on the URI
- * @param value Insert the data value of the database
+ * @param uri URI of the data table tobe inserted
+ * @param value Inserted data value of the database
  *
  * @return Insert database results code
  */
@@ -214,7 +214,7 @@ int ContactsDataAbility::InsertExecute(int &code, const NativeRdb::ValuesBucket 
  * @brief ContactsDataAbility BatchInsert database
  *
  * @param uri Determine the data table name based on the URI
- * @param value Insert the data values of the database
+ * @param value Inserted data value of the database
  *
  * @return BatchInsert database results code
  */
@@ -265,10 +265,10 @@ int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb
 }
 
 /**
- * @brief ContactsDataAbility Update database
+ * @brief Update ContactsDataAbility in the database
  *
- * @param uri Determine the data table name based on the URI
- * @param predicates Update the data value of the condition
+ * @param uri URI of the data table to be inserted
+ * @param predicates Conditions for updating data value
  *
  * @return Update database results code
  */
@@ -364,10 +364,10 @@ void ContactsDataAbility::SwitchUpdate(int &retCode, int &code, const NativeRdb:
 }
 
 /**
- * @brief ContactsDataAbility Delete database
+ * @brief Delete ContactsDataAbility from the database
  *
- * @param uri Determine the data table name based on the URI
- * @param predicates Delete the data values of the condition
+ * @param uri URI for the data table storing ContactsDataAbility
+ * @param predicates Conditions for deleting data values
  *
  * @return Delete database results code
  */
@@ -437,16 +437,16 @@ void ContactsDataAbility::DeleteExecute(
             break;
         default:
             retCode = Contacts::OPERATION_ERROR;
-            HILOG_ERROR("ContactsDataAbility ====>no match uri action");
+            HILOG_ERROR("ContactsDataAbility ====>No matching URI action");
             break;
     }
 }
 
 /**
- * @brief ContactsDataAbility query database
+ * @brief Query contact data in the database
  *
- * @param uri Determine the data table name based on the URI
- * @param columns Conditions for query operation
+ * @param uri URI of the data table that stores the contact data
+ * @param columns Columns where the contact data is located
  * @param predicates Condition for querying data values
  *
  * @return Database query result

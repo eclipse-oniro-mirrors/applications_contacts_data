@@ -134,7 +134,7 @@ bool CandidateStatus::IsNeedMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> sto
  * @param store Conditions for query operation
  * @param rawId Contacts's raw_contact_id to query
  *
- * @return The result returned by the update operation
+ * @return True if the candidate is in the merged status; flase otherwise
  */
 bool CandidateStatus::IsMergeStatus(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId)
 {
