@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,7 +32,7 @@ RawContacts::~RawContacts()
 /**
  * @brief RawContacts insert table raw_contact
  *
- * @param rdbStore Insert operation based on radStore
+ * @param rdbStore Insert operation based on rdbStore
  * @param rawContactValues Pass in parameter rawContactValues
  *
  * @return Insert database results code
@@ -50,12 +50,12 @@ int RawContacts::InsertRawContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdb
 /**
  * @brief RawContacts update table raw_contact
  *
- * @param rdbStore Update operation based on radStore
+ * @param rdbStore Update operation based on rdbStore
  * @param upRawContactValues Pass in parameter upRawContactValues
  * @param whereClause Conditions for update operation
  * @param whereArgs Conditions for update operation
  *
- * @return Insert database results code
+ * @return Update database results code
  */
 int RawContacts::UpdateRawContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore,
     OHOS::NativeRdb::ValuesBucket upRawContactValues, std::string whereClause, std::vector<std::string> whereArgs)

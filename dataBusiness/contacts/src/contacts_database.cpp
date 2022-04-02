@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -69,7 +69,7 @@ ContactsDataBase::ContactsDataBase()
         }
     }
     if (errCode != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("ContactsDataBase rebase open error :%{public}d", errCode);
+        HILOG_ERROR("ContactsDataBase open error :%{public}d", errCode);
         return;
     }
     store_ = contactStore_;
@@ -101,7 +101,7 @@ int ContactsDataBase::BeginTransaction()
     }
     int ret = store_->BeginTransaction();
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("ContactsDataBase BeginTransaction fail :%{public}d", ret);
+        HILOG_ERROR("ContactsDataBase BeginTransaction failed :%{public}d", ret);
     }
     return ret;
 }
@@ -114,7 +114,7 @@ int ContactsDataBase::Commit()
     }
     int ret = store_->Commit();
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("ContactsDataBase Commit fail :%{public}d", ret);
+        HILOG_ERROR("ContactsDataBase Commit failed :%{public}d", ret);
     }
     return ret;
 }
@@ -127,7 +127,7 @@ int ContactsDataBase::RollBack()
     }
     int ret = store_->RollBack();
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("ContactsDataBase RollBack fail :%{public}d", ret);
+        HILOG_ERROR("ContactsDataBase RollBack failed :%{public}d", ret);
     }
     return ret;
 }
@@ -154,14 +154,14 @@ int64_t ContactsDataBase::InsertRawContact(std::string table, OHOS::NativeRdb::V
     int64_t outRawContactId = 0;
     int rowRet = rawContacts.InsertRawContact(store_, outRawContactId, rawContactValues);
     if (rowRet != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("InsertRawContact insertRawContact fail:%{public}d", rowRet);
+        HILOG_ERROR("InsertRawContact insertRawContact failed:%{public}d", rowRet);
         return RDB_EXECUTE_FAIL;
     }
     Contacts contactsContact;
     int64_t contactId = 0;
     int rowContactRet = contactsContact.InsertContact(store_, outRawContactId, rawContactValues, contactId);
     if (rowContactRet != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("InsertRawContact insertContact fail:%{public}d", rowContactRet);
+        HILOG_ERROR("InsertRawContact insertContact failed:%{public}d", rowContactRet);
         return RDB_EXECUTE_FAIL;
     }
     // update contactId to rawContacts
@@ -174,7 +174,7 @@ int64_t ContactsDataBase::InsertRawContact(std::string table, OHOS::NativeRdb::V
     upWhereArgs.push_back(std::to_string(outRawContactId));
     int ret = rawContacts.UpdateRawContact(store_, upRawContactValues, upWhereClause, upWhereArgs);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("insertRawContact Update contactId to rawContacts fail:%{public}d", rowContactRet);
+        HILOG_ERROR("insertRawContact Update contactId to rawContacts failed:%{public}d", rowContactRet);
         return RDB_EXECUTE_FAIL;
     }
     // insert search
@@ -183,7 +183,7 @@ int64_t ContactsDataBase::InsertRawContact(std::string table, OHOS::NativeRdb::V
     int rowSearchContactRet =
         contactsSearch.Insert(store_, contactId, outRawContactId, rawContactValues, searchContactId);
     if (rowSearchContactRet != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("InsertRawContact insertSearchContact fail:%{public}d", rowSearchContactRet);
+        HILOG_ERROR("InsertRawContact insertSearchContact failed:%{public}d", rowSearchContactRet);
         return RDB_EXECUTE_FAIL;
     }
     return outRawContactId;
@@ -245,7 +245,7 @@ int64_t ContactsDataBase::InsertContactData(std::string table, OHOS::NativeRdb::
     std::string typeText;
     int retCode = GetTypeText(contactDataValues, typeId, rawContactId, typeText);
     if (retCode != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("InsertContactData getTypeText fail:%{public}d", retCode);
+        HILOG_ERROR("InsertContactData getTypeText failed:%{public}d", retCode);
         return retCode;
     }
     if (typeId <= 0) {
@@ -258,7 +258,7 @@ int64_t ContactsDataBase::InsertContactData(std::string table, OHOS::NativeRdb::
     int64_t outDataRowId;
     int ret = store_->Insert(outDataRowId, table, contactDataValues);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("InsertContactData fail:%{public}d", ret);
+        HILOG_ERROR("InsertContactData failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     std::vector<int> rawContactIdVector;
@@ -269,7 +269,7 @@ int64_t ContactsDataBase::InsertContactData(std::string table, OHOS::NativeRdb::
     int updateDisplayRet =
         contactsUpdateHelper.UpdateDisplay(rawContactIdVector, typeTextVector, store_, contactDataValues, false);
     if (updateDisplayRet != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("InsertContactData UpdateDisplay fail:%{public}d", updateDisplayRet);
+        HILOG_ERROR("InsertContactData UpdateDisplay failed:%{public}d", updateDisplayRet);
         return RDB_EXECUTE_FAIL;
     }
     MergeUpdateTask(store_, rawContactIdVector, false);
@@ -331,7 +331,7 @@ int64_t ContactsDataBase::InsertGroup(std::string table, OHOS::NativeRdb::Values
     int64_t outGroupRowId = OHOS::NativeRdb::E_OK;
     int ret = store_->Insert(outGroupRowId, table, initialValues);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("InsertGroup fail:%{public}d", ret);
+        HILOG_ERROR("InsertGroup failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     return outGroupRowId;
@@ -380,14 +380,14 @@ int ContactsDataBase::UpdateContactData(
     ret = store_->Update(changedRows, contactDataValues, rdbPredicates);
     if (ret != OHOS::NativeRdb::E_OK) {
         RollBack();
-        HILOG_ERROR("UpdateContactData fail:%{public}d", ret);
+        HILOG_ERROR("UpdateContactData failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     ContactsUpdateHelper contactsUpdateHelper;
     ret = contactsUpdateHelper.UpdateDisplay(rawContactIdVector, types, store_, contactDataValues, false);
     if (ret != OHOS::NativeRdb::E_OK) {
         RollBack();
-        HILOG_ERROR("UpdateContactData UpdateDisplay fail:%{public}d", ret);
+        HILOG_ERROR("UpdateContactData UpdateDisplay failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     ret = Commit();
@@ -432,7 +432,7 @@ int ContactsDataBase::UpdateRawContact(
     int changedRows = OHOS::NativeRdb::E_OK;
     int ret = store_->Update(changedRows, values, rdbPredicates);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("UpdateRawContact fail:%{public}d", ret);
+        HILOG_ERROR("UpdateRawContact failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     // add Restore contact judgment
@@ -467,7 +467,7 @@ int ContactsDataBase::UpdateBlockList(
     int changedRows = OHOS::NativeRdb::E_OK;
     int ret = store_->Update(changedRows, values, rdbPredicates);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("UpdateBlockList fail:%{public}d", ret);
+        HILOG_ERROR("UpdateBlockList failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     HILOG_INFO("UpdateBlockList row:%{public}d", changedRows);
@@ -491,7 +491,7 @@ int ContactsDataBase::UpdateGroup(OHOS::NativeRdb::ValuesBucket values, OHOS::Na
     int changedRows = OHOS::NativeRdb::E_OK;
     int ret = store_->Update(changedRows, values, rdbPredicates);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("UpdateGroup fail:%{public}d", ret);
+        HILOG_ERROR("UpdateGroup failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     HILOG_INFO("UpdateGroup row:%{public}d", changedRows);
@@ -514,7 +514,7 @@ int ContactsDataBase::DeleteBlockList(OHOS::NativeRdb::RdbPredicates &rdbPredica
     int changedRows = OHOS::NativeRdb::E_OK;
     int ret = store_->Delete(changedRows, rdbPredicates);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("DeleteBlockList fail:%{public}d", ret);
+        HILOG_ERROR("DeleteBlockList failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     HILOG_INFO("DeleteBlockList row:%{public}d", changedRows);
@@ -537,7 +537,7 @@ int ContactsDataBase::DeleteGroup(OHOS::NativeRdb::RdbPredicates &rdbPredicates)
     int deletedRows = OHOS::NativeRdb::E_OK;
     int ret = store_->Delete(deletedRows, rdbPredicates);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("DeleteGroup fail:%{public}d", ret);
+        HILOG_ERROR("DeleteGroup failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     HILOG_INFO("DeleteGroup row:%{public}d", deletedRows);
@@ -553,7 +553,7 @@ int ContactsDataBase::DeleteRecord(OHOS::NativeRdb::RdbPredicates &rdbPredicates
     int deletedRows = OHOS::NativeRdb::E_OK;
     int ret = store_->Delete(deletedRows, rdbPredicates);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("DeleteRecord raw_contact_deleted fail:%{public}d", ret);
+        HILOG_ERROR("DeleteRecord raw_contact_deleted failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     HILOG_INFO("DeleteRecord raw_contact_deleted row:%{public}d", deletedRows);
@@ -587,7 +587,7 @@ int ContactsDataBase::DeleteContactData(OHOS::NativeRdb::RdbPredicates &rdbPredi
         contactsUpdateHelper.UpdateDisplay(rawContactIdVector, types, store_, contactDataValues, true);
     if (updateDisplayRet != OHOS::NativeRdb::E_OK) {
         RollBack();
-        HILOG_ERROR("deleteContactData UpdateDisplay fail:%{public}d", updateDisplayRet);
+        HILOG_ERROR("deleteContactData UpdateDisplay failed:%{public}d", updateDisplayRet);
         return RDB_EXECUTE_FAIL;
     }
     ret = Commit();
@@ -666,7 +666,7 @@ int ContactsDataBase::DeleteExecute(std::vector<OHOS::NativeRdb::ValuesBucket> &
         upWhereArgs.push_back(std::to_string(rawContactId));
         ret = store_->Update(updateRow, ContactTableName::RAW_CONTACT, values, upWhere, upWhereArgs);
         if (ret != OHOS::NativeRdb::E_OK) {
-            HILOG_ERROR("deleteRawContact upResultDelete fail:%{public}d", ret);
+            HILOG_ERROR("deleteRawContact upResultDelete failed:%{public}d", ret);
             return RDB_EXECUTE_FAIL;
         }
     }
@@ -703,7 +703,7 @@ void ContactsDataBase::DeleteRecordInsert(
         }
         int deleteRet = DeleteRawContactLocal(contactId, rawContactId, backupData, disPlayName);
         if (deleteRet != OHOS::NativeRdb::E_OK) {
-            HILOG_ERROR("deleteRawContact upResultDelete fail:%{public}d", deleteRet);
+            HILOG_ERROR("deleteRawContact upResultDelete failed:%{public}d", deleteRet);
         }
         std::vector<int> rawContactIdVector;
         rawContactIdVector.push_back(rawContactId);
@@ -810,7 +810,7 @@ int ContactsDataBase::DeleteRawContactLocal(
     int64_t outRowId = OHOS::NativeRdb::E_OK;
     int ret = store_->Insert(outRowId, ContactTableName::DELETE_RAW_CONTACT, deleteRawContact);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("deleteRawContact deleteInsert fail:%{public}d", ret);
+        HILOG_ERROR("deleteRawContact deleteInsert failed:%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     return ret;
@@ -860,7 +860,7 @@ int ContactsDataBase::CompletelyDelete(OHOS::NativeRdb::RdbPredicates &rdbPredic
         }
         contactIdSet->Close();
         if (retCode != OHOS::NativeRdb::E_OK) {
-            HILOG_ERROR("CompletelyDelete for error:%{public}d", retCode);
+            HILOG_ERROR("CompletelyDelete error:%{public}d", retCode);
             RollBack();
             return retCode;
         }
@@ -976,7 +976,7 @@ std::vector<int> ContactsDataBase::QueryContactDataRawContactId(
  * @param rdbPredicates Conditions for query operation
  * @param columns Conditions for query operation
  *
- * @return The result returned by the delete operation
+ * @return The result returned by the query operation
  */
 std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsDataBase::Query(
     OHOS::NativeRdb::RdbPredicates &rdbPredicates, std::vector<std::string> &columns)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -94,18 +94,18 @@ void ContactsDataAbility::Dump(const std::string &extra)
 }
 
 /**
- * @brief ContactsDataAbility BeginTransaction emptiness problems
+ * @brief Check whether BeginTransaction of ContactsDataAbility is empty
  *
  * @param code the return number of BeginTransaction
  * @param mutex transmission parameter : lock
  *
- * @return BeginTransaction emptiness true or false
+ * @return True if BeginTransaction is empty; flase otherwise
  */
 bool ContactsDataAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
 {
     mutex.try_lock();
     if (code != 0) {
-        HILOG_ERROR("IsBeginTransactionOK fail");
+        HILOG_ERROR("IsBeginTransactionOK failed");
         mutex.unlock();
         return false;
     }
@@ -113,18 +113,18 @@ bool ContactsDataAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
 }
 
 /**
- * @brief ContactsDataAbility Commit emptiness problems
+ * @brief  Check if ContactsDataAbility Commit is empty
  *
  * @param code the return number of Commit
  * @param mutex transmission parameter : lock
  *
- * @return Commit emptiness true or false
+ * @return True if ContactsDataAbility Commit is empty; flase otherwise
  */
 bool ContactsDataAbility::IsCommitOK(int code, std::mutex &mutex)
 {
     mutex.try_lock();
     if (code != 0) {
-        HILOG_ERROR("IsCommitOK fail");
+        HILOG_ERROR("IsCommitOK failed");
         mutex.unlock();
         return false;
     }
@@ -132,10 +132,10 @@ bool ContactsDataAbility::IsCommitOK(int code, std::mutex &mutex)
 }
 
 /**
- * @brief ContactsDataAbility insert database
+ * @brief Insert ContactsDataAbility into the database
  *
- * @param uri Determine the data table name based on the URI
- * @param value Insert the data value of the database
+ * @param uri URI of the data table tobe inserted
+ * @param value Inserted data value of the database
  *
  * @return Insert database results code
  */
@@ -145,7 +145,7 @@ int ContactsDataAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &v
     Contacts::SqlAnalyzer sqlAnalyzer;
     bool isOk = sqlAnalyzer.CheckValuesBucket(value);
     if (!isOk) {
-        HILOG_ERROR("ContactsDataAbility CheckValuesBucket is error");
+        HILOG_ERROR("ContactsDataAbility CheckValuesBucket error");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     g_mutex.lock();
@@ -214,7 +214,7 @@ int ContactsDataAbility::InsertExecute(int &code, const NativeRdb::ValuesBucket 
  * @brief ContactsDataAbility BatchInsert database
  *
  * @param uri Determine the data table name based on the URI
- * @param value Insert the data values of the database
+ * @param value Inserted data value of the database
  *
  * @return BatchInsert database results code
  */
@@ -265,10 +265,10 @@ int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb
 }
 
 /**
- * @brief ContactsDataAbility Update database
+ * @brief Update ContactsDataAbility in the database
  *
- * @param uri Determine the data table name based on the URI
- * @param predicates Update the data value of the condition
+ * @param uri URI of the data table to be inserted
+ * @param predicates Conditions for updating data value
  *
  * @return Update database results code
  */
@@ -278,7 +278,7 @@ int ContactsDataAbility::Update(
     Contacts::SqlAnalyzer sqlAnalyzer;
     bool isOk = sqlAnalyzer.CheckValuesBucket(value);
     if (!isOk) {
-        HILOG_ERROR("ContactsDataAbility CheckValuesBucket is error");
+        HILOG_ERROR("ContactsDataAbility CheckValuesBucket error");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     g_mutex.lock();
@@ -364,10 +364,10 @@ void ContactsDataAbility::SwitchUpdate(int &retCode, int &code, const NativeRdb:
 }
 
 /**
- * @brief ContactsDataAbility Delete database
+ * @brief Delete ContactsDataAbility from the database
  *
- * @param uri Determine the data table name based on the URI
- * @param predicates Delete the data values of the condition
+ * @param uri URI for the data table storing ContactsDataAbility
+ * @param predicates Conditions for deleting data values
  *
  * @return Delete database results code
  */
@@ -437,19 +437,19 @@ void ContactsDataAbility::DeleteExecute(
             break;
         default:
             retCode = Contacts::OPERATION_ERROR;
-            HILOG_ERROR("ContactsDataAbility ====>no match uri action");
+            HILOG_ERROR("ContactsDataAbility ====>No matching URI action");
             break;
     }
 }
 
 /**
- * @brief ContactsDataAbility query database
+ * @brief Query contact data in the database
  *
- * @param uri Determine the data table name based on the URI
- * @param columns Conditions for query operation
- * @param predicates Query the data values of the condition
+ * @param uri URI of the data table that stores the contact data
+ * @param columns Columns where the contact data is located
+ * @param predicates Condition for querying data values
  *
- * @return Query database results
+ * @return Database query result
  */
 std::shared_ptr<NativeRdb::AbsSharedResultSet> ContactsDataAbility::Query(
     const Uri &uri, const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates)
@@ -546,7 +546,7 @@ void ContactsDataAbility::QueryExecuteSwitchSplit(std::shared_ptr<NativeRdb::Abs
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         default:
-            HILOG_ERROR("ContactsDataAbility ====>no match uri action");
+            HILOG_ERROR("ContactsDataAbility ====>no matching uri action");
             break;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -87,9 +87,9 @@ int64_t ContactProfileTest::GroupsInsert(std::string groupName, OHOS::NativeRdb:
 int64_t ContactProfileTest::ContactBlocklistInsert(
     std::string phoneNumber, OHOS::NativeRdb::ValuesBucket &contactBlocklistValues)
 {
-    OHOS::Uri uriBlacklist(ProfileUri::BLOCKLIST);
+    OHOS::Uri uriBlocklist(ProfileUri::BLOCKLIST);
     contactBlocklistValues.PutString("phone_number", phoneNumber);
-    int64_t code = contactsDataAbility.Insert(uriBlacklist, contactBlocklistValues);
+    int64_t code = contactsDataAbility.Insert(uriBlocklist, contactBlocklistValues);
     return code;
 }
 
@@ -2939,20 +2939,20 @@ HWTEST_F(ContactProfileTest, contactProfile_Update_test_5800, testing::ext::Test
 HWTEST_F(ContactProfileTest, contactProfile_BatchInsertAndDelete_test_5900, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- contactProfile_BatchInsertAndDelete_test_5900 is starting! ---");
-    OHOS::Uri uriContactBlacklist(ProfileUri::BLOCKLIST);
-    OHOS::NativeRdb::ValuesBucket contactBlacklistValuesOne;
+    OHOS::Uri uriContactBlocklist(ProfileUri::BLOCKLIST);
+    OHOS::NativeRdb::ValuesBucket contactBlocklistValuesOne;
     string phoneNumber = random_number_utils.Generating(9);
-    contactBlacklistValuesOne.PutString("phone_number", phoneNumber);
-    OHOS::NativeRdb::ValuesBucket contactBlacklistValuesTwo;
-    contactBlacklistValuesTwo.PutString("phone_number", phoneNumber);
-    OHOS::NativeRdb::ValuesBucket contactBlacklistValuesThree;
-    contactBlacklistValuesThree.PutString("phone_number", phoneNumber);
+    contactBlocklistValuesOne.PutString("phone_number", phoneNumber);
+    OHOS::NativeRdb::ValuesBucket contactBlocklistValuesTwo;
+    contactBlocklistValuesTwo.PutString("phone_number", phoneNumber);
+    OHOS::NativeRdb::ValuesBucket contactBlocklistValuesThree;
+    contactBlocklistValuesThree.PutString("phone_number", phoneNumber);
 
     std::vector<OHOS::NativeRdb::ValuesBucket> listAddBluk;
-    listAddBluk.push_back(contactBlacklistValuesOne);
-    listAddBluk.push_back(contactBlacklistValuesTwo);
-    listAddBluk.push_back(contactBlacklistValuesThree);
-    int batchInsertCode = contactsDataAbility.BatchInsert(uriContactBlacklist, listAddBluk);
+    listAddBluk.push_back(contactBlocklistValuesOne);
+    listAddBluk.push_back(contactBlocklistValuesTwo);
+    listAddBluk.push_back(contactBlocklistValuesThree);
+    int batchInsertCode = contactsDataAbility.BatchInsert(uriContactBlocklist, listAddBluk);
     EXPECT_EQ(batchInsertCode, 0);
 
     OHOS::NativeRdb::DataAbilityPredicates predicates;

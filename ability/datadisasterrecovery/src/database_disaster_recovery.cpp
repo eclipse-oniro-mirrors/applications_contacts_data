@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -147,14 +147,14 @@ int DataBaseDisasterRecovery::BackDatabase(std::string dataBaseName)
         values.PutString(DatabaseBackupColumns::BACKUP_PATH, dbPath);
         int ret = store_->Insert(outRowId, ContactTableName::DATABASE_BACKUP_TASK, values);
         if (ret != OHOS::NativeRdb::E_OK) {
-            HILOG_ERROR("DataBaseDisasterRecovery Insert filed, status is %{public}d.", ret);
+            HILOG_ERROR("DataBaseDisasterRecovery Insert failed, status is %{public}d.", ret);
             g_mtx.unlock();
             return RDB_EXECUTE_FAIL;
         }
         OHOS::NativeRdb::RdbHelper::DeleteRdbStore(dbPath);
         ret = store_->Backup(dbPath, std::vector<uint8_t>());
         if (ret != OHOS::NativeRdb::E_OK) {
-            HILOG_ERROR("DataBaseDisasterRecovery Backup filed, status is %{public}d.", ret);
+            HILOG_ERROR("DataBaseDisasterRecovery Backup failed, status is %{public}d.", ret);
             g_mtx.unlock();
             return RDB_EXECUTE_FAIL;
         }

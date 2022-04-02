@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -494,7 +494,7 @@ describe('CalllogTest', function() {
         {
             var resultColumns = [ "id", "phone_number" ];
             var condition = new ohos_data_ability.DataAbilityPredicates();
-            condition.like("phone_number", phoneNumber_Test + "%");
+            condition.like("phone_number", "%" + phoneNumber_Test);
             try {
                 var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
