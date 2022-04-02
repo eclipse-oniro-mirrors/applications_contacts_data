@@ -64,8 +64,8 @@ int ContactsUpdateHelper::UpdateDisplay(std::vector<int> rawContactIdVector, std
             }
             ret = rawContacts.UpdateRawContactById(rawContactId, type, rdbStore, rawContactValues);
             if (ret != OHOS::NativeRdb::E_OK) {
-                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateRawContact failed type:%{public}s", type.c_str());
-                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateRawContact failed:%{public}d", ret);
+                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateRawContact failed type:%{public}s", type.c_str());
+                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateRawContact failed:%{public}d", ret);
                 return ret;
             }
             OHOS::NativeRdb::ValuesBucket contactValues = GetUpdateCompanyValuesBucket(contactDataDataValues, isDelete);
@@ -74,15 +74,15 @@ int ContactsUpdateHelper::UpdateDisplay(std::vector<int> rawContactIdVector, std
             }
             ret = contactsContact.UpdateContact(rawContactId, rdbStore, contactValues);
             if (ret != OHOS::NativeRdb::E_OK) {
-                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateContact failed type:%{public}s", type.c_str());
-                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateContact failed:%{public}d", ret);
+                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateContact failed type:%{public}s", type.c_str());
+                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateContact failed:%{public}d", ret);
                 return ret;
             }
         } else if (strcmp(type.c_str(), ContentTypeData::NAME) == 0) {
             ret = UpdateName(contactDataDataValues, isDelete, rawContactId, type, rdbStore);
             if (ret != OHOS::NativeRdb::E_OK) {
-                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateRawContact failed type:%{public}s", type.c_str());
-                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateRawContact failed:%{public}d", ret);
+                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateRawContact failed type:%{public}s", type.c_str());
+                HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateRawContact failed:%{public}d", ret);
                 return ret;
             }
         } else {
@@ -131,8 +131,8 @@ int ContactsUpdateHelper::UpdateName(OHOS::NativeRdb::ValuesBucket linkDataDataV
         RawContacts rawContacts;
         rawContacts.UpdateRawContactById(rawContactId, type, rdbStore, rawContactValues);
         if (ret != OHOS::NativeRdb::E_OK) {
-            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateRawContact failed type:%{public}s", type.c_str());
-            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateRawContact failed:%{public}d", ret);
+            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateRawContact failed type:%{public}s", type.c_str());
+            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateRawContact failed:%{public}d", ret);
             return ret;
         }
     }
@@ -141,8 +141,8 @@ int ContactsUpdateHelper::UpdateName(OHOS::NativeRdb::ValuesBucket linkDataDataV
         ContactsSearch contactsSearch;
         ret = contactsSearch.UpdateSearchContact(rawContactId, type, rdbStore, searchContactValues);
         if (ret != OHOS::NativeRdb::E_OK) {
-            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateSearchContact failed type:%{public}s", type.c_str());
-            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateSearchContact failed:%{public}d", ret);
+            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateSearchContact failed type:%{public}s", type.c_str());
+            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateSearchContact failed:%{public}d", ret);
             return ret;
         }
     }
