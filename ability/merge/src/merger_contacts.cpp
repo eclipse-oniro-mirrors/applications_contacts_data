@@ -331,7 +331,7 @@ std::vector<std::set<int>> MergerContacts::QueryMergeContacts(
         resultSetNum = resultSet->GoToNextRow();
     }
     resultSet->Close();
-    HILOG_INFO("QueryMergeContacts currentIds' size = %{public}d", currentIds.size());
+    HILOG_INFO("QueryMergeContacts currentIds' size = %{public}zu", currentIds.size());
     std::vector<std::set<int>> candidates;
     UpdateCandidate(store, currentIds, candidates);
     return candidates;
@@ -361,10 +361,10 @@ void MergerContacts::UpdateCandidate(std::shared_ptr<OHOS::NativeRdb::RdbStore> 
                 rawIds.insert(*nameId);
             }
         }
-        HILOG_INFO("rawIds' size = %{public}d", rawIds.size());
+        HILOG_INFO("rawIds' size = %{public}zu", rawIds.size());
         candidates.push_back(rawIds);
     }
-    HILOG_INFO("candidates' size = %{public}d", candidates.size());
+    HILOG_INFO("candidates' size = %{public}zu", candidates.size());
 }
 
 std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> MergerContacts::SelectCandidate(
@@ -448,7 +448,7 @@ int MergerContacts::ReContactMerge(
     for (auto it = selectedIds.begin(); it != selectedIds.end(); ++it) {
         currentIds = *it;
         std::set<int> handledIds = HandleIds(store, currentIds);
-        HILOG_INFO("ReContactMerge size = :%{public}d", handledIds.size());
+        HILOG_INFO("ReContactMerge size = :%{public}zu", handledIds.size());
         if (handledIds.size() == 1) {
             HILOG_ERROR("MergeCircle continue ");
             isModeHasError = true;
@@ -600,7 +600,7 @@ int MergerContacts::ForceContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore>
     int minId = 0;
     if (isNameMatch(store, ids)) {
         std::set<int> handledIds = HandleIds(store, ids);
-        HILOG_INFO("ForceContactMerge size = %{public}d", handledIds.size());
+        HILOG_INFO("ForceContactMerge size = %{public}zu", handledIds.size());
         auto minIdPosition = handledIds.begin();
         minId = *minIdPosition;
         UpdateRawContacts(store, minId, handledIds);

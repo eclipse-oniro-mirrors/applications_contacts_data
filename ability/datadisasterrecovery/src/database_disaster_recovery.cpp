@@ -133,7 +133,7 @@ int DataBaseDisasterRecovery::BackDatabase(std::string dataBaseName)
 {
     g_mtx.lock();
     auto iter = redbStoreMap.find(dataBaseName);
-    HILOG_INFO("DataBaseDisasterRecovery BackDatabase redbStoreMap size is %{public}d", redbStoreMap.size());
+    HILOG_INFO("DataBaseDisasterRecovery BackDatabase redbStoreMap size is %{public}zu", redbStoreMap.size());
     if (iter != redbStoreMap.end()) {
         std::shared_ptr<OHOS::NativeRdb::RdbStore> store_ = iter->second;
         if (store_ == nullptr) {

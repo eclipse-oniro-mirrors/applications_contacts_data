@@ -77,8 +77,8 @@ Candidate CandidateStatus::QueryAllForMerge(std::shared_ptr<OHOS::NativeRdb::Rdb
     HILOG_INFO("QueryAllForMerge mode is : %{public}d ", candidate.mergeMode_);
     candidate.autoIds_.insert(rawId);
     candidate.manualIds_.insert(rawId);
-    HILOG_INFO("QueryAllForMerge size is : %{public}d ", candidate.autoIds_.size());
-    HILOG_INFO("QueryAllForMerge candidate.manualIds_ is : %{public}d ", candidate.manualIds_.size());
+    HILOG_INFO("QueryAllForMerge size is : %{public}zu ", candidate.autoIds_.size());
+    HILOG_INFO("QueryAllForMerge candidate.manualIds_ is : %{public}zu ", candidate.manualIds_.size());
     return candidate;
 }
 

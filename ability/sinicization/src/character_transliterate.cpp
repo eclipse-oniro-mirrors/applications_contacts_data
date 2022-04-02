@@ -1984,7 +1984,7 @@ Container CharacterTransliterate::GetContainer(std::wstring wChinese)
             nameFullFightsVectors.push_back(nameFullFights);
         }
     }
-    HILOG_INFO("CharacterTransliterate GetContainer length:%{public}d", nameFullFightsVectors.size());
+    HILOG_INFO("CharacterTransliterate GetContainer length:%{public}zu", nameFullFightsVectors.size());
     container.initialsContainer_ = initialsVectors;
     container.nameFullFightContainer_ = nameFullFightsVectors;
     return container;
