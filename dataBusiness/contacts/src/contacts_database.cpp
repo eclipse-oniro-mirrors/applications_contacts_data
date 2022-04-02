@@ -133,12 +133,12 @@ int ContactsDataBase::RollBack()
 }
 
 /**
- * @brief ContactsDataBase insert data into table raw_contact
+ * @brief Insert contact data into the raw_contact table
  *
- * @param table Insert tableName
- * @param rawContactValues Parameters to be passed for insert operation
+ * @param table Raw_contact table
+ * @param rawContactValues Contact to be inserted
  *
- * @return The result returned by the insert operation
+ * @return The result returned by the insert
  */
 int64_t ContactsDataBase::InsertRawContact(std::string table, OHOS::NativeRdb::ValuesBucket rawContactValues)
 {
@@ -177,7 +177,7 @@ int64_t ContactsDataBase::InsertRawContact(std::string table, OHOS::NativeRdb::V
         HILOG_ERROR("insertRawContact Update contactId to rawContacts failed:%{public}d", rowContactRet);
         return RDB_EXECUTE_FAIL;
     }
-    // insert search
+    // Search insterted contact data
     ContactsSearch contactsSearch;
     int64_t searchContactId = 0;
     int rowSearchContactRet =
@@ -216,7 +216,7 @@ void ContactsDataBase::GetContactByValue(int &contactValue, OHOS::NativeRdb::Val
 }
 
 /**
- * @brief ContactsDataBase insert data into table contact_data
+ * @brief Insert data into table contact_data
  *
  * @param table Insert tableName
  * @param contactDataValues Parameters to be passed for insert operation
@@ -279,7 +279,7 @@ int64_t ContactsDataBase::InsertContactData(std::string table, OHOS::NativeRdb::
 int ContactsDataBase::GetTypeText(
     OHOS::NativeRdb::ValuesBucket &contactDataValues, int &typeId, int &rawContactId, std::string &typeText)
 {
-    // if content_type is added , by content_type get type_id
+    // if content_type is added , get type_id by content_type
     if (contactDataValues.HasColumn(ContentTypeColumns::CONTENT_TYPE)) {
         OHOS::NativeRdb::ValueObject typeValue;
         contactDataValues.GetObject(ContentTypeColumns::CONTENT_TYPE, typeValue);
@@ -292,7 +292,7 @@ int ContactsDataBase::GetTypeText(
         ContactsType contactsType;
         typeId = contactsType.LookupTypeId(store_, typeText);
         if (typeId == RDB_EXECUTE_FAIL) {
-            // not find type insert auto type
+            // type not found. insert the default type
             typeId = contactsType.Insert(store_, typeText, RDB_OBJECT_EMPTY);
         }
         if (typeId == RDB_EXECUTE_FAIL) {
@@ -311,7 +311,7 @@ int ContactsDataBase::GetTypeText(
 }
 
 /**
- * @brief ContactsDataBase insert data into table groups
+ * @brief Insert data into table groups
  *
  * @param table Insert tableName
  * @param initialValues Parameters to be passed for insert operation
@@ -338,7 +338,7 @@ int64_t ContactsDataBase::InsertGroup(std::string table, OHOS::NativeRdb::Values
 }
 
 /**
- * @brief ContactsDataBase insert data into table contact_blocklist
+ * @brief Insert data into the contact_blocklist table
  *
  * @param table Insert tableName
  * @param initialValues Parameters to be passed for insert operation
@@ -356,7 +356,7 @@ int64_t ContactsDataBase::InsertBlockList(std::string table, OHOS::NativeRdb::Va
 }
 
 /**
- * @brief ContactsDataBase update data into table contact_data
+ * @brief Update data into contact_data table
  *
  * @param contactDataValues Parameters to be passed for update operation
  * @param rdbPredicates Conditions for update operation
@@ -400,7 +400,7 @@ int ContactsDataBase::UpdateContactData(
 }
 
 /**
- * @brief ContactsDataBase update data into table raw_contact
+ * @brief Update data in the raw_contact table
  *
  * @param values Parameters to be passed for update operation
  * @param rdbPredicates Conditions for update operation
@@ -450,7 +450,7 @@ int ContactsDataBase::UpdateRawContact(
 }
 
 /**
- * @brief ContactsDataBase update data into table contact_blocklist
+ * @brief Update data in the contact_blocklist table
  *
  * @param values Parameters to be passed for update operation
  * @param rdbPredicates Conditions for update operation
@@ -475,7 +475,7 @@ int ContactsDataBase::UpdateBlockList(
 }
 
 /**
- * @brief ContactsDataBase update data into table groups
+ * @brief Update data in table groups
  *
  * @param values Parameters to be passed for update operation
  * @param rdbPredicates Conditions for update operation
@@ -499,7 +499,7 @@ int ContactsDataBase::UpdateGroup(OHOS::NativeRdb::ValuesBucket values, OHOS::Na
 }
 
 /**
- * @brief ContactsDataBase delete data from table contact_blocklist
+ * @brief Delete data from contact_blocklist table
  *
  * @param rdbPredicates Conditions for delete operation
  *
@@ -522,7 +522,7 @@ int ContactsDataBase::DeleteBlockList(OHOS::NativeRdb::RdbPredicates &rdbPredica
 }
 
 /**
- * @brief ContactsDataBase delete data from table groups
+ * @brief Delete data from table groups
  *
  * @param rdbPredicates Conditions for delete operation
  *
@@ -561,7 +561,7 @@ int ContactsDataBase::DeleteRecord(OHOS::NativeRdb::RdbPredicates &rdbPredicates
 }
 
 /**
- * @brief ContactsDataBase delete data from table contact_data
+ * @brief Delete data from contact_data table
  *
  * @param rdbPredicates Conditions for delete operation
  *
@@ -600,7 +600,7 @@ int ContactsDataBase::DeleteContactData(OHOS::NativeRdb::RdbPredicates &rdbPredi
 }
 
 /**
- * @brief ContactsDataBase delete data from table contact
+ * @brief Delete data from the contact table
  *
  * @param rdbPredicates Conditions for delete operation
  *
@@ -714,7 +714,7 @@ void ContactsDataBase::DeleteRecordInsert(
 }
 
 /**
- * @brief ContactsDataBase delete data from table raw_contact
+ * @brief Delete data from the raw_contact table
  *
  * @param rdbPredicates Conditions for delete operation
  *
@@ -817,7 +817,7 @@ int ContactsDataBase::DeleteRawContactLocal(
 }
 
 /**
- * @brief ContactsDataBase completely delete data
+ * @brief Completely delete data from the database
  *
  * @param rdbPredicates Conditions for delete operation
  *
@@ -971,7 +971,7 @@ std::vector<int> ContactsDataBase::QueryContactDataRawContactId(
 }
 
 /**
- * @brief ContactsDataBase query data according to given conditions
+ * @brief Query data according to given conditions
  *
  * @param rdbPredicates Conditions for query operation
  * @param columns Conditions for query operation
@@ -1165,7 +1165,7 @@ bool ContactsDataBase::Restore(std::string restorePath)
 }
 
 /**
- * @brief ContactsDataAbility selectCandidate operation
+ * @brief Select candidates
  *
  * @return The result returned by the selectCandidate operation
  */
@@ -1177,7 +1177,7 @@ std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsDataBase::SelectCan
 }
 
 /**
- * @brief ContactsDataAbility split operation
+ * @brief Perform a split operation
  *
  * @param predicates Conditions for split operation
  *
@@ -1202,7 +1202,7 @@ int ContactsDataBase::Split(OHOS::NativeRdb::DataAbilityPredicates predicates)
 }
 
 /**
- * @brief ContactsDataAbility autoMerge operation
+ * @brief Perform an autoMerge operation
  *
  * @return The result returned by the autoMerge operation
  */
@@ -1221,7 +1221,7 @@ int ContactsDataBase::ContactMerge()
 }
 
 /**
- * @brief ContactsDataAbility manualMerge operation
+ * @brief Perform a manualMerge operation
  *
  * @param predicates Conditions for manualMerge operation
  *

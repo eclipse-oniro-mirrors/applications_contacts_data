@@ -113,7 +113,7 @@ bool ContactsDataAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
 }
 
 /**
- * @brief  Check if ContactsDataAbility Commit is empty
+ * @brief Check if ContactsDataAbility Commit is empty
  *
  * @param code the return number of Commit
  * @param mutex transmission parameter : lock
