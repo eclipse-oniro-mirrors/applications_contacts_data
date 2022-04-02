@@ -123,7 +123,7 @@ int Contacts::DeleteContactById(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSt
 {
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &store = rdbStore;
     if (store == nullptr) {
-        HILOG_ERROR("ContactsAccount DeletecontactById store is  nullptr");
+        HILOG_ERROR("ContactsAccount DeletecontactById store is nullptr");
         return RDB_OBJECT_EMPTY;
     }
     if (needDeleteContactId < ID_EMPTY) {
