@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -693,17 +693,17 @@ export default {
     getPhoneNumberBatch:
         function() {
             var phoneNumber = randomNum(13);
-            var contactBlacklistValuesOne = {"phone_number" : phoneNumber};
-            var contactBlacklistValuesTwo = {"phone_number" : phoneNumber};
-            var contactBlacklistValuesThree = {"phone_number" : phoneNumber};
-            var contactBlacklistValuesFour = {"phone_number" : phoneNumber};
-            var contactBlacklistValuesFive = {"phone_number" : phoneNumber};
+            var contactBlocklistValuesOne = {"phone_number" : phoneNumber};
+            var contactBlocklistValuesTwo = {"phone_number" : phoneNumber};
+            var contactBlocklistValuesThree = {"phone_number" : phoneNumber};
+            var contactBlocklistValuesFour = {"phone_number" : phoneNumber};
+            var contactBlocklistValuesFive = {"phone_number" : phoneNumber};
             var listAddBluk = []
-            listAddBluk[0] = contactBlacklistValuesOne;
-            listAddBluk[1] = contactBlacklistValuesTwo;
-            listAddBluk[2] = contactBlacklistValuesThree;
-            listAddBluk[3] = contactBlacklistValuesFour;
-            listAddBluk[4] = contactBlacklistValuesFive;
+            listAddBluk[0] = contactBlocklistValuesOne;
+            listAddBluk[1] = contactBlocklistValuesTwo;
+            listAddBluk[2] = contactBlocklistValuesThree;
+            listAddBluk[3] = contactBlocklistValuesFour;
+            listAddBluk[4] = contactBlocklistValuesFive;
             return listAddBluk;
         },
     getSearchMap:

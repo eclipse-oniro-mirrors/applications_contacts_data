@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1547,7 +1547,7 @@ describe('ContactsTest', function() {
 
     /**
      * @tc.number  contact_insert_test_2700
-     * @tc.name    Insert contact blacklist
+     * @tc.name    Insert contact blocklist
      * @tc.desc    Function test
      */
     it("contact_insert_test_2700", 0, async function(done) {
@@ -1572,7 +1572,7 @@ describe('ContactsTest', function() {
 
     /**
      * @tc.number  contact_delete_test_2800
-     * @tc.name    Delete contact blacklist
+     * @tc.name    Delete contact blocklist
      * @tc.desc    Function test
      */
     it("contact_delete_test_2800", 0, async function(done) {
@@ -2708,7 +2708,7 @@ describe('ContactsTest', function() {
 
     /**
      * @tc.number  contact_batchinsert_test_5400
-     * @tc.name    Batch operation of contact blacklist
+     * @tc.name    Batch operation of contact blocklist
      * @tc.desc    Function test
      */
     it("contact_batchinsert_test_5400", 0, async function(done) {
@@ -4729,7 +4729,7 @@ describe('ContactsTest', function() {
 
     /**
      * @tc.number  contact_insertContactBlocklist_test_6800
-     * @tc.name    Add multiple records to the blacklist and verify whether the insertion is successful
+     * @tc.name    Add multiple records to the blocklist and verify whether the insertion is successful
      * @tc.desc    Function test
      */
     it("contact_insertContactBlocklist_test_6800", 0, async function(done) {
@@ -4776,7 +4776,7 @@ describe('ContactsTest', function() {
 
     /**
      * @tc.number  contact_removeContactBlocklist_test_6900
-     * @tc.name    Delete multiple records from the blacklist and verify whether the deletion is successful
+     * @tc.name    Delete multiple records from the blocklist and verify whether the deletion is successful
      * @tc.desc    Function test
      */
     it("contact_removeContactBlocklist_test_6900", 0, async function(done) {
@@ -5968,8 +5968,8 @@ describe('ContactsTest', function() {
             var dataId1 = await insertData(rawContactId1, "phone", phoneNumber, "");
             console.info("logMessage abnormal_contact_insertblocklist_test_9600: dataId1 = " + dataId1);
 
-            var blacklist = {"phone_numbers" : phoneNumber};
-            var code = await DAHelper.insert(contactBlocklistUri, blacklist);
+            var blocklist = {"phone_numbers" : phoneNumber};
+            var code = await DAHelper.insert(contactBlocklistUri, blocklist);
             expect(code == -1).assertTrue();
             await deleteRawContact("abnormal_contact_insertblocklist_test_9600");
             await deleteAll(contactDataUri, "abnormal_contact_insertblocklist_test_9600");

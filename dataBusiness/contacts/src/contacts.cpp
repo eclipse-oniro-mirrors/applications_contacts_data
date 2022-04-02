@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,7 +34,7 @@ Contacts::~Contacts()
  *
  * @param rdbStore Database operation object
  * @param outRawContactId raw_contact table id
- * @param rawContactValues insert raw_contact values
+ * @param rawContactValues inserted raw_contact values
  * @param contactId contact_id address
  *
  * @return insert contact error or success code
@@ -66,7 +66,7 @@ int Contacts::UpdateContact(const int &rawContactId, std::shared_ptr<OHOS::Nativ
 /**
  * @brief Build conatct data
  *
- * @param rawContactValues insert contact values
+ * @param rawContactValues inserted contact values
  *
  * @return contact table values
  */

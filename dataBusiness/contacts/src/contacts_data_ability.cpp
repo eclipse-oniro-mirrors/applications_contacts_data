@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -105,7 +105,7 @@ bool ContactsDataAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
 {
     mutex.try_lock();
     if (code != 0) {
-        HILOG_ERROR("IsBeginTransactionOK fail");
+        HILOG_ERROR("IsBeginTransactionOK failed");
         mutex.unlock();
         return false;
     }
@@ -124,7 +124,7 @@ bool ContactsDataAbility::IsCommitOK(int code, std::mutex &mutex)
 {
     mutex.try_lock();
     if (code != 0) {
-        HILOG_ERROR("IsCommitOK fail");
+        HILOG_ERROR("IsCommitOK failed");
         mutex.unlock();
         return false;
     }
@@ -145,7 +145,7 @@ int ContactsDataAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &v
     Contacts::SqlAnalyzer sqlAnalyzer;
     bool isOk = sqlAnalyzer.CheckValuesBucket(value);
     if (!isOk) {
-        HILOG_ERROR("ContactsDataAbility CheckValuesBucket is error");
+        HILOG_ERROR("ContactsDataAbility CheckValuesBucket error");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     g_mutex.lock();
@@ -278,7 +278,7 @@ int ContactsDataAbility::Update(
     Contacts::SqlAnalyzer sqlAnalyzer;
     bool isOk = sqlAnalyzer.CheckValuesBucket(value);
     if (!isOk) {
-        HILOG_ERROR("ContactsDataAbility CheckValuesBucket is error");
+        HILOG_ERROR("ContactsDataAbility CheckValuesBucket error");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     g_mutex.lock();
@@ -447,9 +447,9 @@ void ContactsDataAbility::DeleteExecute(
  *
  * @param uri Determine the data table name based on the URI
  * @param columns Conditions for query operation
- * @param predicates Query the data values of the condition
+ * @param predicates Condition for querying data values
  *
- * @return Query database results
+ * @return Database query result
  */
 std::shared_ptr<NativeRdb::AbsSharedResultSet> ContactsDataAbility::Query(
     const Uri &uri, const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates)
@@ -546,7 +546,7 @@ void ContactsDataAbility::QueryExecuteSwitchSplit(std::shared_ptr<NativeRdb::Abs
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         default:
-            HILOG_ERROR("ContactsDataAbility ====>no match uri action");
+            HILOG_ERROR("ContactsDataAbility ====>no matching uri action");
             break;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1548,7 +1548,7 @@ describe('ContactCardTest', function() {
 
     /**
      * @tc.number  contactCard_insert_test_2700
-     * @tc.name    Insert contact blacklist
+     * @tc.name    Insert contact blocklist
      * @tc.desc    Function test
      */
     it("contactCard_insert_test_2700", 0, async function(done) {
@@ -1573,7 +1573,7 @@ describe('ContactCardTest', function() {
 
     /**
      * @tc.number  contactCard_delete_test_2800
-     * @tc.name    Delete contact blacklist
+     * @tc.name    Delete contact blocklist
      * @tc.desc    Function test
      */
     it("contactCard_delete_test_2800", 0, async function(done) {
@@ -2712,7 +2712,7 @@ describe('ContactCardTest', function() {
 
     /**
      * @tc.number  contactCard_batchinsert_test_5400
-     * @tc.name    Batch operation of contact blacklist
+     * @tc.name    Batch operation of contact blocklist
      * @tc.desc    Function test
      */
     it("contactCard_batchinsert_test_5400", 0, async function(done) {
@@ -4749,7 +4749,7 @@ describe('ContactCardTest', function() {
 
     /**
      * @tc.number  contactCard_insertContactBlocklist_test_6800
-     * @tc.name    Add multiple records to the blacklist and verify whether the insertion is successful
+     * @tc.name    Add multiple records to the blocklist and verify whether the insertion is successful
      * @tc.desc    Function test
      */
     it("contactCard_insertContactBlocklist_test_6800", 0, async function(done) {
@@ -4796,7 +4796,7 @@ describe('ContactCardTest', function() {
 
     /**
      * @tc.number  contactCard_removeContactBlocklist_test_6900
-     * @tc.name    Delete multiple records from the blacklist and verify whether the deletion is successful
+     * @tc.name    Delete multiple records from the blocklist and verify whether the deletion is successful
      * @tc.desc    Function test
      */
     it("contactCard_removeContactBlocklist_test_6900", 0, async function(done) {

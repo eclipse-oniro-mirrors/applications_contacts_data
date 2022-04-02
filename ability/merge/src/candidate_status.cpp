@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,12 +32,12 @@ CandidateStatus::~CandidateStatus()
 }
 
 /**
- * @brief Query operation for merge candidate
+ * @brief Query operation for merging candidates
  *
  * @param store Conditions for query operation
  * @param rawId Contacts's raw_contact_id to query
  *
- * @return Candidate contact raw_contact_id collection
+ * @return Collection of canddidate contacts with the same raw_contact_id
  */
 Candidate CandidateStatus::QueryAllForMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId)
 {
@@ -47,7 +47,7 @@ Candidate CandidateStatus::QueryAllForMerge(std::shared_ptr<OHOS::NativeRdb::Rdb
     int phoneType = contactsDataBase->GetTypeId(ContentTypeData::PHONE);
     MergeUtils mergeUtils;
     std::set<std::string> names = mergeUtils.QueryRawContactByType(store, rawId, nameType);
-    // query other name same raw_contact_id
+    // query other name with the raw_contact_id
     std::vector<int> nameIds = mergeUtils.QueryByDataName(rawId, names, store);
     // query current phone
     std::set<std::string> phones = mergeUtils.QueryRawContactByType(store, rawId, phoneType);
@@ -94,12 +94,12 @@ void CandidateStatus::AddMergedStatus(Candidate &candidate)
 }
 
 /**
- * @brief Query operation for ensure if candidate need merge
+ * @brief Query operation for checking if candidate marging is needed
  *
  * @param store Conditions for query operation
  * @param rawId Contacts's raw_contact_id to query
  *
- * @return The result returned by the update operation
+ * @return The result returned by the query operation
  */
 bool CandidateStatus::IsNeedMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId)
 {
@@ -129,7 +129,7 @@ bool CandidateStatus::IsNeedMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> sto
 }
 
 /**
- * @brief Query operation for ensure if candidate has true merge_status
+ * @brief Check if the candidate has true merge_status
  *
  * @param store Conditions for query operation
  * @param rawId Contacts's raw_contact_id to query
@@ -164,12 +164,12 @@ bool CandidateStatus::IsMergeStatus(std::shared_ptr<OHOS::NativeRdb::RdbStore> s
 }
 
 /**
- * @brief Query operation for ensure if candidate has merged
+ * @brief Check if the candidate has been merged
  *
  * @param store Conditions for query operation
  * @param rawId Contacts's raw_contact_id to query
  *
- * @return The result returned by the update operation
+ * @return True if the candidate has been merged; false otherwise
  */
 bool CandidateStatus::IsMerged(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId)
 {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,7 +42,7 @@ ContactsAccount::~ContactsAccount()
 /**
  * @brief ContactsAccount insert database
  *
- * @param rdbStore Insert operation based on radStore
+ * @param rdbStore Insert operation based on rdbStore
  * @param accountName Pass in parameter accountName
  * @param accountType Pass in parameter accountType
  *
@@ -57,7 +57,7 @@ int64_t ContactsAccount::Insert(
     values.PutString(AccountColumns::ACCOUNT_TYPE, accountType);
     int64_t outRowId = OHOS::NativeRdb::E_OK;
     if (store_ == nullptr) {
-        HILOG_ERROR("ContactsAccount insert store_ is  nullptr");
+        HILOG_ERROR("ContactsAccount insert store_ is nullptr");
         return RDB_OBJECT_EMPTY;
     }
     int ret = store_->Insert(outRowId, ContactTableName::ACCOUNT, values);
