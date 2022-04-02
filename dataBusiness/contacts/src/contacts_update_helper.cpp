@@ -152,8 +152,8 @@ int ContactsUpdateHelper::UpdateName(OHOS::NativeRdb::ValuesBucket linkDataDataV
 /**
  * @brief ContactsUpdateHelper update table calllog
  *
- * @param rawContactIdVector Contacts ID collection to update
- * @param rdbStore Conditions to update calllog
+ * @param rawContactIdVector Collection of IDs to update
+ * @param rdbStore Database that stores the table calllog
  * @param isDelete Contacts field value to update
  *
  * @return Update calllog results code
@@ -220,7 +220,7 @@ void ContactsUpdateHelper::DataToUpdateCallLog(
     }
     resultSet->Close();
     if (rowCount == 0) {
-        // not find contact data update callLog
+        // contact data update callLog not found
         std::string quickSearch = std::to_string(contactId);
         std::string name;
         UpdateCallLogNameNull(name, quickSearch, true);
@@ -291,14 +291,14 @@ int ContactsUpdateHelper::UpdateCallLogNameNull(std::string &name, std::string &
         ret = VoiceMailDataBase::GetInstance()->UpdateVoiceMail(updateCallLogValues, predicates);
     }
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("UpdateCallLogPhone name error from phone is %{public}d", ret);
+        HILOG_ERROR("UpdateCallLogPhone name error, phone number is %{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     return ret;
 }
 
 /**
- * @brief ContactsUpdateHelper update table calllog
+ * @brief Update table calllog
  *
  * @param phoneNumber Contacts's phone number
  * @param name CallLog name to update
@@ -342,7 +342,7 @@ int ContactsUpdateHelper::UpdateCallLog(
         ret = VoiceMailDataBase::GetInstance()->UpdateVoiceMail(updateCallLogValues, predicates);
     }
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("UpdateCallLogPhone name error from phone is %{public}d", ret);
+        HILOG_ERROR("UpdateCallLogPhone name error, phone number is %{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     return ret;

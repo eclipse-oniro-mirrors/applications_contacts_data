@@ -43,8 +43,8 @@ ContactsAccount::~ContactsAccount()
  * @brief Insert ContactsAccount into rdbStore
  *
  * @param rdbStore Insert operation based on rdbStore
- * @param accountName Pass in parameter account Name
- * @param accountType Pass in parameter account Type
+ * @param accountName Pass in parameter account name
+ * @param accountType Pass in parameter account type
  *
  * @return Insert database results code
  */

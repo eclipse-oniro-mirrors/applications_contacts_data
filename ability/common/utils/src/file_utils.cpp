@@ -31,7 +31,7 @@ FileUtils::~FileUtils()
 int FileUtils::IsFolderExist(std::string path)
 {
     DIR *dp;
-    if ((dp = opendir(path.c_str())) == NULL) {
+    if ((dp = opendir(path.c_str())) == nullptr) {
         HILOG_ERROR("FileUtils file NULL");
         return OPERATION_ERROR;
     }

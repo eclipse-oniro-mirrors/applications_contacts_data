@@ -30,10 +30,10 @@ RawContacts::~RawContacts()
 }
 
 /**
- * @brief RawContacts insert table raw_contact
+ * @brief Insert data to the raw_contact table
  *
  * @param rdbStore Insert operation based on rdbStore
- * @param rawContactValues Pass in parameter rawContactValues
+ * @param rawContactValues Raw contact values to be inserted
  *
  * @return Insert database results code
  */
@@ -48,11 +48,11 @@ int RawContacts::InsertRawContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdb
 }
 
 /**
- * @brief RawContacts update table raw_contact
+ * @brief Update data in the raw_contact table
  *
  * @param rdbStore Update operation based on rdbStore
  * @param upRawContactValues Pass in parameter upRawContactValues
- * @param whereClause Conditions for update operation
+ * @param whereClause Clauses for update operation
  * @param whereArgs Conditions for update operation
  *
  * @return Update database results code

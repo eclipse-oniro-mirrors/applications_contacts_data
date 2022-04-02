@@ -47,7 +47,7 @@ int64_t ContactsSearch::Insert(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSto
 }
 
 /**
- * @brief ContactsDataBase update by quick_search_key
+ * @brief Update contact data by quick_search_key
  *
  * @param rawContactId Parameters to be passed for update operation
  * @param type Parameters to be passed for update operation
