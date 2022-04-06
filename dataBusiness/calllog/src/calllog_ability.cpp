@@ -56,7 +56,7 @@ void CallLogAbility::Dump(const std::string &extra)
 
 void CallLogAbility::OnStart(const Want &want)
 {
-    std::string basePath = GetDatabaseDir();
+    std::string basePath = GetAbilityContext()->GetDatabaseDir();
     Contacts::ContactsPath::RDB_PATH = basePath + "/";
     Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
     Contacts::ContactsPath::DUMP_PATH = GetFilesDir() + "/";
