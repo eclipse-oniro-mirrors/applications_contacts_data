@@ -80,7 +80,7 @@ ContactsDataAbility::~ContactsDataAbility()
 void ContactsDataAbility::OnStart(const Want &want)
 {
     Ability::OnStart(want);
-    std::string basePath = GetDatabaseDir();
+    std::string basePath = GetAbilityContext()->GetDatabaseDir();
     Contacts::ContactsPath::RDB_PATH = basePath + "/";
     Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
     Contacts::ContactsPath::DUMP_PATH = GetFilesDir() + "/";
