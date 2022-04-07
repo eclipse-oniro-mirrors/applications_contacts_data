@@ -44,8 +44,8 @@ public:
 
     PerformanceTest();
     ~PerformanceTest();
-    long long GetCurrentTime();
-    int CalcTime(long long startTime, long long endTime);
+    int64_t GetCurrentTime();
+    int CalcTime(int64_t startTime, int64_t endTime);
     void DeleteContact();
 };
 } // namespace Test
