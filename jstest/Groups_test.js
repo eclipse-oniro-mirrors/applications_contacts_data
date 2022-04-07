@@ -31,7 +31,7 @@ describe('GroupsTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': groupsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", map.get("id"));
         try {
             var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
@@ -39,7 +39,7 @@ describe('GroupsTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         for (var [key, value] of map) {
-                            var dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
                             console.info(tag + ': logMessage groupsQuery key =' + key + 'dbresult :' + dbresult +
                                          ' value : ' + value);
                             expect(value == dbresult).assertTrue();
@@ -57,8 +57,8 @@ describe('GroupsTest', function() {
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryIdForDelete start ! DAHelper = ' + DAHelper);
-        var resultColumns = common.getCallLogResultColumns();
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let resultColumns = common.getCallLogResultColumns();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", map.get("id"));
         try {
             var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
@@ -73,7 +73,7 @@ describe('GroupsTest', function() {
     async function deleteAll(uri, tag)
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(uri, condition);
         console.info(tag + ': deleteAll deleteCode = ' + deleteCode);
@@ -127,7 +127,7 @@ describe('GroupsTest', function() {
 
         async function GroupUpdate()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", groupId.toString());
             try {
                 var updateCode = await DAHelper.update(groupUri, common.getProfileUpdateGroup(), condition);
@@ -164,7 +164,7 @@ describe('GroupsTest', function() {
         }
         async function GroupDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", groupId.toString());
             try {
                 var deleteCode = await DAHelper.delete(groupUri, condition);
@@ -233,7 +233,7 @@ describe('GroupsTest', function() {
         async function GroupQuery()
         {
             var resultColumns = [ "id", "group_name" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             try {
                 var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
@@ -291,7 +291,7 @@ describe('GroupsTest', function() {
 
         async function GroupUpdate()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", groupId.toString());
             var updateValue = { "group_notesss" : "6666" }
             try {
@@ -330,7 +330,7 @@ describe('GroupsTest', function() {
         }
         async function GroupDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("idss", groupId.toString());
             try {
                 var deleteCode = await DAHelper.delete(groupUri, condition);
@@ -372,7 +372,7 @@ describe('GroupsTest', function() {
         async function GroupQuery(DAHelper)
         {
             var resultColumns = [ "id", "group_namesss" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", groupId.toString());
             try {
                 var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
@@ -419,7 +419,7 @@ describe('GroupsTest', function() {
         {
             var groupSize = 3;
             var resultColumns = [ "id", "group_name" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("group_name", "test1000");
             try {
                 var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
@@ -466,7 +466,7 @@ describe('GroupsTest', function() {
         {
             var groupSize = 0;
             var resultColumns = [ "id", "group_name" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("group_name", "test1100");
             try {
                 var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
@@ -514,7 +514,7 @@ describe('GroupsTest', function() {
         {
             var groupSize = 3;
             var resultColumns = [ "id", "group_name" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("group_name", "test120000");
             try {
                 var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
@@ -530,7 +530,7 @@ describe('GroupsTest', function() {
 
     async function GroupUpdateThree(DAHelper)
     {
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("group_name", "test1200");
         var updateValue = { "group_name" : "test120000" }
         try {
@@ -544,7 +544,7 @@ describe('GroupsTest', function() {
 
     afterAll(async function(done) {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.notEqualTo("id", "0");
         try {
             var deleteCode = await DAHelper.delete(groupUri, condition);

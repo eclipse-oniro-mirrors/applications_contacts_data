@@ -85,7 +85,7 @@ describe('PerformanceTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var updateValues = {"favorite" : 1};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         condition.and();
         condition.equalTo("is_deleted", "0");
@@ -111,7 +111,7 @@ describe('PerformanceTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': start ! DAHelper = ' + DAHelper);
         var resultColumns = ["id"];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         condition.and();
         condition.equalTo("is_deleted", "0");
@@ -136,7 +136,7 @@ describe('PerformanceTest', function() {
     it("raw_contact_delete_stability_test_1200", 0, async function(done) {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('raw_contact_delete_stability_test_1200 : start ! DAHelper = ' + DAHelper);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         condition.and();
         condition.equalTo("is_deleted", "0");
@@ -172,7 +172,7 @@ describe('PerformanceTest', function() {
             console.info("logMessage contact_data_insert_stability_test_1300: raw_contact insert error = " + error);
         }
 
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId.toString());
         var deleteCode = await DAHelper.delete(rawContactUri, condition);
         sleep(1000);
@@ -214,7 +214,7 @@ describe('PerformanceTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('logMessage contact_data_update_stability_test_1400 DAHelper success! DAHelper = ' + DAHelper);
         var updateValues = {"syn_1" : "test"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         try {
             var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
@@ -237,7 +237,7 @@ describe('PerformanceTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('contact_data_query_stability_test_1500 start ! DAHelper = ' + DAHelper);
         var resultColumns = ["id"];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         try {
             var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
@@ -260,7 +260,7 @@ describe('PerformanceTest', function() {
     it("contact_data_delete_stability_test_1600", 0, async function(done) {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('contact_data_delete_stability_test_1600 : start ! DAHelper = ' + DAHelper);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         try {
             var deleteCode = await DAHelper.delete(contactDataUri, condition);
@@ -321,7 +321,7 @@ describe('PerformanceTest', function() {
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var updateValues = {"answer_state" : "1"};
         try {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             var updateCode = await DAHelper.update(calllogUri, updateValues, condition);
             sleep(1000);
@@ -344,11 +344,11 @@ describe('PerformanceTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info(tag + ': start ! DAHelper = ' + DAHelper);
         var resultColumns = ["id"];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.notEqualTo("id", 0);
 
         try {
-            var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
             sleep(5000);
             console.info(tag + ' : logMessage : rowCount' + resultSet.rowCount);
             expect(resultSet.rowCount == 10000).assertTrue();
@@ -369,7 +369,7 @@ describe('PerformanceTest', function() {
         var tag = "calllog_delete_stability_test_400";
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info(tag + ': start ! DAHelper = ' + DAHelper);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(calllogUri, condition);
         sleep(5000);
@@ -426,7 +426,7 @@ describe('PerformanceTest', function() {
         console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
         var updateValues = {"origin_type" : "test"};
         try {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.notEqualTo("id", 0);
             var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
             sleep(1000);
@@ -449,7 +449,7 @@ describe('PerformanceTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ': start ! DAHelper = ' + DAHelper);
         var resultColumns = ["id"];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         try {
             var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
@@ -473,7 +473,7 @@ describe('PerformanceTest', function() {
         var tag = "voicemail_delete_stability_test_800";
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ': start ! DAHelper = ' + DAHelper);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         try {
             var deleteCode = await DAHelper.delete(voicemailUri, condition);
@@ -490,7 +490,7 @@ describe('PerformanceTest', function() {
     afterAll(async function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('Stability : start ! DAHelper = ' + DAHelper);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.notEqualTo("id", "0");
         try {
             var resultColumns = [ "id" ];

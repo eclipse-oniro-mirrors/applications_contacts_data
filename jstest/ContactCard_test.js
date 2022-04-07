@@ -56,7 +56,7 @@ describe('ContactCardTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': contactsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", map.get("id"));
         try {
             var resultSet = await DAHelper.query(uri, resultColumns, condition);
@@ -65,7 +65,7 @@ describe('ContactCardTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         for (var [key, value] of map) {
-                            var dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
                             console.info(tag + ':logMessage contactsQuery key = ' + key + ' dbresult :' + dbresult +
                                          ' value : ' + value);
                             expect(value == dbresult).assertEqual(true);
@@ -84,7 +84,7 @@ describe('ContactCardTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryBatch start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", map.get("raw_contact_id"));
         try {
             var resultSet = await DAHelper.query(profileRawContactUri, resultColumns, condition);
@@ -101,8 +101,8 @@ describe('ContactCardTest', function() {
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryIdForDelete start ! DAHelper = ' + DAHelper);
-        var resultColumns = common.getCallLogResultColumns();
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let resultColumns = common.getCallLogResultColumns();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", map.get("id"));
         try {
             var resultSet = await DAHelper.query(uri, resultColumns, condition);
@@ -119,7 +119,7 @@ describe('ContactCardTest', function() {
     {
         try {
             let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             var deleteCode = await DAHelper.delete(uri, condition);
             console.info(tag + ': deleteAll deleteCode = ' + deleteCode);
@@ -133,7 +133,7 @@ describe('ContactCardTest', function() {
     {
         try {
             let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             condition.and();
             condition.equalTo("is_deleted", "0");
@@ -646,7 +646,7 @@ describe('ContactCardTest', function() {
             "favorite" : 0,
             "phonetic_name" : "dacheng||dc"
         };
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileRawContactUri, updateValues, condition);
@@ -707,7 +707,7 @@ describe('ContactCardTest', function() {
     async function dataNameUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "dayuan"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -769,7 +769,7 @@ describe('ContactCardTest', function() {
     async function dataCompanyUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "OOOO", "position" : "developer"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -827,7 +827,7 @@ describe('ContactCardTest', function() {
     async function dataPhoneUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "99663355"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -889,7 +889,7 @@ describe('ContactCardTest', function() {
     async function dataNickNameUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "fengyuan"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -951,7 +951,7 @@ describe('ContactCardTest', function() {
     async function dataEmailUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "199@163.com"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition)
@@ -1013,7 +1013,7 @@ describe('ContactCardTest', function() {
     async function dataPostalUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "BeiJing"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -1071,7 +1071,7 @@ describe('ContactCardTest', function() {
     async function dataNoteUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "God"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -1129,7 +1129,7 @@ describe('ContactCardTest', function() {
     async function dataAimUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "bbbbb"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -1191,7 +1191,7 @@ describe('ContactCardTest', function() {
     async function dataEventUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "19971021"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -1253,7 +1253,7 @@ describe('ContactCardTest', function() {
     async function dataWebsiteUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "www.123.com"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -1314,7 +1314,7 @@ describe('ContactCardTest', function() {
     async function dataRelationUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "spouse"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -1376,7 +1376,7 @@ describe('ContactCardTest', function() {
     async function dataGroupUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "7"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -1439,7 +1439,7 @@ describe('ContactCardTest', function() {
     async function dataMiscUpdate(DAHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "999"};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
@@ -1482,7 +1482,7 @@ describe('ContactCardTest', function() {
     async function updateFavorite(DAHelper, rawContactId)
     {
         var updateValues = {"favorite" : 1};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileRawContactUri, updateValues, condition);
@@ -1527,7 +1527,7 @@ describe('ContactCardTest', function() {
     async function updateUnFavorite(DAHelper, rawContactId)
     {
         var updateValues = {"favorite" : 0};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
             var updateCode = await DAHelper.update(profileRawContactUri, updateValues, condition);
@@ -1594,7 +1594,7 @@ describe('ContactCardTest', function() {
 
         async function BlocklistDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", blocklistId.toString());
             try {
                 var deleteCode = await DAHelper.delete(profileBlocklistUri, condition);
@@ -1734,7 +1734,7 @@ describe('ContactCardTest', function() {
 
     async function deleteGroup(DAHelper, contactDataId)
     {
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", contactDataId.toString());
         try {
             var deleteCode = await DAHelper.delete(profileContactDataUri, condition);
@@ -1777,7 +1777,7 @@ describe('ContactCardTest', function() {
     async function RawContactQuery(DAHelper, rawContactId)
     {
         var resultColumns = [ "id", "display_name" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
             var resultSet = await DAHelper.query(profileRawContactUri, resultColumns, condition);
@@ -1835,7 +1835,7 @@ describe('ContactCardTest', function() {
     async function queryTwoRaw(DAHelper, rawContactId1, rawContactId2)
     {
         var resultColumns = [ "id", "display_name" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId1.toString());
         condition.or();
         condition.equalTo("id", rawContactId2.toString());
@@ -1879,7 +1879,7 @@ describe('ContactCardTest', function() {
             done();
         }
         var resultColumns = [ "id", "display_name" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         try {
             var resultSet = await DAHelper.query(profileRawContactUri, resultColumns, condition);
@@ -1935,7 +1935,7 @@ describe('ContactCardTest', function() {
     async function queryAllInformation(DAHelper, rawContactId)
     {
         var resultColumns = [];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
             var resultSet = await DAHelper.query(profileRawContactUri, resultColumns, condition);
@@ -2022,7 +2022,7 @@ describe('ContactCardTest', function() {
     async function groupBossBoardQuery(DAHelper, rawContactId, groupId)
     {
         var resultColumns = [ "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         // type_id = 9 data is group
         condition.equalTo("type_id", "9");
         condition.and();
@@ -2070,7 +2070,7 @@ describe('ContactCardTest', function() {
         async function queryFavorite()
         {
             var resultColumns = [ "id", "display_name" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("favorite", "1");
             condition.and();
             condition.equalTo("is_deleted", "0");
@@ -2120,7 +2120,7 @@ describe('ContactCardTest', function() {
         async function queryContacted()
         {
             var resultColumns = [ "id", "display_name" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.lessThan("lastest_contacted_time", "100");
             condition.and();
             condition.equalTo("is_deleted", "0");
@@ -2254,7 +2254,7 @@ describe('ContactCardTest', function() {
     async function phoneQuery(DAHelper, rawContactId)
     {
         var resultColumns = [ "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         // type_id = 5 data is phone
         condition.equalTo("content_type", "phone");
         try {
@@ -2322,7 +2322,7 @@ describe('ContactCardTest', function() {
     async function emailQuery(DAHelper, contactDataId, rawContactId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         // type_id = 1 data content_type is  email
         condition.equalTo("type_id", "1").limitAs(array_three).orderByDesc("id");
         try {
@@ -2406,7 +2406,7 @@ describe('ContactCardTest', function() {
     async function queryTwo(DAHelper, rawContactId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info", "position" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var resultSet = await DAHelper.query(profileContactDataUri, resultColumns, condition);
@@ -2654,7 +2654,7 @@ describe('ContactCardTest', function() {
             console.info("logMessage contactCard_batchinsert_test_4900: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == 0).assertTrue();
             var resultColumns = [];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("company", "TT4900");
             var resultSet = await DAHelper.query(profileRawContactUri, resultColumns, condition);
             console.info(
@@ -2735,7 +2735,7 @@ describe('ContactCardTest', function() {
 
         async function BlocklistDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("phone_number", phoneNumber);
             try {
                 var deleteCode = await DAHelper.delete(profileBlocklistUri, condition);
@@ -2752,7 +2752,7 @@ describe('ContactCardTest', function() {
         async function query(size)
         {
             var resultColumns = [];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("phone_number", phoneNumber);
             try {
                 var resultSet = await DAHelper.query(profileBlocklistUri, resultColumns, condition);
@@ -2802,7 +2802,7 @@ describe('ContactCardTest', function() {
     async function RawContactUpdateUnFavorites(DAHelper)
     {
         var updateValues = {"favorite" : 0};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("display_name", "fengyuan");
         condition.or();
         condition.equalTo("display_name", "xiaoma");
@@ -2819,7 +2819,7 @@ describe('ContactCardTest', function() {
     async function queryUnFavorites(DAHelper)
     {
         var resultColumns = [];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("display_name", "fengyuan");
         condition.or();
         condition.equalTo("display_name", "xiaoma");
@@ -2934,7 +2934,7 @@ describe('ContactCardTest', function() {
 
     async function ContactDataDelete(DAHelper, rawContactId1, rawContactId3)
     {
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId1.toString());
         condition.or();
         condition.equalTo("raw_contact_id", rawContactId3.toString());
@@ -2952,7 +2952,7 @@ describe('ContactCardTest', function() {
     async function queryTwoData(DAHelper, rawContactId1, rawContactId3)
     {
         var resultColumns = [];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId1.toString());
         condition.or();
         condition.equalTo("raw_contact_id", rawContactId3.toString());
@@ -3014,7 +3014,7 @@ describe('ContactCardTest', function() {
     async function SearchQuery(DAHelper, rawContactId)
     {
         var resultColumns = [ "id", "search_name" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var resultSet = await DAHelper.query(profilesearchContactUri, resultColumns, condition);
@@ -3023,7 +3023,7 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     for (var [key, value] of map) {
-                        var dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                        let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
                         console.info(tag + ':contactCard_pinyin_query_test_200 key = ' + key +
                                      ' dbresult :' + dbresult + ' value : ' + value);
                         expect(value == dbresult).assertEqual(true);
@@ -3080,7 +3080,7 @@ describe('ContactCardTest', function() {
     async function SearchContactQueryChinese(DAHelper, rawContactId)
     {
         var resultColumns = [ "raw_contact_id", "search_name" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var resultSet = await DAHelper.query(profilesearchContactUri, resultColumns, condition);
@@ -3141,7 +3141,7 @@ describe('ContactCardTest', function() {
     async function SearchContactQuery(DAHelper, rawContactId)
     {
         var resultColumns = [ "raw_contact_id", "search_name" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
             var resultSet = await DAHelper.query(profilesearchContactUri, resultColumns, condition);
@@ -3187,7 +3187,7 @@ describe('ContactCardTest', function() {
         async function RawContactNameQuery()
         {
             var resultColumns = [ "id", "display_name" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.like("display_name", "%xiaoming40%");
             condition.and();
             condition.equalTo("is_deleted", "0");
@@ -3235,7 +3235,7 @@ describe('ContactCardTest', function() {
         async function RawContactPhoneticNameQuery()
         {
             var resultColumns = [ "id", "display_name", "phonetic_name" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.like("phonetic_name", "%xiaoming%");
             condition.and();
             condition.equalTo("is_deleted", "0");
@@ -3293,7 +3293,7 @@ describe('ContactCardTest', function() {
     async function RawContactCompanyQuery(DAHelper, rawContactId)
     {
         var resultColumns = [ "id", "display_name", "company", "position" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.like("company", "%TT6%");
         condition.and();
         condition.equalTo("is_deleted", "0");
@@ -3370,7 +3370,7 @@ describe('ContactCardTest', function() {
     async function fuzzyQueryPhone(DAHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         // type_id = 5 data is phone
         condition.like("detail_info", "%52896%");
         condition.and();
@@ -3442,7 +3442,7 @@ describe('ContactCardTest', function() {
     async function fuzzyQueryPhoneNickName(DAHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         // type_id = 3 data is nickname
         condition.like("detail_info", "%daming%");
         condition.and();
@@ -3513,7 +3513,7 @@ describe('ContactCardTest', function() {
     async function fuzzyQueryEmail(DAHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         // type_id = 1 data is email
         condition.like("detail_info", "%1564%");
         condition.and();
@@ -3586,7 +3586,7 @@ describe('ContactCardTest', function() {
     async function fuzzyQueryAddress(DAHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         // type_id = 1 data is postal_address
         condition.like("detail_info", "%nanjing10%");
         condition.and();
@@ -3660,7 +3660,7 @@ describe('ContactCardTest', function() {
     async function fuzzyQueryNote(DAHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         // type_id = 10 data is note
         condition.like("detail_info", "%java11%");
         condition.and();
@@ -3731,7 +3731,7 @@ describe('ContactCardTest', function() {
     async function fuzzyQueryIM(DAHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         // type_id = 10 data is im account number
         condition.like("detail_info", "%aa12%");
         condition.and();
@@ -3827,7 +3827,7 @@ describe('ContactCardTest', function() {
         async function AbnormalUpdate()
         {
             var updateValues = {"display_names" : "xiaosan"};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", rawContactId.toString());
             try {
                 var updataCode = await DAHelper.update(profileRawContactUri, updateValues, condition)
@@ -3871,7 +3871,7 @@ describe('ContactCardTest', function() {
         async function AbnormalUpdate()
         {
             var updateValues = {"display_name" : "xiaosan"};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", rawContactId.toString());
             try {
                 var updataCode = await DAHelper.update(errorUri, updateValues, condition);
@@ -3913,7 +3913,7 @@ describe('ContactCardTest', function() {
 
         async function AbnormalDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", rawContactId.toString());
             try {
                 var deleteCode = await DAHelper.delete(profileRawContactUri, condition);
@@ -3957,7 +3957,7 @@ describe('ContactCardTest', function() {
 
         async function AbnormalDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", rawContactId.toString());
             try {
                 var deleteCode = await DAHelper.delete(errorUri, condition);
@@ -4001,7 +4001,7 @@ describe('ContactCardTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [ "id", "display_name" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", rawContactId.toString());
             try {
                 var resultSet = await DAHelper.query(profileRawContactUri, resultColumns, condition);
@@ -4146,7 +4146,7 @@ describe('ContactCardTest', function() {
         }
         async function executeBatch()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", rawContactId.toString());
             DAHelper.executeBatch(URI_CONTACTS, [ {
                 uri : profileRawContactUri,
@@ -4192,7 +4192,7 @@ describe('ContactCardTest', function() {
         async function executeBatch()
         {
             var updateValues = {"display_name" : "xiaoxiaoxiao"};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", rawContactId.toString());
             DAHelper.executeBatch(URI_CONTACTS, [ {
                 uri : profileRawContactUri,
@@ -4446,7 +4446,7 @@ describe('ContactCardTest', function() {
             console.info("logMessage contactCard_update_test_6200: rawContactIdTwo = " + rawContactIdTwo);
 
             var updateValues = {"display_name" : "xiaosan"};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", rawContactId.toString());
             condition.or();
             condition.equalTo("id", rawContactIdOne.toString());
@@ -4472,7 +4472,7 @@ describe('ContactCardTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': contactsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "display_name" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId.toString());
         condition.or();
         condition.equalTo("id", rawContactIdOne.toString());
@@ -4510,7 +4510,7 @@ describe('ContactCardTest', function() {
             expect(rawContactId > 0).assertTrue();
             sleep(sleep_two);
             var updateValues = common.getProfileRawContactUpdate();
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", rawContactId.toString());
             var updataCode = await DAHelper.update(profileRawContactUri, updateValues, condition);
             console.info('logMessage contactCard_UpdateRawContcat_test_6300: updataCode = ' + updataCode);
@@ -4554,7 +4554,7 @@ describe('ContactCardTest', function() {
             expect(contactDataId > 0).assertTrue();
 
             var updateValues = common.getProfileContactDataUpdate();
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", contactDataId.toString());
             var updataCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
             console.info('logMessage contactCard_insertDataUpdate_test_6400: updataCode = ' + updataCode);
@@ -4603,7 +4603,7 @@ describe('ContactCardTest', function() {
             await insertData(rawContactId, "group_membership", 1, "");
             await insertData(rawContactId, "contact_misc", "5678", "");
             var updateValues = {"detail_info" : "xiaocai"};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("raw_contact_id", rawContactId.toString());
             var updataCode = await DAHelper.update(profileContactDataUri, updateValues, condition);
             console.info('logMessage contactCard_insertDataUpdateAll_test_6500: updataCode = ' + updataCode);
@@ -4624,7 +4624,7 @@ describe('ContactCardTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': contactsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("row_contact_id", rawContactId.toString());
         try {
             var resultSet = await DAHelper.query(profileContactDataUri, resultColumns, condition);
@@ -4682,7 +4682,7 @@ describe('ContactCardTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryThreeFavorite start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "favorite" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId.toString());
         condition.or();
         condition.equalTo("id", rawContactIdOne.toString());
@@ -4728,7 +4728,7 @@ describe('ContactCardTest', function() {
             console.info("logMessage contactCard_unFavorite_test_6700: rawContactId = " + rawContactIdTwo);
 
             var updateValues = {"favorite" : 0};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", rawContactId.toString());
             condition.or();
             condition.equalTo("id", rawContactIdOne.toString());
@@ -4776,7 +4776,7 @@ describe('ContactCardTest', function() {
         async function query(size)
         {
             var resultColumns = [];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             var phoneNumber = randomNum(8);
             condition.equalTo("phone_number", phoneNumber);
             try {
@@ -4823,7 +4823,7 @@ describe('ContactCardTest', function() {
         async function query(size)
         {
             var resultColumns = [];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             var phoneNumber = randomNum(8);
             condition.equalTo("phone_number", phoneNumber);
             try {
@@ -4883,7 +4883,7 @@ describe('ContactCardTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryThreeGroup start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", rawContactId.toString());
         condition.or();
         condition.equalTo("id", rawContactIdOne.toString());
@@ -4978,7 +4978,7 @@ describe('ContactCardTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': queryZeroGroup start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         condition.or();
         condition.equalTo("raw_contact_id", rawContactIdOne.toString());
@@ -5134,7 +5134,7 @@ describe('ContactCardTest', function() {
     async function queryAlldata(tag, DAHelper, rawContactId, contactdata, values)
     {
         var resultColumns = [ "raw_contact_id", "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", contactdata.toString());
         try {
             var resultSet = await DAHelper.query(profileContactDataUri, resultColumns, condition);
@@ -5235,7 +5235,7 @@ describe('ContactCardTest', function() {
             await insertData(rawContactId, "name", "xiaotian", "");
 
             var updateValues = {"detail_info" : "xiaocai7800"};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("raw_contact_id", rawContactId.toString());
             condition.or();
             condition.equalTo("raw_contact_id", rawContactId1.toString())
@@ -5256,7 +5256,7 @@ describe('ContactCardTest', function() {
     async function insertDataUpdateMoreQuery(tag, DAHelper, rawContactId, rawContactId1)
     {
         var resultColumns = [ "detail_info" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         condition.or();
         condition.equalTo("raw_contact_id", rawContactId1.toString())
@@ -5323,7 +5323,7 @@ describe('ContactCardTest', function() {
 
     afterAll(async function() {
         var tag = "Contacts_test_start_deleted";
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         let DAHelperContact = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': start ! DAHelperContact = ' + DAHelperContact);

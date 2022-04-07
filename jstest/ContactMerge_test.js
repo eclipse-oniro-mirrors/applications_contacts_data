@@ -75,7 +75,7 @@ describe('ContactMergeTest', function() {
 
     async function AutoMerge(DAHelper, rawContactId1)
     {
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var updateValues = {};
         try {
             var autoMergeCode = await DAHelper.update(autoMergeUri, updateValues, condition);
@@ -115,7 +115,7 @@ describe('ContactMergeTest', function() {
     async function deleteAll(uri, tag)
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(uri, condition);
         console.info(tag + ': deleteAll deleteCode = ' + deleteCode);
@@ -127,7 +127,7 @@ describe('ContactMergeTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ' : ContactMergeQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [ "contact_id" ];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         console.info(tag + ' : map_id  = ' + map.get("id"));
         condition.equalTo("id", map.get("id"));
         try {
@@ -158,7 +158,7 @@ describe('ContactMergeTest', function() {
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var updateValues = {"detail_info" : updateDataValue};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", contactDataId.toString());
         var code = await DAHelper.update(contactDataUri, updateValues, condition);
         console.info(testName + "  updateContactData: code = " + code);
@@ -424,7 +424,7 @@ describe('ContactMergeTest', function() {
 
     async function AutoMerger(DAHelper, rawContactId1, testName)
     {
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var updateValues = {};
         try {
             var autoMergeCode = await DAHelper.update(autoMergeUri, updateValues, condition);
@@ -443,7 +443,7 @@ describe('ContactMergeTest', function() {
 
     async function AutoNotMerger(DAHelper, rawContactId1, testName)
     {
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var updateValues = {};
         try {
             sleep(sleep_two);
@@ -747,7 +747,7 @@ describe('ContactMergeTest', function() {
 
     async function threeAutoMerger(DAHelper, rawContactId1)
     {
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var updateValues = {};
         try {
             var autoMergeCode = await DAHelper.update(autoMergeUri, updateValues, condition);
@@ -1005,7 +1005,7 @@ describe('ContactMergeTest', function() {
             console.info('logMessage contact_query_merge_list_test_1000: raw_contact_2 insert error = ' + error);
             done();
         }
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var updateValues = {};
         try {
             sleep(sleep_three);
@@ -1370,7 +1370,7 @@ describe('ContactMergeTest', function() {
             console.info('logMessage contact_query_merge_list_test_1800: raw_contact_2 insert error = ' + error);
             done();
         }
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var updateValues = {};
         try {
             var autoMergeCode = await DAHelper.update(autoMergeUri, updateValues, condition);
@@ -1504,7 +1504,7 @@ describe('ContactMergeTest', function() {
             console.info('logMessage abnormal_merge_Update_test_2100: raw_contact_2 insert error = ' + error);
             done();
         }
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var updateValues = {};
         var autoMergeCode = await DAHelper.update(autoMergeUri, updateValues, condition);
         console.info("logMessage abnormal_merge_Update_test_2100 autoMergeCode = " + autoMergeCode);
@@ -1686,7 +1686,7 @@ describe('ContactMergeTest', function() {
             console.info('logMessage abnormal_merge_Update_test_2500: raw_contact_2 insert error = ' + error);
             done();
         }
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var updateValues = {};
         var autoMergeCode = await DAHelper.update(autoMergeUri, updateValues, condition);
         sleep(sleep_one);
@@ -1736,7 +1736,7 @@ describe('ContactMergeTest', function() {
             console.info('logMessage abnormal_merge_Update_test_2600: raw_contact_2 insert error = ' + error);
             done();
         }
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var updateValues = {};
         var autoMergeCode = await DAHelper.update(autoMergeUri, updateValues, condition);
         sleep(sleep_one);
@@ -1770,7 +1770,7 @@ describe('ContactMergeTest', function() {
     afterAll(async function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info('merge afterAll delete_All: start ! DAHelper = ' + DAHelper);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         var deletedAll = await DAHelper.delete(deletedUri, condition);
         sleep(4000);
         console.info('merge afterAll delete_All : deletedAll ! DAHelper = ' + deletedAll);

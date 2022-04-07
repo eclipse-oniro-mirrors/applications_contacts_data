@@ -29,7 +29,7 @@ describe('VoicemailTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ':calllogInsertQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", map.get("id"));
         try {
             var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
@@ -37,7 +37,7 @@ describe('VoicemailTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         for (var [key, value] of map) {
-                            var dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
                             console.info(tag + ' :logMessage voicemailQuery key = ' + key + ' dbresult :' + dbresult +
                                          ' value : ' + value);
                             expect(value == dbresult).assertTrue();
@@ -55,8 +55,8 @@ describe('VoicemailTest', function() {
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ': voicemailQueryForDelete start ! DAHelper = ' + DAHelper);
-        var resultColumns = common.getCallLogResultColumns();
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let resultColumns = common.getCallLogResultColumns();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", map.get("id"));
         try {
             var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
@@ -72,8 +72,8 @@ describe('VoicemailTest', function() {
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ': voicemailQueryError start ! DAHelper = ' + DAHelper);
-        var resultColumns = common.getCallLogResultColumns();
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let resultColumns = common.getCallLogResultColumns();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("phone_number", map.get("phone_number"));
         try {
             var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
@@ -89,8 +89,8 @@ describe('VoicemailTest', function() {
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info(tag + ': voicemailQueryForBatchInsert start ! DAHelper = ' + DAHelper);
-        var resultColumns = common.getCallLogResultColumns();
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let resultColumns = common.getCallLogResultColumns();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("phone_number", array[0].get("phone_number"));
         try {
             var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
@@ -102,7 +102,7 @@ describe('VoicemailTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         for (var [key, value] of array[i]) {
-                            var dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
                             console.info(tag + ' : logMessage voicemailQueryForBatchInsert dbresult :' + dbresult +
                                          ' value : ' + value);
                             console.info(
@@ -122,7 +122,7 @@ describe('VoicemailTest', function() {
     async function voiceMailDelete(tag)
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(voicemailUri, condition);
         console.info(tag + ': voiceMailDelete deleteCode = ' + deleteCode);
@@ -236,7 +236,7 @@ describe('VoicemailTest', function() {
 
         async function VoicemailUpdate()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
                 var updateCode = await DAHelper.update(voicemailUri, common.getVoiceMailUpdate(), condition);
@@ -278,7 +278,7 @@ describe('VoicemailTest', function() {
         async function VoicemailUpdate()
         {
             var updateValues = {"voice_status" : 1};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
                 var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
@@ -320,7 +320,7 @@ describe('VoicemailTest', function() {
 
         async function VoicemailDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
                 var deleteCode = await DAHelper.delete(voicemailUri, condition);
@@ -362,7 +362,7 @@ describe('VoicemailTest', function() {
         async function VoicemailUpdate()
         {
             var updateValues = {"voice_status" : 0};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
                 var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
@@ -472,7 +472,7 @@ describe('VoicemailTest', function() {
         async function VoicemailQuery()
         {
             var resultColumns = [ "id", "display_name", "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
                 var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
@@ -519,7 +519,7 @@ describe('VoicemailTest', function() {
         async function VoicemailQuery()
         {
             var resultColumns = [ "id", "display_name", "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("voice_status", "1");
             condition.and();
             condition.equalTo("phone_number", phoneNumber);
@@ -618,7 +618,7 @@ describe('VoicemailTest', function() {
         {
             var phoneNumber_Test = randomNum(15);
             var updateValues = {"phone_numbers" : phoneNumber_Test};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", voicemailId.toString());
             try {
                 var updataCode = await DAHelper.update(voicemailUri, updateValues, condition);
@@ -662,7 +662,7 @@ describe('VoicemailTest', function() {
         {
             var phoneNumber_Test = randomNum(6);
             var updateValues = {"phone_number" : phoneNumber_Test};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
                 var updataCode = await DAHelper.update(errorUri, updateValues, condition)
@@ -703,7 +703,7 @@ describe('VoicemailTest', function() {
 
         async function AbnormalDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", voicemailId.toString());
             try {
                 var deleteCode = await DAHelper.delete(voicemailUri, condition);
@@ -742,7 +742,7 @@ describe('VoicemailTest', function() {
 
         async function AbnormalDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
                 var deleteCode = await DAHelper.delete(errorUri, condition);
@@ -782,7 +782,7 @@ describe('VoicemailTest', function() {
         {
             var resultColumns = [ "id", "phone_number" ];
 
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", voicemailId.toString());
             try {
                 var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition)
@@ -853,7 +853,7 @@ describe('VoicemailTest', function() {
         async function executeBatch()
         {
             console.info("logMessage voiceMail_delete_test_2000:  executeBatch start ");
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voiceMailId.toString());
             DAHelper.executeBatch(URI_VOICEMAIL, [ {
                 uri : voicemailUri,
@@ -899,7 +899,7 @@ describe('VoicemailTest', function() {
             var phoneNumber = randomNum(8);
             var updateValues = {"phone_number" : phoneNumber};
             console.info("logMessage voiceMail_update_test_2100:  executeBatch start ");
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voiceMailId.toString());
             DAHelper.executeBatch(URI_VOICEMAIL, [ {
                 uri : voicemailUri,
@@ -966,7 +966,7 @@ describe('VoicemailTest', function() {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
             var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue)
             var voicemailIdTwo = await DAHelper.insert(voicemailUri, stringValue)
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             condition.or();
             condition.equalTo("id", voicemailIdOne.toString());
@@ -1001,7 +1001,7 @@ describe('VoicemailTest', function() {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
             var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue)
             var voicemailIdTwo = await DAHelper.insert(voicemailUri, stringValue)
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             condition.or();
             condition.equalTo("id", voicemailIdOne.toString());
@@ -1044,7 +1044,7 @@ describe('VoicemailTest', function() {
         try {
             var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
             var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue)
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.beginWrap();
             condition.equalTo("id", voicemailId.toString());
             condition.or();
@@ -1081,7 +1081,7 @@ describe('VoicemailTest', function() {
             console.info('voicemail_query_test_2600 voicemailId = ' + voicemailId);
             var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue);
             console.info('voicemail_query_test_2600  voicemailIdOne = ' + voicemailIdOne);
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             var resultColumns = [];
             var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.rowCount == 2).assertTrue();
@@ -1108,7 +1108,7 @@ describe('VoicemailTest', function() {
             var insertValues = {display_name : "2700name", voice_statuss : "1"};
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             expect(voicemailId == -1).assertTrue();
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             var resultColumns = [];
             var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.rowCount == 0).assertTrue();
@@ -1133,7 +1133,7 @@ describe('VoicemailTest', function() {
             var insertValues = {display_name : "2800name", voice_status : "1"};
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             expect(voicemailId > 0).assertTrue();
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             var updateValues = {display_name : "2800name", voice_statuss : "0"};
             var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
@@ -1164,7 +1164,7 @@ describe('VoicemailTest', function() {
             var insertValues = {display_name : "2900name", voice_status : "1"};
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             expect(voicemailId > 0).assertTrue();
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", voicemailId.toString());
             var updateValues = {display_name : "2900name", voice_statuss : "0"};
             var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
@@ -1195,7 +1195,7 @@ describe('VoicemailTest', function() {
             var insertValues = {display_name : "2900name", voice_status : "1"};
             var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
             expect(voicemailId > 0).assertTrue();
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", voicemailId.toString());
             var resultColumns = [];
             var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
@@ -1233,7 +1233,7 @@ describe('VoicemailTest', function() {
             var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
             console.info("logMessage abnormal_voicemail_batchInsert_test_3100: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == -1).assertTrue();
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             var resultColumns = [];
             var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.rowCount == 0).assertTrue();
@@ -1248,7 +1248,7 @@ describe('VoicemailTest', function() {
     afterAll(async function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
         console.info('voicemai afterAll logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(voicemailUri, condition);
         console.info('voicemai afterAll logMessage deleteCode = ' + deleteCode);
