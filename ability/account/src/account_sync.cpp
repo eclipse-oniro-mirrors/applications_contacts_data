@@ -102,11 +102,11 @@ void AccountSync::SyncUpdateAccount(std::vector<OHOS::AccountSA::OhosAccountInfo
             notInSysAccounts.push_back(iter);
         }
     }
-    HILOG_INFO("SyncUpdateAccount getNotExistAccount notInSysAccounts size is :%{public}d", notInSysAccounts.size());
+    HILOG_INFO("SyncUpdateAccount getNotExistAccount notInSysAccounts size is :%{public}zu", notInSysAccounts.size());
     std::vector<OHOS::AccountSA::OhosAccountInfo> shouldUpdateAccounts;
     std::vector<OHOS::AccountSA::OhosAccountInfo> shouldAddAccounts;
     getShouldUpdateAndAddAccounts(sysAccounts, accounts, shouldUpdateAccounts, shouldAddAccounts);
-    HILOG_INFO("SyncUpdateAccount:%{public}d, :%{public}d", shouldUpdateAccounts.size(), shouldAddAccounts.size());
+    HILOG_INFO("SyncUpdateAccount:%{public}zu, :%{public}zu", shouldUpdateAccounts.size(), shouldAddAccounts.size());
     store->BeginTransaction();
     if (!notInSysAccounts.empty()) {
         g_contactsAccount->StopForegin(store);
