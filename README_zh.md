@@ -106,7 +106,7 @@ var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
 // 获取DAHelper
 let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
 // 条件参数
-var condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 // 调用update方法
 DAHelper.update(calllogUri, value, condition).then((data) => {
@@ -138,7 +138,7 @@ var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
 // 获取DAHelper
 let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
 // 条件参数
-var condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 // 调用delete方法
 DAHelper.delete(calllogUri, condition).then((data) => {
@@ -171,7 +171,7 @@ var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
 // 获取DAHelper
 let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
 // 条件参数
-var condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 var resultColumns = [ "id", "display_name", "phone_number"];
 // 调用query方法
@@ -245,7 +245,7 @@ var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
 // 获取DAHelper
 let DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
 // 条件参数
-var condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 // 调用update方法
 DAHelper.update(voicemaiUri, value, condition).then((data) => {
@@ -277,7 +277,7 @@ var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
 // 获取DAHelper
 let DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
 // 条件参数
-var condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 // 调用delete方法
 DAHelper.delete(voicemaiUri, condition).then((data) => {
@@ -310,7 +310,7 @@ var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
 // 获取DAHelper
 let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
 // 条件参数
-var condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 var resultColumns = [ "id", "display_name", "phone_number"];
 // 调用query方法
@@ -394,7 +394,7 @@ var value = {"display_name" : "xxx"};
 // 获取DAHelper
 let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
 // 条件参数
-var condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 // 调用update方法
 DAHelper.update(rawContactUri, value, condition).then((data) => {
@@ -427,7 +427,7 @@ var contactDataUri  = "dataability:///com.ohos.contactsdataability/contacts/cont
 // 获取DAHelper
 let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
 // 条件参数
-var condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 // 调用delete方法
 DAHelper.delete(contactDataUri, condition).then((data) => {
@@ -459,7 +459,7 @@ var rawContactUri  = "dataability:///com.ohos.contactsdataability/contacts/raw_c
 // 获取DAHelper
 let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
 // 条件参数
-var condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 var resultColumns = [ "id", "display_name"];
 // 调用query方法

@@ -1965,7 +1965,7 @@ CharacterTransliterate::~CharacterTransliterate()
 
 bool CharacterTransliterate::IsChineseCharacter(wchar_t chineseCharacter)
 {
-    return (unsigned short)chineseCharacter >= 0x4E00 && (unsigned short)chineseCharacter <= 0x9FCF;
+    return (uint16_t)chineseCharacter >= 0x4E00 && (uint16_t)chineseCharacter <= 0x9FCF;
 }
 
 Container CharacterTransliterate::GetContainer(std::wstring wChinese)

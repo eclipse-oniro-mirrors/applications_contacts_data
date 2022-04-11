@@ -40,7 +40,7 @@ describe('RecoveryTest', function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         console.info(tag + ': ContactsQuery start ! DAHelper = ' + DAHelper);
         var resultColumns = [];
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         try {
             var resultSet = await DAHelper.query(uri, resultColumns, condition);
@@ -85,7 +85,7 @@ describe('RecoveryTest', function() {
     {
         try {
             let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             condition.and();
             condition.equalTo("is_deleted", "0");
@@ -108,7 +108,7 @@ describe('RecoveryTest', function() {
         await deleteRawContact("recovery_test_100");
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var updateValues = {};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         try {
             var updateCode = await DAHelper.update(backup, updateValues, condition);
             sleep(2000);
@@ -132,7 +132,7 @@ describe('RecoveryTest', function() {
         await deleteRawContact("recovery_test_200");
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
         var updateValues = {};
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         rawContactInsert("liming");
         rawContactInsert("xiaolilili");
         sleep(2000);

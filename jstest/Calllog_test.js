@@ -28,16 +28,16 @@ describe('CalllogTest', function() {
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info(tag + ': calllogQueryByInsert start ! DAHelper = ' + DAHelper);
-        var resultColumns = common.getCallLogResultColumns();
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let resultColumns = common.getCallLogResultColumns();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
                         for (var [key, value] of map) {
-                            var dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
                             console.info(tag + ' : logMessage calllogQueryByInsert key = ' + key +
                                          ' dbResult :' + dbresult + ' value : ' + value);
                             console.info(tag + ' : logMessage calllogQueryByInsert value ' + (value == dbresult));
@@ -57,11 +57,11 @@ describe('CalllogTest', function() {
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info(tag + ': calllogQueryForDelete start ! DAHelper = ' + DAHelper);
-        var resultColumns = common.getCallLogResultColumns();
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let resultColumns = common.getCallLogResultColumns();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
             expect(resultSet.goToFirstRow() == false).assertTrue();
             console.info(tag + " :logMessage calllogQueryForDelete: goToFirstRow " + resultSet.goToFirstRow());
             resultSet.close();
@@ -74,11 +74,11 @@ describe('CalllogTest', function() {
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info(tag + ': calllogQueryForBatchInsert start ! DAHelper = ' + DAHelper);
-        var resultColumns = common.getCallLogResultColumns();
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let resultColumns = common.getCallLogResultColumns();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("phone_number", array[0].get("phone_number"));
         try {
-            var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
             var size = array.size();
             console.info(tag + ' : logMessage calllogQueryForBatchInsert: size' + size);
             expect(resultSet.rowCount == size).assertEqual(true);
@@ -87,7 +87,7 @@ describe('CalllogTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         for (var [key, value] of array[i]) {
-                            var dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
                             console.info(tag + ' : logMessage calllogQueryForBatchInsert dbresult :' + dbresult +
                                          ' value : ' + value);
                             console.info(tag + ' : logMessage calllogQueryForBatchInsert value ' + (value == dbresult));
@@ -106,7 +106,7 @@ describe('CalllogTest', function() {
     async function calllogDelete(tag)
     {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(calllogUri, condition);
         console.info(tag + ': calllogDelete deleteCode = ' + deleteCode);
@@ -161,7 +161,7 @@ describe('CalllogTest', function() {
         async function UpdateOneCalllog()
         {
             try {
-                var condition = new ohos_data_ability.DataAbilityPredicates();
+                let condition = new ohos_data_ability.DataAbilityPredicates();
                 condition.equalTo("id", calllogId.toString());
                 var updateCode = await DAHelper.update(calllogUri, common.getCallLogUpdate(), condition);
                 console.info("logMessage calllog_update_test_400: updateCode = " + updateCode);
@@ -201,7 +201,7 @@ describe('CalllogTest', function() {
         async function UpdateAllCalllog()
         {
             var updateValues = {"answer_state" : "1"};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             try {
                 var updateCode = await DAHelper.update(calllogUri, updateValues, condition)
@@ -244,7 +244,7 @@ describe('CalllogTest', function() {
         async function DeleteOneCalllog()
         {
             try {
-                var condition = new ohos_data_ability.DataAbilityPredicates();
+                let condition = new ohos_data_ability.DataAbilityPredicates();
                 condition.equalTo("id", calllogId.toString());
                 var deleteCode = await DAHelper.delete(calllogUri, condition);
                 console.info("logMessage calllog_delete_test_1300: deleteCode = " + deleteCode);
@@ -344,12 +344,12 @@ describe('CalllogTest', function() {
         async function QueryCalllog()
         {
             var resultColumns = [ "id", "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.greaterThan("id", "0");
             condition.and();
             condition.lessThan("ring_duration", "200").orderByAsc("id");
             try {
-                var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_query_test_1100: columnNames:" + resultSet.columnNames);
@@ -394,10 +394,10 @@ describe('CalllogTest', function() {
         async function QueryOneCalllog()
         {
             var resultColumns = [ "id", "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", calllogId.toString());
             try {
-                var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_query_test_800: columnNames:" + resultSet.columnNames);
@@ -443,10 +443,10 @@ describe('CalllogTest', function() {
         async function QueryByStartsWithPhoneNumber()
         {
             var resultColumns = [ "id", "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.like("phone_number", phoneNumber_Test + "%");
             try {
-                var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_fuzzyquery_test_100: columnNames:" + resultSet.columnNames);
@@ -493,10 +493,10 @@ describe('CalllogTest', function() {
         async function QueryByEndWithPhoneNumber()
         {
             var resultColumns = [ "id", "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.like("phone_number", "%" + phoneNumber_Test);
             try {
-                var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_fuzzyquery_test_200: columnNames:" + resultSet.columnNames);
@@ -542,11 +542,11 @@ describe('CalllogTest', function() {
         async function QueryByPhoneNumberContainsField()
         {
             var resultColumns = [ "id", "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             var phoneNumber_Test = phoneNumber.substring(7,10);
             condition.like("phone_number", "%" + phoneNumber_Test + "%");
             try {
-                var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_fuzzyquery_test_300: columnNames:" + resultSet.columnNames);
@@ -638,7 +638,7 @@ describe('CalllogTest', function() {
         {
             var phoneNumber_Test = randomNum(7);
             var updateValues = {"phone_numbers" : phoneNumber_Test};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", calllogId.toString());
             try {
                 var updataCode = await DAHelper.update(calllogUri, updateValues, condition);
@@ -683,7 +683,7 @@ describe('CalllogTest', function() {
         {
             var phoneNumber_Test = randomNum(7);
             var updateValues = {"phone_numbers" : phoneNumber_Test};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", calllogId.toString());
             try {
                 var updataCode = await DAHelper.update(errorUri, updateValues, condition);
@@ -726,7 +726,7 @@ describe('CalllogTest', function() {
 
         async function abnormalDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", calllogId.toString());
             try {
                 var deleteCode = await DAHelper.delete(calllogUri, condition);
@@ -769,7 +769,7 @@ describe('CalllogTest', function() {
 
         async function abnormalDelete()
         {
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", calllogId.toString());
             try {
                 var deleteCode = await DAHelper.delete(errorUri, condition);
@@ -813,10 +813,10 @@ describe('CalllogTest', function() {
         async function abnormalQuery()
         {
             var resultColumns = [ "id", "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("ids", calllogId.toString());
             try {
-                var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 console.info('logMessage abnormal_calllog_query_test_900: goToFirstRow' + resultSet.goToFirstRow());
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 resultSet.close();
@@ -885,7 +885,7 @@ describe('CalllogTest', function() {
         async function executeBatch()
         {
             console.info("logMessage calllog_delete_test_1800:  executeBatch start ");
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", calllogId.toString());
             DAHelper.executeBatch(URI_CALLLOG, [ {
                 uri : calllogUri,
@@ -931,7 +931,7 @@ describe('CalllogTest', function() {
         {
             var phoneNumber = randomNum(8);
             var updateValues = {"phone_number" : phoneNumber};
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", calllogId.toString());
             DAHelper.executeBatch(URI_CALLLOG, [ {
                 uri : calllogUri,
@@ -980,7 +980,7 @@ describe('CalllogTest', function() {
         async function DeleteCalllog()
         {
             try {
-                var condition = new ohos_data_ability.DataAbilityPredicates();
+                let condition = new ohos_data_ability.DataAbilityPredicates();
                 condition.equalTo("id", calllogId.toString());
                 condition.or();
                 condition.equalTo("id", calllogIdTwo.toString());
@@ -990,7 +990,7 @@ describe('CalllogTest', function() {
                 console.info("logMessage calllog_Delete_test_2000: deleteCode = " + deleteCode);
                 expect(deleteCode == 0).assertTrue();
                 var resultColumns = [];
-                var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 expect(resultSet.rowCount == 0).assertTrue();
                 resultSet.close();
             } catch (error) {
@@ -1017,10 +1017,10 @@ describe('CalllogTest', function() {
             map.set("id", calllogId.toString());
             await calllogQueryForALL(map, "calllog_Delete_test_2100");
             await calllogDelete("calllog_Delete_test_2100");
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", calllogId);
             var resultColumns = [];
-            var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
             expect(resultSet.rowCount == 0).assertTrue();
             resultSet.close();
             done();
@@ -1048,9 +1048,9 @@ describe('CalllogTest', function() {
             expect(calllogId > 0).assertTrue();
 
             var resultColumns = [ "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.contains("phone_number", phoneNumber_Test);
-            var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -1131,10 +1131,10 @@ describe('CalllogTest', function() {
             var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.equalTo("id", calllogId.toString() + "ksks");
             var resultColumns = [ "display_names" ];
-            var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
             console.info("abnormal_calllog_query_test_2400: resultSet.rowCount = " + resultSet.rowCount);
             expect(resultSet.rowCount == -1).assertTrue();
             resultSet.close();
@@ -1165,9 +1165,9 @@ describe('CalllogTest', function() {
             console.info('abnormal_calllog_query_test_2500 calllogIdTwo = ' + calllogIdTwo);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             var resultColumns = [ "display_names" ];
-            var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
             console.info('abnormal_calllog_query_test_2500 resultSet.goToFirstRow() = ' + resultSet.goToFirstRow());
             console.info('abnormal_calllog_query_test_2500 resultSet.rowCount = ' + resultSet.rowCount);
             expect(resultSet.goToFirstRow() == false).assertTrue();
@@ -1200,7 +1200,7 @@ describe('CalllogTest', function() {
             console.info("logMessage abnormal_calllog_delete_test_2600: calllog insert error = " + error);
             done();
         }
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.equalTo("ids", calllogIdTwo.toString());
         condition.or();
         condition.equalTo("id", calllogId.toString());
@@ -1209,7 +1209,7 @@ describe('CalllogTest', function() {
         expect(code == -1).assertTrue();
         condition.clear();
         var resultColumns = [];
-        var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+        let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
         var count = 2;
         expect(resultSet.rowCount == count).assertTrue();
         resultSet.close();
@@ -1242,7 +1242,7 @@ describe('CalllogTest', function() {
         {
             try {
                 var insertValues = {phone_number : phoneNumber, display_names : "nameUpdateError2700"};
-                var condition = new ohos_data_ability.DataAbilityPredicates();
+                let condition = new ohos_data_ability.DataAbilityPredicates();
                 condition.equalTo("ids", calllogIdTwo.toString());
                 condition.or();
                 condition.equalTo("id", calllogId.toString());
@@ -1290,10 +1290,10 @@ describe('CalllogTest', function() {
         async function QueryByStartsWithPhoneNumberError()
         {
             var resultColumns = [ "id", "phone_number" ];
-            var condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new ohos_data_ability.DataAbilityPredicates();
             condition.like("phone_numbers", phoneNumber_Test + "%");
             try {
-                var resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
                 console.info("logMessage abnormal_calllog_query_test_2800: resultSet.rowCount = " + resultSet.rowCount);
                 expect(resultSet.rowCount == -1).assertTrue();
                 resultSet.close();
@@ -1307,7 +1307,7 @@ describe('CalllogTest', function() {
     afterAll(async function() {
         let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
         console.info('callllog afterAll logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new ohos_data_ability.DataAbilityPredicates();
         condition.greaterThan("id", "0");
         var deleteCode = await DAHelper.delete(calllogUri, condition);
         console.info('callllog afterAll end logMessage deleteCode = ' + deleteCode);
