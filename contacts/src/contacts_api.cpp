@@ -171,7 +171,7 @@ std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_e
         HILOG_ERROR("abilityObj is nullptr!");
     }
     OHOS::AppExecFwk::Ability *ability = nullptr;
-    NAPI_CALL(env, napi_get_value_external(env, abilityObj, (void **)&ability));
+    NAPI_CALL(env, napi_get_value_external(env, abilityObj, reinterpret_cast<void **>(&ability)));
     if (ability == nullptr) {
         HILOG_ERROR("ability is nullptr!");
     }
@@ -586,7 +586,7 @@ NativeRdb::DataAbilityPredicates BuildIsMyCardPredicates(napi_env env, napi_valu
 
 void ExecuteDone(napi_env env, napi_status status, void *data)
 {
-    ExecuteHelper *executeHelper = (ExecuteHelper *)data;
+    ExecuteHelper *executeHelper = reinterpret_cast<ExecuteHelper *>(data);
     napi_value result = executeHelper->dataValue;
     executeHelper->dataValue = nullptr;
     napi_deferred deferred = executeHelper->deferred;
@@ -604,7 +604,7 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         return;
     }
     if (data != nullptr) {
-        ExecuteHelper *executeHelper = (ExecuteHelper *)data;
+        ExecuteHelper *executeHelper = reinterpret_cast<ExecuteHelper *>(data);
         napi_value global;
         napi_get_global(env, &global);
         napi_value resultData[1];
@@ -833,13 +833,13 @@ napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper, napi_call
             napi_create_reference(env, argv[argc - 1], 1, &executeHelper->callBack);
         }
         napi_create_async_work(
-            env, nullptr, workName, Execute, ExecuteSyncDone, (void *)executeHelper, &(executeHelper->work));
+            env, nullptr, workName, Execute, ExecuteSyncDone, reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
         napi_get_null(env, &result);
     } else {
         napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &workName);
         napi_create_promise(env, &(executeHelper->deferred), &result);
         napi_create_async_work(
-            env, nullptr, workName, Execute, ExecuteDone, (void *)executeHelper, &(executeHelper->work));
+            env, nullptr, workName, Execute, ExecuteDone, reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
     }
     napi_queue_async_work(env, executeHelper->work);
     executeHelper->promise = result;
