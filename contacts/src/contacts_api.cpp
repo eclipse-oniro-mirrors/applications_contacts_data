@@ -833,15 +833,15 @@ napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper, napi_call
             napi_create_reference(env, argv[argc - 1], 1, &executeHelper->callBack);
         }
         napi_create_async_work(
-            env, nullptr, workName, Execute, ExecuteSyncDone, 
-            reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
+            env, nullptr, workName, Execute, ExecuteSyncDone,
+             reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
         napi_get_null(env, &result);
     } else {
         napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &workName);
         napi_create_promise(env, &(executeHelper->deferred), &result);
         napi_create_async_work(
-            env, nullptr, workName, Execute, ExecuteDone, 
-            reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
+            env, nullptr, workName, Execute, ExecuteDone,
+             reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
     }
     napi_queue_async_work(env, executeHelper->work);
     executeHelper->promise = result;
