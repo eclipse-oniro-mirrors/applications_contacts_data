@@ -39,9 +39,9 @@ ohos_unittest("contacts_test") {
   ]
   deps = [
     "//applications/standard/contactsdata:contactsdataability",
-    "//base/notification/ces_standard/frameworks/core:cesfwk_core",
-    "//base/notification/ces_standard/frameworks/native:cesfwk_innerkits",
-    "//base/notification/ces_standard/services:cesfwk_services",
+    "//base/notification/common_event_service/frameworks/core:cesfwk_core",
+    "//base/notification/common_event_service/frameworks/native:cesfwk_innerkits",
+    "//base/notification/common_event_service/services:cesfwk_services",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:dummy_classes",
     "//foundation/aafwk/standard/interfaces/innerkits/uri:zuri",
