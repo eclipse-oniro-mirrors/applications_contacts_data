@@ -106,7 +106,7 @@ int ContactsUpdateHelper::UpdateName(OHOS::NativeRdb::ValuesBucket linkDataDataV
         name.GetConstructionName(disPlayName, name);
         std::string searchName;
         searchName.append(disPlayName);
-		searchContactValues.PutString(SearchContactColumns::SEARCH_NAME, searchName);
+        searchContactValues.PutString(SearchContactColumns::SEARCH_NAME, searchName);
         if (!name.nameFullFight_.empty()) {
             searchName.append("||");
             searchName.append(name.nameFullFight_);
