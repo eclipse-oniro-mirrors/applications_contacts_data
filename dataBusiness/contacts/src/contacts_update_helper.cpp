@@ -117,9 +117,7 @@ int ContactsUpdateHelper::UpdateName(OHOS::NativeRdb::ValuesBucket linkDataDataV
         if (!searchName.empty()) {
             searchContactValues.PutString(SearchContactColumns::SEARCH_NAME, searchName);
         }
-        if (!name.photoFirstName_.empty()) {
-            rawContactValues.PutString(RawContactColumns::PHOTO_FIRST_NAME, name.photoFirstName_);
-        }
+        rawContactValues.PutString(RawContactColumns::PHOTO_FIRST_NAME, name.photoFirstName_);
         if (!name.sortFirstLetter_.empty()) {
             // add sort and sort_first_letter
             rawContactValues.PutString(RawContactColumns::SORT_FIRST_LETTER, name.sortFirstLetter_);

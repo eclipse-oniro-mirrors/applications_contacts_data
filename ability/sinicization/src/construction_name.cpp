@@ -80,6 +80,7 @@ ConstructionName ConstructionName::GetConstructionName(
 
 ConstructionName ConstructionName::GetPhotoFirstName(ConstructionName &constructionName)
 {
+    constructionName.photoFirstName_.clear();
     if (!constructionName.disPlayName_.empty()) {
         CharacterTransliterate characterTransliterate;
         std::wstring nameWstr = characterTransliterate.StringToWstring(constructionName.disPlayName_);
