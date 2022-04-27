@@ -43,6 +43,7 @@ bool SqlAnalyzer::CheckValuesBucket(const NativeRdb::ValuesBucket &value)
         if (value.GetType() == NativeRdb::ValueObjectType::TYPE_STRING) {
             std::string str;
             value.GetString(str);
+            str = ParseSpecial(str);
             bool isValue = FindIllegalWords(str);
             if (isValue) {
                 HILOG_ERROR("SqlAnalyzer CheckValuesBucket value is %{public}s error", str.c_str());

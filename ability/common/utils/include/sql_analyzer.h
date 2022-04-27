@@ -62,6 +62,20 @@ private:
         }
         return 0;
     }
+    std::string ParseSpecial(std::string OriginString)
+    {
+        std::string ParsedString;
+        for(int i = 0; i < OriginString.size(); i++) {
+        char curChar=OriginString.at(i);
+        if (curChar== '\"' || curChar == '\''
+         || curChar == ';' || curChar == '-') {
+            ParsedString += '\\' + curChar;
+        } else {
+            ParsedString += curChar;
+        }
+    }
+    return ParsedString;
+    }
 };
 } // namespace Contacts
 } // namespace OHOS
