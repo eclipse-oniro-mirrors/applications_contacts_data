@@ -66,15 +66,15 @@ private:
     {
         std::string ParsedString;
         for (int i = 0; i < OriginString.size(); i++) {
-        char curChar = OriginString.at(i);
-        if (curChar== '\"' || curChar == '\''
-         || curChar == ';' || curChar == '-') {
-            ParsedString += '\\' + curChar;
-        } else {
-            ParsedString += curChar;
+            char curChar = OriginString.at(i);
+            if (curChar == '\"' || curChar == '\''
+             || curChar == ';' || curChar == '-') {
+                ParsedString += '\\' + curChar;
+            } else {
+                ParsedString += curChar;
+            }
         }
-    }
-    return ParsedString;
+        return ParsedString;
     }
 };
 } // namespace Contacts
