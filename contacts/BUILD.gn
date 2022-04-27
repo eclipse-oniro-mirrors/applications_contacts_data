@@ -51,8 +51,8 @@ ohos_shared_library("contact") {
     "//foundation/aafwk/standard/frameworks/kits/ability/native:dummy_classes",
     "//foundation/aafwk/standard/interfaces/innerkits/uri:zuri",
     "//foundation/aafwk/standard/interfaces/innerkits/want/:want",
-    "//foundation/ace/napi:ace_napi",
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
+    "//foundation/arkui/napi:ace_napi",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//utils/native/base:utils",
   ]
