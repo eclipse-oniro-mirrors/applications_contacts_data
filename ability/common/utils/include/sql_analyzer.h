@@ -65,8 +65,8 @@ private:
     std::string ParseSpecial(std::string OriginString)
     {
         std::string ParsedString;
-        for(int i = 0; i < OriginString.size(); i++) {
-        char curChar=OriginString.at(i);
+        for (int i = 0; i < OriginString.size(); i++) {
+        char curChar = OriginString.at(i);
         if (curChar== '\"' || curChar == '\''
          || curChar == ';' || curChar == '-') {
             ParsedString += '\\' + curChar;
