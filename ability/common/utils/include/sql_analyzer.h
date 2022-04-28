@@ -62,19 +62,19 @@ private:
         }
         return 0;
     }
-    std::string ParseSpecial(std::string OriginString)
+    std::string ParseSpecial(std::string originString)
     {
-        std::vector<char> NeedsTransform = {'\'', '\"', ';', '_', '-', '\\', '%'};
-        std::string ParsedString;
-        for (int i = 0; i < OriginString.size(); i++) {
-            char curChar = OriginString.at(i);
-            if (std::find(NeedsTransform.begin(), NeedsTransform.end(), curChar) != NeedsTransform.end()) {
-                ParsedString += '\\' + curChar;
+        std::vector<char> needsTransform = {'\'', '\"', ';', '_', '-', '\\', '%', '[', ']', '/', '*'};
+        std::string parsedString;
+        for (int i = 0; i < originString.size(); i++) {
+            char curChar = originString.at(i);
+            if (std::find(needsTransform.begin(), needsTransform.end(), curChar) != needsTransform.end()) {
+                parsedString += '\\' + curChar;
             } else {
-                ParsedString += curChar;
+                parsedString += curChar;
             }
         }
-        return ParsedString;
+        return parsedString;
     }
 };
 } // namespace Contacts
