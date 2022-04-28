@@ -64,11 +64,11 @@ private:
     }
     std::string ParseSpecial(std::string OriginString)
     {
+		std::vector<char> NeedsTransform = {'\'', '\"', ';', '_', '-', '\\', '%'};
         std::string ParsedString;
         for (int i = 0; i < OriginString.size(); i++) {
             char curChar = OriginString.at(i);
-            if (curChar == '\"' || curChar == '\''
-             || curChar == ';' || curChar == '-') {
+            if (std::find(NeedsTransform.begin(), NeedsTransform.end(), curChar) != NeedsTransform.end()) {
                 ParsedString += '\\' + curChar;
             } else {
                 ParsedString += curChar;
