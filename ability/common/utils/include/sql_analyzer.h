@@ -66,7 +66,7 @@ private:
     {
         std::vector<char> needsTransform = {'\'', '\"', ';', '_', '-', '\\', '%', '[', ']', '/', '*'};
         std::string parsedString;
-        for (int i = 0; i < originString.size(); i++) {
+        for (unsigned int i = 0; i < originString.size(); i++) {
             char curChar = originString.at(i);
             if (std::find(needsTransform.begin(), needsTransform.end(), curChar) != needsTransform.end()) {
                 parsedString += '\\' + curChar;
