@@ -34,19 +34,13 @@ ohos_shared_library("contact") {
     "//utils/system/safwk/native/include",
     "//utils/native/base/include",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/uri/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/want/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
     "//foundation/aafwk/standard/services/abilitymgr/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/base/include/ohos/aafwk/base",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
   ]
 
   deps = [
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
-    "//foundation/aafwk/standard/interfaces/innerkits/uri:zuri",
-    "//foundation/aafwk/standard/interfaces/innerkits/want/:want",
     "//foundation/arkui/napi:ace_napi",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//utils/native/base:utils",
@@ -55,6 +49,7 @@ ohos_shared_library("contact") {
   public_configs = [ ":contactsapi_public_config" ]
   external_deps = [
     "ability_base:want",
+    "ability_base:zuri",
     "ability_runtime:ability_manager",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
