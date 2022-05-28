@@ -88,13 +88,13 @@ ohos_shared_library("contactsdataability") {
     "//base/account/os_account/interfaces/innerkits/ohosaccount/native/include/",
     "//base/account/os_account/interfaces/kits/napi/distributedaccount/include/",
     "//base/account/os_account/interfaces/innerkits/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
-    "//foundation/aafwk/standard/services/abilitymgr/include",
-    "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
+    "//foundation/ability/ability_runtime/interfaces/innerkits/ability_manager/include",
+    "//foundation/ability/ability_runtime/services/abilitymgr/include",
+    "//foundation/ability/ability_runtime/frameworks/kits/ability/native/include",
   ]
 
   deps = [
-    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/ability/ability_runtime/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/arkui/napi:ace_napi",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//third_party/jsoncpp:jsoncpp",
