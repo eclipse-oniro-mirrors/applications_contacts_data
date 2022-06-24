@@ -41,6 +41,7 @@ ohos_shared_library("contact") {
 
   deps = [
     "//foundation/ability/ability_runtime/frameworks/native/ability/native:abilitykit_native",
+    "//foundation/ability/ability_runtime/frameworks/native/ability/native:data_ability_helper",
     "//foundation/arkui/napi:ace_napi",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//utils/native/base:utils",
