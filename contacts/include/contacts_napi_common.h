@@ -102,8 +102,6 @@ struct ExecuteHelper {
     std::vector<NativeRdb::ValuesBucket> valueContact;
     // insertContactData
     std::vector<NativeRdb::ValuesBucket> valueContactData;
-    // dataAbilityHelper
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper;
 };
 } // namespace ContactsApi
 } // namespace OHOS
