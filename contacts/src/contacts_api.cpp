@@ -153,7 +153,6 @@ int GetType(napi_env env, napi_value value)
     }
 }
 
-std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> g_dataAbilityHelper = nullptr;
 /**
  * @brief Get dataAbilityHelper
  *
@@ -176,11 +175,7 @@ std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_e
         HILOG_ERROR("ability is nullptr!");
     }
     std::shared_ptr<OHOS::Uri> uriPtr = std::make_shared<OHOS::Uri>("dataability:///com.ohos.contactsdataability");
-    if (g_dataAbilityHelper == nullptr) {
-        HILOG_ERROR("g_dataAbilityHelper is not nullptr!");
-        g_dataAbilityHelper = OHOS::AppExecFwk::DataAbilityHelper::Creator(ability->GetContext(), uriPtr);
-    }
-    return g_dataAbilityHelper;
+    return OHOS::AppExecFwk::DataAbilityHelper::Creator(ability->GetContext(), uriPtr);
 }
 
 /**
@@ -519,9 +514,11 @@ void BuildUpdateContactConvertParams(napi_env env, napi_value &contact, napi_val
         BuildQueryContactData(env, contact, attr, executeHelper->valueContactData);
     executeHelper->columns = BuildUpdateContactColumns();
     ContactsControl contactsControl;
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsControl.ContactDataQuery(GetDataAbilityHelper(env), executeHelper->columns, predicates);
+        contactsControl.ContactDataQuery(dataAbilityHelper, executeHelper->columns, predicates);
     int rawId = GetRawIdByResultSet(resultSet);
+    dataAbilityHelper->Release();
     std::vector<NativeRdb::ValuesBucket> value = executeHelper->valueContactData;
     unsigned int size = value.size();
     for (unsigned int i = 0; i < size; ++i) {
@@ -633,105 +630,123 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
 {
     ContactsControl contactsControl;
-    int64_t rawId =
-        contactsControl.RawContactInsert(executeHelper->dataAbilityHelper, (executeHelper->valueContact)[0]);
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
+    int64_t rawId = contactsControl.RawContactInsert(dataAbilityHelper, (executeHelper->valueContact)[0]);
     std::vector<NativeRdb::ValuesBucket> value = executeHelper->valueContactData;
     unsigned int size = value.size();
     for (unsigned int i = 0; i < size; ++i) {
         (executeHelper->valueContactData)[i].PutInt("raw_contact_id", rawId);
     }
-    int code = contactsControl.ContactDataInsert(executeHelper->dataAbilityHelper, executeHelper->valueContactData);
+    int code = contactsControl.ContactDataInsert(dataAbilityHelper, executeHelper->valueContactData);
     if (code == 0) {
         napi_create_int64(env, rawId, &result);
     } else {
         napi_create_int64(env, code, &result);
     }
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteDeleteContact(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     ContactsControl contactsControl;
-    int ret = contactsControl.ContactDelete(executeHelper->dataAbilityHelper, executeHelper->predicates);
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
+    int ret = contactsControl.ContactDelete(dataAbilityHelper, executeHelper->predicates);
     HILOG_INFO("LocalExecuteDeleteContact contact ret = %{public}d", ret);
     napi_create_int64(env, ret, &result);
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteQueryContact(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     ResultConvert resultConvert;
     ContactsControl contactsControl;
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     napi_value results = resultConvert.ResultSetToObject(env, resultSet);
     if (results != nullptr) {
         napi_get_element(env, results, 0, &result);
     }
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteQueryContactsOrKey(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     ResultConvert resultConvert;
     ContactsControl contactsControl;
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     result = resultConvert.ResultSetToObject(env, resultSet);
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteQueryContactsByData(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     ResultConvert resultConvert;
     ContactsControl contactsControl;
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactDataQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     result = resultConvert.ResultSetToObject(env, resultSet);
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteQueryGroup(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     ResultConvert resultConvert;
     ContactsControl contactsControl;
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.GroupsQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     result = resultConvert.ResultSetToGroup(env, resultSet);
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteQueryHolders(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     ResultConvert resultConvert;
     ContactsControl contactsControl;
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.HolderQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     result = resultConvert.ResultSetToHolder(env, resultSet);
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteQueryMyCard(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     ResultConvert resultConvert;
     ContactsControl contactsControl;
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.MyCardQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     result = resultConvert.ResultSetToObject(env, resultSet);
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteUpdateContact(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     ContactsControl contactsControl;
-    int resultCode = contactsControl.ContactDataDelete(executeHelper->dataAbilityHelper, executeHelper->predicates);
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
+    int resultCode = contactsControl.ContactDataDelete(dataAbilityHelper, executeHelper->predicates);
     if (resultCode == 0) {
-        resultCode =
-            contactsControl.ContactDataInsert(executeHelper->dataAbilityHelper, executeHelper->valueContactData);
+        resultCode = contactsControl.ContactDataInsert(dataAbilityHelper, executeHelper->valueContactData);
         napi_create_int64(env, resultCode, &result);
     }
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteIsLocalContact(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     int64_t isLocal = 0;
     ContactsControl contactsControl;
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     if (resultSet == nullptr) {
         napi_create_int64(env, isLocal, &result);
+        dataAbilityHelper->Release();
         return;
     }
     int resultSetNum = resultSet->GoToFirstRow();
@@ -740,17 +755,20 @@ void LocalExecuteIsLocalContact(napi_env env, const ExecuteHelper *executeHelper
     }
     napi_create_int64(env, isLocal, &result);
     resultSet->Close();
+    dataAbilityHelper->Release();
 }
 
 void LocalExecuteIsMyCard(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
 {
     int64_t isLocal = 0;
     ContactsControl contactsControl;
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper = GetDataAbilityHelper(env);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.MyCardQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     if (resultSet == nullptr) {
         HILOG_ERROR("LocalExecute is_my_card resultSet is nullptr===>");
         napi_create_int64(env, isLocal, &result);
+        dataAbilityHelper->Release();
         return;
     }
     int rowCount = 0;
@@ -761,6 +779,7 @@ void LocalExecuteIsMyCard(napi_env env, const ExecuteHelper *executeHelper, napi
     }
     napi_create_int64(env, isLocal, &result);
     resultSet->Close();
+    dataAbilityHelper->Release();
 }
 
 napi_value LocalExecute(napi_env env, ExecuteHelper *executeHelper)
@@ -925,7 +944,6 @@ napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *exec
     napi_value argv[MAX_PARAMS];
     size_t argc = MAX_PARAMS;
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    executeHelper->dataAbilityHelper = GetDataAbilityHelper(env);
     executeHelper->argc = argc;
     executeHelper->actionCode = actionCode;
     SetChildActionCodeAndConvertParams(env, info, executeHelper);
