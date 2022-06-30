@@ -129,7 +129,7 @@ int VoiceMailAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &valu
     }
     rowRet = InsertExecute(uri, value);
     if (rowRet == Contacts::OPERATION_ERROR) {
-        ret = voiceMailDataBase_->RollBack();
+        voiceMailDataBase_->RollBack();
         g_mutex.unlock();
         return Contacts::OPERATION_ERROR;
     }

@@ -187,7 +187,7 @@ int ContactsAccount::GetNotExistAccount(
                 break;
             }
             result->GetInt(reValueIndex, reValue);
-            resultSetNum = result->GoToNextRow();
+            result->GoToNextRow();
             break;
         }
         result->Close();

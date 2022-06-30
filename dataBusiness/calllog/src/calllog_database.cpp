@@ -264,7 +264,7 @@ void CallLogDataBase::QueryContactsByInsertCalls(OHOS::NativeRdb::ValuesBucket &
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         resultSet->GetString(0, name);
         resultSet->GetString(1, quickSearchKey);
-        resultSetNum = resultSet->GoToNextRow();
+        resultSet->GoToNextRow();
         insertValues.Delete(CallLogColumns::DISPLAY_NAME);
         insertValues.PutString(CallLogColumns::DISPLAY_NAME, name);
         insertValues.Delete(CallLogColumns::QUICK_SEARCH_KEY);

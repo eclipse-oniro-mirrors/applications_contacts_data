@@ -174,7 +174,7 @@ std::string DataBaseDisasterRecovery::GetBackUpDatabase(const std::shared_ptr<OH
         int currValueIndex;
         result->GetColumnIndex(DatabaseBackupColumns::BACKUP_PATH, currValueIndex);
         result->GetString(currValueIndex, currValue);
-        resultSetNum = result->GoToNextRow();
+        result->GoToNextRow();
         break;
     }
     result->Close();

@@ -184,7 +184,7 @@ void ContactsUpdateHelper::UpdateCallLogByPhoneNum(
             int columnIndex = 0;
             rawContactResultSet->GetColumnIndex(columnName, columnIndex);
             rawContactResultSet->GetInt(columnIndex, contactId);
-            rawContactResultSetNum = rawContactResultSet->GoToNextRow();
+            rawContactResultSet->GoToNextRow();
             break;
         }
         rawContactResultSet->Close();
