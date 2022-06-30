@@ -173,6 +173,7 @@ std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_e
     NAPI_CALL(env, napi_get_value_external(env, abilityObj, reinterpret_cast<void **>(&ability)));
     if (ability == nullptr) {
         HILOG_ERROR("ability is nullptr!");
+        return nullptr;
     }
     std::shared_ptr<OHOS::Uri> uriPtr = std::make_shared<OHOS::Uri>("dataability:///com.ohos.contactsdataability");
     return OHOS::AppExecFwk::DataAbilityHelper::Creator(ability->GetContext(), uriPtr);

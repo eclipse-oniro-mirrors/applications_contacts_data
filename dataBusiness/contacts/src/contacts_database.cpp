@@ -580,7 +580,7 @@ int ContactsDataBase::DeleteContactData(OHOS::NativeRdb::RdbPredicates &rdbPredi
     std::vector<std::string> types;
     std::vector<int> rawContactIdVector = QueryContactDataRawContactId(rdbPredicates, types);
     int deletedRows = OHOS::NativeRdb::E_OK;
-    ret = store_->Delete(deletedRows, rdbPredicates);
+    store_->Delete(deletedRows, rdbPredicates);
     ContactsUpdateHelper contactsUpdateHelper;
     OHOS::NativeRdb::ValuesBucket contactDataValues;
     int updateDisplayRet =
@@ -759,7 +759,7 @@ std::vector<OHOS::NativeRdb::ValuesBucket> ContactsDataBase::DeleteContactQuery(
     if (resultSetNum != OHOS::NativeRdb::E_OK) {
         // query size 0
         std::vector<OHOS::NativeRdb::ValuesBucket> vectorQueryData;
-        resultSetNum = resultSet->GoToNextRow();
+        resultSet->GoToNextRow();
         resultSet->Close();
         return vectorQueryData;
     }

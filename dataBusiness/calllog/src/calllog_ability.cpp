@@ -132,7 +132,7 @@ int CallLogAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &value)
     }
     int resultId = InsertExecute(uri, value);
     if (resultId == Contacts::OPERATION_ERROR) {
-        ret = callLogDataBase_->RollBack();
+        callLogDataBase_->RollBack();
         g_mutex.unlock();
         return Contacts::OPERATION_ERROR;
     }
