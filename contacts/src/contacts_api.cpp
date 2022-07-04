@@ -685,7 +685,7 @@ void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper)
 void LocalExecuteQueryContact(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactQuery(
+    executeHelper->resultSet = contactsControl.ContactQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
 }
 
@@ -755,14 +755,14 @@ void LocalExecuteIsLocalContact(napi_env env, ExecuteHelper *executeHelper)
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     if (resultSet == nullptr) {
-        dataAbilityHelper->resultData = isLocal;
+        executeHelper->resultData = isLocal;
         return;
     }
     int resultSetNum = resultSet->GoToFirstRow();
     if (resultSetNum == OHOS::NativeRdb::E_OK) {
         isLocal = 1;
     }
-    dataAbilityHelper->resultData = isLocal;
+    executeHelper->resultData = isLocal;
     resultSet->Close();
 }
 
@@ -773,7 +773,7 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.MyCardQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     if (resultSet == nullptr) {
-        dataAbilityHelper->resultData = isMyCard;
+        executeHelper->resultData = isMyCard;
         return;
     }
     int rowCount = 0;
@@ -782,7 +782,7 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
     if (resultSetNum == OHOS::NativeRdb::E_OK) {
         isMyCard = 1;
     }
-    dataAbilityHelper->resultData = isMyCard;
+    executeHelper->resultData = isMyCard;
     resultSet->Close();
 }
 
@@ -790,7 +790,7 @@ void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
     if (executeHelper->dataAbilityHelper == nullptr) {
         HILOG_ERROR("create dataAbilityHelper is null, please check your permission");
-        dataAbilityHelper->resultData = ERROR;
+        executeHelper->resultData = ERROR;
         return;
     }
     switch (executeHelper->actionCode) {
