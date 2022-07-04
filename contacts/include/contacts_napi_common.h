@@ -34,6 +34,10 @@ constexpr int ERROR = -1;
 constexpr int NAPI_GET_STRING_SIZE = 256;
 constexpr int REQUEST_PARAMS_COUNT_ONE = 1;
 
+// NAPI callback type
+constexpr int NAPI_CALL_TYPE_CALLBACK = 0;
+constexpr int NAPI_CALL_TYPE_PROMISE = 1;
+
 // NAPI type
 constexpr int TYPE_NAPI_ERROR = -1;
 constexpr int TYPE_NAPI_NUMBER = 0;
@@ -80,28 +84,35 @@ constexpr int SIP_ADDRESS = 17;
 
 struct ExecuteHelper {
     ExecuteHelper()
-        : work(nullptr), deferred(nullptr), dataValue(nullptr), sync(1), argc(0), actionCode(-1), callBack(nullptr),
-          info(nullptr), childActionCode(0), promise(nullptr) {}
+        : work(nullptr), deferred(nullptr), sync(NAPI_CALL_TYPE_PROMISE), argc(0), actionCode(-1), callBack(nullptr),
+          childActionCode(0), promise(nullptr), resultData(-1), resultSet(nullptr) {}
     napi_async_work work;
     napi_deferred deferred;
-    napi_value dataValue;
     int sync;
     unsigned int argc;
+    napi_value argv[MAX_PARAMS] = {0};
     int actionCode;
     napi_ref callBack;
-    napi_callback_info info;
     int childActionCode;
     napi_value promise;
     // query
     std::vector<std::string> columns;
     // condition
     NativeRdb::DataAbilityPredicates predicates;
+    // delete contact predicates for update contact
+    NativeRdb::DataAbilityPredicates deletePredicates;
     // update
     std::vector<NativeRdb::ValuesBucket> valueUpdateContact;
     // insert
     std::vector<NativeRdb::ValuesBucket> valueContact;
     // insertContactData
     std::vector<NativeRdb::ValuesBucket> valueContactData;
+    // dataAbilityHelper
+    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper;
+
+    // operation result
+    int resultData;
+    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
 };
 } // namespace ContactsApi
 } // namespace OHOS

@@ -47,15 +47,12 @@ void ContactsBuild::GetContactDataByObject(napi_env env, napi_value object, Cont
     contact.postalAddresses = GetPostalAddress(env, object);
 }
 
-void ContactsBuild::GetContactData(napi_env env, napi_callback_info info,
+void ContactsBuild::GetContactData(napi_env env, napi_value object,
     std::vector<NativeRdb::ValuesBucket> &valueContact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    napi_value argv[MAX_PARAMS];
-    size_t argc = MAX_PARAMS;
-    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     ContactsBuild contactsBuild;
     Contacts contact;
-    GetContactDataByObject(env, argv[0], contact);
+    GetContactDataByObject(env, object, contact);
     BuildValueContact(contact, valueContact);
     BuildValueContactData(contact, valueContactData);
 }
