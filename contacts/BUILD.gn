@@ -57,7 +57,7 @@ ohos_shared_library("contact") {
     "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "preference:native_preference",
+    "preferences:native_preferences",
     "relational_store:native_appdatafwk",
     "relational_store:native_dataability",
     "relational_store:native_rdb",
