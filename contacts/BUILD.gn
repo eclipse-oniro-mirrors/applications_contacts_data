@@ -26,6 +26,7 @@ ohos_shared_library("contact") {
     "src/contacts_api.cpp",
     "src/contacts_build.cpp",
     "src/contacts_control.cpp",
+    "src/contacts_napi_utils.cpp",
     "src/native_module.cpp",
     "src/result_convert.cpp",
   ]
