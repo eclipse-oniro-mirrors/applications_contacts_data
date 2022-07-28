@@ -63,6 +63,8 @@ constexpr int QUERY_MY_CARD = 4007;
 constexpr int IS_LOCAL_CONTACT = 5008;
 constexpr int IS_MY_CARD = 5009;
 
+constexpr int SELECT_CONTACT = 6001;
+
 // contactsData type
 constexpr int EMAIL = 1;
 constexpr int IM = 2;
