@@ -32,6 +32,7 @@
 
 #include "contacts_control.h"
 #include "contacts_napi_common.h"
+#include "contacts_napi_utils.h"
 #include "hilog_wrapper_api.h"
 #include "result_convert.h"
 
@@ -630,6 +631,7 @@ void handleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
         case UPDATE_CONTACT:
         case IS_LOCAL_CONTACT:
         case IS_MY_CARD:
+        case SELECT_CONTACT:
             napi_create_int64(env, executeHelper->resultData, &result);
             break;
         case QUERY_CONTACT:
@@ -1031,7 +1033,12 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
  */
 napi_value SelectContact(napi_env env, napi_callback_info info)
 {
+    ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        result = Scheduling(env, info, executeHelper, SELECT_CONTACT);
+        return result;
+    }
     napi_create_int64(env, ERROR, &result);
     return result;
 }
@@ -1236,6 +1243,278 @@ napi_value IsLocalContact(napi_env env, napi_callback_info info)
     return result;
 }
 
+napi_value DeclareContactConst(napi_env env, napi_value exports)
+{
+    // Contact
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_CONTACT_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Contacts::INVALID_CONTACT_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Contact", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Contact", result);
+    return exports;
+}
+
+napi_value DeclareEmailConst(napi_env env, napi_value exports)
+{
+    // Email
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("EMAIL_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::EMAIL_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("EMAIL_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::EMAIL_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("EMAIL_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::EMAIL_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Email", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Email", result);
+    return exports;
+}
+
+napi_value DeclareEventConst(napi_env env, napi_value exports)
+{
+    // Event
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("EVENT_ANNIVERSARY",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::EVENT_ANNIVERSARY))),
+        DECLARE_NAPI_STATIC_PROPERTY("EVENT_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::EVENT_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("EVENT_BIRTHDAY",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::EVENT_BIRTHDAY))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Event", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Event", result);
+    return exports;
+}
+
+napi_value DeclareImAddressConst(napi_env env, napi_value exports)
+{
+    // ImAddress
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_AIM",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_AIM))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_MSN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_MSN))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_YAHOO",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_YAHOO))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_SKYPE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_SKYPE))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_QQ",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_QQ))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_ICQ",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_ICQ))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_JABBER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_JABBER))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "ImAddress", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "ImAddress", result);
+    return exports;
+}
+
+napi_value DeclarePhoneNumberConst(napi_env env, napi_value exports)
+{
+    // PhoneNumber
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_MOBILE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_MOBILE))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_FAX_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_FAX_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_FAX_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_FAX_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_PAGER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_PAGER))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_CALLBACK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_CALLBACK))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_CAR",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_CAR))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_COMPANY_MAIN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_COMPANY_MAIN))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_ISDN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_ISDN))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_MAIN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_MAIN))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_OTHER_FAX",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_OTHER_FAX))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_RADIO",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_RADIO))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_TELEX",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_TELEX))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_TTY_TDD",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_TTY_TDD))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_WORK_MOBILE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_WORK_MOBILE))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_WORK_PAGER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_WORK_PAGER))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_ASSISTANT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_ASSISTANT))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_MMS",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_MMS))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "PhoneNumber", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "PhoneNumber", result);
+    return exports;
+}
+
+napi_value DeclarePostalAddressConst(napi_env env, napi_value exports)
+{
+    // PostalAddress
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("ADDR_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::ADDR_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("ADDR_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::ADDR_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("ADDR_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::ADDR_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "PostalAddress", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "PostalAddress", result);
+    return exports;
+}
+
+napi_value DeclareRelationConst(napi_env env, napi_value exports)
+{
+    // Relation
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_ASSISTANT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_ASSISTANT))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_BROTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_BROTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_CHILD",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_CHILD))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_DOMESTIC_PARTNER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_DOMESTIC_PARTNER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_FATHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_FATHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_FRIEND",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_FRIEND))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_MANAGER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_MANAGER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_MOTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_MOTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_PARENT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_PARENT))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_PARTNER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_PARTNER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_REFERRED_BY",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_REFERRED_BY))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_RELATIVE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_RELATIVE))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_SISTER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_SISTER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_SPOUSE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_SPOUSE))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Relation", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Relation", result);
+    return exports;
+}
+
+napi_value DeclareSipAddressConst(napi_env env, napi_value exports)
+{
+    // SipAddress
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("SIP_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::SIP_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("SIP_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::SIP_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("SIP_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::SIP_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "SipAddress", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "SipAddress", result);
+    return exports;
+}
+
+napi_value DeclareAttributeConst(napi_env env, napi_value exports)
+{
+    // Attribute
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_CONTACT_EVENT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_CONTACT_EVENT))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_EMAIL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_EMAIL))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_GROUP_MEMBERSHIP",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_GROUP_MEMBERSHIP))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_IM",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_IM))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_NAME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_NAME))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_NICKNAME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_NICKNAME))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_NOTE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_NOTE))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_ORGANIZATION",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_ORGANIZATION))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_PHONE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_PHONE))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_PORTRAIT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_PORTRAIT))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_POSTAL_ADDRESS",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_POSTAL_ADDRESS))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_RELATION",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_RELATION))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_SIP_ADDRESS",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_SIP_ADDRESS))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_WEBSITE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_WEBSITE))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Attribute", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Attribute", result);
+    return exports;
+}
+
 void Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor exportFuncs[] = {
@@ -1255,6 +1534,16 @@ void Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("isLocalContact", OHOS::ContactsApi::IsLocalContact),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
+    // Declare class const initialization
+    DeclareContactConst(env, exports);
+    DeclareEmailConst(env, exports);
+    DeclareEventConst(env, exports);
+    DeclareImAddressConst(env, exports);
+    DeclarePhoneNumberConst(env, exports);
+    DeclarePostalAddressConst(env, exports);
+    DeclareRelationConst(env, exports);
+    DeclareSipAddressConst(env, exports);
+    DeclareAttributeConst(env, exports);
 }
 } // namespace ContactsApi
 } // namespace OHOS
