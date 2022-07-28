@@ -111,27 +111,27 @@ public:
     /**
      * Indicates a custom label.
      */
-    int CUSTOM_LABEL = 0;
+    static const int CUSTOM_LABEL = 0;
 
     /**
      * Indicates a home email.
      */
-    int EMAIL_HOME = 1;
+    static const int EMAIL_HOME = 1;
 
     /**
      * Indicates a work email.
      */
-    int EMAIL_WORK = 2;
+    static const int EMAIL_WORK = 2;
 
     /**
      * Indicates an email of the OTHER type.
      */
-    int EMAIL_OTHER = 3;
+    static const int EMAIL_OTHER = 3;
 
     /**
      * Indicates an invalid label ID.
      */
-    int INVALID_LABEL_ID = -1;
+    static const int INVALID_LABEL_ID = -1;
 
     /**
      * Indicates the email address.
@@ -162,27 +162,27 @@ public:
     /**
      * Indicates a custom label.
      */
-    int CUSTOM_LABEL = 0;
+    static const int CUSTOM_LABEL = 0;
 
     /**
      * Indicates an anniversary event.
      */
-    int EVENT_ANNIVERSARY = 1;
+    static const int EVENT_ANNIVERSARY = 1;
 
     /**
      * Indicates an event of the OTHER type.
      */
-    int EVENT_OTHER = 2;
+    static const int EVENT_OTHER = 2;
 
     /**
      * Indicates an birthday event.
      */
-    int EVENT_BIRTHDAY = 3;
+    static const int EVENT_BIRTHDAY = 3;
 
     /**
      * Indicates an invalid label ID.
      */
-    int INVALID_LABEL_ID = -1;
+    static const int INVALID_LABEL_ID = -1;
 
     /**
      * Indicates the event date.
@@ -245,47 +245,47 @@ public:
     /**
      * Indicates a custom label.
      */
-    int CUSTOM_LABEL = -1;
+    static const int CUSTOM_LABEL = -1;
 
     /**
      * Indicates an AIM instant message.
      */
-    int IM_AIM = 0;
+    static const int IM_AIM = 0;
 
     /**
      * Indicates a Windows Live instant message.
      */
-    int IM_MSN = 1;
+    static const int IM_MSN = 1;
 
     /**
      * Indicates a Yahoo instant message.
      */
-    int IM_YAHOO = 2;
+    static const int IM_YAHOO = 2;
 
     /**
      * Indicates a Skype instant message.
      */
-    int IM_SKYPE = 3;
+    static const int IM_SKYPE = 3;
 
     /**
      * Indicates a QQ instant message.
      */
-    int IM_QQ = 4;
+    static const int IM_QQ = 4;
 
     /**
      * Indicates an ICQ instant message.
      */
-    int IM_ICQ = 6;
+    static const int IM_ICQ = 6;
 
     /**
      * Indicates a Jabber instant message.
      */
-    int IM_JABBER = 7;
+    static const int IM_JABBER = 7;
 
     /**
      * Indicates an invalid label ID.
      */
-    int INVALID_LABEL_ID = -2;
+    static const int INVALID_LABEL_ID = -2;
 
     /**
      * Indicates the IM address.
@@ -396,112 +396,112 @@ public:
     /**
      * Indicates a custom label.
      */
-    int CUSTOM_LABEL = 0;
+    static const int CUSTOM_LABEL = 0;
 
     /**
      * Indicates a home number.
      */
-    int NUM_HOME = 1;
+    static const int NUM_HOME = 1;
 
     /**
      * Indicates a mobile phone number.
      */
-    int NUM_MOBILE = 2;
+    static const int NUM_MOBILE = 2;
 
     /**
      * Indicates a work number.
      */
-    int NUM_WORK = 3;
+    static const int NUM_WORK = 3;
 
     /**
      * Indicates a work fax number.
      */
-    int NUM_FAX_WORK = 4;
+    static const int NUM_FAX_WORK = 4;
 
     /**
      * Indicates a home fax number.
      */
-    int NUM_FAX_HOME = 5;
+    static const int NUM_FAX_HOME = 5;
 
     /**
      * Indicates a pager number.
      */
-    int NUM_PAGER = 6;
+    static const int NUM_PAGER = 6;
 
     /**
      * Indicates a number of the OTHER type.
      */
-    int NUM_OTHER = 7;
+    static const int NUM_OTHER = 7;
 
     /**
      * Indicates a callback number.
      */
-    int NUM_CALLBACK = 8;
+    static const int NUM_CALLBACK = 8;
 
     /**
      * Indicates a car number.
      */
-    int NUM_CAR = 9;
+    static const int NUM_CAR = 9;
 
     /**
      * Indicates a company director number.
      */
-    int NUM_COMPANY_MAIN = 10;
+    static const int NUM_COMPANY_MAIN = 10;
 
     /**
      * Indicates an Integrated Services Digital Network (ISDN) number.
      */
-    int NUM_ISDN = 11;
+    static const int NUM_ISDN = 11;
 
     /**
      * Indicates a main number.
      */
-    int NUM_MAIN = 12;
+    static const int NUM_MAIN = 12;
 
     /**
      * Indicates a number of the OTHER_FAX type.
      */
-    int NUM_OTHER_FAX = 13;
+    static const int NUM_OTHER_FAX = 13;
 
     /**
      * Indicates a radio number.
      */
-    int NUM_RADIO = 14;
+    static const int NUM_RADIO = 14;
 
     /**
      * Indicates a telex number.
      */
-    int NUM_TELEX = 15;
+    static const int NUM_TELEX = 15;
 
     /**
      * Indicates a teletypewriter (TTY) or test-driven development (TDD) number.
      */
-    int NUM_TTY_TDD = 16;
+    static const int NUM_TTY_TDD = 16;
 
     /**
      * Indicates a work mobile phone number.
      */
-    int NUM_WORK_MOBILE = 17;
+    static const int NUM_WORK_MOBILE = 17;
 
     /**
      * Indicates a work pager number.
      */
-    int NUM_WORK_PAGER = 18;
+    static const int NUM_WORK_PAGER = 18;
 
     /**
      * Indicates an assistant number.
      */
-    int NUM_ASSISTANT = 19;
+    static const int NUM_ASSISTANT = 19;
 
     /**
      * Indicates an MMS number.
      */
-    int NUM_MMS = 20;
+    static const int NUM_MMS = 20;
 
     /**
      * Indicates an invalid label ID.
      */
-    int INVALID_LABEL_ID = -1;
+    static const int INVALID_LABEL_ID = -1;
 
     /**
      * Indicates the label name of an attribute.
@@ -537,27 +537,27 @@ public:
     /**
      * Indicates a custom label.
      */
-    int CUSTOM_LABEL = 0;
+    static const int CUSTOM_LABEL = 0;
 
     /**
      * Indicates a home address.
      */
-    int ADDR_HOME = 1;
+    static const int ADDR_HOME = 1;
 
     /**
      * Indicates a work address.
      */
-    int ADDR_WORK = 2;
+    static const int ADDR_WORK = 2;
 
     /**
      * Indicates an address of the OTHER type.
      */
-    int ADDR_OTHER = 3;
+    static const int ADDR_OTHER = 3;
 
     /**
      * Indicates an invalid label ID.
      */
-    int INVALID_LABEL_ID = -1;
+    static const int INVALID_LABEL_ID = -1;
 
     /**
      * Indicates the city where this contact is located.
@@ -615,82 +615,82 @@ public:
     /**
      * Indicates a custom label.
      */
-    int CUSTOM_LABEL = 0;
+    static const int CUSTOM_LABEL = 0;
 
     /**
      * Indicates an assistant.
      */
-    int RELATION_ASSISTANT = 1;
+    static const int RELATION_ASSISTANT = 1;
 
     /**
      * Indicates a brother.
      */
-    int RELATION_BROTHER = 2;
+    static const int RELATION_BROTHER = 2;
 
     /**
      * Indicates a child.
      */
-    int RELATION_CHILD = 3;
+    static const int RELATION_CHILD = 3;
 
     /**
      * Indicates a domestic partner.
      */
-    int RELATION_DOMESTIC_PARTNER = 4;
+    static const int RELATION_DOMESTIC_PARTNER = 4;
 
     /**
      * Indicates a father.
      */
-    int RELATION_FATHER = 5;
+    static const int RELATION_FATHER = 5;
 
     /**
      * Indicates a friend.
      */
-    int RELATION_FRIEND = 6;
+    static const int RELATION_FRIEND = 6;
 
     /**
      * Indicates a manager.
      */
-    int RELATION_MANAGER = 7;
+    static const int RELATION_MANAGER = 7;
 
     /**
      * Indicates a mother.
      */
-    int RELATION_MOTHER = 8;
+    static const int RELATION_MOTHER = 8;
 
     /**
      * Indicates a parent.
      */
-    int RELATION_PARENT = 9;
+    static const int RELATION_PARENT = 9;
 
     /**
      * Indicates a partner.
      */
-    int RELATION_PARTNER = 10;
+    static const int RELATION_PARTNER = 10;
 
     /**
      * Indicates a referrer.
      */
-    int RELATION_REFERRED_BY = 11;
+    static const int RELATION_REFERRED_BY = 11;
 
     /**
      * Indicates a relative.
      */
-    int RELATION_RELATIVE = 12;
+    static const int RELATION_RELATIVE = 12;
 
     /**
      * Indicates a sister.
      */
-    int RELATION_SISTER = 13;
+    static const int RELATION_SISTER = 13;
 
     /**
      * Indicates a spouse.
      */
-    int RELATION_SPOUSE = 14;
+    static const int RELATION_SPOUSE = 14;
 
     /**
      * Indicates an invalid label ID.
      */
-    int INVALID_LABEL_ID = -1;
+    static const int INVALID_LABEL_ID = -1;
 
     /**
      * Indicates the label name of an attribute.
@@ -713,27 +713,27 @@ public:
     /**
      * Indicates a custom label.
      */
-    int CUSTOM_LABEL = 0;
+    static const int CUSTOM_LABEL = 0;
 
     /**
      * Indicates a home SIP address.
      */
-    int SIP_HOME = 1;
+    static const int SIP_HOME = 1;
 
     /**
      * Indicates a work SIP address.
      */
-    int SIP_WORK = 2;
+    static const int SIP_WORK = 2;
 
     /**
      * Indicates an SIP address of the OTHER type.
      */
-    int SIP_OTHER = 3;
+    static const int SIP_OTHER = 3;
 
     /**
      * Indicates an invalid label ID.
      */
-    int INVALID_LABEL_ID = -1;
+    static const int INVALID_LABEL_ID = -1;
 
     /**
      * Indicates the label name of an attribute.
@@ -764,7 +764,7 @@ public:
     /**
      * Indicates the contact ID.
      */
-    static int INVALID_CONTACT_ID;
+    static const int INVALID_CONTACT_ID = -1;
 
     /**
      * Indicates the contact ID.

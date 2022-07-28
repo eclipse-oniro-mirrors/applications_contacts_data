@@ -22,6 +22,15 @@
 namespace OHOS {
 namespace ContactsApi {
 void Init(napi_env env, napi_value exports);
+napi_value DeclareContactConst(napi_env env, napi_value exports);
+napi_value DeclareEmailConst(napi_env env, napi_value exports);
+napi_value DeclareEventConst(napi_env env, napi_value exports);
+napi_value DeclareImAddressConst(napi_env env, napi_value exports);
+napi_value DeclarePhoneNumberConst(napi_env env, napi_value exports);
+napi_value DeclarePostalAddressConst(napi_env env, napi_value exports);
+napi_value DeclareRelationConst(napi_env env, napi_value exports);
+napi_value DeclareSipAddressConst(napi_env env, napi_value exports);
+napi_value DeclareAttributeConst(napi_env env, napi_value exports);
 napi_value AddContact(napi_env env, napi_callback_info info);
 napi_value DeleteContact(napi_env env, napi_callback_info info);
 napi_value UpdateContact(napi_env env, napi_callback_info info);
