@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,6 +32,7 @@
 
 #include "contacts_control.h"
 #include "contacts_napi_common.h"
+#include "contacts_napi_utils.h"
 #include "hilog_wrapper_api.h"
 #include "result_convert.h"
 
@@ -153,7 +154,6 @@ int GetType(napi_env env, napi_value value)
     }
 }
 
-std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> g_dataAbilityHelper = nullptr;
 /**
  * @brief Get dataAbilityHelper
  *
@@ -171,16 +171,13 @@ std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_e
         HILOG_ERROR("abilityObj is nullptr!");
     }
     OHOS::AppExecFwk::Ability *ability = nullptr;
-    NAPI_CALL(env, napi_get_value_external(env, abilityObj, (void **)&ability));
+    NAPI_CALL(env, napi_get_value_external(env, abilityObj, reinterpret_cast<void **>(&ability)));
     if (ability == nullptr) {
         HILOG_ERROR("ability is nullptr!");
+        return nullptr;
     }
     std::shared_ptr<OHOS::Uri> uriPtr = std::make_shared<OHOS::Uri>("dataability:///com.ohos.contactsdataability");
-    if (g_dataAbilityHelper == nullptr) {
-        HILOG_ERROR("g_dataAbilityHelper is not nullptr!");
-        g_dataAbilityHelper = OHOS::AppExecFwk::DataAbilityHelper::Creator(ability->GetContext(), uriPtr);
-    }
-    return g_dataAbilityHelper;
+    return OHOS::AppExecFwk::DataAbilityHelper::Creator(ability->GetContext(), uriPtr);
 }
 
 /**
@@ -235,14 +232,11 @@ void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredic
  * @param env Conditions for resolve object interface operation
  * @param info Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildDeleteContactPredicates(napi_env env, napi_callback_info info)
+NativeRdb::DataAbilityPredicates BuildDeleteContactPredicates(napi_env env, ExecuteHelper *executeHelper)
 {
     NativeRdb::DataAbilityPredicates predicates;
-    napi_value argv[MAX_PARAMS];
-    size_t argc = MAX_PARAMS;
-    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     ContactsBuild contactsBuild;
-    std::string keyValue = contactsBuild.NapiGetValueString(env, argv[0]);
+    std::string keyValue = contactsBuild.NapiGetValueString(env, executeHelper->argv[0]);
     if (!keyValue.empty()) {
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
@@ -259,7 +253,7 @@ NativeRdb::DataAbilityPredicates BuildDeleteContactPredicates(napi_env env, napi
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyContactPredicates(
+NativeRdb::DataAbilityPredicates BuildQueryContactPredicates(
     napi_env env, napi_value key, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
@@ -297,7 +291,7 @@ void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holde
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyContactsPredicates(napi_env env, napi_value hold, napi_value attr)
+NativeRdb::DataAbilityPredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
     Holder holder = contactsBuild.GetHolder(env, hold);
@@ -344,7 +338,7 @@ NativeRdb::DataAbilityPredicates BuildQureyContactsPredicates(napi_env env, napi
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyContactsByEmailPredicates(
+NativeRdb::DataAbilityPredicates BuildQueryContactsByEmailPredicates(
     napi_env env, napi_value emailobject, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
@@ -372,7 +366,7 @@ NativeRdb::DataAbilityPredicates BuildQureyContactsByEmailPredicates(
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyContactsByPhoneNumberPredicates(
+NativeRdb::DataAbilityPredicates BuildQueryContactsByPhoneNumberPredicates(
     napi_env env, napi_value number, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
@@ -398,7 +392,7 @@ NativeRdb::DataAbilityPredicates BuildQureyContactsByPhoneNumberPredicates(
  * @param env Conditions for resolve object interface operation
  * @param hold Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyGroupsPredicates(napi_env env, napi_value hold)
+NativeRdb::DataAbilityPredicates BuildQueryGroupsPredicates(napi_env env, napi_value hold)
 {
     ContactsBuild contactsBuild;
     Holder holder = contactsBuild.GetHolder(env, hold);
@@ -427,7 +421,7 @@ NativeRdb::DataAbilityPredicates BuildQureyGroupsPredicates(napi_env env, napi_v
  * @param id Conditions for resolve object interface operation
  * @param hold Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQureyKeyPredicates(napi_env env, napi_value id, napi_value hold)
+NativeRdb::DataAbilityPredicates BuildQueryKeyPredicates(napi_env env, napi_value id, napi_value hold)
 {
     ContactsBuild contactsBuild;
     int value = contactsBuild.GetInt(env, id);
@@ -467,7 +461,7 @@ NativeRdb::DataAbilityPredicates BuildQueryMyCardPredicates(napi_env env, napi_v
     return predicates;
 }
 
-NativeRdb::DataAbilityPredicates BuildQuerytContactData(napi_env env, napi_value &contactObject, napi_value &attrObject,
+NativeRdb::DataAbilityPredicates BuildQueryContactData(napi_env env, napi_value &contactObject, napi_value &attrObject,
     std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
     ContactsBuild contactsBuild;
@@ -516,29 +510,17 @@ void BuildUpdateContactConvertParams(napi_env env, napi_value &contact, napi_val
 {
     executeHelper->valueContactData.clear();
     NativeRdb::DataAbilityPredicates predicates =
-        BuildQuerytContactData(env, contact, attr, executeHelper->valueContactData);
+        BuildQueryContactData(env, contact, attr, executeHelper->valueContactData);
     executeHelper->columns = BuildUpdateContactColumns();
-    ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsControl.ContactDataQuery(GetDataAbilityHelper(env), executeHelper->columns, predicates);
-    int rawId = GetRawIdByResultSet(resultSet);
-    std::vector<NativeRdb::ValuesBucket> value = executeHelper->valueContactData;
-    unsigned int size = value.size();
-    for (unsigned int i = 0; i < size; ++i) {
-        (executeHelper->valueContactData)[i].PutInt("raw_contact_id", rawId);
-    }
-    executeHelper->predicates = BuildDeleteContactDataPredicates(env, rawId, attr);
+    executeHelper->deletePredicates = BuildDeleteContactDataPredicates(env, attr);
 }
 
-NativeRdb::DataAbilityPredicates BuildDeleteContactDataPredicates(napi_env env, int rawId, napi_value attr)
+NativeRdb::DataAbilityPredicates BuildDeleteContactDataPredicates(napi_env env, napi_value attr)
 {
     ContactsBuild contactsBuild;
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
     NativeRdb::DataAbilityPredicates predicates;
-    if (rawId != 0) {
-        predicates.EqualTo("raw_contact_id", std::to_string(rawId));
-        AttributesPredicates(attrs, predicates);
-    }
+    AttributesPredicates(attrs, predicates);
     return predicates;
 }
 
@@ -586,13 +568,18 @@ NativeRdb::DataAbilityPredicates BuildIsMyCardPredicates(napi_env env, napi_valu
 
 void ExecuteDone(napi_env env, napi_status status, void *data)
 {
-    ExecuteHelper *executeHelper = (ExecuteHelper *)data;
-    napi_value result = executeHelper->dataValue;
-    executeHelper->dataValue = nullptr;
+    ExecuteHelper *executeHelper = reinterpret_cast<ExecuteHelper *>(data);
+    HILOG_INFO("ExecuteDone workName: %{public}d", executeHelper->actionCode);
+    napi_value result = nullptr;
+    handleExecuteResult(env, executeHelper, result);
     napi_deferred deferred = executeHelper->deferred;
     executeHelper->deferred = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, executeHelper->work));
+    if (executeHelper->dataAbilityHelper != nullptr) {
+        executeHelper->dataAbilityHelper->Release();
+        executeHelper->dataAbilityHelper = nullptr;
+    }
     delete executeHelper;
     executeHelper = nullptr;
 }
@@ -604,12 +591,12 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         return;
     }
     if (data != nullptr) {
-        ExecuteHelper *executeHelper = (ExecuteHelper *)data;
+        ExecuteHelper *executeHelper = reinterpret_cast<ExecuteHelper *>(data);
+        HILOG_INFO("ExecuteSyncDone workName: %{public}d", executeHelper->actionCode);
         napi_value global;
         napi_get_global(env, &global);
         napi_value resultData[1];
-        resultData[0] = executeHelper->dataValue;
-        executeHelper->dataValue = nullptr;
+        handleExecuteResult(env, executeHelper, resultData[0]);
         napi_value result;
         napi_value callBack;
         napi_get_reference_value(env, executeHelper->callBack, &callBack);
@@ -625,16 +612,57 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         }
         executeHelper->work = nullptr;
         executeHelper->deferred = nullptr;
+        if (executeHelper->dataAbilityHelper != nullptr) {
+            executeHelper->dataAbilityHelper->Release();
+            executeHelper->dataAbilityHelper = nullptr;
+        }
         delete executeHelper;
     }
     HILOG_INFO("contactApi ExecuteSyncDone done===>");
 }
 
-void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
+void handleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
+{
+    ResultConvert resultConvert;
+    napi_value results = nullptr;
+    switch (executeHelper->actionCode) {
+        case ADD_CONTACT:
+        case DELETE_CONTACT:
+        case UPDATE_CONTACT:
+        case IS_LOCAL_CONTACT:
+        case IS_MY_CARD:
+        case SELECT_CONTACT:
+            napi_create_int64(env, executeHelper->resultData, &result);
+            break;
+        case QUERY_CONTACT:
+            results = resultConvert.ResultSetToObject(env, executeHelper->resultSet);
+            if (results != nullptr) {
+                napi_get_element(env, results, 0, &result);
+            }
+            break;
+        case QUERY_CONTACTS:
+        case QUERY_KEY:
+        case QUERY_CONTACTS_BY_EMAIL:
+        case QUERY_CONTACTS_BY_PHONE_NUMBER:
+        case QUERY_MY_CARD:
+            result = resultConvert.ResultSetToObject(env, executeHelper->resultSet);
+            break;
+        case QUERY_GROUPS:
+            result = resultConvert.ResultSetToGroup(env, executeHelper->resultSet);
+            break;
+        case QUERY_HOLDERS:
+            result = resultConvert.ResultSetToHolder(env, executeHelper->resultSet);
+            break;
+        default:
+            break;
+    }
+}
+
+void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
-    int64_t rawId =
-        contactsControl.RawContactInsert(executeHelper->dataAbilityHelper, (executeHelper->valueContact)[0]);
+    int64_t rawId = contactsControl.RawContactInsert(
+        executeHelper->dataAbilityHelper, (executeHelper->valueContact)[0]);
     std::vector<NativeRdb::ValuesBucket> value = executeHelper->valueContactData;
     unsigned int size = value.size();
     for (unsigned int i = 0; i < size; ++i) {
@@ -642,204 +670,197 @@ void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper, napi_val
     }
     int code = contactsControl.ContactDataInsert(executeHelper->dataAbilityHelper, executeHelper->valueContactData);
     if (code == 0) {
-        napi_create_int64(env, rawId, &result);
+        executeHelper->resultData = rawId;
     } else {
-        napi_create_int64(env, code, &result);
+        executeHelper->resultData = code;
     }
 }
 
-void LocalExecuteDeleteContact(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
     int ret = contactsControl.ContactDelete(executeHelper->dataAbilityHelper, executeHelper->predicates);
     HILOG_INFO("LocalExecuteDeleteContact contact ret = %{public}d", ret);
-    napi_create_int64(env, ret, &result);
+    executeHelper->resultData = ret;
 }
 
-void LocalExecuteQueryContact(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteQueryContact(napi_env env, ExecuteHelper *executeHelper)
 {
-    ResultConvert resultConvert;
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactQuery(
+    executeHelper->resultSet = contactsControl.ContactQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
-    napi_value results = resultConvert.ResultSetToObject(env, resultSet);
-    if (results != nullptr) {
-        napi_get_element(env, results, 0, &result);
-    }
 }
 
-void LocalExecuteQueryContactsOrKey(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteQueryContactsOrKey(napi_env env, ExecuteHelper *executeHelper)
 {
-    ResultConvert resultConvert;
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactQuery(
+    executeHelper->resultSet = contactsControl.ContactQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
-    result = resultConvert.ResultSetToObject(env, resultSet);
 }
 
-void LocalExecuteQueryContactsByData(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper)
 {
-    ResultConvert resultConvert;
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactDataQuery(
+    executeHelper->resultSet = contactsControl.ContactDataQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
-    result = resultConvert.ResultSetToObject(env, resultSet);
 }
 
-void LocalExecuteQueryGroup(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteQueryGroup(napi_env env, ExecuteHelper *executeHelper)
 {
-    ResultConvert resultConvert;
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.GroupsQuery(
+    executeHelper->resultSet = contactsControl.GroupsQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
-    result = resultConvert.ResultSetToGroup(env, resultSet);
 }
 
-void LocalExecuteQueryHolders(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteQueryHolders(napi_env env, ExecuteHelper *executeHelper)
 {
-    ResultConvert resultConvert;
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.HolderQuery(
+    executeHelper->resultSet = contactsControl.HolderQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
-    result = resultConvert.ResultSetToHolder(env, resultSet);
 }
 
-void LocalExecuteQueryMyCard(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteQueryMyCard(napi_env env, ExecuteHelper *executeHelper)
 {
-    ResultConvert resultConvert;
     ContactsControl contactsControl;
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.MyCardQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
-    result = resultConvert.ResultSetToObject(env, resultSet);
 }
 
-void LocalExecuteUpdateContact(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
-    int resultCode = contactsControl.ContactDataDelete(executeHelper->dataAbilityHelper, executeHelper->predicates);
-    if (resultCode == 0) {
-        resultCode =
-            contactsControl.ContactDataInsert(executeHelper->dataAbilityHelper, executeHelper->valueContactData);
-        napi_create_int64(env, resultCode, &result);
+    // query raw_contact_id
+    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactDataQuery(
+        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+    int rawId = GetRawIdByResultSet(resultSet);
+    std::vector<NativeRdb::ValuesBucket> value = executeHelper->valueContactData;
+    unsigned int size = value.size();
+    for (unsigned int i = 0; i < size; ++i) {
+        (executeHelper->valueContactData)[i].PutInt("raw_contact_id", rawId);
     }
+    if (rawId != 0) {
+        executeHelper->deletePredicates.EqualTo("raw_contact_id", std::to_string(rawId));
+    }
+    int resultCode = contactsControl.ContactDataDelete(
+        executeHelper->dataAbilityHelper, executeHelper->deletePredicates);
+    if (resultCode == 0) {
+        resultCode = contactsControl.ContactDataInsert(
+            executeHelper->dataAbilityHelper, executeHelper->valueContactData);
+    }
+    executeHelper->resultData = resultCode;
 }
 
-void LocalExecuteIsLocalContact(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteIsLocalContact(napi_env env, ExecuteHelper *executeHelper)
 {
     int64_t isLocal = 0;
     ContactsControl contactsControl;
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     if (resultSet == nullptr) {
-        napi_create_int64(env, isLocal, &result);
+        executeHelper->resultData = isLocal;
         return;
     }
     int resultSetNum = resultSet->GoToFirstRow();
     if (resultSetNum == OHOS::NativeRdb::E_OK) {
         isLocal = 1;
     }
-    napi_create_int64(env, isLocal, &result);
+    executeHelper->resultData = isLocal;
     resultSet->Close();
 }
 
-void LocalExecuteIsMyCard(napi_env env, const ExecuteHelper *executeHelper, napi_value &result)
+void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
 {
-    int64_t isLocal = 0;
+    int64_t isMyCard = 0;
     ContactsControl contactsControl;
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.MyCardQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     if (resultSet == nullptr) {
-        HILOG_ERROR("LocalExecute is_my_card resultSet is nullptr===>");
-        napi_create_int64(env, isLocal, &result);
+        executeHelper->resultData = isMyCard;
         return;
     }
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     int resultSetNum = resultSet->GoToFirstRow();
     if (resultSetNum == OHOS::NativeRdb::E_OK) {
-        isLocal = 1;
+        isMyCard = 1;
     }
-    napi_create_int64(env, isLocal, &result);
+    executeHelper->resultData = isMyCard;
     resultSet->Close();
 }
 
-napi_value LocalExecute(napi_env env, ExecuteHelper *executeHelper)
+void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
-    napi_value result = nullptr;
+    if (executeHelper->dataAbilityHelper == nullptr) {
+        HILOG_ERROR("create dataAbilityHelper is null, please check your permission");
+        executeHelper->resultData = ERROR;
+        return;
+    }
     switch (executeHelper->actionCode) {
         case ADD_CONTACT:
-            LocalExecuteAddContact(env, executeHelper, result);
+            LocalExecuteAddContact(env, executeHelper);
             break;
         case DELETE_CONTACT:
-            LocalExecuteDeleteContact(env, executeHelper, result);
+            LocalExecuteDeleteContact(env, executeHelper);
             break;
         case QUERY_CONTACT:
-            LocalExecuteQueryContact(env, executeHelper, result);
+            LocalExecuteQueryContact(env, executeHelper);
             break;
         case QUERY_CONTACTS:
-            LocalExecuteQueryContactsOrKey(env, executeHelper, result);
+            LocalExecuteQueryContactsOrKey(env, executeHelper);
             break;
         case QUERY_CONTACTS_BY_EMAIL:
         case QUERY_CONTACTS_BY_PHONE_NUMBER:
-            LocalExecuteQueryContactsByData(env, executeHelper, result);
+            LocalExecuteQueryContactsByData(env, executeHelper);
             break;
         case QUERY_GROUPS:
-            LocalExecuteQueryGroup(env, executeHelper, result);
+            LocalExecuteQueryGroup(env, executeHelper);
             break;
         case QUERY_HOLDERS:
-            LocalExecuteQueryHolders(env, executeHelper, result);
+            LocalExecuteQueryHolders(env, executeHelper);
             break;
         case QUERY_KEY:
-            LocalExecuteQueryContactsOrKey(env, executeHelper, result);
+            LocalExecuteQueryContactsOrKey(env, executeHelper);
             break;
         case QUERY_MY_CARD:
-            LocalExecuteQueryMyCard(env, executeHelper, result);
+            LocalExecuteQueryMyCard(env, executeHelper);
             break;
         case UPDATE_CONTACT:
-            LocalExecuteUpdateContact(env, executeHelper, result);
+            LocalExecuteUpdateContact(env, executeHelper);
             break;
         case IS_LOCAL_CONTACT:
-            LocalExecuteIsLocalContact(env, executeHelper, result);
+            LocalExecuteIsLocalContact(env, executeHelper);
             break;
         case IS_MY_CARD:
-            LocalExecuteIsMyCard(env, executeHelper, result);
+            LocalExecuteIsMyCard(env, executeHelper);
             break;
         default:
             HILOG_INFO("LocalExecute case error===>");
             break;
     }
-    return result;
 }
 
 void Execute(napi_env env, void *data)
 {
     ExecuteHelper *executeHelper = static_cast<ExecuteHelper *>(data);
-    executeHelper->dataValue = LocalExecute(env, executeHelper);
+    HILOG_INFO("Execute start workName: %{public}d", executeHelper->actionCode);
+    LocalExecute(env, executeHelper);
 }
 
-napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper, napi_callback_info info)
+napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper)
 {
     napi_value workName;
     napi_value result = nullptr;
-    if (executeHelper->sync == 0) {
+    if (executeHelper->sync == NAPI_CALL_TYPE_CALLBACK) {
         napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &workName);
-        napi_value argv[6];
-        size_t argc = 6;
-        napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-        napi_valuetype valuetype = napi_undefined;
-        napi_typeof(env, argv[argc - 1], &valuetype);
-        if (valuetype == napi_function) {
-            HILOG_INFO("AddContact  is callback function===>");
-            napi_create_reference(env, argv[argc - 1], 1, &executeHelper->callBack);
-        }
-        napi_create_async_work(
-            env, nullptr, workName, Execute, ExecuteSyncDone, (void *)executeHelper, &(executeHelper->work));
+        napi_create_reference(env, executeHelper->argv[executeHelper->argc - 1], 1, &executeHelper->callBack);
+        napi_create_async_work(env, nullptr, workName, Execute, ExecuteSyncDone,
+            reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
         napi_get_null(env, &result);
     } else {
         napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &workName);
         napi_create_promise(env, &(executeHelper->deferred), &result);
-        napi_create_async_work(
-            env, nullptr, workName, Execute, ExecuteDone, (void *)executeHelper, &(executeHelper->work));
+        napi_create_async_work(env, nullptr, workName, Execute, ExecuteDone,
+            reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
     }
     napi_queue_async_work(env, executeHelper->work);
     executeHelper->promise = result;
@@ -852,19 +873,19 @@ NativeRdb::DataAbilityPredicates ConvertParamsSwitchSplit(
     NativeRdb::DataAbilityPredicates predicates;
     switch (code) {
         case QUERY_CONTACT:
-            predicates = BuildQureyContactPredicates(env, key, hold, attr);
+            predicates = BuildQueryContactPredicates(env, key, hold, attr);
             break;
         case QUERY_CONTACTS:
-            predicates = BuildQureyContactsPredicates(env, hold, attr);
+            predicates = BuildQueryContactsPredicates(env, hold, attr);
             break;
         case QUERY_CONTACTS_BY_EMAIL:
-            predicates = BuildQureyContactsByEmailPredicates(env, key, hold, attr);
+            predicates = BuildQueryContactsByEmailPredicates(env, key, hold, attr);
             break;
         case QUERY_CONTACTS_BY_PHONE_NUMBER:
-            predicates = BuildQureyContactsByPhoneNumberPredicates(env, key, hold, attr);
+            predicates = BuildQueryContactsByPhoneNumberPredicates(env, key, hold, attr);
             break;
         case QUERY_GROUPS:
-            predicates = BuildQureyGroupsPredicates(env, hold);
+            predicates = BuildQueryGroupsPredicates(env, hold);
             break;
         case QUERY_HOLDERS:
             break;
@@ -878,29 +899,27 @@ NativeRdb::DataAbilityPredicates ConvertParamsSwitchSplit(
     return predicates;
 }
 
-void SetChildActionCodeAndConvertParams(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper)
+void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelper)
 {
     napi_value id = nullptr;
     napi_value key = nullptr;
     napi_value hold = nullptr;
     napi_value attr = nullptr;
     napi_value contact = nullptr;
-    napi_value argv[MAX_PARAMS];
-    size_t argc = MAX_PARAMS;
-    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    unsigned int size = argc;
+    unsigned int size = executeHelper->argc;
     for (unsigned int i = 0; i < size; i++) {
-        ObjectInitId(env, argv[i], id);
-        ObjectInitString(env, argv[i], key);
-        ObjectInit(env, argv[i], hold, attr, contact);
+        ObjectInitId(env, executeHelper->argv[i], id);
+        ObjectInitString(env, executeHelper->argv[i], key);
+        ObjectInit(env, executeHelper->argv[i], hold, attr, contact);
     }
     ContactsBuild contactsBuild;
     switch (executeHelper->actionCode) {
         case ADD_CONTACT:
-            contactsBuild.GetContactData(env, info, executeHelper->valueContact, executeHelper->valueContactData);
+            contactsBuild.GetContactData(
+                env, executeHelper->argv[0], executeHelper->valueContact, executeHelper->valueContactData);
             break;
         case DELETE_CONTACT:
-            executeHelper->predicates = BuildDeleteContactPredicates(env, info);
+            executeHelper->predicates = BuildDeleteContactPredicates(env, executeHelper);
             break;
         case UPDATE_CONTACT:
             BuildUpdateContactConvertParams(env, contact, attr, executeHelper);
@@ -912,7 +931,7 @@ void SetChildActionCodeAndConvertParams(napi_env env, napi_callback_info info, E
             executeHelper->predicates = BuildIsMyCardPredicates(env, id);
             break;
         case QUERY_KEY:
-            executeHelper->predicates = BuildQureyKeyPredicates(env, id, hold);
+            executeHelper->predicates = BuildQueryKeyPredicates(env, id, hold);
             break;
         default:
             executeHelper->predicates = ConvertParamsSwitchSplit(executeHelper->actionCode, env, key, hold, attr);
@@ -922,30 +941,26 @@ void SetChildActionCodeAndConvertParams(napi_env env, napi_callback_info info, E
 
 napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper, int actionCode)
 {
-    napi_value argv[MAX_PARAMS];
     size_t argc = MAX_PARAMS;
-    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    executeHelper->dataAbilityHelper = GetDataAbilityHelper(env);
+    napi_get_cb_info(env, info, &argc, executeHelper->argv, nullptr, nullptr);
     executeHelper->argc = argc;
     executeHelper->actionCode = actionCode;
-    SetChildActionCodeAndConvertParams(env, info, executeHelper);
-    napi_value result = CreateAsyncWork(env, executeHelper, info);
-    return result;
-}
 
-int GetMethodType(napi_env env, napi_callback_info info)
-{
-    napi_value argv[MAX_PARAMS];
-    size_t argc = MAX_PARAMS;
-    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    napi_valuetype valuetype = napi_undefined;
-    napi_typeof(env, argv[argc - 1], &valuetype);
-    // last params is function as callback
-    if (valuetype == napi_function) {
-        HILOG_INFO("GetMethodType   callback function===>");
-        return 0;
+    if (argc > 0) {
+        napi_valuetype valuetype = napi_undefined;
+        napi_typeof(env, executeHelper->argv[argc - 1], &valuetype);
+        // last params is function as callback
+        if (valuetype == napi_function) {
+            executeHelper->sync = NAPI_CALL_TYPE_CALLBACK;
+        } else {
+            executeHelper->sync = NAPI_CALL_TYPE_PROMISE;
+        }
     }
-    return 1;
+    SetChildActionCodeAndConvertParams(env, executeHelper);
+    executeHelper->dataAbilityHelper = GetDataAbilityHelper(env);
+
+    napi_value result = CreateAsyncWork(env, executeHelper);
+    return result;
 }
 
 /**
@@ -961,7 +976,6 @@ napi_value AddContact(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, ADD_CONTACT);
         return result;
     }
@@ -982,7 +996,6 @@ napi_value DeleteContact(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, DELETE_CONTACT);
         return result;
     }
@@ -1003,8 +1016,27 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, UPDATE_CONTACT);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
+    return result;
+}
+
+/**
+ * @brief Test interface SELECT_CONTACT
+ *
+ * @param env Conditions for resolve object interface operation
+ * @param info Conditions for resolve object interface operation
+ *
+ * @return The result returned by test
+ */
+napi_value SelectContact(napi_env env, napi_callback_info info)
+{
+    ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        result = Scheduling(env, info, executeHelper, SELECT_CONTACT);
         return result;
     }
     napi_create_int64(env, ERROR, &result);
@@ -1024,7 +1056,6 @@ napi_value QueryContact(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, QUERY_CONTACT);
         return result;
     }
@@ -1045,7 +1076,6 @@ napi_value QueryContacts(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, QUERY_CONTACTS);
         return result;
     }
@@ -1066,7 +1096,6 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_EMAIL);
         return result;
     }
@@ -1087,7 +1116,6 @@ napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, QUERY_CONTACTS_BY_PHONE_NUMBER);
         return result;
     }
@@ -1108,7 +1136,6 @@ napi_value QueryGroups(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, QUERY_GROUPS);
         return result;
     }
@@ -1129,7 +1156,6 @@ napi_value QueryHolders(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, QUERY_HOLDERS);
         return result;
     }
@@ -1150,7 +1176,6 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, QUERY_KEY);
         return result;
     }
@@ -1171,7 +1196,6 @@ napi_value QueryMyCard(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, QUERY_MY_CARD);
         return result;
     }
@@ -1192,7 +1216,6 @@ napi_value IsMyCard(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, IS_MY_CARD);
         return result;
     }
@@ -1213,12 +1236,283 @@ napi_value IsLocalContact(napi_env env, napi_callback_info info)
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
-        executeHelper->sync = GetMethodType(env, info);
         result = Scheduling(env, info, executeHelper, IS_LOCAL_CONTACT);
         return result;
     }
     napi_create_int64(env, ERROR, &result);
     return result;
+}
+
+napi_value DeclareContactConst(napi_env env, napi_value exports)
+{
+    // Contact
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_CONTACT_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Contacts::INVALID_CONTACT_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Contact", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Contact", result);
+    return exports;
+}
+
+napi_value DeclareEmailConst(napi_env env, napi_value exports)
+{
+    // Email
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("EMAIL_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::EMAIL_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("EMAIL_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::EMAIL_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("EMAIL_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::EMAIL_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Email::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Email", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Email", result);
+    return exports;
+}
+
+napi_value DeclareEventConst(napi_env env, napi_value exports)
+{
+    // Event
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("EVENT_ANNIVERSARY",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::EVENT_ANNIVERSARY))),
+        DECLARE_NAPI_STATIC_PROPERTY("EVENT_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::EVENT_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("EVENT_BIRTHDAY",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::EVENT_BIRTHDAY))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Event::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Event", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Event", result);
+    return exports;
+}
+
+napi_value DeclareImAddressConst(napi_env env, napi_value exports)
+{
+    // ImAddress
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_AIM",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_AIM))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_MSN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_MSN))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_YAHOO",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_YAHOO))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_SKYPE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_SKYPE))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_QQ",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_QQ))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_ICQ",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_ICQ))),
+        DECLARE_NAPI_STATIC_PROPERTY("IM_JABBER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::IM_JABBER))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(ImAddress::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "ImAddress", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "ImAddress", result);
+    return exports;
+}
+
+napi_value DeclarePhoneNumberConst(napi_env env, napi_value exports)
+{
+    // PhoneNumber
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_MOBILE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_MOBILE))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_FAX_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_FAX_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_FAX_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_FAX_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_PAGER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_PAGER))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_CALLBACK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_CALLBACK))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_CAR",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_CAR))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_COMPANY_MAIN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_COMPANY_MAIN))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_ISDN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_ISDN))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_MAIN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_MAIN))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_OTHER_FAX",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_OTHER_FAX))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_RADIO",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_RADIO))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_TELEX",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_TELEX))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_TTY_TDD",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_TTY_TDD))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_WORK_MOBILE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_WORK_MOBILE))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_WORK_PAGER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_WORK_PAGER))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_ASSISTANT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_ASSISTANT))),
+        DECLARE_NAPI_STATIC_PROPERTY("NUM_MMS",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::NUM_MMS))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PhoneNumber::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "PhoneNumber", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "PhoneNumber", result);
+    return exports;
+}
+
+napi_value DeclarePostalAddressConst(napi_env env, napi_value exports)
+{
+    // PostalAddress
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("ADDR_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::ADDR_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("ADDR_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::ADDR_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("ADDR_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::ADDR_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(PostalAddress::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "PostalAddress", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "PostalAddress", result);
+    return exports;
+}
+
+napi_value DeclareRelationConst(napi_env env, napi_value exports)
+{
+    // Relation
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_ASSISTANT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_ASSISTANT))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_BROTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_BROTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_CHILD",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_CHILD))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_DOMESTIC_PARTNER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_DOMESTIC_PARTNER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_FATHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_FATHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_FRIEND",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_FRIEND))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_MANAGER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_MANAGER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_MOTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_MOTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_PARENT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_PARENT))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_PARTNER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_PARTNER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_REFERRED_BY",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_REFERRED_BY))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_RELATIVE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_RELATIVE))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_SISTER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_SISTER))),
+        DECLARE_NAPI_STATIC_PROPERTY("RELATION_SPOUSE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::RELATION_SPOUSE))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Relation::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Relation", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Relation", result);
+    return exports;
+}
+
+napi_value DeclareSipAddressConst(napi_env env, napi_value exports)
+{
+    // SipAddress
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("CUSTOM_LABEL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::CUSTOM_LABEL))),
+        DECLARE_NAPI_STATIC_PROPERTY("SIP_HOME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::SIP_HOME))),
+        DECLARE_NAPI_STATIC_PROPERTY("SIP_WORK",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::SIP_WORK))),
+        DECLARE_NAPI_STATIC_PROPERTY("SIP_OTHER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::SIP_OTHER))),
+        DECLARE_NAPI_STATIC_PROPERTY("INVALID_LABEL_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(SipAddress::INVALID_LABEL_ID))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "SipAddress", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "SipAddress", result);
+    return exports;
+}
+
+napi_value DeclareAttributeConst(napi_env env, napi_value exports)
+{
+    // Attribute
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_CONTACT_EVENT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_CONTACT_EVENT))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_EMAIL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_EMAIL))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_GROUP_MEMBERSHIP",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_GROUP_MEMBERSHIP))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_IM",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_IM))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_NAME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_NAME))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_NICKNAME",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_NICKNAME))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_NOTE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_NOTE))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_ORGANIZATION",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_ORGANIZATION))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_PHONE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_PHONE))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_PORTRAIT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_PORTRAIT))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_POSTAL_ADDRESS",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_POSTAL_ADDRESS))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_RELATION",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_RELATION))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_SIP_ADDRESS",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_SIP_ADDRESS))),
+        DECLARE_NAPI_STATIC_PROPERTY("ATTR_WEBSITE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Attribute::ATTR_WEBSITE))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "Attribute", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "Attribute", result);
+    return exports;
 }
 
 void Init(napi_env env, napi_value exports)
@@ -1227,6 +1521,7 @@ void Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("addContact", OHOS::ContactsApi::AddContact),
         DECLARE_NAPI_FUNCTION("deleteContact", OHOS::ContactsApi::DeleteContact),
         DECLARE_NAPI_FUNCTION("updateContact", OHOS::ContactsApi::UpdateContact),
+        DECLARE_NAPI_FUNCTION("selectContact", OHOS::ContactsApi::SelectContact),
         DECLARE_NAPI_FUNCTION("queryContact", OHOS::ContactsApi::QueryContact),
         DECLARE_NAPI_FUNCTION("queryContacts", OHOS::ContactsApi::QueryContacts),
         DECLARE_NAPI_FUNCTION("queryContactsByEmail", OHOS::ContactsApi::QueryContactsByEmail),
@@ -1239,6 +1534,16 @@ void Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("isLocalContact", OHOS::ContactsApi::IsLocalContact),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
+    // Declare class const initialization
+    DeclareContactConst(env, exports);
+    DeclareEmailConst(env, exports);
+    DeclareEventConst(env, exports);
+    DeclareImAddressConst(env, exports);
+    DeclarePhoneNumberConst(env, exports);
+    DeclarePostalAddressConst(env, exports);
+    DeclareRelationConst(env, exports);
+    DeclareSipAddressConst(env, exports);
+    DeclareAttributeConst(env, exports);
 }
 } // namespace ContactsApi
 } // namespace OHOS
