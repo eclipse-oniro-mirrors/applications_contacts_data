@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,7 +42,7 @@ public:
     ~ContactsBuild();
     void GetContactDataByObject(napi_env env, napi_value object, Contacts &contacts);
     int GetInt(napi_env env, napi_value id);
-    void GetContactData(napi_env env, napi_callback_info info, std::vector<NativeRdb::ValuesBucket> &valueContact,
+    void GetContactData(napi_env env, napi_value object, std::vector<NativeRdb::ValuesBucket> &valueContact,
         std::vector<NativeRdb::ValuesBucket> &valueContactData);
     std::string NapiGetValueString(napi_env env, napi_value value);
     ContactAttributes GetContactAttributes(napi_env env, napi_value object);
