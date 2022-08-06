@@ -44,7 +44,7 @@ ohos_shared_library("contact") {
     "//foundation/ability/ability_runtime/frameworks/native/ability/native:abilitykit_native",
     "//foundation/ability/ability_runtime/frameworks/native/ability/native:data_ability_helper",
     "//foundation/arkui/napi:ace_napi",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
   ]
 
   public_configs = [ ":contactsapi_public_config" ]
