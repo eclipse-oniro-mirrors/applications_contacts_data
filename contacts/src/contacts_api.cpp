@@ -482,7 +482,7 @@ NativeRdb::DataAbilityPredicates BuildQueryContactData(napi_env env, napi_value 
     Contacts contact;
     contactsBuild.GetContactDataByObject(env, contactObject, contact);
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attrObject);
-    checkAttributes(attrs);
+    CheckAttributes(attrs);
     NativeRdb::DataAbilityPredicates predicates;
     std::vector<std::string> fields;
     fields.push_back("raw_contact_id");
@@ -534,7 +534,7 @@ NativeRdb::DataAbilityPredicates BuildDeleteContactDataPredicates(napi_env env, 
 {
     ContactsBuild contactsBuild;
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
-    checkAttributes(attrs);
+    CheckAttributes(attrs);
     NativeRdb::DataAbilityPredicates predicates;
     AttributesPredicates(attrs, predicates);
     return predicates;
@@ -587,7 +587,7 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
     ExecuteHelper *executeHelper = reinterpret_cast<ExecuteHelper *>(data);
     HILOG_INFO("ExecuteDone workName: %{public}d", executeHelper->actionCode);
     napi_value result = nullptr;
-    handleExecuteResult(env, executeHelper, result);
+    HandleExecuteResult(env, executeHelper, result);
     napi_deferred deferred = executeHelper->deferred;
     executeHelper->deferred = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
@@ -613,11 +613,11 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         napi_get_global(env, &global);
         napi_value resultData[RESULT_DATA_SIZE];
         if (executeHelper->resultData < 0) {
-            handleExecuteResult(env, executeHelper, resultData[0]);
+            HandleExecuteResult(env, executeHelper, resultData[0]);
             napi_get_undefined(env, &resultData[1]);
         } else {
             napi_get_undefined(env, &resultData[0]);
-            handleExecuteResult(env, executeHelper, resultData[1]);
+            HandleExecuteResult(env, executeHelper, resultData[1]);
         }
         napi_value result;
         napi_value callBack;
@@ -643,7 +643,7 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
     HILOG_INFO("contactApi ExecuteSyncDone done===>");
 }
 
-void handleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
+void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
 {
     ResultConvert resultConvert;
     napi_value results = nullptr;
