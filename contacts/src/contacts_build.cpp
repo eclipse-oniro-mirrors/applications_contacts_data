@@ -807,7 +807,7 @@ Organization ContactsBuild::GetOrganization(napi_env env, napi_value object)
     napi_value organizationObject = GetObjectByKey(env, object, "organization");
     Organization resultObj;
     if (organizationObject == nullptr) {
-        HILOG_ERROR("GetOrganization noteKey is null ");
+        HILOG_ERROR("GetOrganization organizationKey is null ");
         return resultObj;
     }
     resultObj.name = GetStringValueByKey(env, organizationObject, "name");
@@ -867,7 +867,6 @@ ContactAttributes ContactsBuild::GetContactAttributes(napi_env env, napi_value o
 std::string ContactsBuild::NapiGetValueString(napi_env env, napi_value value)
 {
     if (value == nullptr) {
-        HILOG_ERROR("ContactsBuild NapiGetValueString value is nullptr");
         return "";
     }
     char valueString[NAPI_GET_STRING_SIZE];

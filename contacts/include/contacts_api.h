@@ -72,6 +72,7 @@ std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_e
 void HolderPredicates(const Holder &holder, NativeRdb::DataAbilityPredicates &predicates);
 void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holder);
 void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredicates &predicates);
+void checkAttributes(ContactAttributes &attrs);
 NativeRdb::DataAbilityPredicates BuildQueryContactPredicates(
     napi_env env, std::string key, napi_value hold, napi_value attr);
 NativeRdb::DataAbilityPredicates BuildUpdateContactPredicates(napi_env env, napi_value contacts, napi_value attr);

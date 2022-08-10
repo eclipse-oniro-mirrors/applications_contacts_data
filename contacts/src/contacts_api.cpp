@@ -138,12 +138,7 @@ int GetType(napi_env env, napi_value value)
             if (result) {
                 return TYPE_ATTR;
             }
-            napi_create_string_utf8(env, "id", NAPI_AUTO_LENGTH, &key);
-            napi_has_property(env, value, key, &result);
-            if (result) {
-                return TYPE_CONTACT;
-            }
-            return TYPE_NAPI_ERROR;
+            return TYPE_CONTACT;
             break;
         default:
             return TYPE_NAPI_ERROR;
@@ -220,6 +215,28 @@ void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredic
     }
     if (size > 0) {
         predicates.EndWrap();
+    }
+}
+
+void checkAttributes(ContactAttributes &attrs)
+{
+    unsigned int size = attrs.attributes.size();
+    if (size == 0) {
+        HILOG_INFO("attributes not exist, it means all attribute");
+        attrs.attributes.push_back(EMAIL);
+        attrs.attributes.push_back(IM);
+        attrs.attributes.push_back(NICKNAME);
+        attrs.attributes.push_back(ORGANIZATION);
+        attrs.attributes.push_back(PHONE);
+        attrs.attributes.push_back(NAME);
+        attrs.attributes.push_back(POSTAL_ADDRESS);
+        attrs.attributes.push_back(PHOTO);
+        attrs.attributes.push_back(GROUP_MEMBERSHIP);
+        attrs.attributes.push_back(NOTE);
+        attrs.attributes.push_back(CONTACT_EVENT);
+        attrs.attributes.push_back(WEBSITE);
+        attrs.attributes.push_back(RELATION);
+        attrs.attributes.push_back(SIP_ADDRESS);
     }
 }
 
@@ -465,6 +482,7 @@ NativeRdb::DataAbilityPredicates BuildQueryContactData(napi_env env, napi_value 
     Contacts contact;
     contactsBuild.GetContactDataByObject(env, contactObject, contact);
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attrObject);
+    checkAttributes(attrs);
     NativeRdb::DataAbilityPredicates predicates;
     std::vector<std::string> fields;
     fields.push_back("raw_contact_id");
@@ -516,6 +534,7 @@ NativeRdb::DataAbilityPredicates BuildDeleteContactDataPredicates(napi_env env, 
 {
     ContactsBuild contactsBuild;
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
+    checkAttributes(attrs);
     NativeRdb::DataAbilityPredicates predicates;
     AttributesPredicates(attrs, predicates);
     return predicates;
