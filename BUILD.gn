@@ -117,6 +117,12 @@ ohos_shared_library("contactsdataability") {
     "relational_store:native_dataability",
     "relational_store:native_rdb",
   ]
+
+  defines += [
+    "CONTACTSDATA_LOG_TAG = \"ContactsData\"",
+    "LOG_DOMAIN = 0xD001F09",
+  ]
+
   if (is_standard_system) {
     external_deps += [ "hiviewdfx_hilog_native:libhilog" ]
   } else {

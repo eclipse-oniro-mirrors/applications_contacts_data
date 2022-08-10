@@ -41,7 +41,7 @@
 #undef HILOG_DEBUG
 #endif
 
-static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, 0, "ContactsDataAbility===>"};
+static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_DOMAIN, CONTACTSDATA_LOG_TAG};
 
 #define HILOG_FATAL(...) (void)OHOS::HiviewDFX::HiLog::Fatal(LOG_LABEL, __VA_ARGS__)
 #define HILOG_ERROR(...) (void)OHOS::HiviewDFX::HiLog::Error(LOG_LABEL, __VA_ARGS__)

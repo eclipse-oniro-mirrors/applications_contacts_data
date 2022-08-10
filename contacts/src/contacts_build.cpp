@@ -50,7 +50,6 @@ void ContactsBuild::GetContactDataByObject(napi_env env, napi_value object, Cont
 void ContactsBuild::GetContactData(napi_env env, napi_value object,
     std::vector<NativeRdb::ValuesBucket> &valueContact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    ContactsBuild contactsBuild;
     Contacts contact;
     GetContactDataByObject(env, object, contact);
     BuildValueContact(contact, valueContact);
@@ -171,9 +170,16 @@ void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<NativeRd
     for (unsigned int i = 0; i < emailsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketEmail;
         valuesBucketEmail.PutString("detail_info", contact.emails[i].email);
-        valuesBucketEmail.PutString("extend7", std::to_string(contact.emails[i].labelId));
-        valuesBucketEmail.PutString("custom_data", contact.emails[i].labelName);
-        valuesBucketEmail.PutString("alias_detail_info", contact.emails[i].displayName);
+        if (contact.emails[i].labelId != ERROR) {
+            valuesBucketEmail.PutString("extend7", std::to_string(contact.emails[i].labelId));
+        }
+        if (!contact.emails[i].labelName.empty()) {
+            valuesBucketEmail.PutString("custom_data", contact.emails[i].labelName);
+            valuesBucketEmail.PutString("extend7", std::to_string(Email::CUSTOM_LABEL));
+        }
+        if (!contact.emails[i].displayName.empty()) {
+            valuesBucketEmail.PutString("alias_detail_info", contact.emails[i].displayName);
+        }
         valuesBucketEmail.PutString("content_type", "email");
         valueContactData.push_back(valuesBucketEmail);
     }
@@ -191,8 +197,13 @@ void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<NativeRd
     for (unsigned int i = 0; i < eventsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketEvent;
         valuesBucketEvent.PutString("detail_info", contact.events[i].eventDate);
-        valuesBucketEvent.PutString("extend7", std::to_string(contact.events[i].labelId));
-        valuesBucketEvent.PutString("custom_data", contact.events[i].labelName);
+        if (contact.events[i].labelId != ERROR) {
+            valuesBucketEvent.PutString("extend7", std::to_string(contact.events[i].labelId));
+        }
+        if (!contact.events[i].labelName.empty()) {
+            valuesBucketEvent.PutString("custom_data", contact.events[i].labelName);
+            valuesBucketEvent.PutString("extend7", std::to_string(Event::CUSTOM_LABEL));
+        }
         valuesBucketEvent.PutString("content_type", "contact_event");
         valueContactData.push_back(valuesBucketEvent);
     }
@@ -209,7 +220,9 @@ void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<NativeRd
     unsigned int groupsSize = contact.groups.size();
     for (unsigned int i = 0; i < groupsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketGroup;
-        valuesBucketGroup.PutString("detail_info", std::to_string(contact.groups[i].groupId));
+        if (contact.groups[i].groupId != ERROR) {
+            valuesBucketGroup.PutString("detail_info", std::to_string(contact.groups[i].groupId));
+        }
         valuesBucketGroup.PutString("alias_detail_info", contact.groups[i].title);
         valuesBucketGroup.PutString("content_type", "group_membership");
         valueContactData.push_back(valuesBucketGroup);
@@ -228,8 +241,13 @@ void ContactsBuild::GetValuesBucketImAddress(Contacts &contact, std::vector<Nati
     for (unsigned int i = 0; i < imAddressSize; i++) {
         NativeRdb::ValuesBucket valuesBucketImAddress;
         valuesBucketImAddress.PutString("detail_info", contact.imAddresses[i].imAddress);
-        valuesBucketImAddress.PutString("extend7", std::to_string(contact.imAddresses[i].labelId));
-        valuesBucketImAddress.PutString("custom_data", contact.imAddresses[i].labelName);
+        if (contact.imAddresses[i].labelId != ERROR) {
+            valuesBucketImAddress.PutString("extend7", std::to_string(contact.imAddresses[i].labelId));
+        }
+        if (!contact.imAddresses[i].labelName.empty()) {
+            valuesBucketImAddress.PutString("custom_data", contact.imAddresses[i].labelName);
+            valuesBucketImAddress.PutString("extend7", std::to_string(ImAddress::CUSTOM_LABEL));
+        }
         valuesBucketImAddress.PutString("content_type", "im");
         valueContactData.push_back(valuesBucketImAddress);
     }
@@ -264,8 +282,13 @@ void ContactsBuild::GetValuesBucketPhoneNumber(
     for (unsigned int i = 0; i < phoneNumbersSize; i++) {
         NativeRdb::ValuesBucket valuesBucketPhoneNumber;
         valuesBucketPhoneNumber.PutString("detail_info", contact.phoneNumbers[i].phoneNumber);
-        valuesBucketPhoneNumber.PutString("extend7", std::to_string(contact.phoneNumbers[i].labelId));
-        valuesBucketPhoneNumber.PutString("custom_data", contact.phoneNumbers[i].labelName);
+        if (contact.phoneNumbers[i].labelId != ERROR) {
+            valuesBucketPhoneNumber.PutString("extend7", std::to_string(contact.phoneNumbers[i].labelId));
+        }
+        if (!contact.phoneNumbers[i].labelName.empty()) {
+            valuesBucketPhoneNumber.PutString("custom_data", contact.phoneNumbers[i].labelName);
+            valuesBucketPhoneNumber.PutString("extend7", std::to_string(PhoneNumber::CUSTOM_LABEL));
+        }
         valuesBucketPhoneNumber.PutString("content_type", "phone");
         valueContactData.push_back(valuesBucketPhoneNumber);
     }
@@ -284,14 +307,31 @@ void ContactsBuild::GetValuesBucketPostalAddress(
     for (unsigned int i = 0; i < postalAddressesSize; i++) {
         NativeRdb::ValuesBucket valuesBucketPostalAddress;
         valuesBucketPostalAddress.PutString("detail_info", contact.postalAddresses[i].postalAddress);
-        valuesBucketPostalAddress.PutString("extend7", std::to_string(contact.postalAddresses[i].labelId));
-        valuesBucketPostalAddress.PutString("custom_data", contact.postalAddresses[i].labelName);
-        valuesBucketPostalAddress.PutString("neighborhood", contact.postalAddresses[i].neighborhood);
-        valuesBucketPostalAddress.PutString("pobox", contact.postalAddresses[i].pobox);
-        valuesBucketPostalAddress.PutString("postcode", contact.postalAddresses[i].postcode);
-        valuesBucketPostalAddress.PutString("region", contact.postalAddresses[i].region);
-        valuesBucketPostalAddress.PutString("street", contact.postalAddresses[i].street);
-        valuesBucketPostalAddress.PutString("city", contact.postalAddresses[i].city);
+        if (contact.postalAddresses[i].labelId != ERROR) {
+            valuesBucketPostalAddress.PutString("extend7", std::to_string(contact.postalAddresses[i].labelId));
+        }
+        if (!contact.postalAddresses[i].labelName.empty()) {
+            valuesBucketPostalAddress.PutString("custom_data", contact.postalAddresses[i].labelName);
+            valuesBucketPostalAddress.PutString("extend7", std::to_string(PostalAddress::CUSTOM_LABEL));
+        }
+        if (!contact.postalAddresses[i].neighborhood.empty()) {
+            valuesBucketPostalAddress.PutString("neighborhood", contact.postalAddresses[i].neighborhood);
+        }
+        if (!contact.postalAddresses[i].pobox.empty()) {
+            valuesBucketPostalAddress.PutString("pobox", contact.postalAddresses[i].pobox);
+        }
+        if (!contact.postalAddresses[i].postcode.empty()) {
+            valuesBucketPostalAddress.PutString("postcode", contact.postalAddresses[i].postcode);
+        }
+        if (!contact.postalAddresses[i].region.empty()) {
+            valuesBucketPostalAddress.PutString("region", contact.postalAddresses[i].region);
+        }
+        if (!contact.postalAddresses[i].street.empty()) {
+            valuesBucketPostalAddress.PutString("street", contact.postalAddresses[i].street);
+        }
+        if (!contact.postalAddresses[i].city.empty()) {
+            valuesBucketPostalAddress.PutString("city", contact.postalAddresses[i].city);
+        }
         valuesBucketPostalAddress.PutString("content_type", "postal_address");
         valueContactData.push_back(valuesBucketPostalAddress);
     }
@@ -309,8 +349,13 @@ void ContactsBuild::GetValuesBucketRelation(Contacts &contact, std::vector<Nativ
     for (unsigned int i = 0; i < relationsSize; i++) {
         NativeRdb::ValuesBucket valuesBucketRelation;
         valuesBucketRelation.PutString("detail_info", contact.relations[i].relationName);
-        valuesBucketRelation.PutString("extend7", std::to_string(contact.relations[i].labelId));
-        valuesBucketRelation.PutString("custom_data", contact.relations[i].labelName);
+        if (contact.relations[i].labelId != ERROR) {
+            valuesBucketRelation.PutString("extend7", std::to_string(contact.relations[i].labelId));
+        }
+        if (!contact.relations[i].labelName.empty()) {
+            valuesBucketRelation.PutString("custom_data", contact.relations[i].labelName);
+            valuesBucketRelation.PutString("extend7", std::to_string(Relation::CUSTOM_LABEL));
+        }
         valuesBucketRelation.PutString("content_type", "relation");
         valueContactData.push_back(valuesBucketRelation);
     }
@@ -328,8 +373,13 @@ void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<Nat
     for (unsigned int i = 0; i < sipAddressesSize; i++) {
         NativeRdb::ValuesBucket valuesBucketSipAddress;
         valuesBucketSipAddress.PutString("detail_info", contact.sipAddresses[i].sipAddress);
-        valuesBucketSipAddress.PutString("extend7", std::to_string(contact.sipAddresses[i].labelId));
-        valuesBucketSipAddress.PutString("custom_data", contact.sipAddresses[i].labelName);
+        if (contact.sipAddresses[i].labelId != ERROR) {
+            valuesBucketSipAddress.PutString("extend7", std::to_string(contact.sipAddresses[i].labelId));
+        }
+        if (!contact.sipAddresses[i].labelName.empty()) {
+            valuesBucketSipAddress.PutString("custom_data", contact.sipAddresses[i].labelName);
+            valuesBucketSipAddress.PutString("extend7", std::to_string(SipAddress::CUSTOM_LABEL));
+        }
         valuesBucketSipAddress.PutString("content_type", "sip_address");
         valueContactData.push_back(valuesBucketSipAddress);
     }
@@ -363,14 +413,30 @@ void ContactsBuild::GetValuesBucketName(Contacts &contact, std::vector<NativeRdb
     if (!contact.name.fullName.empty() || contact.name.fullName != "") {
         NativeRdb::ValuesBucket valuesBucketName;
         valuesBucketName.PutString("detail_info", contact.name.fullName);
-        valuesBucketName.PutString("alpha_name", contact.name.namePrefix);
-        valuesBucketName.PutString("other_lan_last_name", contact.name.middleName);
-        valuesBucketName.PutString("other_lan_first_name", contact.name.nameSuffix);
-        valuesBucketName.PutString("family_name", contact.name.familyName);
-        valuesBucketName.PutString("middle_name_phonetic", contact.name.middleNamePhonetic);
-        valuesBucketName.PutString("given_name", contact.name.givenName);
-        valuesBucketName.PutString("given_name_phonetic", contact.name.givenNamePhonetic);
-        valuesBucketName.PutString("phonetic_name", contact.name.familyNamePhonetic);
+        if (!contact.name.namePrefix.empty()) {
+            valuesBucketName.PutString("alpha_name", contact.name.namePrefix);
+        }
+        if (!contact.name.middleName.empty()) {
+            valuesBucketName.PutString("other_lan_last_name", contact.name.middleName);
+        }
+        if (!contact.name.nameSuffix.empty()) {
+            valuesBucketName.PutString("other_lan_first_name", contact.name.nameSuffix);
+        }
+        if (!contact.name.familyName.empty()) {
+            valuesBucketName.PutString("family_name", contact.name.familyName);
+        }
+        if (!contact.name.middleNamePhonetic.empty()) {
+            valuesBucketName.PutString("middle_name_phonetic", contact.name.middleNamePhonetic);
+        }
+        if (!contact.name.givenName.empty()) {
+            valuesBucketName.PutString("given_name", contact.name.givenName);
+        }
+        if (!contact.name.givenNamePhonetic.empty()) {
+            valuesBucketName.PutString("given_name_phonetic", contact.name.givenNamePhonetic);
+        }
+        if (!contact.name.familyNamePhonetic.empty()) {
+            valuesBucketName.PutString("phonetic_name", contact.name.familyNamePhonetic);
+        }
         valuesBucketName.PutString("content_type", "name");
         valueContactData.push_back(valuesBucketName);
     }
@@ -417,16 +483,15 @@ void ContactsBuild::GetValuesBucketNote(Contacts &contact, std::vector<NativeRdb
 void ContactsBuild::GetValuesBucketOrganization(
     Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
 {
-    NativeRdb::ValuesBucket valuesBucketData;
-    if (!contact.organization.name.empty() || contact.organization.name != "") {
+    if (!contact.organization.name.empty()) {
+        NativeRdb::ValuesBucket valuesBucketData;
         valuesBucketData.PutString("detail_info", contact.organization.name);
+        if (!contact.organization.title.empty()) {
+            valuesBucketData.PutString("position", contact.organization.title);
+        }
         valuesBucketData.PutString("content_type", "organization");
+        valueContactData.push_back(valuesBucketData);
     }
-    if (!contact.organization.title.empty() || contact.organization.title != "") {
-        valuesBucketData.PutString("position", contact.organization.title);
-        valuesBucketData.PutString("content_type", "organization");
-    }
-    valueContactData.push_back(valuesBucketData);
 }
 
 napi_value ContactsBuild::GetObjectByKey(napi_env env, napi_value object, std::string key)
@@ -460,6 +525,9 @@ int ContactsBuild::GetIntValueByKey(napi_env env, napi_value valueObject, std::s
 {
     ResultConvert resultConvert;
     napi_value value = resultConvert.GetNapiValue(env, key.c_str(), valueObject);
+    if (value == nullptr) {
+        return ERROR;
+    }
     int64_t result;
     napi_get_value_int64(env, value, &result);
     int code = result;
@@ -495,35 +563,15 @@ Name ContactsBuild::GetName(napi_env env, napi_value object)
 
 Portrait ContactsBuild::GetUri(napi_env env, napi_value object)
 {
-    HILOG_INFO("ContactsBuild into GetUri");
     Portrait portrait;
-    napi_value portraitKey = GetObjectByKey(env, object, "portrait");
-    if (portraitKey == nullptr) {
-        HILOG_ERROR("ContactsBuild GetUri portraitKey is null ");
-        return portrait;
-    }
-    napi_value portraitValue;
-    napi_get_property(env, object, portraitKey, &portraitValue);
+    napi_value portraitObj = GetObjectByKey(env, object, "portrait");
     napi_valuetype valueType;
-    napi_typeof(env, portraitValue, &valueType);
-    if (portraitValue == nullptr || valueType != napi_object) {
-        HILOG_ERROR("ContactsBuild GetUri portraitValue is null or object type is not object");
+    napi_typeof(env, portraitObj, &valueType);
+    if (portraitObj == nullptr || valueType != napi_object) {
+        HILOG_ERROR("ContactsBuild GetUri portraitObj is null or object type is not object");
         return portrait;
     }
-    napi_value portraitKeyNames;
-    napi_get_property_names(env, portraitValue, &portraitKeyNames);
-    napi_value uriKey = GetObjectByKey(env, portraitKeyNames, "uri");
-    if (uriKey == nullptr) {
-        HILOG_ERROR("ContactsBuild GetUri uriKey is null ");
-        return portrait;
-    }
-    napi_value uriValue;
-    napi_get_property(env, portraitValue, uriKey, &uriValue);
-    if (uriValue == nullptr) {
-        HILOG_ERROR("ContactsBuild GetUri uriValue is null ");
-        return portrait;
-    }
-    portrait.uri = NapiGetValueString(env, uriValue);
+    portrait.uri = GetStringValueByKey(env, portraitObj, "uri");
     return portrait;
 }
 
