@@ -218,7 +218,7 @@ void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredic
     }
 }
 
-void checkAttributes(ContactAttributes &attrs)
+void CheckAttributes(ContactAttributes &attrs)
 {
     unsigned int size = attrs.attributes.size();
     if (size == 0) {
