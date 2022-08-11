@@ -118,7 +118,7 @@ ohos_shared_library("contactsdataability") {
     "relational_store:native_rdb",
   ]
 
-  defines += [
+  defines = [
     "CONTACTSDATA_LOG_TAG = \"ContactsData\"",
     "LOG_DOMAIN = 0xD001F09",
   ]
