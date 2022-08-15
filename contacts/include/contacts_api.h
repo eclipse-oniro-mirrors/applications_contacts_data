@@ -49,7 +49,7 @@ void Execute(napi_env env, void *data);
 void ExecuteAsync(napi_env env, void *data);
 void ExecuteDone(napi_env env, napi_status status, void *data);
 void ExecuteSyncDone(napi_env env, napi_status status, void *data);
-void handleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
+void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
 int GetRawIdByResultSet(const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
 napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper);
@@ -72,6 +72,7 @@ std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_e
 void HolderPredicates(const Holder &holder, NativeRdb::DataAbilityPredicates &predicates);
 void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holder);
 void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredicates &predicates);
+void CheckAttributes(ContactAttributes &attrs);
 NativeRdb::DataAbilityPredicates BuildQueryContactPredicates(
     napi_env env, std::string key, napi_value hold, napi_value attr);
 NativeRdb::DataAbilityPredicates BuildUpdateContactPredicates(napi_env env, napi_value contacts, napi_value attr);

@@ -30,6 +30,8 @@ namespace OHOS {
 namespace ContactsApi {
 constexpr int MAX_PARAMS = 6;
 constexpr int ERROR = -1;
+constexpr int SUCCESS = 0;
+constexpr int RESULT_DATA_SIZE = 2;
 
 constexpr int NAPI_GET_STRING_SIZE = 256;
 constexpr int REQUEST_PARAMS_COUNT_ONE = 1;
