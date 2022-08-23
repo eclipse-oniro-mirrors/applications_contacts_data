@@ -175,11 +175,11 @@ let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 var resultColumns = [ "id", "display_name", "phone_number"];
 // 调用query方法
-DAHelper.query(calllogUri, resultColumns, condition).then((data) => {
+DAHelper.query(calllogUri, resultColumns, condition).then((resultSet) => {
     if (resultSet.goToFirstRow()) {
         do {
             var displayName = resultSet.getString(resultSet.getColumnIndex("display_name"));
-            var id = resultSet.getInt(resultSet.getColumnIndex("id"));
+            var id = resultSet.getLong(resultSet.getColumnIndex("id"));
             var phoneNumber = resultSet.getString(resultSet.getColumnIndex("phone_number"));
         } while (resultSet.goToNextRow());
     }
@@ -314,11 +314,11 @@ let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 var resultColumns = [ "id", "display_name", "phone_number"];
 // 调用query方法
-DAHelper.query(voicemaiUri, resultColumns, condition).then((data) => {
+DAHelper.query(voicemaiUri, resultColumns, condition).then((resultSet) => {
     if (resultSet.goToFirstRow()) {
         do {
             var displayName = resultSet.getString(resultSet.getColumnIndex("display_name"));
-            var id = resultSet.getInt(resultSet.getColumnIndex("id"));
+            var id = resultSet.getLong(resultSet.getColumnIndex("id"));
             var phoneNumber = resultSet.getString(resultSet.getColumnIndex("phone_number"));
         } while (resultSet.goToNextRow());
     }
@@ -463,7 +463,7 @@ let condition = new ohos_data_ability.DataAbilityPredicates();
 condition.equalTo("id", "xxx");
 var resultColumns = [ "id", "display_name"];
 // 调用query方法
-DAHelper.query(rawContactUri, resultColumns, condition).then((data) => {
+DAHelper.query(rawContactUri, resultColumns, condition).then((resultSet) => {
     if (resultSet.goToFirstRow()) {
         do {
             var displayName = resultSet.getString(resultSet.getColumnIndex("display_name"));
