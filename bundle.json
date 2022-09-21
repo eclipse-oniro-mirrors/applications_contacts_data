@@ -14,7 +14,7 @@
     "author": {},
     "contributors": [],
     "segment": {
-        "destPath": "//applications/standard/contactsdata"
+        "destPath": "applications/standard/contactsdata"
     },
     "component": {
         "name": "contactsdata_hap",
