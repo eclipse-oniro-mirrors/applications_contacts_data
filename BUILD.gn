@@ -100,11 +100,11 @@ ohos_shared_library("contactsdataability") {
   public_configs = [ ":contactsdataability_public_config" ]
   external_deps = [
     "ability_runtime:abilitykit_native",
-    "napi:ace_napi",
     "ability_base:want",
     "ability_base:zuri",
     "c_utils:utilsbase",
     "common_event_service:cesfwk_innerkits",
+    "napi:ace_napi",
     "relational_store:native_dataability",
     "relational_store:native_rdb",
   ]
