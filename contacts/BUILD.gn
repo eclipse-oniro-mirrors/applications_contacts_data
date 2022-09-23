@@ -42,9 +42,9 @@ ohos_shared_library("contact") {
 
   public_configs = [ ":contactsapi_public_config" ]
   external_deps = [
+    "ability_base:zuri",
     "ability_runtime:abilitykit_native",
     "ability_runtime:data_ability_helper",
-    "ability_base:zuri",
     "c_utils:utils",
     "napi:ace_napi",
     "relational_store:native_dataability",
