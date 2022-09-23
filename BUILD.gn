@@ -93,9 +93,7 @@ ohos_shared_library("contactsdataability") {
     "//foundation/ability/ability_runtime/interfaces/kits/native/ability/native",
   ]
 
-  deps = [
-    "//third_party/jsoncpp:jsoncpp"
-  ]
+  deps = [ "//third_party/jsoncpp:jsoncpp" ]
 
   public_configs = [ ":contactsdataability_public_config" ]
   external_deps = [
