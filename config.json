@@ -17,6 +17,7 @@
 		"name": ".ContactsDataAbility",
 		
 		"deviceType": [
+			"default",
 			"smartVision"
 		],
 		"distro": {
