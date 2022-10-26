@@ -18,7 +18,8 @@
 		
 		"deviceType": [
 			"default",
-			"smartVision"
+			"smartVision",
+			"tablet"
 		],
 		"distro": {
 			"deliveryWithInstall": true,
