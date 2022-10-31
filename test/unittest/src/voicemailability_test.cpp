@@ -1133,7 +1133,7 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2500, testing::ext
     predicates.Clear();
     std::int number = 6;
     string phoneNumber = random_number_utils.Generating(number);
-    predicates.EqualTo("phone_number", phoneNumber;
+    predicates.EqualTo("phone_number", phoneNumber);
     predicates.And();
     predicates.EqualTo("voice_status", "0");
     std::vector<std::string> columns;

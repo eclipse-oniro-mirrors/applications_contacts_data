@@ -168,14 +168,12 @@ std::string DataBaseDisasterRecovery::GetBackUpDatabase(const std::shared_ptr<OH
     std::string sql = "select backup_path from ";
     sql.append(ContactTableName::DATABASE_BACKUP_TASK).append(" order by backup_time desc limit 0,1");
     std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = store_->QuerySql(sql, std::vector<std::string>());
-    int resultSetNum = result->GoToFirstRow();
     std::string currValue;
-    while (resultSetNum == OHOS::NativeRdb::E_OK) {
+    if (result->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
         int currValueIndex;
         result->GetColumnIndex(DatabaseBackupColumns::BACKUP_PATH, currValueIndex);
         result->GetString(currValueIndex, currValue);
         result->GoToNextRow();
-        break;
     }
     result->Close();
     return currValue;

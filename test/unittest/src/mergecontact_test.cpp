@@ -70,14 +70,12 @@ int MergeContactTest::GetMergeResultContactId(const std::shared_ptr<OHOS::Native
 {
     std::vector<std::string> columnNames;
     resultSet->GetAllColumnNames(columnNames);
-    int resultSetNum = resultSet->GoToFirstRow();
     int resultSetIntValue = 0;
-    while (resultSetNum == OHOS::NativeRdb::E_OK) {
+    if (resultSet->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
         std::string typeValue = "contact_id";
         int columnIndex = 0;
         resultSet->GetColumnIndex(typeValue, columnIndex);
         resultSet->GetInt(columnIndex, resultSetIntValue);
-        break;
     }
     resultSet->Close();
     return resultSetIntValue;

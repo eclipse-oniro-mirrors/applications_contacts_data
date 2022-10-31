@@ -177,15 +177,13 @@ void ContactsUpdateHelper::UpdateCallLogByPhoneNum(
             .append(std::to_string(rawContactIdVector[i]));
         std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> rawContactResultSet =
             rdbStore->QuerySql(queryContactIdSql);
-        int rawContactResultSetNum = rawContactResultSet->GoToFirstRow();
         int contactId = 0;
-        while (rawContactResultSetNum == OHOS::NativeRdb::E_OK) {
+        if (rawContactResultSet->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
             std::string columnName = RawContactColumns::CONTACT_ID;
             int columnIndex = 0;
             rawContactResultSet->GetColumnIndex(columnName, columnIndex);
             rawContactResultSet->GetInt(columnIndex, contactId);
             rawContactResultSet->GoToNextRow();
-            break;
         }
         rawContactResultSet->Close();
         if (contactId <= 0) {
