@@ -749,7 +749,7 @@ void LocalExecuteQueryHolders(napi_env env, ExecuteHelper *executeHelper)
 void LocalExecuteQueryMyCard(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.MyCardQuery(
+    executeHelper->resultSet = contactsControl.MyCardQuery(
         executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
     executeHelper->resultData = SUCCESS;
 }
@@ -896,7 +896,7 @@ napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper)
 }
 
 NativeRdb::DataAbilityPredicates ConvertParamsSwitchSplit(
-    int code, napi_env env, napi_value &key, napi_value &hold, napi_value &attr)
+    int code, napi_env env, const napi_value &key, const napi_value &hold, const napi_value &attr)
 {
     NativeRdb::DataAbilityPredicates predicates;
     switch (code) {

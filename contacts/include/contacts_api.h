@@ -67,7 +67,7 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper);
 napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper, int actionCode);
 void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelper);
 NativeRdb::DataAbilityPredicates ConvertParamsSwitchSplit(
-    int code, napi_env env, napi_value &key, napi_value &hold, napi_value &attr);
+    int code, napi_env env, const napi_value &key, const napi_value &hold, const napi_value &attr);
 std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_env env);
 void HolderPredicates(const Holder &holder, NativeRdb::DataAbilityPredicates &predicates);
 void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holder);

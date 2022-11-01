@@ -444,9 +444,8 @@ int MergerContacts::ReContactMerge(
     std::vector<std::set<int>> selectedIds = SelectIdsByName(store, ids);
     int minId = 0;
     bool isModeHasError = false;
-    std::set<int> currentIds;
     for (auto it = selectedIds.begin(); it != selectedIds.end(); ++it) {
-        currentIds = *it;
+        std::set<int> currentIds = *it;
         std::set<int> handledIds = HandleIds(store, currentIds);
         HILOG_INFO("ReContactMerge size = :%{public}zu", handledIds.size());
         if (handledIds.size() == 1) {

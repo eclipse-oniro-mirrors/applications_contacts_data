@@ -72,13 +72,11 @@ void BaseTest::CheckResultSet(OHOS::NativeRdb::ValuesBucket &values,
 {
     std::vector<std::string> columnNames;
     resultSet->GetAllColumnNames(columnNames);
-    int resultSetNum = resultSet->GoToFirstRow();
-    while (resultSetNum == OHOS::NativeRdb::E_OK) {
+    if (resultSet->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
         int size = columnNames.size();
         for (int i = 0; i < size; i++) {
             CheckData(values, resultSet, columnNames[i], testName);
         }
-        break;
     }
     resultSet->Close();
 }
@@ -109,10 +107,10 @@ void BaseTest::CheckData(OHOS::NativeRdb::ValuesBucket &values,
         }
     } else if (columnType == OHOS::NativeRdb::ColumnType::TYPE_STRING) {
         std::string resultSetStringValue;
-        std::string valuesStringValue;
         resultSet->GetString(columnIndex, resultSetStringValue);
         if (values.HasColumn(typeValue)) {
             OHOS::NativeRdb::ValueObject valuesObject;
+            std::string valuesStringValue;
             values.GetObject(typeValue, valuesObject);
             valuesObject.GetString(valuesStringValue);
             std::string tempName = testName;

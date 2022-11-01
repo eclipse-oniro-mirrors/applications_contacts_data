@@ -260,8 +260,8 @@ void CallLogDataBase::QueryContactsByInsertCalls(OHOS::NativeRdb::ValuesBucket &
         contactsDataBase->contactStore_->QuerySql(sql, selectionArgs);
     std::string quickSearchKey;
     std::string name;
-    int resultSetNum = resultSet->GoToFirstRow();
-    while (resultSetNum == OHOS::NativeRdb::E_OK) {
+
+    if (resultSet->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
         resultSet->GetString(0, name);
         resultSet->GetString(1, quickSearchKey);
         resultSet->GoToNextRow();
@@ -269,7 +269,6 @@ void CallLogDataBase::QueryContactsByInsertCalls(OHOS::NativeRdb::ValuesBucket &
         insertValues.PutString(CallLogColumns::DISPLAY_NAME, name);
         insertValues.Delete(CallLogColumns::QUICK_SEARCH_KEY);
         insertValues.PutString(CallLogColumns::QUICK_SEARCH_KEY, quickSearchKey);
-        break;
     }
     resultSet->Close();
     int ret = UpdateTopContact(insertValues);
