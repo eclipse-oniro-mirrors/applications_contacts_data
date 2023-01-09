@@ -48,7 +48,7 @@ void ContactsBuild::GetContactDataByObject(napi_env env, napi_value object, Cont
 }
 
 void ContactsBuild::GetContactData(napi_env env, napi_value object,
-    std::vector<NativeRdb::ValuesBucket> &valueContact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+    std::vector<DataShare::DataShareValuesBucket> &valueContact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     Contacts contact;
     GetContactDataByObject(env, object, contact);
@@ -56,22 +56,22 @@ void ContactsBuild::GetContactData(napi_env env, napi_value object,
     BuildValueContactData(contact, valueContactData);
 }
 
-void ContactsBuild::BuildValueContact(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContact)
+void ContactsBuild::BuildValueContact(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContact)
 {
-    NativeRdb::ValuesBucket valuesBucketContact;
+    DataShare::DataShareValuesBucket valuesBucketContact;
     if (!contact.name.fullName.empty() || contact.name.fullName != "") {
-        valuesBucketContact.PutString("display_name", contact.name.fullName);
+        valuesBucketContact.Put("display_name", contact.name.fullName);
     }
     if (!contact.organization.name.empty() || contact.organization.name != "") {
-        valuesBucketContact.PutString("company", contact.organization.name);
+        valuesBucketContact.Put("company", contact.organization.name);
     }
     if (!contact.organization.title.empty() || contact.organization.title != "") {
-        valuesBucketContact.PutString("position", contact.organization.title);
+        valuesBucketContact.Put("position", contact.organization.title);
     }
     valueContact.push_back(valuesBucketContact);
 }
 
-void ContactsBuild::BuildValueContactData(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::BuildValueContactData(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     GetValuesBucketEmail(contact, valueContactData);
     GetValuesBucketEvent(contact, valueContactData);
@@ -90,7 +90,7 @@ void ContactsBuild::BuildValueContactData(Contacts &contact, std::vector<NativeR
 }
 
 void ContactsBuild::BuildValueContactDataByType(
-    Contacts &contact, int typeId, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+    Contacts &contact, int typeId, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     switch (typeId) {
         case EMAIL:
@@ -121,7 +121,7 @@ void ContactsBuild::BuildValueContactDataByType(
 }
 
 void ContactsBuild::TypeSwitchSplit(
-    int typeId, Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+    int typeId, Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     switch (typeId) {
         case PHOTO:
@@ -164,23 +164,23 @@ void ContactsBuild::TypeSwitchSplit(
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int emailsSize = contact.emails.size();
     for (unsigned int i = 0; i < emailsSize; i++) {
-        NativeRdb::ValuesBucket valuesBucketEmail;
-        valuesBucketEmail.PutString("detail_info", contact.emails[i].email);
+        DataShare::DataShareValuesBucket valuesBucketEmail;
+        valuesBucketEmail.Put("detail_info", contact.emails[i].email);
         if (contact.emails[i].labelId != ERROR) {
-            valuesBucketEmail.PutString("extend7", std::to_string(contact.emails[i].labelId));
+            valuesBucketEmail.Put("extend7", std::to_string(contact.emails[i].labelId));
         }
         if (!contact.emails[i].labelName.empty()) {
-            valuesBucketEmail.PutString("custom_data", contact.emails[i].labelName);
-            valuesBucketEmail.PutString("extend7", std::to_string(Email::CUSTOM_LABEL));
+            valuesBucketEmail.Put("custom_data", contact.emails[i].labelName);
+            valuesBucketEmail.Put("extend7", std::to_string(Email::CUSTOM_LABEL));
         }
         if (!contact.emails[i].displayName.empty()) {
-            valuesBucketEmail.PutString("alias_detail_info", contact.emails[i].displayName);
+            valuesBucketEmail.Put("alias_detail_info", contact.emails[i].displayName);
         }
-        valuesBucketEmail.PutString("content_type", "email");
+        valuesBucketEmail.Put("content_type", "email");
         valueContactData.push_back(valuesBucketEmail);
     }
 }
@@ -191,20 +191,20 @@ void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<NativeRd
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int eventsSize = contact.events.size();
     for (unsigned int i = 0; i < eventsSize; i++) {
-        NativeRdb::ValuesBucket valuesBucketEvent;
-        valuesBucketEvent.PutString("detail_info", contact.events[i].eventDate);
+        DataShare::DataShareValuesBucket valuesBucketEvent;
+        valuesBucketEvent.Put("detail_info", contact.events[i].eventDate);
         if (contact.events[i].labelId != ERROR) {
-            valuesBucketEvent.PutString("extend7", std::to_string(contact.events[i].labelId));
+            valuesBucketEvent.Put("extend7", std::to_string(contact.events[i].labelId));
         }
         if (!contact.events[i].labelName.empty()) {
-            valuesBucketEvent.PutString("custom_data", contact.events[i].labelName);
-            valuesBucketEvent.PutString("extend7", std::to_string(Event::CUSTOM_LABEL));
+            valuesBucketEvent.Put("custom_data", contact.events[i].labelName);
+            valuesBucketEvent.Put("extend7", std::to_string(Event::CUSTOM_LABEL));
         }
-        valuesBucketEvent.PutString("content_type", "contact_event");
+        valuesBucketEvent.Put("content_type", "contact_event");
         valueContactData.push_back(valuesBucketEvent);
     }
 }
@@ -215,16 +215,16 @@ void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<NativeRd
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int groupsSize = contact.groups.size();
     for (unsigned int i = 0; i < groupsSize; i++) {
-        NativeRdb::ValuesBucket valuesBucketGroup;
+        DataShare::DataShareValuesBucket valuesBucketGroup;
         if (contact.groups[i].groupId != ERROR) {
-            valuesBucketGroup.PutString("detail_info", std::to_string(contact.groups[i].groupId));
+            valuesBucketGroup.Put("detail_info", std::to_string(contact.groups[i].groupId));
         }
-        valuesBucketGroup.PutString("alias_detail_info", contact.groups[i].title);
-        valuesBucketGroup.PutString("content_type", "group_membership");
+        valuesBucketGroup.Put("alias_detail_info", contact.groups[i].title);
+        valuesBucketGroup.Put("content_type", "group_membership");
         valueContactData.push_back(valuesBucketGroup);
     }
 }
@@ -235,20 +235,20 @@ void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<NativeRd
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketImAddress(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketImAddress(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int imAddressSize = contact.imAddresses.size();
     for (unsigned int i = 0; i < imAddressSize; i++) {
-        NativeRdb::ValuesBucket valuesBucketImAddress;
-        valuesBucketImAddress.PutString("detail_info", contact.imAddresses[i].imAddress);
+        DataShare::DataShareValuesBucket valuesBucketImAddress;
+        valuesBucketImAddress.Put("detail_info", contact.imAddresses[i].imAddress);
         if (contact.imAddresses[i].labelId != ERROR) {
-            valuesBucketImAddress.PutString("extend7", std::to_string(contact.imAddresses[i].labelId));
+            valuesBucketImAddress.Put("extend7", std::to_string(contact.imAddresses[i].labelId));
         }
         if (!contact.imAddresses[i].labelName.empty()) {
-            valuesBucketImAddress.PutString("custom_data", contact.imAddresses[i].labelName);
-            valuesBucketImAddress.PutString("extend7", std::to_string(ImAddress::CUSTOM_LABEL));
+            valuesBucketImAddress.Put("custom_data", contact.imAddresses[i].labelName);
+            valuesBucketImAddress.Put("extend7", std::to_string(ImAddress::CUSTOM_LABEL));
         }
-        valuesBucketImAddress.PutString("content_type", "im");
+        valuesBucketImAddress.Put("content_type", "im");
         valueContactData.push_back(valuesBucketImAddress);
     }
 }
@@ -259,12 +259,12 @@ void ContactsBuild::GetValuesBucketImAddress(Contacts &contact, std::vector<Nati
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketPortrait(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketPortrait(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     if (!contact.portrait.uri.empty() || contact.portrait.uri != "") {
-        NativeRdb::ValuesBucket valuesBucketPortrait;
-        valuesBucketPortrait.PutString("detail_info", contact.portrait.uri);
-        valuesBucketPortrait.PutString("content_type", "photo");
+        DataShare::DataShareValuesBucket valuesBucketPortrait;
+        valuesBucketPortrait.Put("detail_info", contact.portrait.uri);
+        valuesBucketPortrait.Put("content_type", "photo");
         valueContactData.push_back(valuesBucketPortrait);
     }
 }
@@ -276,20 +276,20 @@ void ContactsBuild::GetValuesBucketPortrait(Contacts &contact, std::vector<Nativ
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
 void ContactsBuild::GetValuesBucketPhoneNumber(
-    Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+    Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int phoneNumbersSize = contact.phoneNumbers.size();
     for (unsigned int i = 0; i < phoneNumbersSize; i++) {
-        NativeRdb::ValuesBucket valuesBucketPhoneNumber;
-        valuesBucketPhoneNumber.PutString("detail_info", contact.phoneNumbers[i].phoneNumber);
+        DataShare::DataShareValuesBucket valuesBucketPhoneNumber;
+        valuesBucketPhoneNumber.Put("detail_info", contact.phoneNumbers[i].phoneNumber);
         if (contact.phoneNumbers[i].labelId != ERROR) {
-            valuesBucketPhoneNumber.PutString("extend7", std::to_string(contact.phoneNumbers[i].labelId));
+            valuesBucketPhoneNumber.Put("extend7", std::to_string(contact.phoneNumbers[i].labelId));
         }
         if (!contact.phoneNumbers[i].labelName.empty()) {
-            valuesBucketPhoneNumber.PutString("custom_data", contact.phoneNumbers[i].labelName);
-            valuesBucketPhoneNumber.PutString("extend7", std::to_string(PhoneNumber::CUSTOM_LABEL));
+            valuesBucketPhoneNumber.Put("custom_data", contact.phoneNumbers[i].labelName);
+            valuesBucketPhoneNumber.Put("extend7", std::to_string(PhoneNumber::CUSTOM_LABEL));
         }
-        valuesBucketPhoneNumber.PutString("content_type", "phone");
+        valuesBucketPhoneNumber.Put("content_type", "phone");
         valueContactData.push_back(valuesBucketPhoneNumber);
     }
 }
@@ -301,38 +301,38 @@ void ContactsBuild::GetValuesBucketPhoneNumber(
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
 void ContactsBuild::GetValuesBucketPostalAddress(
-    Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+    Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int postalAddressesSize = contact.postalAddresses.size();
     for (unsigned int i = 0; i < postalAddressesSize; i++) {
-        NativeRdb::ValuesBucket valuesBucketPostalAddress;
-        valuesBucketPostalAddress.PutString("detail_info", contact.postalAddresses[i].postalAddress);
+        DataShare::DataShareValuesBucket valuesBucketPostalAddress;
+        valuesBucketPostalAddress.Put("detail_info", contact.postalAddresses[i].postalAddress);
         if (contact.postalAddresses[i].labelId != ERROR) {
-            valuesBucketPostalAddress.PutString("extend7", std::to_string(contact.postalAddresses[i].labelId));
+            valuesBucketPostalAddress.Put("extend7", std::to_string(contact.postalAddresses[i].labelId));
         }
         if (!contact.postalAddresses[i].labelName.empty()) {
-            valuesBucketPostalAddress.PutString("custom_data", contact.postalAddresses[i].labelName);
-            valuesBucketPostalAddress.PutString("extend7", std::to_string(PostalAddress::CUSTOM_LABEL));
+            valuesBucketPostalAddress.Put("custom_data", contact.postalAddresses[i].labelName);
+            valuesBucketPostalAddress.Put("extend7", std::to_string(PostalAddress::CUSTOM_LABEL));
         }
         if (!contact.postalAddresses[i].neighborhood.empty()) {
-            valuesBucketPostalAddress.PutString("neighborhood", contact.postalAddresses[i].neighborhood);
+            valuesBucketPostalAddress.Put("neighborhood", contact.postalAddresses[i].neighborhood);
         }
         if (!contact.postalAddresses[i].pobox.empty()) {
-            valuesBucketPostalAddress.PutString("pobox", contact.postalAddresses[i].pobox);
+            valuesBucketPostalAddress.Put("pobox", contact.postalAddresses[i].pobox);
         }
         if (!contact.postalAddresses[i].postcode.empty()) {
-            valuesBucketPostalAddress.PutString("postcode", contact.postalAddresses[i].postcode);
+            valuesBucketPostalAddress.Put("postcode", contact.postalAddresses[i].postcode);
         }
         if (!contact.postalAddresses[i].region.empty()) {
-            valuesBucketPostalAddress.PutString("region", contact.postalAddresses[i].region);
+            valuesBucketPostalAddress.Put("region", contact.postalAddresses[i].region);
         }
         if (!contact.postalAddresses[i].street.empty()) {
-            valuesBucketPostalAddress.PutString("street", contact.postalAddresses[i].street);
+            valuesBucketPostalAddress.Put("street", contact.postalAddresses[i].street);
         }
         if (!contact.postalAddresses[i].city.empty()) {
-            valuesBucketPostalAddress.PutString("city", contact.postalAddresses[i].city);
+            valuesBucketPostalAddress.Put("city", contact.postalAddresses[i].city);
         }
-        valuesBucketPostalAddress.PutString("content_type", "postal_address");
+        valuesBucketPostalAddress.Put("content_type", "postal_address");
         valueContactData.push_back(valuesBucketPostalAddress);
     }
 }
@@ -343,20 +343,20 @@ void ContactsBuild::GetValuesBucketPostalAddress(
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketRelation(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketRelation(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int relationsSize = contact.relations.size();
     for (unsigned int i = 0; i < relationsSize; i++) {
-        NativeRdb::ValuesBucket valuesBucketRelation;
-        valuesBucketRelation.PutString("detail_info", contact.relations[i].relationName);
+        DataShare::DataShareValuesBucket valuesBucketRelation;
+        valuesBucketRelation.Put("detail_info", contact.relations[i].relationName);
         if (contact.relations[i].labelId != ERROR) {
-            valuesBucketRelation.PutString("extend7", std::to_string(contact.relations[i].labelId));
+            valuesBucketRelation.Put("extend7", std::to_string(contact.relations[i].labelId));
         }
         if (!contact.relations[i].labelName.empty()) {
-            valuesBucketRelation.PutString("custom_data", contact.relations[i].labelName);
-            valuesBucketRelation.PutString("extend7", std::to_string(Relation::CUSTOM_LABEL));
+            valuesBucketRelation.Put("custom_data", contact.relations[i].labelName);
+            valuesBucketRelation.Put("extend7", std::to_string(Relation::CUSTOM_LABEL));
         }
-        valuesBucketRelation.PutString("content_type", "relation");
+        valuesBucketRelation.Put("content_type", "relation");
         valueContactData.push_back(valuesBucketRelation);
     }
 }
@@ -367,20 +367,20 @@ void ContactsBuild::GetValuesBucketRelation(Contacts &contact, std::vector<Nativ
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int sipAddressesSize = contact.sipAddresses.size();
     for (unsigned int i = 0; i < sipAddressesSize; i++) {
-        NativeRdb::ValuesBucket valuesBucketSipAddress;
-        valuesBucketSipAddress.PutString("detail_info", contact.sipAddresses[i].sipAddress);
+        DataShare::DataShareValuesBucket valuesBucketSipAddress;
+        valuesBucketSipAddress.Put("detail_info", contact.sipAddresses[i].sipAddress);
         if (contact.sipAddresses[i].labelId != ERROR) {
-            valuesBucketSipAddress.PutString("extend7", std::to_string(contact.sipAddresses[i].labelId));
+            valuesBucketSipAddress.Put("extend7", std::to_string(contact.sipAddresses[i].labelId));
         }
         if (!contact.sipAddresses[i].labelName.empty()) {
-            valuesBucketSipAddress.PutString("custom_data", contact.sipAddresses[i].labelName);
-            valuesBucketSipAddress.PutString("extend7", std::to_string(SipAddress::CUSTOM_LABEL));
+            valuesBucketSipAddress.Put("custom_data", contact.sipAddresses[i].labelName);
+            valuesBucketSipAddress.Put("extend7", std::to_string(SipAddress::CUSTOM_LABEL));
         }
-        valuesBucketSipAddress.PutString("content_type", "sip_address");
+        valuesBucketSipAddress.Put("content_type", "sip_address");
         valueContactData.push_back(valuesBucketSipAddress);
     }
 }
@@ -391,13 +391,13 @@ void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<Nat
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketWebsite(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketWebsite(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int websitesSize = contact.websites.size();
     for (unsigned int i = 0; i < websitesSize; i++) {
-        NativeRdb::ValuesBucket valuesBucketWebsite;
-        valuesBucketWebsite.PutString("detail_info", contact.websites[i].website);
-        valuesBucketWebsite.PutString("content_type", "website");
+        DataShare::DataShareValuesBucket valuesBucketWebsite;
+        valuesBucketWebsite.Put("detail_info", contact.websites[i].website);
+        valuesBucketWebsite.Put("content_type", "website");
         valueContactData.push_back(valuesBucketWebsite);
     }
 }
@@ -408,36 +408,36 @@ void ContactsBuild::GetValuesBucketWebsite(Contacts &contact, std::vector<Native
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketName(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketName(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     if (!contact.name.fullName.empty() || contact.name.fullName != "") {
-        NativeRdb::ValuesBucket valuesBucketName;
-        valuesBucketName.PutString("detail_info", contact.name.fullName);
+        DataShare::DataShareValuesBucket valuesBucketName;
+        valuesBucketName.Put("detail_info", contact.name.fullName);
         if (!contact.name.namePrefix.empty()) {
-            valuesBucketName.PutString("alpha_name", contact.name.namePrefix);
+            valuesBucketName.Put("alpha_name", contact.name.namePrefix);
         }
         if (!contact.name.middleName.empty()) {
-            valuesBucketName.PutString("other_lan_last_name", contact.name.middleName);
+            valuesBucketName.Put("other_lan_last_name", contact.name.middleName);
         }
         if (!contact.name.nameSuffix.empty()) {
-            valuesBucketName.PutString("other_lan_first_name", contact.name.nameSuffix);
+            valuesBucketName.Put("other_lan_first_name", contact.name.nameSuffix);
         }
         if (!contact.name.familyName.empty()) {
-            valuesBucketName.PutString("family_name", contact.name.familyName);
+            valuesBucketName.Put("family_name", contact.name.familyName);
         }
         if (!contact.name.middleNamePhonetic.empty()) {
-            valuesBucketName.PutString("middle_name_phonetic", contact.name.middleNamePhonetic);
+            valuesBucketName.Put("middle_name_phonetic", contact.name.middleNamePhonetic);
         }
         if (!contact.name.givenName.empty()) {
-            valuesBucketName.PutString("given_name", contact.name.givenName);
+            valuesBucketName.Put("given_name", contact.name.givenName);
         }
         if (!contact.name.givenNamePhonetic.empty()) {
-            valuesBucketName.PutString("given_name_phonetic", contact.name.givenNamePhonetic);
+            valuesBucketName.Put("given_name_phonetic", contact.name.givenNamePhonetic);
         }
         if (!contact.name.familyNamePhonetic.empty()) {
-            valuesBucketName.PutString("phonetic_name", contact.name.familyNamePhonetic);
+            valuesBucketName.Put("phonetic_name", contact.name.familyNamePhonetic);
         }
-        valuesBucketName.PutString("content_type", "name");
+        valuesBucketName.Put("content_type", "name");
         valueContactData.push_back(valuesBucketName);
     }
 }
@@ -448,12 +448,12 @@ void ContactsBuild::GetValuesBucketName(Contacts &contact, std::vector<NativeRdb
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketNickName(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketNickName(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     if (!contact.nickName.nickName.empty() || contact.nickName.nickName != "") {
-        NativeRdb::ValuesBucket valuesBucketNickName;
-        valuesBucketNickName.PutString("detail_info", contact.nickName.nickName);
-        valuesBucketNickName.PutString("content_type", "nickname");
+        DataShare::DataShareValuesBucket valuesBucketNickName;
+        valuesBucketNickName.Put("detail_info", contact.nickName.nickName);
+        valuesBucketNickName.Put("content_type", "nickname");
         valueContactData.push_back(valuesBucketNickName);
     }
 }
@@ -464,12 +464,12 @@ void ContactsBuild::GetValuesBucketNickName(Contacts &contact, std::vector<Nativ
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketNote(Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketNote(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     if (!contact.note.noteContent.empty() || contact.note.noteContent != "") {
-        NativeRdb::ValuesBucket valuesBucketNote;
-        valuesBucketNote.PutString("detail_info", contact.note.noteContent);
-        valuesBucketNote.PutString("content_type", "note");
+        DataShare::DataShareValuesBucket valuesBucketNote;
+        valuesBucketNote.Put("detail_info", contact.note.noteContent);
+        valuesBucketNote.Put("content_type", "note");
         valueContactData.push_back(valuesBucketNote);
     }
 }
@@ -481,15 +481,15 @@ void ContactsBuild::GetValuesBucketNote(Contacts &contact, std::vector<NativeRdb
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
 void ContactsBuild::GetValuesBucketOrganization(
-    Contacts &contact, std::vector<NativeRdb::ValuesBucket> &valueContactData)
+    Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     if (!contact.organization.name.empty()) {
-        NativeRdb::ValuesBucket valuesBucketData;
-        valuesBucketData.PutString("detail_info", contact.organization.name);
+        DataShare::DataShareValuesBucket valuesBucketData;
+        valuesBucketData.Put("detail_info", contact.organization.name);
         if (!contact.organization.title.empty()) {
-            valuesBucketData.PutString("position", contact.organization.title);
+            valuesBucketData.Put("position", contact.organization.title);
         }
-        valuesBucketData.PutString("content_type", "organization");
+        valuesBucketData.Put("content_type", "organization");
         valueContactData.push_back(valuesBucketData);
     }
 }

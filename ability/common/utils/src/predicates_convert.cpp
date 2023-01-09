@@ -14,6 +14,7 @@
  */
 
 #include "predicates_convert.h"
+#include "rdb_utils.h"
 
 namespace OHOS {
 namespace Contacts {
@@ -26,13 +27,9 @@ PredicatesConvert::~PredicatesConvert()
 }
 
 OHOS::NativeRdb::RdbPredicates PredicatesConvert::ConvertPredicates(
-    std::string tableName, OHOS::NativeRdb::DataAbilityPredicates &dataPredicates)
+    std::string tableName, DataShare::DataSharePredicates &dataPredicates)
 {
-    OHOS::NativeRdb::RdbPredicates predicates(tableName);
-    OHOS::NativeRdb::PredicatesUtils::SetWhereClauseAndArgs(
-        &predicates, dataPredicates.GetWhereClause(), dataPredicates.GetWhereArgs());
-    OHOS::NativeRdb::PredicatesUtils::SetAttributes(&predicates, dataPredicates.IsDistinct(), dataPredicates.GetIndex(),
-        dataPredicates.GetGroup(), dataPredicates.GetOrder(), dataPredicates.GetLimit(), dataPredicates.GetOffset());
+    OHOS::NativeRdb::RdbPredicates predicates = RdbDataShareAdapter::RdbUtils::ToPredicates(dataPredicates, tableName);
     return predicates;
 }
 

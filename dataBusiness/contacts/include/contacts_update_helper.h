@@ -16,7 +16,7 @@
 #ifndef CONTACT_UPDATE_HELPER_H
 #define CONTACT_UPDATE_HELPER_H
 
-#include "data_ability_predicates.h"
+#include "datashare_predicates.h"
 #include "rdb_errno.h"
 #include "rdb_helper.h"
 #include "rdb_store.h"

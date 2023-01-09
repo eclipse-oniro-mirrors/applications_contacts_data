@@ -1183,7 +1183,7 @@ std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsDataBase::SelectCan
  *
  * @return The result returned by the split operation
  */
-int ContactsDataBase::Split(OHOS::NativeRdb::DataAbilityPredicates predicates)
+int ContactsDataBase::Split(DataShare::DataSharePredicates predicates)
 {
     std::vector<std::string> whereArgs = predicates.GetWhereArgs();
     if (whereArgs.size() > 1) {
@@ -1227,7 +1227,7 @@ int ContactsDataBase::ContactMerge()
  *
  * @return The result returned by the manualMerge operation
  */
-int ContactsDataBase::ReContactMerge(OHOS::NativeRdb::DataAbilityPredicates predicates)
+int ContactsDataBase::ReContactMerge(DataShare::DataSharePredicates predicates)
 {
     MarkMerge(store_);
     int code = RDB_EXECUTE_FAIL;

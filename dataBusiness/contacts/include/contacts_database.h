@@ -16,7 +16,8 @@
 #ifndef CONTACT_DATABASE_H
 #define CONTACT_DATABASE_H
 
-#include "data_ability_predicates.h"
+#include "datashare_predicates.h"
+#include "datashare_values_bucket.h"
 #include "rdb_errno.h"
 #include "rdb_helper.h"
 #include "rdb_open_callback.h"
@@ -59,9 +60,9 @@ public:
     int RollBack();
     static void DestroyInstanceAndRestore(std::string restorePath);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> SelectCandidate();
-    int Split(OHOS::NativeRdb::DataAbilityPredicates predicates);
+    int Split(DataShare::DataSharePredicates predicates);
     int ContactMerge();
-    int ReContactMerge(OHOS::NativeRdb::DataAbilityPredicates predicates);
+    int ReContactMerge(DataShare::DataSharePredicates predicates);
     int DeleteRecord(OHOS::NativeRdb::RdbPredicates &rdbPredicates);
     int GetTypeId(std::string typeText);
     void DeleteExecute(std::shared_ptr<OHOS::NativeRdb::RdbStore> &store,

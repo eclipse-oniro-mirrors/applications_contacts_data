@@ -29,7 +29,7 @@ public:
     SqlAnalyzer();
     ~SqlAnalyzer();
 
-    bool CheckValuesBucket(const NativeRdb::ValuesBucket &value);
+    bool CheckValuesBucket(const OHOS::NativeRdb::ValuesBucket &value);
     bool FindIllegalWords(std::string sql);
     bool StrCheck(char &ch, std::size_t strlen, std::string sql, std::size_t &pos);
     bool CharCheck(char &ch, std::string sql, std::size_t &pos);

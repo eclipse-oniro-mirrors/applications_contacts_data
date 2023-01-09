@@ -18,11 +18,11 @@
 
 #include <string>
 
+#include "datashare_result_set.h"
 #include "json.h"
 #include "json_utils.h"
 #include "rdb_errno.h"
 #include "rdb_open_callback.h"
-#include "result_set.h"
 
 namespace OHOS {
 namespace Contacts {

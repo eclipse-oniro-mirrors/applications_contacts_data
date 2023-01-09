@@ -16,7 +16,7 @@
 #ifndef RAW_CONTACT_H
 #define RAW_CONTACT_H
 
-#include "data_ability_predicates.h"
+#include "datashare_predicates.h"
 #include "rdb_errno.h"
 #include "rdb_store.h"
 

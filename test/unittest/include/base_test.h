@@ -21,6 +21,7 @@
 #include "calllog_ability.h"
 #include "contacts_data_ability.h"
 #include "data_ability_result.h"
+#include "datashare_values_bucket.h"
 #include "hilog_wrapper.h"
 #include "voicemail_ability.h"
 
@@ -30,17 +31,17 @@ class BaseTest : public testing::Test {
 public:
     BaseTest();
     ~BaseTest();
-    OHOS::AppExecFwk::CallLogAbility calllogAbility;
-    OHOS::AppExecFwk::VoiceMailAbility voicemailAbility;
-    OHOS::AppExecFwk::ContactsDataAbility contactsDataAbility;
-    void CheckResultSet(OHOS::NativeRdb::ValuesBucket &rawContactValues,
-        const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet, std::string testName);
-    void CheckData(OHOS::NativeRdb::ValuesBucket &rawContactValues,
-        const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet, std::string &columnName,
+    OHOS::AbilityRuntime::CallLogAbility calllogAbility;
+    OHOS::AbilityRuntime::VoiceMailAbility voicemailAbility;
+    OHOS::AbilityRuntime::ContactsDataAbility contactsDataAbility;
+    void CheckResultSet(OHOS::DataShare::DataShareValuesBucket &rawContactValues,
+        const std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, std::string testName);
+    void CheckData(OHOS::DataShare::DataShareValuesBucket &rawContactValues,
+        const std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, std::string &columnName,
         std::string testName);
-    void CheckResultSetList(std::vector<OHOS::NativeRdb::ValuesBucket> &valuesVector,
-        std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet, std::string testName);
-    OHOS::NativeRdb::ValuesBucket GetAllColumnsValues(
+    void CheckResultSetList(std::vector<OHOS::DataShare::DataShareValuesBucket> &valuesVector,
+        std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, std::string testName);
+    OHOS::DataShare::DataShareValuesBucket GetAllColumnsValues(
         std::vector<std::string> &columnsInt, std::vector<std::string> &columnsStr);
     int ContactsRand();
     void InitAbility();

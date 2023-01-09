@@ -16,11 +16,11 @@
 import contactsapi from "@ohos.contact";
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index';
 
-const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
-const rawContactUri = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
-const contactDataUri = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
-const groupUri = "dataability:///com.ohos.contactsdataability/contacts/groups";
-const deletedUri = "dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
+const URI_CONTACTS = "datashare:///com.ohos.contactsdataability";
+const rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+const contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
+const groupUri = "datashare:///com.ohos.contactsdataability/contacts/groups";
+const deletedUri = "datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
 
 describe('ObjectInterfaceTest', function() {
     function sleep(numberMillis)

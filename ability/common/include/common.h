@@ -115,9 +115,9 @@ constexpr int MERGE_MODE_MANUAL = 1;
 constexpr int MERGE_MODE_AUTO = 2;
 
 // Uri
-constexpr const char *CONTACT_URI = "dataability:///com.ohos.contactsdataability";
-constexpr const char *VOICEMAIL_URI = "dataability:///com.ohos.voicemailability";
-constexpr const char *CALL_LOG_URI = "dataability:///com.ohos.calllogability";
+constexpr const char *CONTACT_URI = "datashare:///com.ohos.contactsdataability";
+constexpr const char *VOICEMAIL_URI = "datashare:///com.ohos.voicemailability";
+constexpr const char *CALL_LOG_URI = "datashare:///com.ohos.calllogability";
 
 constexpr const char *CREATE_CALLLOG =
     "CREATE TABLE IF NOT EXISTS [calllog]("

@@ -22,33 +22,33 @@
 namespace Contacts {
 namespace Test {
 namespace Lock {
-std::mutex mtx_;
+std::mutex calllogMtx_;
 }
 
 class CallLogAsync {
 public:
-    OHOS::NativeRdb::ValuesBucket values;
-    std::map<int, OHOS::NativeRdb::ValuesBucket> result;
-    OHOS::NativeRdb::ValuesBucket updateValues;
+    OHOS::DataShare::DataShareValuesBucket values;
+    std::map<int, OHOS::DataShare::DataShareValuesBucket> result;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
     int predicatesId;
-    std::vector<std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet>> resultSet;
+    std::vector<std::shared_ptr<OHOS::DataShare::DataShareResultSet>> resultSet;
     std::vector<int64_t> predicatesQueryId;
     int predicatesDeleteId;
-    CallLogAsync(OHOS::NativeRdb::ValuesBucket &values, std::map<int, OHOS::NativeRdb::ValuesBucket> &result)
+    CallLogAsync(OHOS::DataShare::DataShareValuesBucket &values, std::map<int, OHOS::DataShare::DataShareValuesBucket> &result)
     {
         this->values = values;
         this->result = result;
         this->predicatesId = -1;
         this->predicatesDeleteId = -1;
     }
-    CallLogAsync(OHOS::NativeRdb::ValuesBucket &updateValues, int &predicatesId)
+    CallLogAsync(OHOS::DataShare::DataShareValuesBucket &updateValues, int &predicatesId)
     {
         this->updateValues = updateValues;
         this->predicatesId = predicatesId;
         this->predicatesDeleteId = -1;
     }
 
-    CallLogAsync(std::vector<std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet>> resultSet,
+    CallLogAsync(std::vector<std::shared_ptr<OHOS::DataShare::DataShareResultSet>> resultSet,
         std::vector<int64_t> predicatesQueryId)
     {
         this->resultSet = resultSet;
@@ -64,30 +64,30 @@ public:
     }
     void Insert()
     {
-        OHOS::AppExecFwk::CallLogAbility calllogAbility;
+        OHOS::AbilityRuntime::CallLogAbility calllogAbility;
         OHOS::Uri callLogUri(CallLogUri::CALL_LOG);
         int64_t code = calllogAbility.Insert(callLogUri, this->values);
         int callLogId = code;
         EXPECT_GT(callLogId, 0);
-        mtx_.lock();
-        this->result.insert(std::map<int, OHOS::NativeRdb::ValuesBucket>::value_type(callLogId, this->values));
-        mtx_.unlock();
+        Lock::calllogMtx_.lock();
+        this->result.insert(std::map<int, OHOS::DataShare::DataShareValuesBucket>::value_type(callLogId, this->values));
+        Lock::calllogMtx_.unlock();
         HILOG_INFO("--- VoicemailAsync Insert---%{public}s", CallLogUri::CALL_LOG);
     }
     void Update()
     {
         OHOS::Uri callLogUri(CallLogUri::CALL_LOG);
-        OHOS::NativeRdb::DataAbilityPredicates predicates;
+        OHOS::DataShare::DataSharePredicates predicates;
         predicates.EqualTo("id", std::to_string(this->predicatesId));
-        OHOS::AppExecFwk::CallLogAbility calllogAbility;
-        int resultCode = calllogAbility.Update(callLogUri, this->updateValues, predicates);
+        OHOS::AbilityRuntime::CallLogAbility calllogAbility;
+        int resultCode = calllogAbility.Update(callLogUri, predicates, this->updateValues);
         EXPECT_EQ(0, resultCode);
         HILOG_INFO("--- VoicemailAsync Update---%{public}s", CallLogUri::CALL_LOG);
     }
     void Query()
     {
         OHOS::Uri callLogUri(CallLogUri::CALL_LOG);
-        OHOS::NativeRdb::DataAbilityPredicates predicates;
+        OHOS::DataShare::DataSharePredicates predicates;
         int size = this->predicatesQueryId.size();
         for (int i = 0; i < size; i++) {
             predicates.EqualTo("id", std::to_string(this->predicatesQueryId[i]));
@@ -95,22 +95,22 @@ public:
                 predicates.Or();
             }
         }
-        OHOS::AppExecFwk::CallLogAbility calllogAbility;
+        OHOS::AbilityRuntime::CallLogAbility calllogAbility;
         std::vector<std::string> columns;
-        std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-            calllogAbility.Query(callLogUri, columns, predicates);
-        mtx_.lock();
+        std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+            calllogAbility.Query(callLogUri, predicates, columns);
+        Lock::calllogMtx_.lock();
         this->resultSet.push_back(resultSet);
-        mtx_.unlock();
+        Lock::calllogMtx_.unlock();
         HILOG_INFO("--- VoicemailAsync Query---%{public}s", CallLogUri::CALL_LOG);
     }
 
     void Delete()
     {
         OHOS::Uri callLogUri(CallLogUri::CALL_LOG);
-        OHOS::NativeRdb::DataAbilityPredicates predicates;
+        OHOS::DataShare::DataSharePredicates predicates;
         predicates.EqualTo("id", std::to_string(this->predicatesDeleteId));
-        OHOS::AppExecFwk::CallLogAbility calllogAbility;
+        OHOS::AbilityRuntime::CallLogAbility calllogAbility;
         int resultCode = calllogAbility.Delete(callLogUri, predicates);
         EXPECT_EQ(0, resultCode);
         HILOG_INFO("--- VoicemailAsync Delete---%{public}s", CallLogUri::CALL_LOG);
@@ -122,14 +122,14 @@ public:
     CalllogAbilityTest();
     ~CalllogAbilityTest();
     int64_t CalllogInsert(std::string phoneNumber);
-    int CalllogUpdate(OHOS::NativeRdb::ValuesBucket updateValues, OHOS::NativeRdb::DataAbilityPredicates predicates);
-    int CalllogDelete(OHOS::NativeRdb::DataAbilityPredicates predicates);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> CalllogQuery(
-        std::vector<std::string> columns, OHOS::NativeRdb::DataAbilityPredicates predicates);
-    OHOS::NativeRdb::ValuesBucket GetCallLogValues(int columnsStart, int columnsEnd, std::vector<std::string> &columns);
+    int CalllogUpdate(OHOS::DataShare::DataShareValuesBucket updateValues, OHOS::DataShare::DataSharePredicates predicates);
+    int CalllogDelete(OHOS::DataShare::DataSharePredicates predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> CalllogQuery(
+        std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates);
+    OHOS::DataShare::DataShareValuesBucket GetCallLogValues(int columnsStart, int columnsEnd, std::vector<std::string> &columns);
     void GetAllValuesColumn(std::vector<std::string> &columns);
-    int64_t CalllogInsertValues(OHOS::NativeRdb::ValuesBucket &values);
-    int64_t CalllogInsertValue(std::string displayName, OHOS::NativeRdb::ValuesBucket &values);
+    int64_t CalllogInsertValues(OHOS::DataShare::DataShareValuesBucket &values);
+    int64_t CalllogInsertValue(std::string displayName, OHOS::DataShare::DataShareValuesBucket &values);
     void ClearCallLog();
 };
 } // namespace Test

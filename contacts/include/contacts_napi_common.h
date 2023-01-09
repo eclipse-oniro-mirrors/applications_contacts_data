@@ -16,8 +16,8 @@
 #ifndef CONTACT_NAPI_COMMON_H
 #define CONTACT_NAPI_COMMON_H
 
-#include "data_ability_predicates.h"
-#include "data_ability_helper.h"
+#include "datashare_predicates.h"
+#include "datashare_helper.h"
 #include "napi/native_api.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
@@ -86,6 +86,9 @@ constexpr int HICALL_DEVICE = 15;
 constexpr int CAMCARD = 16;
 constexpr int SIP_ADDRESS = 17;
 
+constexpr int ARGS_ONE = 1;
+const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
+
 struct ExecuteHelper {
     ExecuteHelper()
         : work(nullptr), deferred(nullptr), sync(NAPI_CALL_TYPE_PROMISE), argc(0), actionCode(-1), callBack(nullptr),
@@ -102,21 +105,21 @@ struct ExecuteHelper {
     // query
     std::vector<std::string> columns;
     // condition
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     // delete contact predicates for update contact
-    NativeRdb::DataAbilityPredicates deletePredicates;
+    DataShare::DataSharePredicates deletePredicates;
     // update
-    std::vector<NativeRdb::ValuesBucket> valueUpdateContact;
+    std::vector<DataShare::DataShareValuesBucket> valueUpdateContact;
     // insert
-    std::vector<NativeRdb::ValuesBucket> valueContact;
+    std::vector<DataShare::DataShareValuesBucket> valueContact;
     // insertContactData
-    std::vector<NativeRdb::ValuesBucket> valueContactData;
-    // dataAbilityHelper
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper;
+    std::vector<DataShare::DataShareValuesBucket> valueContactData;
+    // dataShareHelper
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper;
 
     // operation result
     int resultData;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet;
 };
 } // namespace ContactsApi
 } // namespace OHOS

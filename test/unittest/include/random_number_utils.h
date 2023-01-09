@@ -25,7 +25,7 @@ class RandomNumberUtils {
 public:
     RandomNumberUtils();
     ~RandomNumberUtils();
-    static std::string &Generating(std::string number);
+    static std::string &Generating(int number);
 };
 } // namespace Contacts
 } // namespace OHOS

@@ -25,14 +25,11 @@ RandomNumberUtils::~RandomNumberUtils()
 {
 }
 
-string RandomNumberUtils::Generating(std::int number)
+std::string &RandomNumberUtils::Generating(int number)
 {
-    string phoneNumber = nullptr;
-    if (number == nullptr) {
-        return 0;
-    }
+    std::string phoneNumber = "";
     for (int i = 0; i < number; i++) {
-        phoneNumber += to_string(rand()%10);
+        phoneNumber += std::to_string(rand() % 10);
     }
     return phoneNumber;
 }
