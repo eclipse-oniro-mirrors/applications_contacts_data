@@ -192,7 +192,8 @@ bool ContactsDataShareStubImpl::RegisterObserver(const Uri &uri, const sptr<AAFw
     return true;
 }
 
-bool ContactsDataShareStubImpl::UnregisterObserver(const Uri &uri, const sptr<AAFwk::IDataAbilityObserver> &dataObserver)
+bool ContactsDataShareStubImpl::UnregisterObserver(const Uri &uri,
+    const sptr<AAFwk::IDataAbilityObserver> &dataObserver)
 {
     HILOG_INFO("%{public}s begin.", __func__);
     auto obsMgrClient = DataObsMgrClient::GetInstance();

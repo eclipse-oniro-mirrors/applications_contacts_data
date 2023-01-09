@@ -28,7 +28,8 @@ ContactQueryTest::~ContactQueryTest()
 {
 }
 
-int64_t ContactQueryTest::RawContactInsert(std::string displayName, OHOS::DataShare::DataShareValuesBucket &rawContactValues)
+int64_t ContactQueryTest::RawContactInsert(std::string displayName,
+    OHOS::DataShare::DataShareValuesBucket &rawContactValues)
 {
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
     rawContactValues.Put("display_name", displayName);

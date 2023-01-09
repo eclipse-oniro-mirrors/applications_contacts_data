@@ -34,7 +34,8 @@ public:
     std::vector<std::shared_ptr<OHOS::DataShare::DataShareResultSet>> resultSet;
     std::vector<int64_t> predicatesQueryId;
     int predicatesDeleteId;
-    ContactAsync(OHOS::DataShare::DataShareValuesBucket &values, std::map<int, OHOS::DataShare::DataShareValuesBucket> &result)
+    ContactAsync(OHOS::DataShare::DataShareValuesBucket &values, std::map<int,
+        OHOS::DataShare::DataShareValuesBucket> &result)
     {
         this->values = values;
         this->result = result;
@@ -70,7 +71,8 @@ public:
         int rawContactId = code;
         EXPECT_GT(rawContactId, 0);
         Lock::contactsMtx_.lock();
-        this->result.insert(std::map<int, OHOS::DataShare::DataShareValuesBucket>::value_type(rawContactId, this->values));
+        this->result.insert(std::map<int, OHOS::DataShare::DataShareValuesBucket>::value_type(rawContactId,
+            this->values));
         Lock::contactsMtx_.unlock();
         HILOG_INFO("--- VoicemailAsync Insert---%{public}s", ContactsUri::RAW_CONTACT);
     }

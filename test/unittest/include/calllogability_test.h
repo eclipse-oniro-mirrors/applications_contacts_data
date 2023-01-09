@@ -34,7 +34,8 @@ public:
     std::vector<std::shared_ptr<OHOS::DataShare::DataShareResultSet>> resultSet;
     std::vector<int64_t> predicatesQueryId;
     int predicatesDeleteId;
-    CallLogAsync(OHOS::DataShare::DataShareValuesBucket &values, std::map<int, OHOS::DataShare::DataShareValuesBucket> &result)
+    CallLogAsync(OHOS::DataShare::DataShareValuesBucket &values,
+        std::map<int, OHOS::DataShare::DataShareValuesBucket> &result)
     {
         this->values = values;
         this->result = result;
@@ -122,11 +123,13 @@ public:
     CalllogAbilityTest();
     ~CalllogAbilityTest();
     int64_t CalllogInsert(std::string phoneNumber);
-    int CalllogUpdate(OHOS::DataShare::DataShareValuesBucket updateValues, OHOS::DataShare::DataSharePredicates predicates);
+    int CalllogUpdate(OHOS::DataShare::DataShareValuesBucket updateValues,
+        OHOS::DataShare::DataSharePredicates predicates);
     int CalllogDelete(OHOS::DataShare::DataSharePredicates predicates);
     std::shared_ptr<OHOS::DataShare::DataShareResultSet> CalllogQuery(
         std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates);
-    OHOS::DataShare::DataShareValuesBucket GetCallLogValues(int columnsStart, int columnsEnd, std::vector<std::string> &columns);
+    OHOS::DataShare::DataShareValuesBucket GetCallLogValues(int columnsStart, int columnsEnd,
+        std::vector<std::string> &columns);
     void GetAllValuesColumn(std::vector<std::string> &columns);
     int64_t CalllogInsertValues(OHOS::DataShare::DataShareValuesBucket &values);
     int64_t CalllogInsertValue(std::string displayName, OHOS::DataShare::DataShareValuesBucket &values);

@@ -19,7 +19,7 @@ ohos_hap("Contacts_DataAbility") {
   hap_profile = "entry/src/main/module.json"
   deps = [
     ":Contacts_DataAbility_js_assets",
-    ":Contacts_DataAbility_resources"
+    ":Contacts_DataAbility_resources",
   ]
   shared_libraries = [ ":contactsdataability" ]
   certificate_profile = "./signature/contactsdata.p7b"
@@ -40,12 +40,8 @@ ohos_js_assets("Contacts_DataAbility_js_assets") {
 }
 
 ohos_resources("Contacts_DataAbility_resources") {
-  sources = [
-    "entry/src/main/resources",
-  ]
-  deps = [
-    ":Contacts_DataAbility_app_profile",
-  ]
+  sources = [ "entry/src/main/resources" ]
+  deps = [ ":Contacts_DataAbility_app_profile" ]
   hap_profile = "entry/src/main/module.json"
 }
 
@@ -121,7 +117,7 @@ ohos_shared_library("contactsdataability") {
 
   deps = [
     "//foundation/ability/ability_runtime/interfaces/inner_api/dataobs_manager:dataobs_manager",
-    "//third_party/jsoncpp:jsoncpp"
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   public_configs = [ ":contactsdataability_public_config" ]

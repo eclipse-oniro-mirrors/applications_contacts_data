@@ -34,7 +34,8 @@ public:
     std::vector<std::shared_ptr<OHOS::DataShare::DataShareResultSet>> resultSet;
     std::vector<int64_t> predicatesQueryId;
     int predicatesDeleteId;
-    VoicemailAsync(OHOS::DataShare::DataShareValuesBucket &values, std::map<int, OHOS::DataShare::DataShareValuesBucket> &result)
+    VoicemailAsync(OHOS::DataShare::DataShareValuesBucket &values, std::map<int,
+        OHOS::DataShare::DataShareValuesBucket> &result)
     {
         this->values = values;
         this->result = result;
@@ -122,7 +123,8 @@ public:
     VoicemailAbilityTest();
     ~VoicemailAbilityTest();
     int64_t VoicemailStatusInsert(std::string phoneNumber, int status);
-    int VoicemailUpdate(OHOS::DataShare::DataShareValuesBucket updateValues, OHOS::DataShare::DataSharePredicates predicates);
+    int VoicemailUpdate(OHOS::DataShare::DataShareValuesBucket updateValues,
+        OHOS::DataShare::DataSharePredicates predicates);
     int VoicemailDelete(OHOS::DataShare::DataSharePredicates predicates);
     std::shared_ptr<OHOS::DataShare::DataShareResultSet> VoicemailQuery(
         std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates);

@@ -122,7 +122,8 @@ std::shared_ptr<OHOS::DataShare::DataShareResultSet> ContactGroupTest::ContactQu
 }
 
 void ContactGroupTest::QueryAndExpectResult(const std::string &tableName,
-    OHOS::DataShare::DataSharePredicates predicates, OHOS::DataShare::DataShareValuesBucket &values, std::string testName)
+    OHOS::DataShare::DataSharePredicates predicates, OHOS::DataShare::DataShareValuesBucket &values,
+    std::string testName)
 {
     std::vector<std::string> columns;
     std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(tableName, columns, predicates);

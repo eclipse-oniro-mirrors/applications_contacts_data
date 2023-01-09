@@ -82,7 +82,8 @@ int VoicemailAbilityTest::VoicemailInsertValues(OHOS::DataShare::DataShareValues
     return result;
 }
 
-int64_t VoicemailAbilityTest::VoicemailInsertValue(std::string displayName, OHOS::DataShare::DataShareValuesBucket &values)
+int64_t VoicemailAbilityTest::VoicemailInsertValue(std::string displayName,
+    OHOS::DataShare::DataShareValuesBucket &values)
 {
     OHOS::Uri uriVoicemail(VoicemailUri::VOICEMAIL);
     values.Put("display_name", displayName);

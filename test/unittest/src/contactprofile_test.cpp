@@ -30,7 +30,8 @@ ContactProfileTest::~ContactProfileTest()
 {
 }
 
-int64_t ContactProfileTest::RawContactInsert(std::string displayName, OHOS::DataShare::DataShareValuesBucket &rawContactValues)
+int64_t ContactProfileTest::RawContactInsert(std::string displayName,
+    OHOS::DataShare::DataShareValuesBucket &rawContactValues)
 {
     OHOS::Uri uriRawContact(ProfileUri::RAW_CONTACT);
     rawContactValues.Put("display_name", displayName);
@@ -1294,7 +1295,6 @@ HWTEST_F(ContactProfileTest, contactProfile_Update_test_2000, testing::ext::Test
     bool isValid = false;
     int versionCode = valuesBucket.Get("version", isValid);
     versionCode += 1;
-//    upDateValuesBucket.Delete("version");
     upDateValuesBucket.Put("version", versionCode);
     std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(tableName, columns, predicates);
 
@@ -2733,7 +2733,8 @@ HWTEST_F(ContactProfileTest, contactProfile_BatchInsert_test_5500, testing::ext:
     predicates2.EqualTo("type_id", "5");
     predicates2.And();
     predicates2.EqualTo("raw_contact_id", std::to_string(rawContactId));
-    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetFour = ContactQuery(contactData, columns, predicates2);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetFour =
+        ContactQuery(contactData, columns, predicates2);
     int rowCountFour = 0;
     resultSetFour->GetRowCount(rowCountFour);
     EXPECT_EQ(1, rowCountFour);

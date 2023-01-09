@@ -48,7 +48,8 @@ void ContactsBuild::GetContactDataByObject(napi_env env, napi_value object, Cont
 }
 
 void ContactsBuild::GetContactData(napi_env env, napi_value object,
-    std::vector<DataShare::DataShareValuesBucket> &valueContact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+    std::vector<DataShare::DataShareValuesBucket> &valueContact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     Contacts contact;
     GetContactDataByObject(env, object, contact);
@@ -71,7 +72,8 @@ void ContactsBuild::BuildValueContact(Contacts &contact, std::vector<DataShare::
     valueContact.push_back(valuesBucketContact);
 }
 
-void ContactsBuild::BuildValueContactData(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::BuildValueContactData(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     GetValuesBucketEmail(contact, valueContactData);
     GetValuesBucketEvent(contact, valueContactData);
@@ -164,7 +166,8 @@ void ContactsBuild::TypeSwitchSplit(
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketEmail(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int emailsSize = contact.emails.size();
     for (unsigned int i = 0; i < emailsSize; i++) {
@@ -191,7 +194,8 @@ void ContactsBuild::GetValuesBucketEmail(Contacts &contact, std::vector<DataShar
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketEvent(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int eventsSize = contact.events.size();
     for (unsigned int i = 0; i < eventsSize; i++) {
@@ -215,7 +219,8 @@ void ContactsBuild::GetValuesBucketEvent(Contacts &contact, std::vector<DataShar
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketGroup(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int groupsSize = contact.groups.size();
     for (unsigned int i = 0; i < groupsSize; i++) {
@@ -235,7 +240,8 @@ void ContactsBuild::GetValuesBucketGroup(Contacts &contact, std::vector<DataShar
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketImAddress(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketImAddress(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int imAddressSize = contact.imAddresses.size();
     for (unsigned int i = 0; i < imAddressSize; i++) {
@@ -259,7 +265,8 @@ void ContactsBuild::GetValuesBucketImAddress(Contacts &contact, std::vector<Data
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketPortrait(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketPortrait(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     if (!contact.portrait.uri.empty() || contact.portrait.uri != "") {
         DataShare::DataShareValuesBucket valuesBucketPortrait;
@@ -343,7 +350,8 @@ void ContactsBuild::GetValuesBucketPostalAddress(
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketRelation(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketRelation(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int relationsSize = contact.relations.size();
     for (unsigned int i = 0; i < relationsSize; i++) {
@@ -367,7 +375,8 @@ void ContactsBuild::GetValuesBucketRelation(Contacts &contact, std::vector<DataS
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int sipAddressesSize = contact.sipAddresses.size();
     for (unsigned int i = 0; i < sipAddressesSize; i++) {
@@ -391,7 +400,8 @@ void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact, std::vector<Dat
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketWebsite(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketWebsite(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     unsigned int websitesSize = contact.websites.size();
     for (unsigned int i = 0; i < websitesSize; i++) {
@@ -408,7 +418,8 @@ void ContactsBuild::GetValuesBucketWebsite(Contacts &contact, std::vector<DataSh
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketName(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketName(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     if (!contact.name.fullName.empty() || contact.name.fullName != "") {
         DataShare::DataShareValuesBucket valuesBucketName;
@@ -448,7 +459,8 @@ void ContactsBuild::GetValuesBucketName(Contacts &contact, std::vector<DataShare
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketNickName(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketNickName(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     if (!contact.nickName.nickName.empty() || contact.nickName.nickName != "") {
         DataShare::DataShareValuesBucket valuesBucketNickName;
@@ -464,7 +476,8 @@ void ContactsBuild::GetValuesBucketNickName(Contacts &contact, std::vector<DataS
  * @param contact Conditions for establish ValuesBucket operation
  * @param valueContactData Conditions for establish ValuesBucket operation
  */
-void ContactsBuild::GetValuesBucketNote(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetValuesBucketNote(Contacts &contact,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     if (!contact.note.noteContent.empty() || contact.note.noteContent != "") {
         DataShare::DataShareValuesBucket valuesBucketNote;

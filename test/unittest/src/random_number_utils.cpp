@@ -29,7 +29,7 @@ std::string &RandomNumberUtils::Generating(int number)
 {
     std::string phoneNumber = "";
     for (int i = 0; i < number; i++) {
-        phoneNumber += std::to_string(rand() % 10);
+        phoneNumber += std::to_string(rand() % DECIMAL_NUMBER);
     }
     return phoneNumber;
 }

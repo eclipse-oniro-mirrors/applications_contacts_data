@@ -51,7 +51,8 @@ public:
         Contacts &contacts, int typeId, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
 
 private:
-    void TypeSwitchSplit(int typeId, Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void TypeSwitchSplit(int typeId, Contacts &contacts,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     napi_value GetArrayByKey(napi_env env, napi_value valueObject, std::string key);
     napi_value GetObjectByKey(napi_env env, napi_value object, std::string key);
     std::string GetStringValueByKey(napi_env env, napi_value valueObject, std::string key);
@@ -78,15 +79,18 @@ private:
     void GetValuesBucketGroup(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketImAddress(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketPortrait(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
-    void GetValuesBucketPhoneNumber(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
-    void GetValuesBucketPostalAddress(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketPhoneNumber(Contacts &contacts,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketPostalAddress(Contacts &contacts,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketRelation(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketSipAddress(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketWebsite(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketName(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketNickName(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketNote(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
-    void GetValuesBucketOrganization(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketOrganization(Contacts &contacts,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
 };
 } // namespace ContactsApi
 } // namespace OHOS
