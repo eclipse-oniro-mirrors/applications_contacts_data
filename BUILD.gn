@@ -110,9 +110,7 @@ ohos_shared_library("contactsdataability") {
     "//base/account/os_account/interfaces/kits/napi/distributedaccount/include/",
     "//base/account/os_account/interfaces/innerkits/include",
     "//foundation/ability/ability_runtime/interfaces/inner_api/ability_manager/include",
-    "//foundation/ability/ability_runtime/interfaces/inner_api/dataobs_manager/include",
     "//foundation/ability/ability_runtime/interfaces/kits/native/ability/native",
-    "//foundation/ability/ability_runtime/services/abilitymgr/include",
   ]
 
   deps = [
