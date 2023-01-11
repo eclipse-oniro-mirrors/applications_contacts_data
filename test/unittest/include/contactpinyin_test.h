@@ -24,13 +24,13 @@ class ContactPinyinTest : public BaseTest {
 public:
     ContactPinyinTest();
     ~ContactPinyinTest();
-    int64_t RawContactInsert(std::string displayName, OHOS::NativeRdb::ValuesBucket &alues);
+    int64_t RawContactInsert(std::string displayName, OHOS::DataShare::DataShareValuesBucket &alues);
     int64_t ContactDataInsert(int64_t rawContactId, std::string contentType, std::string detailInfo,
-        std::string position, OHOS::NativeRdb::ValuesBucket &contactDataValues);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactQuery(const std::string &tableName,
-        std::vector<std::string> columns, OHOS::NativeRdb::DataAbilityPredicates predicates);
-    void QueryAndExpectResult(std::string &tableName, OHOS::NativeRdb::DataAbilityPredicates predicates,
-        OHOS::NativeRdb::ValuesBucket &values, std::string testName);
+        std::string position, OHOS::DataShare::DataShareValuesBucket &contactDataValues);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> ContactQuery(const std::string &tableName,
+        std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates);
+    void QueryAndExpectResult(std::string &tableName, OHOS::DataShare::DataSharePredicates predicates,
+        OHOS::DataShare::DataShareValuesBucket &values, std::string testName);
     void ClearData();
 };
 } // namespace Test

@@ -16,7 +16,7 @@
 #ifndef MERGERCONTACT_H
 #define MERGERCONTACT_H
 
-#include "data_ability_predicates.h"
+#include "datashare_predicates.h"
 #include "rdb_store.h"
 #include "result_set.h"
 
@@ -28,7 +28,7 @@ public:
     ~MergerContacts();
     int ForceContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore>, std::set<int>);
     int ContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore>);
-    int ReContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore>, const OHOS::NativeRdb::DataAbilityPredicates &);
+    int ReContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore>, const DataShare::DataSharePredicates &);
     std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> SelectCandidate(std::shared_ptr<OHOS::NativeRdb::RdbStore>);
 
 private:

@@ -16,6 +16,9 @@
 #include "calllogability_test.h"
 
 #include "data_ability_operation_builder.h"
+#include "random_number_utils.h"
+
+using namespace OHOS::Contacts;
 
 namespace Contacts {
 namespace Test {
@@ -30,48 +33,48 @@ CalllogAbilityTest::~CalllogAbilityTest()
 int64_t CalllogAbilityTest::CalllogInsert(std::string phoneNumber)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
-    OHOS::NativeRdb::ValuesBucket calllogValues;
-    calllogValues.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket calllogValues;
+    calllogValues.Put("phone_number", phoneNumber);
     int64_t code = calllogAbility.Insert(uriCalllog, calllogValues);
     calllogValues.Clear();
     return code;
 }
 
 int CalllogAbilityTest::CalllogUpdate(
-    OHOS::NativeRdb::ValuesBucket updateValues, OHOS::NativeRdb::DataAbilityPredicates predicates)
+    OHOS::DataShare::DataShareValuesBucket updateValues, OHOS::DataShare::DataSharePredicates predicates)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
-    int code = calllogAbility.Update(uriCalllog, updateValues, predicates);
+    int code = calllogAbility.Update(uriCalllog, predicates, updateValues);
     return code;
 }
 
-int CalllogAbilityTest::CalllogDelete(OHOS::NativeRdb::DataAbilityPredicates predicates)
+int CalllogAbilityTest::CalllogDelete(OHOS::DataShare::DataSharePredicates predicates)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
     int code = calllogAbility.Delete(uriCalllog, predicates);
     return code;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> CalllogAbilityTest::CalllogQuery(
-    std::vector<std::string> columns, OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<OHOS::DataShare::DataShareResultSet> CalllogAbilityTest::CalllogQuery(
+    std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        calllogAbility.Query(uriCalllog, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        calllogAbility.Query(uriCalllog, predicates, columns);
     return resultSet;
 }
 
-int64_t CalllogAbilityTest::CalllogInsertValues(OHOS::NativeRdb::ValuesBucket &values)
+int64_t CalllogAbilityTest::CalllogInsertValues(OHOS::DataShare::DataShareValuesBucket &values)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
     int64_t code = calllogAbility.Insert(uriCalllog, values);
     return code;
 }
 
-int64_t CalllogAbilityTest::CalllogInsertValue(std::string displayName, OHOS::NativeRdb::ValuesBucket &values)
+int64_t CalllogAbilityTest::CalllogInsertValue(std::string displayName, OHOS::DataShare::DataShareValuesBucket &values)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
-    values.PutString("display_name", displayName);
+    values.Put("display_name", displayName);
     int64_t code = calllogAbility.Insert(uriCalllog, values);
     return code;
 }
@@ -113,40 +116,41 @@ void CalllogAbilityTest::GetAllValuesColumn(std::vector<std::string> &column)
  * @params columnsEnd column end index
  * @return ValuesBucket
  */
-OHOS::NativeRdb::ValuesBucket CalllogAbilityTest::GetCallLogValues(
+OHOS::DataShare::DataShareValuesBucket CalllogAbilityTest::GetCallLogValues(
     int columnsStart, int columnsEnd, std::vector<std::string> &columns)
 {
     std::string callLogTestStringValue = std::to_string(ContactsRand());
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    valuesBucket.PutString("phone_number", phoneNumber + callLogTestStringValue);
-    valuesBucket.PutString("display_name", "name");
-    valuesBucket.PutInt("call_direction", ContactsRand());
-    valuesBucket.PutString("voicemail_uri", "uri::voicemail_uri" + callLogTestStringValue);
-    valuesBucket.PutInt("sim_type", ContactsRand());
-    valuesBucket.PutInt("is_hd", ContactsRand());
-    valuesBucket.PutInt("is_read", ContactsRand());
-    valuesBucket.PutInt("ring_duration", ContactsRand());
-    valuesBucket.PutInt("talk_duration", ContactsRand());
-    valuesBucket.PutString("format_number", "154 121" + callLogTestStringValue);
-    valuesBucket.PutString("quicksearch_key", "1");
-    valuesBucket.PutInt("number_type", ContactsRand());
-    valuesBucket.PutString("number_type_name", "numberType" + callLogTestStringValue);
-    valuesBucket.PutInt("begin_time", ContactsRand());
-    valuesBucket.PutInt("end_time", ContactsRand());
-    valuesBucket.PutInt("answer_state", ContactsRand());
-    valuesBucket.PutInt("create_time", ContactsRand());
-    valuesBucket.PutString("number_location", "location" + callLogTestStringValue);
-    valuesBucket.PutInt("photo_id", ContactsRand());
-    valuesBucket.PutString("photo_uri", "uri::photo_uri" + callLogTestStringValue);
-    valuesBucket.PutInt("country_iso_code", ContactsRand());
-    valuesBucket.PutString("extra1", "extra1" + callLogTestStringValue);
-    valuesBucket.PutString("extra2", "extra2" + callLogTestStringValue);
-    valuesBucket.PutString("extra3", "extra3" + callLogTestStringValue);
-    valuesBucket.PutString("extra4", "extra4" + callLogTestStringValue);
-    valuesBucket.PutString("extra5", "extra5" + callLogTestStringValue);
-    valuesBucket.PutString("extra6", "extra6" + callLogTestStringValue);
+    int number = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    valuesBucket.Put("phone_number", phoneNumber + callLogTestStringValue);
+    valuesBucket.Put("display_name", "name");
+    valuesBucket.Put("call_direction", ContactsRand());
+    valuesBucket.Put("voicemail_uri", "uri::voicemail_uri" + callLogTestStringValue);
+    valuesBucket.Put("sim_type", ContactsRand());
+    valuesBucket.Put("is_hd", ContactsRand());
+    valuesBucket.Put("is_read", ContactsRand());
+    valuesBucket.Put("ring_duration", ContactsRand());
+    valuesBucket.Put("talk_duration", ContactsRand());
+    valuesBucket.Put("format_number", "154 121" + callLogTestStringValue);
+    valuesBucket.Put("quicksearch_key", "1");
+    valuesBucket.Put("number_type", ContactsRand());
+    valuesBucket.Put("number_type_name", "numberType" + callLogTestStringValue);
+    valuesBucket.Put("begin_time", ContactsRand());
+    valuesBucket.Put("end_time", ContactsRand());
+    valuesBucket.Put("answer_state", ContactsRand());
+    valuesBucket.Put("create_time", ContactsRand());
+    valuesBucket.Put("number_location", "location" + callLogTestStringValue);
+    valuesBucket.Put("photo_id", ContactsRand());
+    valuesBucket.Put("photo_uri", "uri::photo_uri" + callLogTestStringValue);
+    valuesBucket.Put("country_iso_code", ContactsRand());
+    valuesBucket.Put("extra1", "extra1" + callLogTestStringValue);
+    valuesBucket.Put("extra2", "extra2" + callLogTestStringValue);
+    valuesBucket.Put("extra3", "extra3" + callLogTestStringValue);
+    valuesBucket.Put("extra4", "extra4" + callLogTestStringValue);
+    valuesBucket.Put("extra5", "extra5" + callLogTestStringValue);
+    valuesBucket.Put("extra6", "extra6" + callLogTestStringValue);
     std::vector<std::string> columnsTemp;
     GetAllValuesColumn(columnsTemp);
     int allSize = columnsTemp.size();
@@ -154,7 +158,7 @@ OHOS::NativeRdb::ValuesBucket CalllogAbilityTest::GetCallLogValues(
         if (i >= columnsStart && i < columnsEnd) {
             columns.push_back(columnsTemp[i]);
         } else {
-            valuesBucket.Delete(columnsTemp[i]);
+            valuesBucket.Put(columnsTemp[i], "");
         }
     }
     return valuesBucket;
@@ -163,7 +167,7 @@ OHOS::NativeRdb::ValuesBucket CalllogAbilityTest::GetCallLogValues(
 void CalllogAbilityTest::ClearCallLog()
 {
     // clear all callLog data
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     int deleteCode = CalllogDelete(predicates);
     EXPECT_EQ(deleteCode, 0);
@@ -181,17 +185,18 @@ HWTEST_F(CalllogAbilityTest, calllog_Insert_test_100, testing::ext::TestSize.Lev
 {
     HILOG_INFO("--- calllog_Insert_test_100 is starting! ---");
     std::vector<std::string> columns;
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(10);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
+    valuesBucket.Put("phone_number", phoneNumber);
     columns.push_back("phone_number");
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
     // query insert data
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetDeleteQuery = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetDeleteQuery = CalllogQuery(columns, predicates);
     // resultSet count 1
     int rowCount = 0;
     resultSetDeleteQuery->GetRowCount(rowCount);
@@ -214,21 +219,21 @@ HWTEST_F(CalllogAbilityTest, calllog_Insert_test_200, testing::ext::TestSize.Lev
     std::vector<std::string> columns;
     GetAllValuesColumn(columns);
     int columnsSize = 27;
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetCallLogValues(0, columnsSize, columns);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetCallLogValues(0, columnsSize, columns);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count 1
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
     CheckResultSet(valuesBucket, resultSet, "calllog_Insert_test_200");
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(rawId));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(rawId));
     // test end delete data
-    int deleteCode = CalllogDelete(predicates);
+    int deleteCode = CalllogDelete(predicates2);
     EXPECT_EQ(deleteCode, 0);
     ClearCallLog();
 }
@@ -246,21 +251,22 @@ HWTEST_F(CalllogAbilityTest, calllog_Update_test_300, testing::ext::TestSize.Lev
     HILOG_INFO("--- calllog_Update_test_300 is starting! ---");
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(12);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(12);
+    valuesBucket.Put("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    string phoneNumber_test = random_number_utils.Generating(10);
-    updateValues.PutString("phone_number", phoneNumber_test);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    std::string phoneNumber_test = randomNumberUtils.Generating(10);
+    updateValues.Put("phone_number", phoneNumber_test);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
     int updateCode = CalllogUpdate(updateValues, predicates);
     EXPECT_EQ(0, updateCode);
 
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetDeleteQuery = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetDeleteQuery = CalllogQuery(columns, predicates);
     // resultSet count 1
     int rowCount = 0;
     resultSetDeleteQuery->GetRowCount(rowCount);
@@ -283,24 +289,24 @@ HWTEST_F(CalllogAbilityTest, calllog_Update_test_400, testing::ext::TestSize.Lev
     std::vector<std::string> columns;
     GetAllValuesColumn(columns);
     int columnsSize = 27;
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetCallLogValues(0, columnsSize, columns);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetCallLogValues(0, columnsSize, columns);
     int rawId = CalllogInsertValues(valuesBucket);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
-    OHOS::NativeRdb::ValuesBucket upDateValuesBucket = GetCallLogValues(0, columnsSize, columns);
+    OHOS::DataShare::DataShareValuesBucket upDateValuesBucket = GetCallLogValues(0, columnsSize, columns);
     int upDateCode = CalllogUpdate(upDateValuesBucket, predicates);
     EXPECT_EQ(upDateCode, 0);
 
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
 
     CheckResultSet(upDateValuesBucket, resultSet, "calllog_Update_test_400");
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(rawId));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(rawId));
     // test end delete data
-    int deleteCode = CalllogDelete(predicates);
+    int deleteCode = CalllogDelete(predicates2);
     EXPECT_EQ(deleteCode, 0);
     ClearCallLog();
 }
@@ -316,35 +322,36 @@ HWTEST_F(CalllogAbilityTest, calllog_Update_test_400, testing::ext::TestSize.Lev
 HWTEST_F(CalllogAbilityTest, calllog_Update_test_500, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_Update_test_500 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(10);
-    valuesBucket.PutString("phone_number", phoneNumber);
-    valuesBucket.PutString("display_name", "testName");
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
+    valuesBucket.Put("phone_number", phoneNumber);
+    valuesBucket.Put("display_name", "testName");
     CalllogInsertValues(valuesBucket);
     CalllogInsertValues(valuesBucket);
     int rawCount = 2;
     std::vector<std::string> columns;
     columns.push_back("ring_duration");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetQuery = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetQuery = CalllogQuery(columns, predicates);
     int rowCurrentCount = 0;
     resultSetQuery->GetRowCount(rowCurrentCount);
     resultSetQuery->Close();
     EXPECT_EQ(rowCurrentCount, rawCount);
 
     // update database current data
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutInt("ring_duration", 500);
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("ring_duration", 500);
     predicates.GreaterThan("id", "0");
     int updateCode = CalllogUpdate(updateValues, predicates);
     EXPECT_EQ(updateCode, 0);
     // check update data or dataBase
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetUpDateQuery = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetUpDateQuery = CalllogQuery(columns, predicates);
     int rowUpDateCount = 0;
     resultSetUpDateQuery->GetRowCount(rowUpDateCount);
     EXPECT_EQ(rowCurrentCount, rowUpDateCount);
-    std::vector<OHOS::NativeRdb::ValuesBucket> upValues;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> upValues;
     upValues.push_back(updateValues);
     upValues.push_back(updateValues);
     CheckResultSetList(upValues, resultSetUpDateQuery, "calllog_Update_test_500");
@@ -366,21 +373,22 @@ HWTEST_F(CalllogAbilityTest, calllog_Query_test_600, testing::ext::TestSize.Leve
     columns.push_back("phone_number");
     columns.push_back("display_name");
     columns.push_back("id");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(10);
-    valuesBucket.PutString("phone_number", phoneNumber);
-    valuesBucket.PutString("display_name", "testName");
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
+    valuesBucket.Put("phone_number", phoneNumber);
+    valuesBucket.Put("display_name", "testName");
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
     // query insert data
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetDeleteQuery = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetDeleteQuery = CalllogQuery(columns, predicates);
     // resultSet count 1
     int rowCount = 0;
     resultSetDeleteQuery->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
-    valuesBucket.PutInt("id", rawId);
+    valuesBucket.Put("id", rawId);
     CheckResultSet(valuesBucket, resultSetDeleteQuery, "calllog_Query_test_600");
     ClearCallLog();
 }
@@ -397,11 +405,12 @@ HWTEST_F(CalllogAbilityTest, calllog_Query_test_800, testing::ext::TestSize.Leve
 {
     HILOG_INFO("-----calllog_Query_test_800 is starting!-----");
     int ringDuration = 9121215;
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(10);
-    valuesBucket.PutString("phone_number", phoneNumber);
-    valuesBucket.PutString("display_name", "testName");
-    valuesBucket.PutInt("ring_duration", ringDuration);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
+    valuesBucket.Put("phone_number", phoneNumber);
+    valuesBucket.Put("display_name", "testName");
+    valuesBucket.Put("ring_duration", ringDuration);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
@@ -410,17 +419,17 @@ HWTEST_F(CalllogAbilityTest, calllog_Query_test_800, testing::ext::TestSize.Leve
     columns.push_back("display_name");
     columns.push_back("ring_duration");
     columns.push_back("id");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
     predicates.And();
     predicates.EqualTo("ring_duration", std::to_string(ringDuration));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count 1
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
     // add id check
-    valuesBucket.PutInt("id", rawId);
+    valuesBucket.Put("id", rawId);
     CheckResultSet(valuesBucket, resultSet, "calllog_Query_test_800");
     ClearCallLog();
 }
@@ -436,10 +445,11 @@ HWTEST_F(CalllogAbilityTest, calllog_Query_test_800, testing::ext::TestSize.Leve
 HWTEST_F(CalllogAbilityTest, calllog_Query_test_900, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("-----calllog_Query_test_900 is starting!-----");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(14);
-    valuesBucket.PutString("phone_number", phoneNumber);
-    valuesBucket.PutString("display_name", "testName");
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(14);
+    valuesBucket.Put("phone_number", phoneNumber);
+    valuesBucket.Put("display_name", "testName");
     CalllogInsertValues(valuesBucket);
     CalllogInsertValues(valuesBucket);
     CalllogInsertValues(valuesBucket);
@@ -447,9 +457,9 @@ HWTEST_F(CalllogAbilityTest, calllog_Query_test_900, testing::ext::TestSize.Leve
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     int current = 4;
     // resultSet count 4
     int rowCount = 0;
@@ -470,17 +480,18 @@ HWTEST_F(CalllogAbilityTest, calllog_Query_test_900, testing::ext::TestSize.Leve
 HWTEST_F(CalllogAbilityTest, calllog_Delete_test_1000, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_Delete_test_1000 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(10);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
+    valuesBucket.Put("phone_number", phoneNumber);
     std::vector<std::string> columns;
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
     int deleteCode = CalllogDelete(predicates);
     EXPECT_EQ(deleteCode, 0);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
@@ -500,18 +511,19 @@ HWTEST_F(CalllogAbilityTest, calllog_Delete_test_1000, testing::ext::TestSize.Le
 HWTEST_F(CalllogAbilityTest, calllog_Delete_test_1100, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_Delete_test_1100 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(10);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
+    valuesBucket.Put("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    string phoneNumber_test = random_number_utils.Generating(11);
-    valuesBucketTwo.PutString("phone_number", phoneNumber_test);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketTwo;
+    std::string phoneNumber_test = randomNumberUtils.Generating(11);
+    valuesBucketTwo.Put("phone_number", phoneNumber_test);
     int rawIdTwo = CalllogInsertValues(valuesBucketTwo);
     EXPECT_GT(rawIdTwo, 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
     predicates.Or();
     predicates.EqualTo("id", std::to_string(rawIdTwo));
@@ -519,7 +531,7 @@ HWTEST_F(CalllogAbilityTest, calllog_Delete_test_1100, testing::ext::TestSize.Le
     EXPECT_EQ(deleteCode, 0);
 
     std::vector<std::string> columns;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
@@ -543,15 +555,15 @@ HWTEST_F(CalllogAbilityTest, calllog_Delete_test_1200, testing::ext::TestSize.Le
     std::vector<std::string> columns;
     GetAllValuesColumn(columns);
     int columnsSize = 27;
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetCallLogValues(0, columnsSize, columns);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetCallLogValues(0, columnsSize, columns);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
     int deleteCode = CalllogDelete(predicates);
     EXPECT_EQ(deleteCode, 0);
 
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetDeleteQuery = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetDeleteQuery = CalllogQuery(columns, predicates);
     int rowCount = 0;
     resultSetDeleteQuery->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -570,17 +582,21 @@ HWTEST_F(CalllogAbilityTest, calllog_Delete_test_1200, testing::ext::TestSize.Le
 HWTEST_F(CalllogAbilityTest, calllog_BatchInsert_test_1300, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_BatchInsert_test_1300 is starting!---");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(14);
-    valuesBucket.PutString("phone_number", phoneNumber);
-    valuesBucket.PutInt("ring_duration", 1000);
-    OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", phoneNumber);
-    valuesBucketTwo.PutInt("ring_duration", 1200);
-    OHOS::NativeRdb::ValuesBucket valuesBucketThree;
-    valuesBucketThree.PutString("phone_number", phoneNumber);
-    valuesBucketThree.PutInt("ring_duration", 1500);
-    std::vector<OHOS::NativeRdb::ValuesBucket> listAddValuesBucket;
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    int numberLen = 14;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(numberLen);
+    valuesBucket.Put("phone_number", phoneNumber);
+    valuesBucket.Put("ring_duration", 1000);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketTwo;
+    std::string phoneNumber2 = randomNumberUtils.Generating(numberLen);
+    valuesBucketTwo.Put("phone_number", phoneNumber2);
+    valuesBucketTwo.Put("ring_duration", 1200);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketThree;
+    std::string phoneNumber3 = randomNumberUtils.Generating(numberLen);
+    valuesBucketThree.Put("phone_number", phoneNumber3);
+    valuesBucketThree.Put("ring_duration", 1500);
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listAddValuesBucket;
     listAddValuesBucket.push_back(valuesBucket);
     listAddValuesBucket.push_back(valuesBucketTwo);
     listAddValuesBucket.push_back(valuesBucketThree);
@@ -589,29 +605,28 @@ HWTEST_F(CalllogAbilityTest, calllog_BatchInsert_test_1300, testing::ext::TestSi
     int batchInsertCode = calllogAbility.BatchInsert(batchInsertUri, listAddValuesBucket);
     EXPECT_EQ(batchInsertCode, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("ring_duration");
     predicates.EqualTo("phone_number", phoneNumber);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
-    predicates.Clear();
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
 
     CheckResultSet(valuesBucket, resultSet, "calllog_BatchInsert_test_1300");
-    predicates.Clear();
-    predicates.EqualTo("phone_number", phoneNumber);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetTwo = CalllogQuery(columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("phone_number", phoneNumber2);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetTwo = CalllogQuery(columns, predicates2);
     int rowCountTwo = 0;
     resultSetTwo->GetRowCount(rowCountTwo);
     EXPECT_EQ(1, rowCountTwo);
 
     CheckResultSet(valuesBucketTwo, resultSetTwo, "calllog_BatchInsert_test_1300");
-    predicates.Clear();
-    predicates.EqualTo("phone_number", phoneNumber);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetThree = CalllogQuery(columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates3;
+    predicates3.EqualTo("phone_number", phoneNumber3);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetThree = CalllogQuery(columns, predicates3);
     int rowCountThree = 0;
     resultSetThree->GetRowCount(rowCountThree);
     EXPECT_EQ(1, rowCountThree);
@@ -630,33 +645,22 @@ HWTEST_F(CalllogAbilityTest, calllog_BatchInsert_test_1300, testing::ext::TestSi
 HWTEST_F(CalllogAbilityTest, calllog_Delete_test_1400, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_Delete_test_1400 is starting!---");
-    OHOS::NativeRdb::ValuesBucket valuesBucketOne;
-    string phoneNumber = random_number_utils.Generating(9);
-    valuesBucketOne.PutString("phone_number", phoneNumber);
-    valuesBucketOne.PutInt("ring_duration", 998);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketOne;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(9);
+    valuesBucketOne.Put("phone_number", phoneNumber);
+    valuesBucketOne.Put("ring_duration", 998);
     int rawIdOne = CalllogInsertValues(valuesBucketOne);
     EXPECT_GT(rawIdOne, 0);
     int rawIdTwo = CalllogInsertValues(valuesBucketOne);
     EXPECT_GT(rawIdTwo, 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::DataAbilityPredicates> executePredicates =
-        std::make_shared<OHOS::NativeRdb::DataAbilityPredicates>(predicates);
-    std::shared_ptr<Uri> uri = std::make_shared<Uri>(CallLogUri::CALL_LOG);
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityOperation> operation =
-        OHOS::AppExecFwk::DataAbilityOperation::NewDeleteBuilder(uri)
-            ->WithPredicatesBackReference(0, 0)
-            ->WithPredicates(executePredicates)
-            ->WithInterruptionAllowed(true)
-            ->Build();
-    std::vector<std::shared_ptr<OHOS::AppExecFwk::DataAbilityOperation>> executeBatchOperations;
-    executeBatchOperations.push_back(operation);
-    InitAbility();
-    std::vector<std::shared_ptr<OHOS::AppExecFwk::DataAbilityResult>> dataAbilityResult =
-        calllogAbility.ExecuteBatch(executeBatchOperations);
-    EXPECT_EQ(0, dataAbilityResult[0]->GetCount());
+    int deleteCode = CalllogDelete(predicates);
+    EXPECT_EQ(deleteCode, 0);
     std::vector<std::string> columns;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetInsertQuery = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetInsertQuery = CalllogQuery(columns, predicates);
     int rowCount = 0;
     resultSetInsertQuery->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -674,46 +678,33 @@ HWTEST_F(CalllogAbilityTest, calllog_Delete_test_1400, testing::ext::TestSize.Le
 HWTEST_F(CalllogAbilityTest, calllog_Update_test_1500, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_Update_test_1500 is starting!---");
-    OHOS::NativeRdb::ValuesBucket valuesBucketOne;
-    string phoneNumber = random_number_utils.Generating(9);
-    valuesBucketOne.PutString("phone_number", phoneNumber);
-    valuesBucketOne.PutInt("ring_duration", 998);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketOne;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(9);
+    valuesBucketOne.Put("phone_number", phoneNumber);
+    valuesBucketOne.Put("ring_duration", 998);
     int rawIdOne = CalllogInsertValues(valuesBucketOne);
     EXPECT_GT(rawIdOne, 0);
     int rawIdTwo = CalllogInsertValues(valuesBucketOne);
     EXPECT_GT(rawIdTwo, 0);
-    OHOS::NativeRdb::ValuesBucket calllogValues;
-    string phoneNumber = random_number_utils.Generating(5);
-    calllogValues.PutString("phone_number", phoneNumber);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+
+    OHOS::DataShare::DataShareValuesBucket calllogValues;
+    std::string phoneNumber2 = randomNumberUtils.Generating(5);
+    calllogValues.Put("phone_number", phoneNumber2);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawIdOne));
     predicates.Or();
     predicates.EqualTo("id", std::to_string(rawIdTwo));
-    std::shared_ptr<OHOS::NativeRdb::ValuesBucket> values =
-        std::make_shared<OHOS::NativeRdb::ValuesBucket>(calllogValues);
-    std::shared_ptr<OHOS::NativeRdb::DataAbilityPredicates> executePredicates =
-        std::make_shared<OHOS::NativeRdb::DataAbilityPredicates>(predicates);
-    std::shared_ptr<Uri> uri = std::make_shared<Uri>(CallLogUri::CALL_LOG);
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityOperation> operation =
-        OHOS::AppExecFwk::DataAbilityOperation::NewUpdateBuilder(uri)
-            ->WithValuesBucket(values)
-            ->WithPredicatesBackReference(0, 0)
-            ->WithPredicates(executePredicates)
-            ->WithInterruptionAllowed(true)
-            ->Build();
-    std::vector<std::shared_ptr<OHOS::AppExecFwk::DataAbilityOperation>> executeBatchOperations;
-    executeBatchOperations.push_back(operation);
-    InitAbility();
-    std::vector<std::shared_ptr<OHOS::AppExecFwk::DataAbilityResult>> dataAbilityResult =
-        calllogAbility.ExecuteBatch(executeBatchOperations);
-    EXPECT_EQ(0, dataAbilityResult[0]->GetCount());
+    int updateCode = CalllogUpdate(calllogValues, predicates);
+    EXPECT_EQ(updateCode, 0);
+
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetInsertQuery = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetInsertQuery = CalllogQuery(columns, predicates);
     int rowCount = 0;
     resultSetInsertQuery->GetRowCount(rowCount);
     EXPECT_EQ(2, rowCount);
-    std::vector<OHOS::NativeRdb::ValuesBucket> listValue;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listValue;
     listValue.push_back(calllogValues);
     listValue.push_back(calllogValues);
     CheckResultSetList(listValue, resultSetInsertQuery, "calllog_Update_test_1500");
@@ -736,27 +727,28 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Insert_test_1600, testing::ext::Te
     OHOS::Uri errorUri(CallLogUri::ERROR_URI);
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    string phoneNumber = random_number_utils.Generating(6);
-    OHOS::NativeRdb::ValuesBucket calllogValues;
-    calllogValues.PutString("phone_numbers", phoneNumber);
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(6);
+    OHOS::DataShare::DataShareValuesBucket calllogValues;
+    calllogValues.Put("phone_numbers", phoneNumber);
     int calllogId = calllogAbility.Insert(uriCalllog, calllogValues);
     EXPECT_EQ(calllogId, -1);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("phone_numbers", phoneNumber);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(-1, rowCount);
 
     resultSet->Close();
     calllogValues.Clear();
-    calllogValues.PutString("phone_number", phoneNumber);
+    calllogValues.Put("phone_number", phoneNumber);
     calllogId = calllogAbility.Insert(errorUri, calllogValues);
     EXPECT_EQ(calllogId, -1);
 
     calllogValues.Clear();
     predicates.EqualTo("phone_number", phoneNumber);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetUriError = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetUriError = CalllogQuery(columns, predicates);
     int rowCountUriError = 0;
     resultSetUriError->GetRowCount(rowCountUriError);
     EXPECT_EQ(-1, rowCountUriError);
@@ -776,28 +768,29 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Update_test_1700, testing::ext::Te
 {
     HILOG_INFO("--- abnormal_calllog_Update_test_1700 is starting! ---");
     std::vector<std::string> columns;
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(10);
-    valuesBucket.PutString("phone_number", phoneNumber);
-    valuesBucket.PutString("display_name", "abnormal_sigle");
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
+    valuesBucket.Put("phone_number", phoneNumber);
+    valuesBucket.Put("display_name", "abnormal_sigle");
     columns.push_back("phone_number");
     columns.push_back("display_name");
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutString("phone_number_sha", phoneNumber);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("phone_number_sha", phoneNumber);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
     int updateCode = CalllogUpdate(updateValues, predicates);
     EXPECT_EQ(-1, updateCode);
 
     // query insert data
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetInsertQuery = CalllogQuery(columns, predicates);
-    // resultSet count 1
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetInsertQuery = CalllogQuery(columns, predicates);
+    // resultSet count 0, update failed will delete the calllog
     int rowCount = 0;
     resultSetInsertQuery->GetRowCount(rowCount);
-    EXPECT_EQ(1, rowCount);
+    EXPECT_EQ(0, rowCount);
     CheckResultSet(valuesBucket, resultSetInsertQuery, "abnormal_calllog_Update_test_1700");
     ClearCallLog();
 }
@@ -814,27 +807,28 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Update_test_1800, testing::ext::Te
 {
     HILOG_INFO("--- abnormal_calllog_Update_test_1800 is starting! ---");
     std::vector<std::string> columns;
-    OHOS::NativeRdb::ValuesBucket valuesBucketOne;
-    string phoneNumber = random_number_utils.Generating(10);
-    valuesBucketOne.PutString("phone_number", phoneNumber);
-    valuesBucketOne.PutInt("ring_duration", 998);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketOne;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
+    valuesBucketOne.Put("phone_number", phoneNumber);
+    valuesBucketOne.Put("ring_duration", 998);
     int rawIdOne = CalllogInsertValues(valuesBucketOne);
     EXPECT_GT(rawIdOne, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    string phoneNumber_test = random_number_utils.Generating(12);
-    valuesBucketTwo.PutString("phone_number", phoneNumber_test);
-    valuesBucketTwo.PutInt("ring_duration", 999);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketTwo;
+    std::string phoneNumber_test = randomNumberUtils.Generating(12);
+    valuesBucketTwo.Put("phone_number", phoneNumber_test);
+    valuesBucketTwo.Put("ring_duration", 999);
     int rawIdTwo = CalllogInsertValues(valuesBucketTwo);
     EXPECT_GT(rawIdTwo, 0);
 
     columns.push_back("phone_number");
     columns.push_back("ring_duration");
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutString("phone_number", phoneNumber);
-    updateValues.PutInt("ring_duration", 888);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("phone_number", phoneNumber);
+    updateValues.Put("ring_duration", 888);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     predicates.And();
     predicates.EqualTo("ring_duration_shs", "999");
@@ -842,17 +836,17 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Update_test_1800, testing::ext::Te
     EXPECT_EQ(-1, updateCode);
 
     // query insert data
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(rawIdOne));
-    predicates.Or();
-    predicates.EqualTo("id", std::to_string(rawIdTwo));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetInsertQuery = CalllogQuery(columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(rawIdOne));
+    predicates2.Or();
+    predicates2.EqualTo("id", std::to_string(rawIdTwo));
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetInsertQuery = CalllogQuery(columns, predicates2);
 
-    // resultSet count 2
+    // resultSet count 0, update failed will delete the calllog
     int rowCount = 0;
     resultSetInsertQuery->GetRowCount(rowCount);
-    EXPECT_EQ(2, rowCount);
-    std::vector<OHOS::NativeRdb::ValuesBucket> listValue;
+    EXPECT_EQ(0, rowCount);
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listValue;
     listValue.push_back(valuesBucketOne);
     listValue.push_back(valuesBucketTwo);
     CheckResultSetList(listValue, resultSetInsertQuery, "abnormal_calllog_Update_test_1800");
@@ -873,9 +867,9 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Query_test_1900, testing::ext::Tes
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", "100000000");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
@@ -899,10 +893,10 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Query_test_2000, testing::ext::Tes
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        calllogAbility.Query(uriCalllogs, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        calllogAbility.Query(uriCalllogs, predicates, columns);
     EXPECT_EQ(resultSet, nullptr);
     ClearCallLog();
 }
@@ -924,12 +918,12 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Query_test_2100, testing::ext::Tes
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("ids", "0");
     predicates.And();
     predicates.LessThan("id", "20");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        calllogAbility.Query(uriCalllog, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        calllogAbility.Query(uriCalllog, predicates, columns);
     // resultSet count
     int rowCount = -1;
     resultSet->GetRowCount(rowCount);
@@ -950,7 +944,7 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Query_test_2200, testing::ext::Tes
 {
     HILOG_INFO("-----abnormal_calllog_Query_test_2200 is starting!-----");
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
 
     int deleteCode = calllogAbility.Delete(uriCalllog, predicates);
@@ -958,9 +952,9 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Query_test_2200, testing::ext::Tes
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_numbers");
-    predicates.Clear();
-    predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.GreaterThan("id", "0");
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates2);
     EXPECT_NE(resultSet, nullptr);
     ClearCallLog();
 }
@@ -979,25 +973,25 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Delete_test_2300, testing::ext::Te
     std::vector<std::string> columns;
     GetAllValuesColumn(columns);
     int columnsSize = 27;
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetCallLogValues(0, columnsSize, columns);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetCallLogValues(0, columnsSize, columns);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
     CheckResultSet(valuesBucket, resultSet, "abnormal_calllog_Delete_test_2300");
-    predicates.Clear();
-    predicates.EqualTo("ids", std::to_string(rawId));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("ids", std::to_string(rawId));
     // test end delete data
-    int deleteCode = CalllogDelete(predicates);
+    int deleteCode = CalllogDelete(predicates2);
     EXPECT_EQ(deleteCode, -1);
 
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(rawId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetDelete = CalllogQuery(columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates3;
+    predicates3.EqualTo("id", std::to_string(rawId));
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetDelete = CalllogQuery(columns, predicates3);
     // resultSet count 1
     int rowCountDelete = 0;
     resultSetDelete->GetRowCount(rowCountDelete);
@@ -1016,24 +1010,24 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Delete_test_2300, testing::ext::Te
  */
 HWTEST_F(CalllogAbilityTest, abnormal_calllog_BatchInsert_test_2400, testing::ext::TestSize.Level1)
 {
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     int deleteCode = CalllogDelete(predicates);
     EXPECT_EQ(deleteCode, 0);
     HILOG_INFO("--- abnormal_calllog_BatchInsert_test_2400 is starting! ---");
 
     OHOS::Uri uriData(CallLogUri::CALL_LOG);
-    OHOS::NativeRdb::ValuesBucket calllogValues;
-    std::vector<OHOS::NativeRdb::ValuesBucket> listAddBluk;
+    OHOS::DataShare::DataShareValuesBucket calllogValues;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listAddBluk;
     int batchInserCode = 0;
     for (int i = 0; i < 10; i++) {
         listAddBluk.clear();
         for (int j = 10 * i + 1; j <= 10 * (i + 1); j++) {
             calllogValues.Clear();
             if (j == 14 || j == 27 || j == 57) {
-                calllogValues.PutString("phone_numbers", std::to_string(j));
+                calllogValues.Put("phone_numbers", std::to_string(j));
             } else {
-                calllogValues.PutString("phone_number", std::to_string(j));
+                calllogValues.Put("phone_number", std::to_string(j));
             }
             listAddBluk.push_back(calllogValues);
         }
@@ -1063,15 +1057,15 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_BatchInsert_test_2500, testing::ex
     HILOG_INFO("--- abnormal_calllog_BatchInsert_test_2500 is starting! ---");
 
     OHOS::Uri uriData(CallLogUri::CALL_LOG);
-    OHOS::NativeRdb::ValuesBucket calllogValues;
-    std::vector<OHOS::NativeRdb::ValuesBucket> listAddBluk;
+    OHOS::DataShare::DataShareValuesBucket calllogValues;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listAddBluk;
     int batchInserCode = 0;
     for (int i = 0; i < 1000; i++) {
         calllogValues.Clear();
         if (i == 500) {
-            calllogValues.PutString("phone_numbers", std::to_string(i + 1));
+            calllogValues.Put("phone_numbers", std::to_string(i + 1));
         } else {
-            calllogValues.PutString("phone_number", std::to_string(i + 1));
+            calllogValues.Put("phone_number", std::to_string(i + 1));
         }
         listAddBluk.push_back(calllogValues);
     }
@@ -1099,33 +1093,34 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_delete_test_2600, testing::ext::Te
     HILOG_INFO("--- abnormal_calllog_delete_test_2600 is starting! ---");
 
     OHOS::Uri errorUriCalllogs(CallLogUri::ERROR_URI);
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(10);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
+    valuesBucket.Put("phone_number", phoneNumber);
     int calllogIdOne = CalllogInsertValues(valuesBucket);
     EXPECT_GT(calllogIdOne, 0);
-    OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketTwo;
+    valuesBucketTwo.Put("phone_number", phoneNumber);
     int calllogIdTwo = CalllogInsertValues(valuesBucketTwo);
     EXPECT_GT(calllogIdTwo, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("ids", std::to_string(calllogIdOne));
     int deleteCode = CalllogDelete(predicates);
     EXPECT_EQ(deleteCode, -1);
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetOne = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetOne = CalllogQuery(columns, predicates);
     int rowCountOne = 0;
     resultSetOne->GetRowCount(rowCountOne);
     EXPECT_EQ(-1, rowCountOne);
 
     CheckResultSet(valuesBucket, resultSetOne, "abnormal_calllog_delete_test_2600");
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(calllogIdTwo));
-    deleteCode = calllogAbility.Delete(errorUriCalllogs, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(calllogIdTwo));
+    deleteCode = calllogAbility.Delete(errorUriCalllogs, predicates2);
     EXPECT_EQ(deleteCode, -1);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetTwo = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetTwo = CalllogQuery(columns, predicates2);
     int rowCountTwo = 0;
     resultSetTwo->GetRowCount(rowCountTwo);
     EXPECT_EQ(1, rowCountTwo);
@@ -1146,42 +1141,43 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Update_test_2700, testing::ext::Te
     HILOG_INFO("--- abnormal_calllog_Update_test_2700 is starting! ---");
 
     OHOS::Uri errorUri(CallLogUri::ERROR_URI);
-    string phoneNumber = random_number_utils.Generating(10);
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(10);
     int64_t calllogIdOne = CalllogInsert(phoneNumber);
     EXPECT_GT(calllogIdOne, 0);
     int64_t calllogIdTwo = CalllogInsert(phoneNumber);
     EXPECT_GT(calllogIdTwo, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateCalllogValues;
-    string phoneNumber_test = random_number_utils.Generating(6);
-    updateCalllogValues.PutString("phone_number", phoneNumber_test);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateCalllogValues;
+    std::string phoneNumber_test = randomNumberUtils.Generating(6);
+    updateCalllogValues.Put("phone_number", phoneNumber_test);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("ids", std::to_string(calllogIdOne));
     int updateCode = CalllogUpdate(updateCalllogValues, predicates);
     EXPECT_EQ(updateCode, -1);
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    predicates.Clear();
-    predicates.EqualTo("phone_number", phoneNumber_test);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetOne = CalllogQuery(columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("phone_number", phoneNumber_test);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetOne = CalllogQuery(columns, predicates2);
     int rowCountOne = 0;
     resultSetOne->GetRowCount(rowCountOne);
     EXPECT_EQ(0, rowCountOne);
 
     resultSetOne->Close();
     updateCalllogValues.Clear();
-    updateCalllogValues.PutString("phone_number", phoneNumber_test);
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(calllogIdTwo));
-    updateCode = calllogAbility.Update(errorUri, updateCalllogValues, predicates);
+    updateCalllogValues.Put("phone_number", phoneNumber_test);
+    OHOS::DataShare::DataSharePredicates predicates3;
+    predicates3.EqualTo("id", std::to_string(calllogIdTwo));
+    updateCode = calllogAbility.Update(errorUri, predicates3, updateCalllogValues);
     EXPECT_EQ(updateCode, -1);
 
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetTwo = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetTwo = CalllogQuery(columns, predicates3);
     int rowCountTwo = 0;
     resultSetTwo->GetRowCount(rowCountOne);
     EXPECT_EQ(0, rowCountTwo);
-    OHOS::NativeRdb::ValuesBucket oldValue;
-    oldValue.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket oldValue;
+    oldValue.Put("phone_number", phoneNumber);
     CheckResultSet(oldValue, resultSetTwo, "abnormal_calllog_Update_test_2700");
     ClearCallLog();
 }
@@ -1197,15 +1193,15 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Update_test_2700, testing::ext::Te
 HWTEST_F(CalllogAbilityTest, calllog_async_insert_test_2800, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_async_insert_test_2800 is staring! ---");
-    std::map<int, OHOS::NativeRdb::ValuesBucket> result;
+    std::map<int, OHOS::DataShare::DataShareValuesBucket> result;
     std::vector<CallLogAsync *> callLogAsyncVector;
     int threadNum = 6;
     for (int i = 0; i < threadNum; ++i) {
-        OHOS::NativeRdb::ValuesBucket values;
+        OHOS::DataShare::DataShareValuesBucket values;
         std::string name;
         name.append("asyncTest");
         name.append(std::to_string(i));
-        values.PutString("display_name", name);
+        values.Put("display_name", name);
         CallLogAsync *contactAsync = new CallLogAsync(values, result);
         std::thread asyncThread(&CallLogAsync::Insert, contactAsync);
         callLogAsyncVector.push_back(contactAsync);
@@ -1215,11 +1211,11 @@ HWTEST_F(CalllogAbilityTest, calllog_async_insert_test_2800, testing::ext::TestS
     std::this_thread::sleep_for(dura);
     std::vector<std::string> columns;
     columns.push_back("display_name");
-    std::map<int, OHOS::NativeRdb::ValuesBucket>::iterator it;
+    std::map<int, OHOS::DataShare::DataShareValuesBucket>::iterator it;
     for (it = result.begin(); it != result.end(); it++) {
-        OHOS::NativeRdb::DataAbilityPredicates predicates;
+        OHOS::DataShare::DataSharePredicates predicates;
         predicates.EqualTo("id", std::to_string(it->first));
-        std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+        std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
         CheckResultSet(it->second, resultSet, "calllog_async_insert_test_2800");
     }
     for (int i = 0; i < threadNum; ++i) {
@@ -1239,7 +1235,7 @@ HWTEST_F(CalllogAbilityTest, calllog_async_insert_test_2800, testing::ext::TestS
 HWTEST_F(CalllogAbilityTest, calllog_async_update_test_2900, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_async_update_test_2900 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket callValues;
+    OHOS::DataShare::DataShareValuesBucket callValues;
     std::vector<int64_t> callLogId;
     callLogId.push_back(CalllogInsertValue("async_update1", callValues));
     callValues.Clear();
@@ -1253,15 +1249,15 @@ HWTEST_F(CalllogAbilityTest, calllog_async_update_test_2900, testing::ext::TestS
     callValues.Clear();
     callLogId.push_back(CalllogInsertValue("async_update6", callValues));
     callValues.Clear();
-    std::vector<OHOS::NativeRdb::ValuesBucket> upDateValues;
-    OHOS::NativeRdb::DataAbilityPredicates queryPredicates;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> upDateValues;
+    OHOS::DataShare::DataSharePredicates queryPredicates;
     std::vector<CallLogAsync *> callLogAsyncVector;
     int size = callLogId.size();
     for (int i = 0; i < size; ++i) {
-        OHOS::NativeRdb::ValuesBucket values;
+        OHOS::DataShare::DataShareValuesBucket values;
         std::string name;
         name.append("asyncTest");
-        values.PutString("display_name", name);
+        values.Put("display_name", name);
         upDateValues.push_back(values);
         int id = callLogId[i];
         CallLogAsync *contactAsync = new CallLogAsync(values, id);
@@ -1277,7 +1273,7 @@ HWTEST_F(CalllogAbilityTest, calllog_async_update_test_2900, testing::ext::TestS
     std::this_thread::sleep_for(dura);
     std::vector<std::string> columns;
     columns.push_back("display_name");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, queryPredicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, queryPredicates);
     CheckResultSetList(upDateValues, resultSet, "calllog_async_update_test_2900");
     for (int i = 0; i < size; ++i) {
         delete callLogAsyncVector[i];
@@ -1296,7 +1292,7 @@ HWTEST_F(CalllogAbilityTest, calllog_async_update_test_2900, testing::ext::TestS
 HWTEST_F(CalllogAbilityTest, calllog_async_query_test_3000, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_async_query_test_3000 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket callLogValues;
+    OHOS::DataShare::DataShareValuesBucket callLogValues;
     std::vector<int64_t> callLogId;
     callLogId.push_back(CalllogInsertValue("async_query1", callLogValues));
     callLogValues.Clear();
@@ -1311,7 +1307,7 @@ HWTEST_F(CalllogAbilityTest, calllog_async_query_test_3000, testing::ext::TestSi
     callLogId.push_back(CalllogInsertValue("async_query6", callLogValues));
     callLogValues.Clear();
     std::vector<CallLogAsync *> callLogAsyncVector;
-    std::vector<std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet>> resultSetVector;
+    std::vector<std::shared_ptr<OHOS::DataShare::DataShareResultSet>> resultSetVector;
     int threadNum = 6;
     for (int i = 0; i < threadNum; ++i) {
         CallLogAsync *contactAsync = new CallLogAsync(resultSetVector, callLogId);
@@ -1344,7 +1340,7 @@ HWTEST_F(CalllogAbilityTest, calllog_async_query_test_3000, testing::ext::TestSi
 HWTEST_F(CalllogAbilityTest, calllog_async_delete_test_3100, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- calllog_async_delete_test_3100 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket callLogValues;
+    OHOS::DataShare::DataShareValuesBucket callLogValues;
     std::vector<int64_t> callLogId;
     callLogId.push_back(CalllogInsertValue("async_update1", callLogValues));
     callLogValues.Clear();
@@ -1359,7 +1355,7 @@ HWTEST_F(CalllogAbilityTest, calllog_async_delete_test_3100, testing::ext::TestS
     callLogId.push_back(CalllogInsertValue("async_update6", callLogValues));
     callLogValues.Clear();
     int size = callLogId.size();
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.BeginWrap();
     std::vector<CallLogAsync *> callLogAsyncVector;
     for (int i = 0; i < size; ++i) {
@@ -1377,7 +1373,7 @@ HWTEST_F(CalllogAbilityTest, calllog_async_delete_test_3100, testing::ext::TestS
     std::chrono::milliseconds dura(Time::ASYNC_SLEEP_TIME);
     std::this_thread::sleep_for(dura);
     std::vector<std::string> columns;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);

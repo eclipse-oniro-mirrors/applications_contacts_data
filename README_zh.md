@@ -9,8 +9,8 @@
 ## 简介<a name="section1166054159366"></a>
 
 联系人数据库应用是每一个用户管理联系人数据库的不可缺少的一个信息管理应用，
-它的内容对于用户管理者来说是至关重要的，所以联系人数据库应该能够为每一个  
-用户的管理提供充足的信息和快捷查询手段，大大方便用户合理的管理联系人数据库信息。  
+它的内容对于用户管理者来说是至关重要的，所以联系人数据库应该能够为每一个
+用户的管理提供充足的信息和快捷查询手段，大大方便用户合理的管理联系人数据库信息。
 
 ## 架构图<a name="section1619419895966"></a>
 
@@ -41,17 +41,16 @@
 ### 概述
 
 提供联系人数据和通话记录以及语音信箱增、删、改、查、等接口。
-接口参数主要有string类型的uri和对象类型的value、DataAbilityPredicates
+接口参数主要有string类型的uri和对象类型的value、DataSharePredicates
 
 使用功能接口前，需要导入相关模块。
 
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
+import dataShare from '@ohos.data.dataShare';
 ```
 ### 通话记录
 
-#### DAHelper.insert(uri: string, value: ValuesBucket)
+#### dataShareHelper.insert(uri: string, value: ValuesBucket)
 
 - 接口说明
 
@@ -68,19 +67,18 @@ import ohos_data_ability from '@ohos.data.dataability';
 
 更新示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  calllogDAhelperUri= "dataability:///com.ohos.calllogability";
-var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
+import dataShare from '@ohos.data.dataShare';
+var calllogData = "datashare:///com.ohos.calllogability";
+var calllogUri = "datashare:///com.ohos.calllogability/calls/calllog";
 var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(calllogData);
 // 调用insert方法
-DAHelper.insert(calllogUri, value).then((data) => {
+dataShareHelper.insert(calllogUri, value).then((data) => {
 	console.info("calllogId = " + data);
 });
 ```
-#### DAHelper.update(uri: string, value: ValuesBucket, condition: DataAbilityPredicates)
+#### dataShareHelper.update(uri: string, condition: DataSharePredicates, value: ValuesBucket)
 
 - 接口说明
 
@@ -91,30 +89,29 @@ DAHelper.insert(calllogUri, value).then((data) => {
   | 名称         | 读写属性 | 类型                    | 必填 | 描述                           |
   | --------     | -------- | ---------------------- | ---- | ------------------------------ |
   | uri          | 只读     | string                 | 是   | 具体操作的uri          |
+  | condition    | 只读     | DataSharePredicates    | 是   | 更新条件               |
   | value        | 只读     | ValuesBucket           | 是   | 数据库字段key-value对象 |
-  | condition    | 只读     | DataAbilityPredicates  | 是   | 更新条件            |
 
 返回值为 成功为0否则为-1
 
 修改示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  calllogDAhelperUri= "dataability:///com.ohos.calllogability";
-var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
+import dataShare from '@ohos.data.dataShare';
+var calllogData = "datashare:///com.ohos.calllogability";
+var calllogUri = "datashare:///com.ohos.calllogability/calls/calllog";
 var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(calllogData);
 // 条件参数
-let condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new dataShare.DataSharePredicates();
 condition.equalTo("id", "xxx");
 // 调用update方法
-DAHelper.update(calllogUri, value, condition).then((data) => {
+dataShareHelper.update(calllogUri, value, condition).then((data) => {
 	console.info("resultCode = " + data);
 });
 ```
 
-#### DAHelper.delete(uri: string, condition: DataAbilityPredicates)
+#### dataShareHelper.delete(uri: string, condition: DataSharePredicates)
 
 - 接口说明
 
@@ -125,28 +122,27 @@ DAHelper.update(calllogUri, value, condition).then((data) => {
   | 名称         | 读写属性 | 类型                    | 必填 | 描述                           |
   | --------     | -------- | ---------------------- | ---- | ------------------------------ |
   | uri          | 只读     | string                 | 是   | 具体操作的uri          |
-  | condition    | 只读     | DataAbilityPredicates  | 是   | 删除条件            |
+  | condition    | 只读     | DataSharePredicates    | 是   | 删除条件              |
 
 返回值为 成功为0否则为-1
 
 删除示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  calllogDAhelperUri= "dataability:///com.ohos.calllogability";
-var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+import dataShare from '@ohos.data.dataShare';
+var calllogData = "datashare:///com.ohos.calllogability";
+var calllogUri = "datashare:///com.ohos.calllogability/calls/calllog";
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(calllogData);
 // 条件参数
-let condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new dataShare.DataSharePredicates();
 condition.equalTo("id", "xxx");
 // 调用delete方法
-DAHelper.delete(calllogUri, condition).then((data) => {
+dataShareHelper.delete(calllogUri, condition).then((data) => {
 	console.info("deleteCode = " + data);
 });
 ```
 
-#### DAHelper.query(uri: string, resultColumns: array, condition: DataAbilityPredicates)
+#### dataShareHelper.query(uri: string, condition: DataSharePredicates, resultColumns: array)
 
 - 接口说明
 
@@ -157,25 +153,24 @@ DAHelper.delete(calllogUri, condition).then((data) => {
   | 名称             | 读写属性 | 类型                    | 必填  | 描述                           |
   | --------         | -------- | ---------------------- | ----  | ------------------------------ |
   | uri              | 只读     | string                 | 是    | 具体操作的uri        |
-  | resultColumns    | 只读     | array                   | 是   | 需要查询的列字段名称   |
-  | condition        | 只读     | DataAbilityPredicates  | 是    | 查询条件            |
+  | condition        | 只读     | DataSharePredicates   | 是    | 查询条件             |
+  | resultColumns    | 只读     | array                 | 是    | 需要查询的列字段名称   |
 
 返回值为 ResultSet 查询结果集
 
 查询示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  calllogDAhelperUri= "dataability:///com.ohos.calllogability";
-var calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+import dataShare from '@ohos.data.dataShare';
+var calllogData = "datashare:///com.ohos.calllogability";
+var calllogUri = "datashare:///com.ohos.calllogability/calls/calllog";
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(calllogData);
 // 条件参数
-let condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new dataShare.DataSharePredicates();
 condition.equalTo("id", "xxx");
 var resultColumns = [ "id", "display_name", "phone_number"];
 // 调用query方法
-DAHelper.query(calllogUri, resultColumns, condition).then((resultSet) => {
+dataShareHelper.query(calllogUri, resultColumns, condition).then((resultSet) => {
     if (resultSet.goToFirstRow()) {
         do {
             var displayName = resultSet.getString(resultSet.getColumnIndex("display_name"));
@@ -190,7 +185,7 @@ DAHelper.query(calllogUri, resultColumns, condition).then((resultSet) => {
 
 ### 语音信箱
 
-#### DAHelper.insert(uri: string, value: ValuesBucket)
+#### dataShareHelper.insert(uri: string, value: ValuesBucket)
 
 - 接口说明
 
@@ -207,19 +202,18 @@ DAHelper.query(calllogUri, resultColumns, condition).then((resultSet) => {
 
 更新示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  voicemailDAhelperUri= "dataability:///com.ohos.voicemailability";
-var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
+import dataShare from '@ohos.data.dataShare';
+var voicemailData = "datashare:///com.ohos.voicemailability";
+var voicemailUri = "datashare:///com.ohos.voicemailability/calls/voicemail";
 var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(voicemailData);
 // 调用insert方法
-DAHelper.insert(voicemaiUri, value).then((data) => {
+dataShareHelper.insert(voicemailUri, value).then((data) => {
 	console.info("calllogId = " + data);
 });
 ```
-#### DAHelper.update(uri: string, value: ValuesBucket, condition:DataAbilityPredicates)
+#### dataShareHelper.update(uri: string, condition:DataSharePredicates, value: ValuesBucket)
 
 - 接口说明
 
@@ -230,30 +224,29 @@ DAHelper.insert(voicemaiUri, value).then((data) => {
   | 名称         | 读写属性 | 类型                    | 必填 | 描述                           |
   | --------     | -------- | ---------------------- | ---- | ------------------------------ |
   | uri          | 只读     | string                 | 是   | 具体操作的uri          |
+  | condition    | 只读     | DataSharePredicates    | 是   | 更新条件               |
   | value        | 只读     | ValuesBucket           | 是   | 数据库字段key-value对象 |
-  | condition    | 只读     | DataAbilityPredicates  | 是   | 更新条件            |
 
 返回值为 成功为0否则为-1
 
 修改示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  voicemailDAhelperUri= "dataability:///com.ohos.voicemailability";
-var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
+import dataShare from '@ohos.data.dataShare';
+var voicemailData = "datashare:///com.ohos.voicemailability";
+var voicemailUri = "datashare:///com.ohos.voicemailability/calls/voicemail";
 var value = {"phone_number" : "xxxxx","display_name" : "xxx"};
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(voicemailData);
 // 条件参数
-let condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new dataShare.DataSharePredicates();
 condition.equalTo("id", "xxx");
 // 调用update方法
-DAHelper.update(voicemaiUri, value, condition).then((data) => {
+dataShareHelper.update(voicemailUri, value, condition).then((data) => {
 	console.info("resultCode = " + data);
 });
 ```
 
-#### DAHelper.delete(uri: string, condition: DataAbilityPredicates)
+#### dataShareHelper.delete(uri: string, condition: DataSharePredicates)
 
 - 接口说明
 
@@ -264,28 +257,27 @@ DAHelper.update(voicemaiUri, value, condition).then((data) => {
   | 名称         | 读写属性 | 类型                    | 必填 | 描述                           |
   | --------     | -------- | ---------------------- | ---- | ------------------------------ |
   | uri          | 只读     | string                 | 是   | 具体操作的uri          |
-  | condition    | 只读     | DataAbilityPredicates  | 是   | 删除条件            |
+  | condition    | 只读     | DataSharePredicates    | 是   | 删除条件              |
 
 返回值为 成功为0否则为-1
 
 删除示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  voicemailDAhelperUri= "dataability:///com.ohos.voicemailability";
-var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(voicemailDAhelperUri);
+import dataShare from '@ohos.data.dataShare';
+var voicemailData = "datashare:///com.ohos.voicemailability";
+var voicemailUri = "datashare:///com.ohos.voicemailability/calls/voicemail";
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(voicemailData);
 // 条件参数
-let condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new dataShare.DataSharePredicates();
 condition.equalTo("id", "xxx");
 // 调用delete方法
-DAHelper.delete(voicemaiUri, condition).then((data) => {
+dataShareHelper.delete(voicemailUri, condition).then((data) => {
 	console.info("deleteCode = " + data);
 });
 ```
 
-#### DAHelper.query(uri: string, resultColumns:array, condition: DataAbilityPredicates)
+#### dataShareHelper.query(uri: string, condition: DataSharePredicates, resultColumns:array)
 
 - 接口说明
 
@@ -296,25 +288,24 @@ DAHelper.delete(voicemaiUri, condition).then((data) => {
   | 名称             | 读写属性 | 类型                    | 必填  | 描述                           |
   | --------         | -------- | ---------------------- | ----  | ------------------------------ |
   | uri              | 只读     | string                 | 是    | 具体操作的uri        |
-  | resultColumns    | 只读     | array                   | 是   | 需要查询的列字段名称   |
-  | condition        | 只读     | DataAbilityPredicates  | 是    | 查询条件            |
+  | condition        | 只读     | DataSharePredicates    | 是    | 查询条件            |
+  | resultColumns    | 只读     | array                  | 是    | 需要查询的列字段名称  |
 
 返回值为 ResultSet 查询结果集
 
 查询示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  voicemailDAhelperUri= "dataability:///com.ohos.voicemailability";
-var voicemaiUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(calllogDAhelperUri);
+import dataShare from '@ohos.data.dataShare';
+var voicemailData = "datashare:///com.ohos.voicemailability";
+var voicemailUri = "datashare:///com.ohos.voicemailability/calls/voicemail";
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(voicemailData);
 // 条件参数
-let condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new dataShare.DataSharePredicates();
 condition.equalTo("id", "xxx");
 var resultColumns = [ "id", "display_name", "phone_number"];
 // 调用query方法
-DAHelper.query(voicemaiUri, resultColumns, condition).then((resultSet) => {
+dataShareHelper.query(voicemailUri, resultColumns, condition).then((resultSet) => {
     if (resultSet.goToFirstRow()) {
         do {
             var displayName = resultSet.getString(resultSet.getColumnIndex("display_name"));
@@ -328,7 +319,7 @@ DAHelper.query(voicemaiUri, resultColumns, condition).then((resultSet) => {
 
 ### 联系人
 
-#### DAHelper.insert(uri: string, value: ValuesBucket)
+#### dataShareHelper.insert(uri: string, value: ValuesBucket)
 
 - 接口说明
 
@@ -345,16 +336,15 @@ DAHelper.query(voicemaiUri, resultColumns, condition).then((resultSet) => {
 
 更新示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  contactsUri= "dataability:///com.ohos.contactsdataability";
-var rawContactUri  = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
-var contactDataUri  = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
+import dataShare from '@ohos.data.dataShare';
+var contactsData = "datashare:///com.ohos.contactsdataability";
+var rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+var contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
 var value = {"display_name" : "xxx"};
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(contactsData);
 // 调用insert方法
-DAHelper.insert(rawContactUri, value).then((rawContactId) => {
+dataShareHelper.insert(rawContactUri, value).then((rawContactId) => {
 	console.info("rawContactId = " + rawContactId);
     // 联系人详细信息插入
     var contactDataValues = {
@@ -362,12 +352,12 @@ DAHelper.insert(rawContactUri, value).then((rawContactId) => {
         "content_type" : "name",
         "detail_info" : "xxxxxxx"
     };
-   DAHelper.insert(contactDataUri, contactDataValues).then((contactDataId) => {
+   dataShareHelper.insert(contactDataUri, contactDataValues).then((contactDataId) => {
       console.info("rawContactId = " + contactDataId);
    };
 });
 ```
-#### DAHelper.update(uri: string, value: ValuesBucket, condition: DataAbilityPredicates)
+#### dataShareHelper.update(uri: string, condition: DataSharePredicates, value: ValuesBucket)
 
 - 接口说明
 
@@ -378,31 +368,30 @@ DAHelper.insert(rawContactUri, value).then((rawContactId) => {
   | 名称         | 读写属性 | 类型                    | 必填 | 描述                           |
   | --------     | -------- | ---------------------- | ---- | ------------------------------ |
   | uri          | 只读     | string                 | 是   | 具体操作的uri          |
+  | condition    | 只读     | DataSharePredicates    | 是   | 更新条件              |
   | value        | 只读     | ValuesBucket           | 是   | 数据库字段key-value对象 |
-  | condition    | 只读     | DataAbilityPredicates  | 是   | 更新条件            |
 
 返回值为 成功为0否则为-1
 
 修改示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  contactsUri= "dataability:///com.ohos.contactsdataability";
-var rawContactUri  = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
-var contactDataUri  = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
+import dataShare from '@ohos.data.dataShare';
+var contactsData = "datashare:///com.ohos.contactsdataability";
+var rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+var contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
 var value = {"display_name" : "xxx"};
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(contactsData);
 // 条件参数
-let condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new dataShare.DataSharePredicates();
 condition.equalTo("id", "xxx");
 // 调用update方法
-DAHelper.update(rawContactUri, value, condition).then((data) => {
+dataShareHelper.update(rawContactUri, value, condition).then((data) => {
 	console.info("resultCode = " + data);
 });
 ```
 
-#### DAHelper.delete(uri: string, condition: DataAbilityPredicates)
+#### dataShareHelper.delete(uri: string, condition: DataSharePredicates)
 
 - 接口说明
 
@@ -413,28 +402,27 @@ DAHelper.update(rawContactUri, value, condition).then((data) => {
   | 名称         | 读写属性 | 类型                    | 必填 | 描述                           |
   | --------     | -------- | ---------------------- | ---- | ------------------------------ |
   | uri          | 只读     | string                 | 是   | 具体操作的uri          |
-  | condition    | 只读     | DataAbilityPredicates  | 是   | 删除条件            |
+  | condition    | 只读     | DataSharePredicates    | 是   | 删除条件              |
 
 返回值为 成功为0否则为-1
 
 删除示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  contactsUri= "dataability:///com.ohos.contactsdataability";
-var rawContactUri  = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
-var contactDataUri  = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
+import dataShare from '@ohos.data.dataShare';
+var contactsData = "datashare:///com.ohos.contactsdataability";
+var rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+var contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(contactsData);
 // 条件参数
-let condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new dataShare.DataSharePredicates();
 condition.equalTo("id", "xxx");
 // 调用delete方法
-DAHelper.delete(contactDataUri, condition).then((data) => {
+dataShareHelper.delete(contactDataUri, condition).then((data) => {
 	console.info("deleteCode = " + data);
 });
 ```
-#### DAHelper.query(uri: string, resultColumns: array, condition: DataAbilityPredicates)
+#### dataShareHelper.query(uri: string, condition: DataSharePredicates, resultColumns: array)
 
 - 接口说明
 
@@ -445,25 +433,24 @@ DAHelper.delete(contactDataUri, condition).then((data) => {
   | 名称             | 读写属性 | 类型                    | 必填  | 描述                           |
   | --------         | -------- | ---------------------- | ----  | ------------------------------ |
   | uri              | 只读     | string                 | 是    | 具体操作的uri        |
-  | resultColumns    | 只读     | array                   | 是   | 需要查询的列字段名称   |
-  | condition        | 只读     | DataAbilityPredicates  | 是    | 查询条件            |
+  | condition        | 只读     | DataSharePredicates    | 是    | 查询条件            |
+  | resultColumns    | 只读     | array                  | 是   | 需要查询的列字段名称   |
 
 返回值为 ResultSet 查询结果集
 
 查询示例
 ```js
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
-var  contactsUri= "dataability:///com.ohos.contactsdataability";
-var rawContactUri  = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
-// 获取DAHelper
-let DAHelper = featureAbility.acquireDataAbilityHelper(contactsUri);
+import dataShare from '@ohos.data.dataShare';
+var contactsData = "datashare:///com.ohos.contactsdataability";
+var rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+// 获取dataShareHelper
+let dataShareHelper = dataShare.createDataShareHelper(contactsData);
 // 条件参数
-let condition = new ohos_data_ability.DataAbilityPredicates();
+let condition = new dataShare.DataSharePredicates();
 condition.equalTo("id", "xxx");
 var resultColumns = [ "id", "display_name"];
 // 调用query方法
-DAHelper.query(rawContactUri, resultColumns, condition).then((resultSet) => {
+dataShareHelper.query(rawContactUri, resultColumns, condition).then((resultSet) => {
     if (resultSet.goToFirstRow()) {
         do {
             var displayName = resultSet.getString(resultSet.getColumnIndex("display_name"));
@@ -474,45 +461,45 @@ DAHelper.query(rawContactUri, resultColumns, condition).then((resultSet) => {
 ```
 | 系统公共uri                                                                       |
 | ---------------------------------------------------------                        | 
-| dataability:///com.ohos.contactsdataability                                      | 
-| dataability:///com.ohos.contactsdataability/contacts/contact                     | 
-| dataability:///com.ohos.contactsdataability/contacts/raw_contact                 | 
-| dataability:///com.ohos.contactsdataability/contacts/contact_data                |
-| dataability:///com.ohos.contactsdataability/contacts/raw_contact/query_merge_list| 
-| dataability:///com.ohos.contactsdataability/contacts/raw_contact/split_contact   |
-| dataability:///com.ohos.contactsdataability/contacts/raw_contact/manual_merge    |
-| dataability:///com.ohos.contactsdataability/contacts/raw_contact/auto_merge      |
-| dataability:///com.ohos.contactsdataability/contacts/contact_type                |
-| dataability:///com.ohos.contactsdataability/contacts/groups                      |
-| dataability:///com.ohos.contactsdataability/contacts/photo_files                 |  
-| dataability:///com.ohos.contactsdataability/contacts/contact_blocklist           | 
-| dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact         | 
-| dataability:///com.ohos.contactsdataability/contacts/search_contact              | 
-| dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact         | 
-| dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact_record  |
-| dataability:///com.ohos.contactsdataability/contacts/backup                      |
-| dataability:///com.ohos.contactsdataability/contacts/recover                     |
-| dataability:///com.ohos.contactsdataability/profile/contact                      | 
-| dataability:///com.ohos.contactsdataability/profile/raw_contact                  | 
-| dataability:///com.ohos.contactsdataability/profile/contact_data                 |
-| dataability:///com.ohos.contactsdataability/profile/raw_contact/query_merge_list | 
-| dataability:///com.ohos.contactsdataability/profile/raw_contact/split_contact    |
-| dataability:///com.ohos.contactsdataability/profile/raw_contact/manual_merge     |
-| dataability:///com.ohos.contactsdataability/profile/raw_contact/auto_merge       |
-| dataability:///com.ohos.contactsdataability/profile/contact_type                 |
-| dataability:///com.ohos.contactsdataability/profile/groups                       |
-| dataability:///com.ohos.contactsdataability/profile/photo_files                  |  
-| dataability:///com.ohos.contactsdataability/profile/contact_blocklist            | 
-| dataability:///com.ohos.contactsdataability/profile/deleted_raw_contact          | 
-| dataability:///com.ohos.contactsdataability/profile/search_contact               | 
-| dataability:///com.ohos.contactsdataability/profile/deleted_raw_contact          | 
-| dataability:///com.ohos.contactsdataability/profile/deleted_raw_contact_record   |
-| dataability:///com.ohos.contactsdataability/profile/backup                       |
-| dataability:///com.ohos.contactsdataability/profile/recover                      |    
-| dataability:///com.ohos.calllogability                                           | 
-| dataability:///com.ohos.calllogability/calls/calllog                             |
-| dataability:///com.ohos.voicemailability                                         | 
-| dataability:///com.ohos.voicemailability/calls/voicemail                         | 
+| datashare:///com.ohos.contactsdataability                                      | 
+| datashare:///com.ohos.contactsdataability/contacts/contact                     | 
+| datashare:///com.ohos.contactsdataability/contacts/raw_contact                 | 
+| datashare:///com.ohos.contactsdataability/contacts/contact_data                |
+| datashare:///com.ohos.contactsdataability/contacts/raw_contact/query_merge_list| 
+| datashare:///com.ohos.contactsdataability/contacts/raw_contact/split_contact   |
+| datashare:///com.ohos.contactsdataability/contacts/raw_contact/manual_merge    |
+| datashare:///com.ohos.contactsdataability/contacts/raw_contact/auto_merge      |
+| datashare:///com.ohos.contactsdataability/contacts/contact_type                |
+| datashare:///com.ohos.contactsdataability/contacts/groups                      |
+| datashare:///com.ohos.contactsdataability/contacts/photo_files                 |  
+| datashare:///com.ohos.contactsdataability/contacts/contact_blocklist           | 
+| datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact         | 
+| datashare:///com.ohos.contactsdataability/contacts/search_contact              | 
+| datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact         | 
+| datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact_record  |
+| datashare:///com.ohos.contactsdataability/contacts/backup                      |
+| datashare:///com.ohos.contactsdataability/contacts/recover                     |
+| datashare:///com.ohos.contactsdataability/profile/contact                      | 
+| datashare:///com.ohos.contactsdataability/profile/raw_contact                  | 
+| datashare:///com.ohos.contactsdataability/profile/contact_data                 |
+| datashare:///com.ohos.contactsdataability/profile/raw_contact/query_merge_list | 
+| datashare:///com.ohos.contactsdataability/profile/raw_contact/split_contact    |
+| datashare:///com.ohos.contactsdataability/profile/raw_contact/manual_merge     |
+| datashare:///com.ohos.contactsdataability/profile/raw_contact/auto_merge       |
+| datashare:///com.ohos.contactsdataability/profile/contact_type                 |
+| datashare:///com.ohos.contactsdataability/profile/groups                       |
+| datashare:///com.ohos.contactsdataability/profile/photo_files                  |  
+| datashare:///com.ohos.contactsdataability/profile/contact_blocklist            | 
+| datashare:///com.ohos.contactsdataability/profile/deleted_raw_contact          | 
+| datashare:///com.ohos.contactsdataability/profile/search_contact               | 
+| datashare:///com.ohos.contactsdataability/profile/deleted_raw_contact          | 
+| datashare:///com.ohos.contactsdataability/profile/deleted_raw_contact_record   |
+| datashare:///com.ohos.contactsdataability/profile/backup                       |
+| datashare:///com.ohos.contactsdataability/profile/recover                      |    
+| datashare:///com.ohos.calllogability                                           | 
+| datashare:///com.ohos.calllogability/calls/calllog                             |
+| datashare:///com.ohos.voicemailability                                         | 
+| datashare:///com.ohos.voicemailability/calls/voicemail                         | 
 ## 相关仓<a name="section1371113476307"></a>
 
 系统应用

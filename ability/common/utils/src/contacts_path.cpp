@@ -18,7 +18,6 @@
 namespace OHOS {
 namespace Contacts {
 std::string ContactsPath::RDB_PATH = "";
-std::string ContactsPath::DUMP_PATH = "";
 std::string ContactsPath::RDB_BACKUP_PATH = "";
 
 ContactsPath::ContactsPath(void)

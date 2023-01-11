@@ -18,8 +18,9 @@
 
 #include <map>
 
-#include "ability.h"
-#include "ability_loader.h"
+#include "abs_shared_result_set.h"
+#include "datashare_ext_ability.h"
+#include "datashare_values_bucket.h"
 #include "predicates_convert.h"
 #include "rdb_predicates.h"
 #include "want.h"
@@ -27,46 +28,47 @@
 #include "contacts_database.h"
 
 namespace OHOS {
-namespace AppExecFwk {
-class ContactsDataAbility : public Ability {
+namespace AbilityRuntime {
+class ContactsDataAbility : public DataShare::DataShareExtAbility {
 public:
     ContactsDataAbility();
-    ~ContactsDataAbility();
-    virtual int Insert(const Uri &uri, const NativeRdb::ValuesBucket &value) override;
-    virtual int BatchInsert(const Uri &uri, const std::vector<NativeRdb::ValuesBucket> &values) override;
+    virtual ~ContactsDataAbility() override;
+    static ContactsDataAbility* Create();
+    sptr<IRemoteObject> OnConnect(const AAFwk::Want &want) override;
+    virtual int Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value) override;
+    virtual int BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values) override;
     virtual void OnStart(const Want &want) override;
-    virtual int Update(const Uri &uri, const NativeRdb::ValuesBucket &value,
-        const NativeRdb::DataAbilityPredicates &predicates) override;
-    virtual int Delete(const Uri &uri, const NativeRdb::DataAbilityPredicates &predicates) override;
-    virtual std::shared_ptr<NativeRdb::AbsSharedResultSet> Query(const Uri &uri,
-        const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates) override;
-    virtual void Dump(const std::string &extra) override;
+    virtual int Update(const Uri &uri, const DataShare::DataSharePredicates &predicates,
+        const DataShare::DataShareValuesBucket &value) override;
+    virtual int Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates) override;
+    virtual std::shared_ptr<DataShare::DataShareResultSet> Query(const Uri &uri,
+        const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns) override;
 
 private:
     static std::shared_ptr<Contacts::ContactsDataBase> contactDataBase_;
     static std::shared_ptr<Contacts::ProfileDatabase> profileDataBase_;
     static std::map<std::string, int> uriValueMap_;
-    int InsertExecute(int &code, const NativeRdb::ValuesBucket &value);
+    int InsertExecute(int &code, const OHOS::NativeRdb::ValuesBucket &value);
     int UriParseAndSwitch(Uri &uri);
     void SwitchProfile(Uri &uri);
-    void QueryExecute(std::shared_ptr<NativeRdb::AbsSharedResultSet> &result,
-        OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates, std::vector<std::string> &columnsTemp,
+    bool QueryExecute(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &result,
+        DataShare::DataSharePredicates &dataSharePredicates, std::vector<std::string> &columnsTemp,
         int &parseCode);
-    void QueryExecuteSwitchSplit(std::shared_ptr<NativeRdb::AbsSharedResultSet> &result,
-        OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates, std::vector<std::string> &columnsTemp,
+    bool QueryExecuteSwitchSplit(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &result,
+        DataShare::DataSharePredicates &dataSharePredicates, std::vector<std::string> &columnsTemp,
         int &parseCode);
-    void UpdateExecute(int &retCode, int code, const NativeRdb::ValuesBucket &value,
-        OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates);
-    void SwitchUpdate(int &retCode, int &code, const NativeRdb::ValuesBucket &value,
-        OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates);
-    void DeleteExecute(int &retCode, int code, OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates);
+    void UpdateExecute(int &retCode, int code, const OHOS::NativeRdb::ValuesBucket &value,
+        DataShare::DataSharePredicates &dataSharePredicates);
+    void SwitchUpdate(int &retCode, int &code, const OHOS::NativeRdb::ValuesBucket &value,
+        DataShare::DataSharePredicates &dataSharePredicates);
+    void DeleteExecute(int &retCode, int code, DataShare::DataSharePredicates &dataSharePredicates);
     void DataBaseNotifyChange(int code, Uri uri);
     bool IsBeginTransactionOK(int code, std::mutex &mutex);
     bool IsCommitOK(int code, std::mutex &mutex);
     int BackUp();
     int Recover(int &code);
 };
-} // namespace AppExecFwk
+} // namespace AbilityRuntime
 } // namespace OHOS
 
 #endif // CONTACTSDATAABILITY_CONTACT_DATA_ABILITY_TEST_H

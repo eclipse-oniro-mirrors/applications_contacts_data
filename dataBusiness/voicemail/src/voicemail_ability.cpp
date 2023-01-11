@@ -21,16 +21,18 @@
 #include "common.h"
 #include "contacts_columns.h"
 #include "contacts_common_event.h"
-#include "data_ability_predicates.h"
+#include "contacts_datashare_stub_impl.h"
+#include "datashare_ext_ability_context.h"
+#include "datashare_predicates.h"
 #include "file_utils.h"
 #include "predicates_convert.h"
 #include "rdb_predicates.h"
+#include "rdb_utils.h"
 #include "sql_analyzer.h"
 #include "uri_utils.h"
 
 namespace OHOS {
-namespace AppExecFwk {
-REGISTER_AA(VoiceMailAbility);
+namespace AbilityRuntime {
 namespace {
 std::mutex g_mutex;
 }
@@ -40,7 +42,12 @@ std::map<std::string, int> VoiceMailAbility::uriValueMap_ = {
     {"/com.ohos.voicemailability/calls/replaying", Contacts::REPLAYING}
 };
 
-VoiceMailAbility::VoiceMailAbility()
+VoiceMailAbility* VoiceMailAbility::Create()
+{
+    return new VoiceMailAbility();
+}
+
+VoiceMailAbility::VoiceMailAbility() : DataShareExtAbility()
 {
 }
 
@@ -48,21 +55,30 @@ VoiceMailAbility::~VoiceMailAbility()
 {
 }
 
-void VoiceMailAbility::Dump(const std::string &extra)
+sptr<IRemoteObject> VoiceMailAbility::OnConnect(const AAFwk::Want &want)
 {
-    HILOG_ERROR("VoiceMailAbility ====>Dump:%{public}s", extra.c_str());
-    Contacts::FileUtils fileUtils;
-    std::string dirStr = Contacts::ContactsPath::DUMP_PATH;
-    fileUtils.WriteStringToFileAppend(dirStr, extra);
+    HILOG_INFO("VoiceMailAbility %{public}s begin.", __func__);
+    Extension::OnConnect(want);
+    sptr<DataShare::ContactsDataShareStubImpl> remoteObject = new (std::nothrow) DataShare::ContactsDataShareStubImpl(
+        std::static_pointer_cast<VoiceMailAbility>(shared_from_this()));
+    if (remoteObject == nullptr) {
+        HILOG_ERROR("%{public}s No memory allocated for DataShareStubImpl", __func__);
+        return nullptr;
+    }
+    HILOG_INFO("VoiceMailAbility %{public}s end.", __func__);
+    return remoteObject->AsObject();
 }
 
 void VoiceMailAbility::OnStart(const Want &want)
 {
-    Ability::OnStart(want);
-    std::string basePath = GetAbilityContext()->GetDatabaseDir();
-    Contacts::ContactsPath::RDB_PATH = basePath + "/";
-    Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
-    Contacts::ContactsPath::DUMP_PATH = GetFilesDir() + "/";
+    HILOG_INFO("VoiceMailAbility %{public}s begin.", __func__);
+    Extension::OnStart(want);
+    auto context = AbilityRuntime::Context::GetApplicationContext();
+    if (context != nullptr) {
+        std::string basePath = context->GetDatabaseDir();
+        Contacts::ContactsPath::RDB_PATH = basePath + "/";
+        Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
+    }
 }
 
 /**
@@ -111,10 +127,11 @@ bool VoiceMailAbility::IsCommitOK(int code, std::mutex &mutex)
  *
  * @return Insert database results code
  */
-int VoiceMailAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &value)
+int VoiceMailAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
+    OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
-    bool isOk = sqlAnalyzer.CheckValuesBucket(value);
+    bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
     if (!isOk) {
         HILOG_ERROR("VoiceMailAbility CheckValuesBucket is error");
         return Contacts::RDB_EXECUTE_FAIL;
@@ -127,7 +144,7 @@ int VoiceMailAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &valu
         g_mutex.unlock();
         return Contacts::RDB_EXECUTE_FAIL;
     }
-    rowRet = InsertExecute(uri, value);
+    rowRet = InsertExecute(uri, valuesBucket);
     if (rowRet == Contacts::OPERATION_ERROR) {
         voiceMailDataBase_->RollBack();
         g_mutex.unlock();
@@ -151,7 +168,7 @@ int VoiceMailAbility::UriParse(Uri &uri)
     return parseCode;
 }
 
-int VoiceMailAbility::InsertExecute(const OHOS::Uri &uri, const NativeRdb::ValuesBucket &initialValues)
+int VoiceMailAbility::InsertExecute(const OHOS::Uri &uri, const OHOS::NativeRdb::ValuesBucket &initialValues)
 {
     int rowId = Contacts::RDB_EXECUTE_FAIL;
     OHOS::Uri uriTemp = uri;
@@ -178,7 +195,7 @@ int VoiceMailAbility::InsertExecute(const OHOS::Uri &uri, const NativeRdb::Value
  *
  * @return BatchInsert database results code
  */
-int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::ValuesBucket> &values)
+int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
     unsigned int size = values.size();
     if (size <= 0) {
@@ -194,8 +211,9 @@ int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::V
     int count = 0;
     for (unsigned int i = 0; i < size; i++) {
         ++count;
-        OHOS::NativeRdb::ValuesBucket rawContactValues = values[i];
-        int code = InsertExecute(uri, rawContactValues);
+        DataShare::DataShareValuesBucket rawContactValues = values[i];
+        OHOS::NativeRdb::ValuesBucket value = RdbDataShareAdapter::RdbUtils::ToValuesBucket(rawContactValues);
+        int code = InsertExecute(uri, value);
         if (code == Contacts::OPERATION_ERROR) {
             voiceMailDataBase_->RollBack();
             g_mutex.unlock();
@@ -231,10 +249,11 @@ int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::V
  * @return Update database results code
  */
 int VoiceMailAbility::Update(
-    const Uri &uri, const NativeRdb::ValuesBucket &value, const NativeRdb::DataAbilityPredicates &predicates)
+    const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
+    OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
-    bool isOk = sqlAnalyzer.CheckValuesBucket(value);
+    bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
     if (!isOk) {
         HILOG_ERROR("VoiceMailAbility CheckValuesBucket is error");
         return Contacts::RDB_EXECUTE_FAIL;
@@ -245,18 +264,18 @@ int VoiceMailAbility::Update(
     int ret = Contacts::RDB_EXECUTE_FAIL;
     OHOS::Uri uriTemp = uri;
     int code = UriParse(uriTemp);
-    OHOS::NativeRdb::DataAbilityPredicates dataAbilityPredicates = predicates;
+    DataShare::DataSharePredicates dataSharePredicates = predicates;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     switch (code) {
         case Contacts::VOICEMAIL:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::VOICEMAIL, dataAbilityPredicates);
-            ret = voiceMailDataBase_->UpdateVoiceMail(value, rdbPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::VOICEMAIL, dataSharePredicates);
+            ret = voiceMailDataBase_->UpdateVoiceMail(valuesBucket, rdbPredicates);
             break;
         case Contacts::REPLAYING:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::REPLYING, dataAbilityPredicates);
-            ret = voiceMailDataBase_->UpdateVoiceMail(value, rdbPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::REPLYING, dataSharePredicates);
+            ret = voiceMailDataBase_->UpdateVoiceMail(valuesBucket, rdbPredicates);
             break;
         default:
             HILOG_ERROR("VoiceMailAbility ====>no match uri action");
@@ -275,7 +294,7 @@ int VoiceMailAbility::Update(
  *
  * @return Delete database results code
  */
-int VoiceMailAbility::Delete(const Uri &uri, const NativeRdb::DataAbilityPredicates &predicates)
+int VoiceMailAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
     g_mutex.lock();
     voiceMailDataBase_ = Contacts::VoiceMailDataBase::GetInstance();
@@ -283,17 +302,17 @@ int VoiceMailAbility::Delete(const Uri &uri, const NativeRdb::DataAbilityPredica
     int ret = Contacts::RDB_EXECUTE_FAIL;
     OHOS::Uri uriTemp = uri;
     int parseCode = UriParse(uriTemp);
-    OHOS::NativeRdb::DataAbilityPredicates dataAbilityPredicates = predicates;
+    DataShare::DataSharePredicates dataSharePredicates = predicates;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     switch (parseCode) {
         case Contacts::VOICEMAIL:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::VOICEMAIL, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::VOICEMAIL, dataSharePredicates);
             ret = voiceMailDataBase_->DeleteVoiceMail(rdbPredicates);
             break;
         case Contacts::REPLAYING:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::REPLYING, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::REPLYING, dataSharePredicates);
             ret = voiceMailDataBase_->DeleteVoiceMail(rdbPredicates);
             break;
         default:
@@ -314,34 +333,41 @@ int VoiceMailAbility::Delete(const Uri &uri, const NativeRdb::DataAbilityPredica
  *
  * @return Query database results
  */
-std::shared_ptr<NativeRdb::AbsSharedResultSet> VoiceMailAbility::Query(
-    const Uri &uri, const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates)
+std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(
+    const Uri &uri, const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns)
 {
     HILOG_ERROR("VoiceMailAbility ====>Query start");
     voiceMailDataBase_ = Contacts::VoiceMailDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
     OHOS::Uri uriTemp = uri;
     int parseCode = UriParse(uriTemp);
-    std::shared_ptr<NativeRdb::AbsSharedResultSet> result;
-    OHOS::NativeRdb::DataAbilityPredicates dataAbilityPredicates = predicates;
+    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result;
+    DataShare::DataSharePredicates dataSharePredicates = predicates;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     std::vector<std::string> columnsTemp = columns;
+    bool isUriMatch = true;
     switch (parseCode) {
         case Contacts::VOICEMAIL:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::VOICEMAIL, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::VOICEMAIL, dataSharePredicates);
             result = voiceMailDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         case Contacts::REPLAYING:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::REPLYING, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::REPLYING, dataSharePredicates);
             result = voiceMailDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         default:
+            isUriMatch = false;
             HILOG_ERROR("VoiceMailAbility ====>no match uri action");
             break;
     }
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> sharedPtrResult = std::move(result);
+    if (!isUriMatch) {
+        return nullptr;
+    }
+    auto queryResultSet = RdbDataShareAdapter::RdbUtils::ToResultSetBridge(result);
+    std::shared_ptr<DataShare::DataShareResultSet> sharedPtrResult =
+        std::make_shared<DataShare::DataShareResultSet>(queryResultSet);
     HILOG_ERROR("VoiceMailAbility ====>Query end");
     return sharedPtrResult;
 }
@@ -350,5 +376,5 @@ void VoiceMailAbility::DataBaseNotifyChange(int code, Uri uri)
 {
     Contacts::ContactsCommonEvent::SendCallLogChange(code);
 }
-} // namespace AppExecFwk
+} // namespace AbilityRuntime
 } // namespace OHOS

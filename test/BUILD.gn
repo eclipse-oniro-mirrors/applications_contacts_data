@@ -33,6 +33,7 @@ ohos_unittest("contacts_test") {
     "unittest/src/contactquery_test.cpp",
     "unittest/src/mergecontact_test.cpp",
     "unittest/src/performance_test.cpp",
+    "unittest/src/random_number_utils.cpp",
     "unittest/src/recovery_test.cpp",
     "unittest/src/stability_test.cpp",
     "unittest/src/voicemailability_test.cpp",
@@ -65,6 +66,8 @@ ohos_unittest("contacts_test") {
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "c_utils:utilsbase",
+    "data_share:datashare_common",
+    "data_share:datashare_provider",
     "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
@@ -72,6 +75,12 @@ ohos_unittest("contacts_test") {
     "relational_store:native_appdatafwk",
     "relational_store:native_dataability",
     "relational_store:native_rdb",
+    "relational_store:rdb_data_share_adapter",
+  ]
+
+  defines = [
+    "CONTACTSDATA_LOG_TAG = \"ContactsTest\"",
+    "LOG_DOMAIN = 0xD001F09",
   ]
 }
 

@@ -34,60 +34,60 @@ public:
 class CallLogUri {
 public:
     ~CallLogUri();
-    static constexpr const char *CALL_LOG = "dataability:///com.ohos.calllogability/calls/calllog";
-    static constexpr const char *ERROR_URI = "dataability:///com.ohos.calllogability/calls/calllogs";
+    static constexpr const char *CALL_LOG = "datashare:///com.ohos.calllogability/calls/calllog";
+    static constexpr const char *ERROR_URI = "datashare:///com.ohos.calllogability/calls/calllogs";
 };
 
 class VoicemailUri {
 public:
     ~VoicemailUri();
-    static constexpr const char *VOICEMAIL = "dataability:///com.ohos.voicemailability/calls/voicemail";
-    static constexpr const char *ERROR_URI = "dataability:///com.ohos.voicemailability/calls/voicemails";
+    static constexpr const char *VOICEMAIL = "datashare:///com.ohos.voicemailability/calls/voicemail";
+    static constexpr const char *ERROR_URI = "datashare:///com.ohos.voicemailability/calls/voicemails";
 };
 
 class ContactsUri {
 public:
     ~ContactsUri();
-    static constexpr const char *RAW_CONTACT = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
+    static constexpr const char *RAW_CONTACT = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
     static constexpr const char *DELETED_RAW_CONTACT =
-        "dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
+        "datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
     static constexpr const char *DELETED_RAW_CONTACT_RECORD =
-        "dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact_record";
-    static constexpr const char *BLOCKLIST = "dataability:///com.ohos.contactsdataability/contacts/contact_blocklist";
-    static constexpr const char *GROUPS = "dataability:///com.ohos.contactsdataability/contacts/groups";
-    static constexpr const char *CONTACT_DATA = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
-    static constexpr const char *CONTACT = "dataability:///com.ohos.contactsdataability/contacts/contact";
-    static constexpr const char *SEARCH = "dataability:///com.ohos.contactsdataability/contacts/search_contact";
-    static constexpr const char *ERROR_URI = "dataability:///com.ohos.contactsdataability/contacts/raw_contacts";
-    static constexpr const char *BACKUP = "dataability:///com.ohos.contactsdataability/contacts/backup";
-    static constexpr const char *RECOVER = "dataability:///com.ohos.contactsdataability/contacts/recover";
-    static constexpr const char *GROUPS_ERROR = "dataability:///com.ohos.contactsdataability/contacts/group";
+        "datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact_record";
+    static constexpr const char *BLOCKLIST = "datashare:///com.ohos.contactsdataability/contacts/contact_blocklist";
+    static constexpr const char *GROUPS = "datashare:///com.ohos.contactsdataability/contacts/groups";
+    static constexpr const char *CONTACT_DATA = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
+    static constexpr const char *CONTACT = "datashare:///com.ohos.contactsdataability/contacts/contact";
+    static constexpr const char *SEARCH = "datashare:///com.ohos.contactsdataability/contacts/search_contact";
+    static constexpr const char *ERROR_URI = "datashare:///com.ohos.contactsdataability/contacts/raw_contacts";
+    static constexpr const char *BACKUP = "datashare:///com.ohos.contactsdataability/contacts/backup";
+    static constexpr const char *RECOVER = "datashare:///com.ohos.contactsdataability/contacts/recover";
+    static constexpr const char *GROUPS_ERROR = "datashare:///com.ohos.contactsdataability/contacts/group";
     static constexpr const char *MERGE_LIST =
-        "dataability:///com.ohos.contactsdataability/contacts/raw_contact/query_merge_list";
+        "datashare:///com.ohos.contactsdataability/contacts/raw_contact/query_merge_list";
     static constexpr const char *AUTO_MERGE =
-        "dataability:///com.ohos.contactsdataability/contacts/raw_contact/auto_merge";
+        "datashare:///com.ohos.contactsdataability/contacts/raw_contact/auto_merge";
     static constexpr const char *MANUAL_MERGE =
-        "dataability:///com.ohos.contactsdataability/contacts/raw_contact/manual_merge";
+        "datashare:///com.ohos.contactsdataability/contacts/raw_contact/manual_merge";
     static constexpr const char *SPLIT_CONTACT =
-        "dataability:///com.ohos.contactsdataability/contacts/raw_contact/split_contact";
+        "datashare:///com.ohos.contactsdataability/contacts/raw_contact/split_contact";
     static constexpr const char *MERGE_ERROR =
-        "dataability:///com.ohos.contactsdataability/contacts/raw_contact/auto_mergeee";
+        "datashare:///com.ohos.contactsdataability/contacts/raw_contact/auto_mergeee";
     static constexpr const char *MERGE_LIST_ERROR =
-        "dataability:///com.ohos.contactsdataability/contacts/raw_contact/merge_lists_error";
+        "datashare:///com.ohos.contactsdataability/contacts/raw_contact/merge_lists_error";
 };
 
 class ProfileUri {
 public:
     ~ProfileUri();
-    static constexpr const char *RAW_CONTACT = "dataability:///com.ohos.contactsdataability/profile/raw_contact";
+    static constexpr const char *RAW_CONTACT = "datashare:///com.ohos.contactsdataability/profile/raw_contact";
     static constexpr const char *DELETED_RAW_CONTACT =
-        "dataability:///com.ohos.contactsdataability/profile/deleted_raw_contact";
-    static constexpr const char *BLOCKLIST = "dataability:///com.ohos.contactsdataability/profile/contact_blocklist";
-    static constexpr const char *GROUPS = "dataability:///com.ohos.contactsdataability/profile/groups";
-    static constexpr const char *CONTACT_DATA = "dataability:///com.ohos.contactsdataability/profile/contact_data";
-    static constexpr const char *CONTACT = "dataability:///com.ohos.contactsdataability/profile/contact";
-    static constexpr const char *SEARCH = "dataability:///com.ohos.contactsdataability/profile/search_contact";
-    static constexpr const char *ERROR_URI = "dataability:///com.ohos.contactsdataability/profile/raw_contacts";
+        "datashare:///com.ohos.contactsdataability/profile/deleted_raw_contact";
+    static constexpr const char *BLOCKLIST = "datashare:///com.ohos.contactsdataability/profile/contact_blocklist";
+    static constexpr const char *GROUPS = "datashare:///com.ohos.contactsdataability/profile/groups";
+    static constexpr const char *CONTACT_DATA = "datashare:///com.ohos.contactsdataability/profile/contact_data";
+    static constexpr const char *CONTACT = "datashare:///com.ohos.contactsdataability/profile/contact";
+    static constexpr const char *SEARCH = "datashare:///com.ohos.contactsdataability/profile/search_contact";
+    static constexpr const char *ERROR_URI = "datashare:///com.ohos.contactsdataability/profile/raw_contacts";
 };
 
 class Time {
@@ -101,10 +101,9 @@ public:
 class DataPath {
 public:
     ~DataPath();
-    static constexpr const char *RDB_PATH = "/data/accounts/account_0/appdata/com.ohos.contactsdataability/database/";
-    static constexpr const char *DUMP_PATH = "/data/accounts/account_0/appdata/com.ohos.contactsdataability/files/";
+    static constexpr const char *RDB_PATH = "/data/app/el2/100/database/com.ohos.contactsdataability/";
     static constexpr const char *RDB_BACKUP_PATH =
-        "/data/accounts/account_0/appdata/com.ohos.contactsdataability/database/backup/";
+        "/data/app/el2/100/database/com.ohos.contactsdataability/backup/";
 };
 } // namespace Test
 } // namespace Contacts

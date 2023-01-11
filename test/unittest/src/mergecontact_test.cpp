@@ -25,7 +25,7 @@ namespace Contacts {
 namespace Test {
 void MergeContactTest::DeleteRawContact()
 {
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
     predicates.NotEqualTo("id", "0");
     predicates.And();
@@ -34,10 +34,10 @@ void MergeContactTest::DeleteRawContact()
     int time = Time::SLEEP_TIME_MERGE_DELETE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
-    predicates.Clear();
+    OHOS::DataShare::DataSharePredicates predicates2;
     OHOS::Uri uriRawContactComplete(ContactsUri::DELETED_RAW_CONTACT);
-    predicates.NotEqualTo("id", "0");
-    contactsDataAbility.Delete(uriRawContactComplete, predicates);
+    predicates2.NotEqualTo("id", "0");
+    contactsDataAbility.Delete(uriRawContactComplete, predicates2);
 }
 
 void MergeContactTest::CheckMergeResultId(std::vector<int64_t> ids, bool merge)
@@ -47,9 +47,9 @@ void MergeContactTest::CheckMergeResultId(std::vector<int64_t> ids, bool merge)
     for (int i = 0; i < mergeIdSize; i++) {
         std::vector<std::string> columns;
         columns.push_back("contact_id");
-        OHOS::NativeRdb::DataAbilityPredicates predicates;
+        OHOS::DataShare::DataSharePredicates predicates;
         predicates.EqualTo("id", std::to_string(ids[i]));
-        std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultOne = ContactQuery(columns, predicates);
+        std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultOne = ContactQuery(columns, predicates);
         int contactIdOne = GetMergeResultContactId(resultOne);
         resultIdVector.push_back(contactIdOne);
     }
@@ -58,15 +58,15 @@ void MergeContactTest::CheckMergeResultId(std::vector<int64_t> ids, bool merge)
     for (int i = 1; i < size; i++) {
         if (merge) {
             EXPECT_EQ(contactId, resultIdVector[i]);
-            HILOG_INFO("merge contact_id = %{public}lld, contact_idTwo %{public}lld", contactId, resultIdVector[i]);
+            HILOG_INFO("merge contact_id = %{public}ld, contact_idTwo %{public}ld", contactId, resultIdVector[i]);
         } else {
             EXPECT_NE(contactId, resultIdVector[i]);
-            HILOG_INFO("split contact_id = %{public}lld", resultIdVector[i]);
+            HILOG_INFO("split contact_id = %{public}ld", resultIdVector[i]);
         }
     }
 }
 
-int MergeContactTest::GetMergeResultContactId(const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet)
+int MergeContactTest::GetMergeResultContactId(const std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet)
 {
     std::vector<std::string> columnNames;
     resultSet->GetAllColumnNames(columnNames);
@@ -82,7 +82,7 @@ int MergeContactTest::GetMergeResultContactId(const std::shared_ptr<OHOS::Native
 }
 
 std::vector<int> MergeContactTest::GetMergeResultRawContactId(
-    const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet)
+    const std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet)
 {
     std::vector<int> rawContactIdVector;
     std::vector<std::string> columnNames;
@@ -102,7 +102,7 @@ std::vector<int> MergeContactTest::GetMergeResultRawContactId(
 }
 
 std::vector<int> MergeContactTest::GetMergeRawContactId(
-    const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet)
+    const std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet)
 {
     std::vector<int> rawContactIdVector;
     std::vector<std::string> columnNames;
@@ -121,20 +121,20 @@ std::vector<int> MergeContactTest::GetMergeRawContactId(
     return rawContactIdVector;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> MergeContactTest::ContactQuery(
-    std::vector<std::string> columns, OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<OHOS::DataShare::DataShareResultSet> MergeContactTest::ContactQuery(
+    std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates)
 {
     OHOS::Uri uri(ContactsUri::RAW_CONTACT);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uri, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uri, predicates, columns);
     return resultSet;
 }
 
 int64_t MergeContactTest::RawContactInsert(std::string displayName)
 {
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    OHOS::NativeRdb::ValuesBucket rawContactValues;
-    rawContactValues.PutString("display_name", displayName);
+    OHOS::DataShare::DataShareValuesBucket rawContactValues;
+    rawContactValues.Put("display_name", displayName);
     int64_t code = contactsDataAbility.Insert(uriRawContact, rawContactValues);
     rawContactValues.Clear();
     return code;
@@ -144,11 +144,11 @@ int64_t MergeContactTest::ContactDataInsert(
     int64_t rawContactId, std::string contentType, std::string detailInfo, std::string position)
 {
     OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-    OHOS::NativeRdb::ValuesBucket contactDataValues;
-    contactDataValues.PutInt("raw_contact_id", rawContactId);
-    contactDataValues.PutString("content_type", contentType);
-    contactDataValues.PutString("detail_info", detailInfo);
-    contactDataValues.PutString("position", position);
+    OHOS::DataShare::DataShareValuesBucket contactDataValues;
+    contactDataValues.Put("raw_contact_id", rawContactId);
+    contactDataValues.Put("content_type", contentType);
+    contactDataValues.Put("detail_info", detailInfo);
+    contactDataValues.Put("position", position);
     int64_t code = contactsDataAbility.Insert(uriContactData, contactDataValues);
     contactDataValues.Clear();
     return code;
@@ -175,20 +175,20 @@ HWTEST_F(MergeContactTest, merge_Query_test_100, testing::ext::TestSize.Level1)
     EXPECT_GT(rawOne, 0);
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaowuww", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Query_test_100 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Query_test_100 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaowuww");
     EXPECT_GT(rawTwo, 0);
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaowuww", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "1234567", "");
-    HILOG_INFO("merge_Query_test_100 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Query_test_100 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriQueryMergeList(ContactsUri::MERGE_LIST);
     std::vector<std::string> columns;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uriQueryMergeList, columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates;
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uriQueryMergeList, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(2, rowCount);
@@ -211,17 +211,17 @@ HWTEST_F(MergeContactTest, merge_Update_test_200, testing::ext::TestSize.Level1)
     HILOG_INFO("--- merge_Update_test_200 Add is starting! ---");
     int64_t rawOne = RawContactInsert("xiaochenc");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaochenc", "");
-    HILOG_INFO("merge_Update_test_200 :  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_200 :  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaochenc");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaochenc", "");
-    HILOG_INFO("merge_Update_test_200 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_200 :  = %{public}ld", dataIdTwo);
     int time = 2000;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -245,26 +245,25 @@ HWTEST_F(MergeContactTest, merge_Update_test_300, testing::ext::TestSize.Level1)
     int64_t rawOne = RawContactInsert("xiaomingmm");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaomingmm", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_300 :  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_300 :  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaomingmm");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaomingmm", "");
-    HILOG_INFO("merge_Update_test_300 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_300 :  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, -1);
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
     value.Clear();
-    predicates.Clear();
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
     predicates.In("raw_contact_id", ids);
-    ret = contactsDataAbility.Update(uriManualMerge, value, predicates);
+    ret = contactsDataAbility.Update(uriManualMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -288,18 +287,18 @@ HWTEST_F(MergeContactTest, merge_Update_test_400, testing::ext::TestSize.Level1)
     int64_t rawOne = RawContactInsert("xiaohong");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaohong", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_400 :  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_400 :  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaohong");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaohong", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_400 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_400 :  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -323,18 +322,18 @@ HWTEST_F(MergeContactTest, merge_Update_test_500, testing::ext::TestSize.Level1)
     int64_t rawOne = RawContactInsert("xiaozhang");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaozhang", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_500 :  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_500 :  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaozhang");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaozhang", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "1234567", "");
-    HILOG_INFO("merge_Update_test_500 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_500 :  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, -1);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -343,12 +342,11 @@ HWTEST_F(MergeContactTest, merge_Update_test_500, testing::ext::TestSize.Level1)
 
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
     value.Clear();
-    predicates.Clear();
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
     predicates.In("raw_contact_id", ids);
-    ret = contactsDataAbility.Update(uriManualMerge, value, predicates);
+    ret = contactsDataAbility.Update(uriManualMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     CheckMergeResultId(resultIdVector, true);
     DeleteRawContact();
@@ -369,19 +367,19 @@ HWTEST_F(MergeContactTest, merge_Update_test_600, testing::ext::TestSize.Level1)
     int64_t rawOne = RawContactInsert("xiaozhou");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaozhou", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_600 dataIdOne_1  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_600 dataIdOne_1  = %{public}ld", dataIdOne);
     dataIdOne = ContactDataInsert(rawOne, "phone", "1234567", "");
-    HILOG_INFO("merge_Update_test_600 dataIdOne_2  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_600 dataIdOne_2  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaozhou");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaozhou", "");
-    HILOG_INFO("merge_Update_test_600 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_600 :  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, -1);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -390,12 +388,11 @@ HWTEST_F(MergeContactTest, merge_Update_test_600, testing::ext::TestSize.Level1)
 
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
     value.Clear();
-    predicates.Clear();
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
     predicates.In("raw_contact_id", ids);
-    ret = contactsDataAbility.Update(uriManualMerge, value, predicates);
+    ret = contactsDataAbility.Update(uriManualMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     CheckMergeResultId(resultIdVector, true);
     DeleteRawContact();
@@ -416,22 +413,22 @@ HWTEST_F(MergeContactTest, merge_Update_test_700, testing::ext::TestSize.Level1)
     int64_t rawOne = RawContactInsert("xiaobai");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaobai", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_700 dataIdOne_1  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_700 dataIdOne_1  = %{public}ld", dataIdOne);
     dataIdOne = ContactDataInsert(rawOne, "phone", "1234567", "");
-    HILOG_INFO("merge_Update_test_700 dataIdOne_2  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_700 dataIdOne_2  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaobai");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaobai", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_700 dataIdTwo_1  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_700 dataIdTwo_1  = %{public}ld", dataIdTwo);
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "1234567", "");
-    HILOG_INFO("merge_Update_test_700 dataIdTwo_2  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_700 dataIdTwo_2  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -455,22 +452,22 @@ HWTEST_F(MergeContactTest, merge_Update_test_800, testing::ext::TestSize.Level1)
     int64_t rawOne = RawContactInsert("xiaomi");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaomi", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_800 dataIdOne_1  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_800 dataIdOne_1  = %{public}ld", dataIdOne);
     dataIdOne = ContactDataInsert(rawOne, "phone", "1234567", "");
-    HILOG_INFO("merge_Update_test_800 dataIdOne_2  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_800 dataIdOne_2  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaomi");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaomi", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_800 dataIdTwo_1  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_800 dataIdTwo_1  = %{public}ld", dataIdTwo);
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "12345678", "");
-    HILOG_INFO("merge_Update_test_800 dataIdTwo_2  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_800 dataIdTwo_2  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, -1);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -479,12 +476,11 @@ HWTEST_F(MergeContactTest, merge_Update_test_800, testing::ext::TestSize.Level1)
 
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
     value.Clear();
-    predicates.Clear();
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
     predicates.In("raw_contact_id", ids);
-    ret = contactsDataAbility.Update(uriManualMerge, value, predicates);
+    ret = contactsDataAbility.Update(uriManualMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     CheckMergeResultId(resultIdVector, true);
     DeleteRawContact();
@@ -505,29 +501,28 @@ HWTEST_F(MergeContactTest, merge_Update_test_900, testing::ext::TestSize.Level1)
     int64_t rawOne = RawContactInsert("daniu");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "daniu", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_900 dataIdOne_1  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_900 dataIdOne_1  = %{public}ld", dataIdOne);
     dataIdOne = ContactDataInsert(rawOne, "phone", "1234567", "");
-    HILOG_INFO("merge_Update_test_900 dataIdOne_2  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_900 dataIdOne_2  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("daniu");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "daniu", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_900 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_900 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, -1);
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
     value.Clear();
-    predicates.Clear();
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
     predicates.In("raw_contact_id", ids);
-    ret = contactsDataAbility.Update(uriManualMerge, value, predicates);
+    ret = contactsDataAbility.Update(uriManualMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -551,29 +546,28 @@ HWTEST_F(MergeContactTest, merge_Update_test_1000, testing::ext::TestSize.Level1
     int64_t rawOne = RawContactInsert("mazi");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "mazi", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_1000 dataIdOne_1  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_1000 dataIdOne_1  = %{public}ld", dataIdOne);
     dataIdOne = ContactDataInsert(rawOne, "phone", "1234567", "");
-    HILOG_INFO("merge_Update_test_1000 dataIdOne_2  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_1000 dataIdOne_2  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("mazi");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "mazi", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456789", "");
-    HILOG_INFO("merge_Update_test_1000 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_1000 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, -1);
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
     value.Clear();
-    predicates.Clear();
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
     predicates.In("raw_contact_id", ids);
-    ret = contactsDataAbility.Update(uriManualMerge, value, predicates);
+    ret = contactsDataAbility.Update(uriManualMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -595,24 +589,23 @@ HWTEST_F(MergeContactTest, abnormal_merge_Update_test_1100, testing::ext::TestSi
     HILOG_INFO("--- abnormal_merge_Update_test_1100 Add is starting! ---");
     int64_t rawOne = RawContactInsert("xiaocai");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaocai", "");
-    HILOG_INFO("abnormal_merge_Update_test_1100 :  = %{public}lld", dataIdOne);
+    HILOG_INFO("abnormal_merge_Update_test_1100 :  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaocai");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaocai", "");
-    HILOG_INFO("abnormal_merge_Update_test_1100 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("abnormal_merge_Update_test_1100 :  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket valueOne;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    contactsDataAbility.Update(uriAutoMerge, valueOne, predicates);
+    OHOS::DataShare::DataShareValuesBucket valueOne;
+    OHOS::DataShare::DataSharePredicates predicates;
+    contactsDataAbility.Update(uriAutoMerge, predicates, valueOne);
     OHOS::Uri uriSplitContact(ContactsUri::SPLIT_CONTACT);
-    OHOS::NativeRdb::ValuesBucket valueTwo;
-    predicates.Clear();
+    OHOS::DataShare::DataShareValuesBucket valueTwo;
     std::vector<std::string> ids;
     ids.push_back("-1");
     predicates.In("raw_contact_id", ids);
-    int ret = contactsDataAbility.Update(uriSplitContact, valueTwo, predicates);
+    int ret = contactsDataAbility.Update(uriSplitContact, predicates, valueTwo);
     EXPECT_EQ(ret, -1);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -634,22 +627,22 @@ HWTEST_F(MergeContactTest, merge_Update_test_1200, testing::ext::TestSize.Level1
     int64_t rawOne = RawContactInsert("xiaoliu");
     int64_t dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
     dataIdOne = ContactDataInsert(rawOne, "name", "xiaoliu", "");
-    HILOG_INFO("merge_Update_test_1200 :  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_1200 :  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaoliu");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
     dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaoliu", "");
-    HILOG_INFO("merge_Update_test_1200 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_1200 :  = %{public}ld", dataIdTwo);
     int64_t rawThree = RawContactInsert("xiaoliu");
     int64_t dataIdThree = ContactDataInsert(rawThree, "phone", "123456", "");
     dataIdThree = ContactDataInsert(rawThree, "name", "xiaoliu", "");
-    HILOG_INFO("merge_Update_test_1200 :  = %{public}lld", dataIdThree);
+    HILOG_INFO("merge_Update_test_1200 :  = %{public}ld", dataIdThree);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
@@ -678,27 +671,27 @@ HWTEST_F(MergeContactTest, merge_Update_test_1300, testing::ext::TestSize.Level1
     int64_t rawOne = RawContactInsert("xiaohua");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaohua", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_1300 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_1300 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaohua");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaohua", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
-    HILOG_INFO("merge_Update_test_1300 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_1300 dataIdTwo  = %{public}ld", dataIdTwo);
 
     OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-    OHOS::NativeRdb::ValuesBucket values;
-    values.PutString("detail_info", "dayuy");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket values;
+    values.Put("detail_info", "dayuy");
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("raw_contact_id", std::to_string(rawTwo));
     predicates.And();
     predicates.EqualTo("type_id", "6");
-    contactsDataAbility.Update(uriContactData, values, predicates);
+    contactsDataAbility.Update(uriContactData, predicates, values);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
     values.Clear();
-    predicates.Clear();
-    int ret = contactsDataAbility.Update(uriAutoMerge, values, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates2, values);
     EXPECT_EQ(ret, -1);
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
@@ -725,36 +718,35 @@ HWTEST_F(MergeContactTest, merge_Update_test_1400, testing::ext::TestSize.Level1
     int64_t rawOne = RawContactInsert("xiaobei");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaobei", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "17612345689", "");
-    HILOG_INFO("merge_Update_test_1400 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_1400 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaobei");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaobei", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "17612345689", "");
-    HILOG_INFO("merge_Update_test_1400 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_1400 dataIdTwo  = %{public}ld", dataIdTwo);
 
     OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-    OHOS::NativeRdb::ValuesBucket values;
-    values.PutString("detail_info", "18355421566");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket values;
+    values.Put("detail_info", "18355421566");
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("raw_contact_id", std::to_string(rawTwo));
     predicates.And();
     predicates.EqualTo("type_id", "5");
-    contactsDataAbility.Update(uriContactData, values, predicates);
+    contactsDataAbility.Update(uriContactData, predicates, values);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
     values.Clear();
-    predicates.Clear();
-    int ret = contactsDataAbility.Update(uriAutoMerge, values, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates2, values);
     EXPECT_EQ(ret, -1);
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
     values.Clear();
-    predicates.Clear();
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
-    predicates.In("raw_contact_id", ids);
-    ret = contactsDataAbility.Update(uriManualMerge, values, predicates);
+    predicates2.In("raw_contact_id", ids);
+    ret = contactsDataAbility.Update(uriManualMerge, predicates2, values);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -777,18 +769,18 @@ HWTEST_F(MergeContactTest, merge_Update_test_1500, testing::ext::TestSize.Level1
     HILOG_INFO("--- merge_Update_test_1500 Add is starting! ---");
     int64_t rawOne = RawContactInsert("xiaolil");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaolil", "");
-    HILOG_INFO("merge_Update_test_1500 :  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_1500 :  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaoli");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaolil", "");
-    HILOG_INFO("merge_Update_test_1500 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_1500 :  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     int ret;
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket valueOne;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    ret = contactsDataAbility.Update(uriAutoMerge, valueOne, predicates);
+    OHOS::DataShare::DataShareValuesBucket valueOne;
+    OHOS::DataShare::DataSharePredicates predicates;
+    ret = contactsDataAbility.Update(uriAutoMerge, predicates, valueOne);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -796,11 +788,11 @@ HWTEST_F(MergeContactTest, merge_Update_test_1500, testing::ext::TestSize.Level1
     CheckMergeResultId(resultIdVector, true);
 
     OHOS::Uri uriSplitContact(ContactsUri::SPLIT_CONTACT);
-    OHOS::NativeRdb::ValuesBucket valueTwo;
+    OHOS::DataShare::DataShareValuesBucket valueTwo;
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     predicates.In("raw_contact_id", ids);
-    ret = contactsDataAbility.Update(uriSplitContact, valueTwo, predicates);
+    ret = contactsDataAbility.Update(uriSplitContact, predicates, valueTwo);
     EXPECT_EQ(ret, 0);
     CheckMergeResultId(resultIdVector, false);
     DeleteRawContact();
@@ -822,20 +814,20 @@ HWTEST_F(MergeContactTest, abnormal_merge_Query_test_1600, testing::ext::TestSiz
     EXPECT_GT(rawOne, 0);
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaoma", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("abnormal_merge_Query_test_1600 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("abnormal_merge_Query_test_1600 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaoma");
     EXPECT_GT(rawTwo, 0);
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaoma", "");
     dataIdOne = ContactDataInsert(rawTwo, "phone", "1234567", "");
-    HILOG_INFO("abnormal_merge_Query_test_1600 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("abnormal_merge_Query_test_1600 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriQueryMergeList(ContactsUri::MERGE_LIST_ERROR);
     std::vector<std::string> columns;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uriQueryMergeList, columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates;
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uriQueryMergeList, predicates, columns);
     EXPECT_EQ(resultSet, nullptr);
     DeleteRawContact();
 }
@@ -857,14 +849,14 @@ HWTEST_F(MergeContactTest, abnormal_merge_Update_test_1700, testing::ext::TestSi
     int64_t rawTwo = RawContactInsert("xiaoqian");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaoqian", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
-    HILOG_INFO("abnormal_merge_Update_test_1700 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("abnormal_merge_Update_test_1700 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::MERGE_ERROR);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, -1);
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
@@ -876,7 +868,6 @@ HWTEST_F(MergeContactTest, abnormal_merge_Update_test_1700, testing::ext::TestSi
 
     HILOG_INFO("ret : %{public}d ", ret);
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    predicates.Clear();
     predicates.EqualTo("id", std::to_string(rawOne));
     predicates.Or();
     predicates.EqualTo("id", std::to_string(rawTwo));
@@ -899,18 +890,18 @@ HWTEST_F(MergeContactTest, abnormal_merge_Update_test_1800, testing::ext::TestSi
     int64_t rawOne = RawContactInsert("xiaosun");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaosun", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("abnormal_merge_Update_test_1800 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("abnormal_merge_Update_test_1800 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaomei");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaomei", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
-    HILOG_INFO("abnormal_merge_Update_test_1800 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("abnormal_merge_Update_test_1800 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, -1);
     HILOG_INFO("ret : %{public}d ", ret);
     std::vector<std::string> ids;
@@ -936,28 +927,27 @@ HWTEST_F(MergeContactTest, abnormal_merge_Update_test_1900, testing::ext::TestSi
     HILOG_INFO("--- abnormal_merge_Update_test_1900 Add is starting! ---");
     int64_t rawOne = RawContactInsert("bob2300");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "bob2300", "");
-    HILOG_INFO("abnormal_merge_Update_test_1900 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("abnormal_merge_Update_test_1900 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("lileibob2300");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "lileibob2300", "");
-    HILOG_INFO("abnormal_merge_Update_test_1900 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("abnormal_merge_Update_test_1900 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
 
-    OHOS::NativeRdb::ValuesBucket values;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket values;
+    OHOS::DataShare::DataSharePredicates predicates;
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    int ret = contactsDataAbility.Update(uriAutoMerge, values, predicates);
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, values);
     EXPECT_EQ(ret, -1);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
     values.Clear();
-    predicates.Clear();
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
     predicates.In("raw_contact_id", ids);
-    ret = contactsDataAbility.Update(uriManualMerge, values, predicates);
+    ret = contactsDataAbility.Update(uriManualMerge, predicates, values);
     EXPECT_EQ(ret, -1);
     DeleteRawContact();
 }
@@ -976,18 +966,18 @@ HWTEST_F(MergeContactTest, abnormal_merge_Update_test_2000, testing::ext::TestSi
     int64_t rawOne = RawContactInsert("xiaowang");
     EXPECT_GT(rawOne, 0);
     int64_t dataIdOne = ContactDataInsert(rawOne, "nameee", "xiaowang", "");
-    HILOG_INFO("abnormal_merge_Update_test_2000 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("abnormal_merge_Update_test_2000 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaowang");
     EXPECT_GT(rawOne, 0);
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaowang", "");
-    HILOG_INFO("abnormal_merge_Update_test_2000 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("abnormal_merge_Update_test_2000 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int ret = contactsDataAbility.Update(uriAutoMerge, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int ret = contactsDataAbility.Update(uriAutoMerge, predicates, value);
     EXPECT_EQ(ret, -1);
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
@@ -999,7 +989,6 @@ HWTEST_F(MergeContactTest, abnormal_merge_Update_test_2000, testing::ext::TestSi
 
     HILOG_INFO("ret : %{public}d ", ret);
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    predicates.Clear();
     predicates.EqualTo("id", std::to_string(dataIdOne));
     predicates.Or();
     predicates.EqualTo("id", std::to_string(dataIdTwo));
@@ -1020,23 +1009,22 @@ HWTEST_F(MergeContactTest, abnormal_merge_Update_test_2100, testing::ext::TestSi
     HILOG_INFO("--- abnormal_merge_Update_test_2100 Add is starting! ---");
     int64_t rawOne = RawContactInsert("xiaocheng");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaocheng", "");
-    HILOG_INFO("abnormal_merge_Update_test_2100 :  = %{public}lld", dataIdOne);
+    HILOG_INFO("abnormal_merge_Update_test_2100 :  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaocheng");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaocheng", "");
-    HILOG_INFO("abnormal_merge_Update_test_2100 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("abnormal_merge_Update_test_2100 :  = %{public}ld", dataIdTwo);
     std::chrono::milliseconds dura(Time::SLEEP_TIME_MERGE);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriAutoMerge(ContactsUri::AUTO_MERGE);
-    OHOS::NativeRdb::ValuesBucket valueOne;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    contactsDataAbility.Update(uriAutoMerge, valueOne, predicates);
+    OHOS::DataShare::DataShareValuesBucket valueOne;
+    OHOS::DataShare::DataSharePredicates predicates;
+    contactsDataAbility.Update(uriAutoMerge, predicates, valueOne);
     OHOS::Uri uriSplitContact(ContactsUri::SPLIT_CONTACT);
-    OHOS::NativeRdb::ValuesBucket valueTwo;
-    predicates.Clear();
+    OHOS::DataShare::DataShareValuesBucket valueTwo;
     std::vector<std::string> ids;
     ids.push_back("0");
     predicates.In("raw_contact_id", ids);
-    int ret = contactsDataAbility.Update(uriSplitContact, valueTwo, predicates);
+    int ret = contactsDataAbility.Update(uriSplitContact, predicates, valueTwo);
     EXPECT_EQ(ret, -1);
 
     std::vector<int64_t> resultIdVector;
@@ -1059,27 +1047,27 @@ HWTEST_F(MergeContactTest, merge_Update_test_2200, testing::ext::TestSize.Level1
     int64_t rawOne = RawContactInsert("xiaocai");
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaocai", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "1234567", "");
-    HILOG_INFO("merge_Update_test_2200 :  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_2200 :  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaocai");
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
     dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaocai", "");
-    HILOG_INFO("merge_Update_test_2200 :  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_2200 :  = %{public}ld", dataIdTwo);
     int64_t rawThree = RawContactInsert("xiaocai");
     int64_t dataIdThree = ContactDataInsert(rawThree, "phone", "12345678", "");
     dataIdThree = ContactDataInsert(rawThree, "name", "xiaocai", "");
-    HILOG_INFO("merge_Update_test_2200 :  = %{public}lld", dataIdThree);
+    HILOG_INFO("merge_Update_test_2200 :  = %{public}ld", dataIdThree);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
     ids.push_back(std::to_string(rawThree));
     predicates.In("raw_contact_id", ids);
-    int ret = contactsDataAbility.Update(uriManualMerge, value, predicates);
+    int ret = contactsDataAbility.Update(uriManualMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);
@@ -1104,16 +1092,16 @@ HWTEST_F(MergeContactTest, merge_Query_test_2300, testing::ext::TestSize.Level1)
     int64_t rawOne = RawContactInsert("xsiaowuwwwww");
     EXPECT_GT(rawOne, 0);
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xsiaowuwwwww", "");
-    HILOG_INFO("merge_Query_test_2300 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Query_test_2300 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xsiaowuwwwww");
     EXPECT_GT(rawTwo, 0);
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xsiaowuwwwww", "");
-    HILOG_INFO("merge_Query_test_2300 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Query_test_2300 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     std::vector<std::string> columns;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.BeginWrap();
     predicates.EqualTo("id", std::to_string(rawOne));
     predicates.Or();
@@ -1124,8 +1112,8 @@ HWTEST_F(MergeContactTest, merge_Query_test_2300, testing::ext::TestSize.Level1)
     predicates.And();
     predicates.EqualTo("is_deleted", "0");
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uriRawContact, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uriRawContact, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(2, rowCount);
@@ -1150,19 +1138,19 @@ HWTEST_F(MergeContactTest, merge_Query_test_2400, testing::ext::TestSize.Level1)
     int64_t rawOne = RawContactInsert("jackxsiaowuwwwww");
     EXPECT_GT(rawOne, 0);
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "jackxsiaowuwwwww", "");
-    HILOG_INFO("merge_Query_test_2400 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Query_test_2400 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xsiaowuwwwww");
     EXPECT_GT(rawTwo, 0);
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xsiaowuwwwww", "");
-    HILOG_INFO("merge_Query_test_2400 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Query_test_2400 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriQueryMergeList(ContactsUri::MERGE_LIST);
     std::vector<std::string> columns;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uriQueryMergeList, columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates;
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uriQueryMergeList, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -1185,17 +1173,17 @@ HWTEST_F(MergeContactTest, merge_Query_test_2500, testing::ext::TestSize.Level1)
     EXPECT_GT(rawOne, 0);
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "xiaowuwwl", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456", "");
-    HILOG_INFO("merge_Query_test_2500 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Query_test_2500 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("xiaowuww");
     EXPECT_GT(rawTwo, 0);
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "xiaowuwwl", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "123456", "");
-    HILOG_INFO("merge_Query_test_2500 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Query_test_2500 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     std::vector<std::string> columns;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.BeginWrap();
     predicates.EqualTo("id", std::to_string(rawOne));
     predicates.Or();
@@ -1206,8 +1194,8 @@ HWTEST_F(MergeContactTest, merge_Query_test_2500, testing::ext::TestSize.Level1)
     predicates.And();
     predicates.EqualTo("is_deleted", "0");
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uriRawContact, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uriRawContact, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(2, rowCount);
@@ -1233,20 +1221,20 @@ HWTEST_F(MergeContactTest, merge_Query_test_2600, testing::ext::TestSize.Level1)
     EXPECT_GT(rawOne, 0);
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "cxiaowuwwl", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456565454", "");
-    HILOG_INFO("merge_Query_test_2600 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Query_test_2600 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("nxiaowuww");
     EXPECT_GT(rawTwo, 0);
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "nxiaowuwwl", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "1234564488", "");
-    HILOG_INFO("merge_Query_test_2600 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Query_test_2600 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriQueryMergeList(ContactsUri::MERGE_LIST);
     std::vector<std::string> columns;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uriQueryMergeList, columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates;
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uriQueryMergeList, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -1270,24 +1258,24 @@ HWTEST_F(MergeContactTest, merge_Update_test_2700, testing::ext::TestSize.Level1
     int64_t dataIdOne = ContactDataInsert(rawOne, "name", "jack12345", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "123456565454", "");
     dataIdOne = ContactDataInsert(rawOne, "phone", "1234565654546", "");
-    HILOG_INFO("merge_Update_test_2700 dataIdOne  = %{public}lld", dataIdOne);
+    HILOG_INFO("merge_Update_test_2700 dataIdOne  = %{public}ld", dataIdOne);
     int64_t rawTwo = RawContactInsert("jack12345");
     EXPECT_GT(rawTwo, 0);
     int64_t dataIdTwo = ContactDataInsert(rawTwo, "name", "jack12345", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "1234564488", "");
     dataIdTwo = ContactDataInsert(rawTwo, "phone", "12345644888", "");
-    HILOG_INFO("merge_Update_test_2700 dataIdTwo  = %{public}lld", dataIdTwo);
+    HILOG_INFO("merge_Update_test_2700 dataIdTwo  = %{public}ld", dataIdTwo);
     int time = Time::SLEEP_TIME_MERGE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
     OHOS::Uri uriManualMerge(ContactsUri::MANUAL_MERGE);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
     std::vector<std::string> ids;
     ids.push_back(std::to_string(rawOne));
     ids.push_back(std::to_string(rawTwo));
     predicates.In("raw_contact_id", ids);
-    int ret = contactsDataAbility.Update(uriManualMerge, value, predicates);
+    int ret = contactsDataAbility.Update(uriManualMerge, predicates, value);
     EXPECT_EQ(ret, 0);
     std::vector<int64_t> resultIdVector;
     resultIdVector.push_back(rawOne);

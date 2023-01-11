@@ -16,6 +16,9 @@
 #include "voicemailability_test.h"
 
 #include "data_ability_operation_builder.h"
+#include "random_number_utils.h"
+
+using namespace OHOS::Contacts;
 
 namespace Contacts {
 namespace Test {
@@ -30,48 +33,48 @@ VoicemailAbilityTest::~VoicemailAbilityTest()
 int64_t VoicemailAbilityTest::VoicemailStatusInsert(std::string phoneNumber, int status)
 {
     OHOS::Uri uriVoicemail(VoicemailUri::VOICEMAIL);
-    OHOS::NativeRdb::ValuesBucket voicemailValues;
-    voicemailValues.PutString("phone_number", phoneNumber);
-    voicemailValues.PutInt("voice_status", status);
+    OHOS::DataShare::DataShareValuesBucket voicemailValues;
+    voicemailValues.Put("phone_number", phoneNumber);
+    voicemailValues.Put("voice_status", status);
     int64_t code = voicemailAbility.Insert(uriVoicemail, voicemailValues);
     return code;
 }
 
 int VoicemailAbilityTest::VoicemailUpdate(
-    OHOS::NativeRdb::ValuesBucket updateValues, OHOS::NativeRdb::DataAbilityPredicates predicates)
+    OHOS::DataShare::DataShareValuesBucket updateValues, OHOS::DataShare::DataSharePredicates predicates)
 {
     OHOS::Uri uriVoicemail(VoicemailUri::VOICEMAIL);
-    int code = voicemailAbility.Update(uriVoicemail, updateValues, predicates);
+    int code = voicemailAbility.Update(uriVoicemail, predicates, updateValues);
     return code;
 }
 
-int VoicemailAbilityTest::VoicemailDelete(OHOS::NativeRdb::DataAbilityPredicates predicates)
+int VoicemailAbilityTest::VoicemailDelete(OHOS::DataShare::DataSharePredicates predicates)
 {
     OHOS::Uri uriVoicemail(VoicemailUri::VOICEMAIL);
     int code = voicemailAbility.Delete(uriVoicemail, predicates);
     return code;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> VoicemailAbilityTest::VoicemailQuery(
-    std::vector<std::string> columns, OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<OHOS::DataShare::DataShareResultSet> VoicemailAbilityTest::VoicemailQuery(
+    std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates)
 {
     OHOS::Uri uriVoicemail(VoicemailUri::VOICEMAIL);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        voicemailAbility.Query(uriVoicemail, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        voicemailAbility.Query(uriVoicemail, predicates, columns);
     return resultSet;
 }
 
-void VoicemailAbilityTest::CheckResultSetBatch(OHOS::NativeRdb::DataAbilityPredicates predicates,
-    std::vector<std::string> &columns, OHOS::NativeRdb::ValuesBucket values, std::string testName)
+void VoicemailAbilityTest::CheckResultSetBatch(OHOS::DataShare::DataSharePredicates predicates,
+    std::vector<std::string> &columns, OHOS::DataShare::DataShareValuesBucket values, std::string testName)
 {
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
     CheckResultSet(values, resultSet, testName);
 }
 
-int VoicemailAbilityTest::VoicemailInsertValues(OHOS::NativeRdb::ValuesBucket &values)
+int VoicemailAbilityTest::VoicemailInsertValues(OHOS::DataShare::DataShareValuesBucket &values)
 {
     OHOS::Uri uriVoicemail(VoicemailUri::VOICEMAIL);
     int64_t code = voicemailAbility.Insert(uriVoicemail, values);
@@ -79,30 +82,32 @@ int VoicemailAbilityTest::VoicemailInsertValues(OHOS::NativeRdb::ValuesBucket &v
     return result;
 }
 
-int64_t VoicemailAbilityTest::VoicemailInsertValue(std::string displayName, OHOS::NativeRdb::ValuesBucket &values)
+int64_t VoicemailAbilityTest::VoicemailInsertValue(std::string displayName,
+    OHOS::DataShare::DataShareValuesBucket &values)
 {
     OHOS::Uri uriVoicemail(VoicemailUri::VOICEMAIL);
-    values.PutString("display_name", displayName);
+    values.Put("display_name", displayName);
     int64_t code = voicemailAbility.Insert(uriVoicemail, values);
     return code;
 }
 
-OHOS::NativeRdb::ValuesBucket VoicemailAbilityTest::GetVoiceMailValues(
+OHOS::DataShare::DataShareValuesBucket VoicemailAbilityTest::GetVoiceMailValues(
     int columnsStart, int columnsEnd, std::vector<std::string> &columns)
 {
     std::string voiceMailTestStringValue = std::to_string(ContactsRand());
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(8);
-    valuesBucket.PutString("phone_number", phoneNumber + voiceMailTestStringValue);
-    valuesBucket.PutString("quicksearch_key", "dfquicksearch_key" + voiceMailTestStringValue);
-    valuesBucket.PutString("display_name", "dfName" + voiceMailTestStringValue);
-    valuesBucket.PutString("voicemail_uri", "dfUri::voicemail_uri" + voiceMailTestStringValue);
-    valuesBucket.PutInt("voicemail_type", ContactsRand());
-    valuesBucket.PutInt("voice_file_size", ContactsRand());
-    valuesBucket.PutInt("voice_duration", ContactsRand());
-    valuesBucket.PutInt("voice_status", ContactsRand());
-    valuesBucket.PutString("origin_type", "origin_type" + voiceMailTestStringValue);
-    valuesBucket.PutInt("create_time", ContactsRand());
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(8);
+    valuesBucket.Put("phone_number", phoneNumber + voiceMailTestStringValue);
+    valuesBucket.Put("quicksearch_key", "dfquicksearch_key" + voiceMailTestStringValue);
+    valuesBucket.Put("display_name", "dfName" + voiceMailTestStringValue);
+    valuesBucket.Put("voicemail_uri", "dfUri::voicemail_uri" + voiceMailTestStringValue);
+    valuesBucket.Put("voicemail_type", ContactsRand());
+    valuesBucket.Put("voice_file_size", ContactsRand());
+    valuesBucket.Put("voice_duration", ContactsRand());
+    valuesBucket.Put("voice_status", ContactsRand());
+    valuesBucket.Put("origin_type", "origin_type" + voiceMailTestStringValue);
+    valuesBucket.Put("create_time", ContactsRand());
     std::vector<std::string> columnsTemp;
     GetVoiceMailValuesColumn(columnsTemp);
     int allSize = columnsTemp.size();
@@ -110,7 +115,7 @@ OHOS::NativeRdb::ValuesBucket VoicemailAbilityTest::GetVoiceMailValues(
         if (i >= columnsStart && i < columnsEnd) {
             columns.push_back(columnsTemp[i]);
         } else {
-            valuesBucket.Delete(columnsTemp[i]);
+            valuesBucket.Put(columnsTemp[i], "");
         }
     }
     return valuesBucket;
@@ -132,7 +137,7 @@ void VoicemailAbilityTest::GetVoiceMailValuesColumn(std::vector<std::string> &co
 
 void VoicemailAbilityTest::ClearVoicemail()
 {
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     int deleteCode = VoicemailDelete(predicates);
     EXPECT_EQ(0, deleteCode);
@@ -149,20 +154,21 @@ void VoicemailAbilityTest::ClearVoicemail()
 HWTEST_F(VoicemailAbilityTest, voicemail_Insert_test_100, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Insert_test_100 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    string phoneNumber = random_number_utils.Generating(6);
-    values.PutString("phone_number", phoneNumber);
-    values.PutInt("voice_status", 1);
+    OHOS::DataShare::DataShareValuesBucket values;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(6);
+    values.Put("phone_number", phoneNumber);
+    values.Put("voice_status", 1);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("voicemail_Insert_test_100 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("voice_status");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -181,18 +187,19 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Insert_test_100, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_Insert_test_200, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Insert_test_200 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    string phoneNumber = random_number_utils.Generating(6);
-    values.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket values;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(6);
+    values.Put("phone_number", phoneNumber);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("voicemail_Insert_test_200 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("id");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -214,23 +221,23 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Insert_test_300, testing::ext::TestSize
     std::vector<std::string> columns;
     GetVoiceMailValuesColumn(columns);
     int columnsSize = 10;
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetVoiceMailValues(0, columnsSize, columns);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetVoiceMailValues(0, columnsSize, columns);
     int rawId = VoicemailInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = VoicemailQuery(columns, predicates);
     // resultSet count 1
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
 
     CheckResultSet(valuesBucket, resultSet, "voicemail_Insert_test_300");
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(rawId));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(rawId));
     // test end delete data
-    int deleteCode = VoicemailDelete(predicates);
+    int deleteCode = VoicemailDelete(predicates2);
     EXPECT_EQ(deleteCode, 0);
     ClearVoicemail();
 }
@@ -246,27 +253,28 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Insert_test_300, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_400, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Update_test_400 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    string phoneNumber = random_number_utils.Generating(4);
-    values.PutString("phone_number", phoneNumber);
-    values.PutInt("voice_status", 1);
+    OHOS::DataShare::DataShareValuesBucket values;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(4);
+    values.Put("phone_number", phoneNumber);
+    values.Put("voice_status", 1);
     int voicemailId = VoicemailInsertValues(values);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutInt("voice_status", 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("voice_status", 0);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
     int updateCode = VoicemailUpdate(updateValues, predicates);
     EXPECT_EQ(updateCode, 0);
 
-    predicates.Clear();
-    predicates.EqualTo("voice_status", "0");
-    predicates.And();
-    predicates.EqualTo("id", std::to_string(voicemailId));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("voice_status", "0");
+    predicates2.And();
+    predicates2.EqualTo("id", std::to_string(voicemailId));
     std::vector<std::string> columns;
     columns.push_back("voice_status");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates2);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -285,25 +293,26 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_400, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_Delete_test_500, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Delete_test_500 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    string phoneNumber = random_number_utils.Generating(6);
-    values.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket values;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(6);
+    values.Put("phone_number", phoneNumber);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("voicemail_Delete_test_500 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
     int deleteCode = VoicemailDelete(predicates);
     HILOG_INFO("voicemail_Delete_test_500: deleteCode = %{public}d", deleteCode);
     EXPECT_EQ(deleteCode, 0);
 
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(voicemailId));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(voicemailId));
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("id");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates2);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -323,26 +332,27 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Delete_test_500, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_Delete_test_600, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Delete_test_600 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket valuesOne;
-    string phoneNumber = random_number_utils.Generating(7);
-    valuesOne.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesOne;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(7);
+    valuesOne.Put("phone_number", phoneNumber);
     int voicemailIdOne = VoicemailInsertValues(valuesOne);
     HILOG_INFO("voicemail_Delete_test_600 : voicemailIdOne = %{public}d", voicemailIdOne);
     EXPECT_GT(voicemailIdOne, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesTwo;
-    valuesTwo.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesTwo;
+    valuesTwo.Put("phone_number", phoneNumber);
     int voicemailIdTwo = VoicemailInsertValues(valuesTwo);
     HILOG_INFO("voicemail_Delete_test_600 : voicemailIdTwo = %{public}d", voicemailIdTwo);
     EXPECT_GT(voicemailIdTwo, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesThree;
-    valuesThree.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesThree;
+    valuesThree.Put("phone_number", phoneNumber);
     int voicemailIdThree = VoicemailInsertValues(valuesThree);
     HILOG_INFO("voicemail_Delete_test_600 : voicemailIdThree = %{public}d", voicemailIdThree);
     EXPECT_GT(voicemailIdThree, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailIdOne));
     predicates.Or();
     predicates.EqualTo("id", std::to_string(voicemailIdThree));
@@ -353,15 +363,15 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Delete_test_600, testing::ext::TestSize
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("id");
-    valuesTwo.PutInt("id", voicemailIdTwo);
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(voicemailIdOne));
-    predicates.Or();
-    predicates.EqualTo("id", std::to_string(voicemailIdTwo));
-    predicates.Or();
-    predicates.EqualTo("id", std::to_string(voicemailIdThree));
-    predicates.OrderByAsc("id");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    valuesTwo.Put("id", voicemailIdTwo);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(voicemailIdOne));
+    predicates2.Or();
+    predicates2.EqualTo("id", std::to_string(voicemailIdTwo));
+    predicates2.Or();
+    predicates2.EqualTo("id", std::to_string(voicemailIdThree));
+    predicates2.OrderByAsc("id");
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates2);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -384,17 +394,17 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Delete_test_700, testing::ext::TestSize
     std::vector<std::string> columns;
     GetVoiceMailValuesColumn(columns);
     int columnsSize = 10;
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetVoiceMailValues(0, columnsSize, columns);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetVoiceMailValues(0, columnsSize, columns);
     int rawId = VoicemailInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
     // test end delete data
     int deleteCode = VoicemailDelete(predicates);
     EXPECT_EQ(deleteCode, 0);
 
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetDeleteQuery = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetDeleteQuery = VoicemailQuery(columns, predicates);
     // resultSet count 0
     int rowCount = 0;
     resultSetDeleteQuery->GetRowCount(rowCount);
@@ -415,34 +425,35 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Delete_test_700, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_Delete_test_800, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Delete_test_800 is starting!---");
-    OHOS::NativeRdb::ValuesBucket voicemailValues;
-    string phoneNumber = random_number_utils.Generating(6);
-    voicemailValues.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket voicemailValues;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(6);
+    voicemailValues.Put("phone_number", phoneNumber);
     int voicemailIdOne = VoicemailInsertValues(voicemailValues);
     EXPECT_GT(voicemailIdOne, 0);
-    voicemailValues.PutString("phone_number", phoneNumber);
+    voicemailValues.Put("phone_number", phoneNumber);
     int voicemailIdTwo = VoicemailInsertValues(voicemailValues);
     EXPECT_GT(voicemailIdTwo, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::DataAbilityPredicates> executePredicates =
-        std::make_shared<OHOS::NativeRdb::DataAbilityPredicates>(predicates);
+    std::shared_ptr<OHOS::DataShare::DataSharePredicates> executePredicates =
+        std::make_shared<OHOS::DataShare::DataSharePredicates>(predicates);
     std::shared_ptr<Uri> uri = std::make_shared<Uri>(VoicemailUri::VOICEMAIL);
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityOperation> operation =
-        OHOS::AppExecFwk::DataAbilityOperation::NewDeleteBuilder(uri)
+    std::shared_ptr<OHOS::DataShare::DataShareOperation> operation =
+        OHOS::DataShare::DataShareOperation::NewDeleteBuilder(uri)
             ->WithPredicatesBackReference(0, 0)
             ->WithPredicates(executePredicates)
             ->WithInterruptionAllowed(true)
             ->Build();
-    std::vector<std::shared_ptr<OHOS::AppExecFwk::DataAbilityOperation>> executeBatchOperations;
+    std::vector<std::shared_ptr<OHOS::DataShare::DataShareOperation>> executeBatchOperations;
     executeBatchOperations.push_back(operation);
     InitAbility();
-    std::vector<std::shared_ptr<OHOS::AppExecFwk::DataAbilityResult>> dataAbilityResult =
+    std::vector<std::shared_ptr<OHOS::DataShare::DataShareResult>> dataShareResult =
         voicemailAbility.ExecuteBatch(executeBatchOperations);
-    EXPECT_EQ(0, dataAbilityResult[0]->GetCount());
+    EXPECT_EQ(0, dataShareResult[0]->GetCount());
     std::vector<std::string> columns;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetInsertQuery = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetInsertQuery = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     resultSetInsertQuery->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -461,28 +472,29 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Delete_test_800, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_900, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Update_test_900 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    string phoneNumber = random_number_utils.Generating(9);
-    values.PutString("phone_number", phoneNumber);
-    values.PutInt("voice_status", 0);
+    OHOS::DataShare::DataShareValuesBucket values;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(9);
+    values.Put("phone_number", phoneNumber);
+    values.Put("voice_status", 0);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("voicemail_Update_test_900 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutInt("voice_status", 1);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("voice_status", 1);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
     int updateCode = VoicemailUpdate(updateValues, predicates);
     EXPECT_EQ(updateCode, 0);
 
-    updateValues.PutString("phone_number", phoneNumber);
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(voicemailId));
+    updateValues.Put("phone_number", phoneNumber);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(voicemailId));
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("voice_status");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates2);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -501,27 +513,28 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_900, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_1000, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Update_test_1000 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    string phoneNumber = random_number_utils.Generating(5);
-    values.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket values;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(5);
+    values.Put("phone_number", phoneNumber);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("voicemail_Update_test_1000 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    string phoneNumber_test = random_number_utils.Generating(11);
-    updateValues.PutString("phone_number", std::string(phoneNumber_test));
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    std::string phoneNumber_test = randomNumberUtils.Generating(11);
+    updateValues.Put("phone_number", std::string(phoneNumber_test));
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
     int updateCode = VoicemailUpdate(updateValues, predicates);
     HILOG_INFO("voicemail_Update_test_1000: updateCode = %{public}d", updateCode);
     EXPECT_EQ(updateCode, 0);
 
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(voicemailId));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(voicemailId));
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates2);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -540,50 +553,51 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_1000, testing::ext::TestSiz
 HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_1100, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Update_test_1100 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket valuesOne;
-    string phoneNumber = random_number_utils.Generating(9);
-    valuesOne.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesOne;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(9);
+    valuesOne.Put("phone_number", phoneNumber);
     int voicemailIdOne = VoicemailInsertValues(valuesOne);
     EXPECT_GT(voicemailIdOne, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesTwo;
-    valuesTwo.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesTwo;
+    valuesTwo.Put("phone_number", phoneNumber);
     int voicemailIdTwo = VoicemailInsertValues(valuesTwo);
     EXPECT_GT(voicemailIdTwo, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesThree;
-    valuesThree.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesThree;
+    valuesThree.Put("phone_number", phoneNumber);
     int voicemailIdThree = VoicemailInsertValues(valuesThree);
     EXPECT_GT(voicemailIdThree, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    string phoneNumber_test = random_number_utils.Generating(8);
-    updateValues.PutString("phone_number", std::string(phoneNumber_test));
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    std::string phoneNumber_test = randomNumberUtils.Generating(8);
+    updateValues.Put("phone_number", std::string(phoneNumber_test));
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailIdOne));
     int updateCode = VoicemailUpdate(updateValues, predicates);
     EXPECT_EQ(updateCode, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValuesTwo;
-    string phoneNumber_test_name = random_number_utils.Generating(7);
-    updateValuesTwo.PutString("phone_number", std::string(phoneNumber_test_name));
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(voicemailIdTwo));
-    updateCode = VoicemailUpdate(updateValuesTwo, predicates);
+    OHOS::DataShare::DataShareValuesBucket updateValuesTwo;
+    std::string phoneNumber_test_name = randomNumberUtils.Generating(7);
+    updateValuesTwo.Put("phone_number", std::string(phoneNumber_test_name));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(voicemailIdTwo));
+    updateCode = VoicemailUpdate(updateValuesTwo, predicates2);
     EXPECT_EQ(updateCode, 0);
 
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(voicemailIdOne));
-    predicates.Or();
-    predicates.EqualTo("id", std::to_string(voicemailIdTwo));
-    predicates.OrderByAsc("id");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates3;
+    predicates3.EqualTo("id", std::to_string(voicemailIdOne));
+    predicates3.Or();
+    predicates3.EqualTo("id", std::to_string(voicemailIdTwo));
+    predicates3.OrderByAsc("id");
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates3);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(2, rowCount);
-    std::vector<OHOS::NativeRdb::ValuesBucket> valuesVector;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> valuesVector;
     valuesVector.push_back(updateValues);
     valuesVector.push_back(updateValuesTwo);
     CheckResultSetList(valuesVector, result, "voicemail_Update_test_1100");
@@ -604,25 +618,25 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_1200, testing::ext::TestSiz
     std::vector<std::string> columns;
     GetVoiceMailValuesColumn(columns);
     int columnsSize = 10;
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetVoiceMailValues(0, columnsSize, columns);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetVoiceMailValues(0, columnsSize, columns);
     int rawId = VoicemailInsertValues(valuesBucket);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
-    OHOS::NativeRdb::ValuesBucket upDateValuesBucket = GetVoiceMailValues(0, columnsSize, columns);
+    OHOS::DataShare::DataShareValuesBucket upDateValuesBucket = GetVoiceMailValues(0, columnsSize, columns);
     int upDateCode = VoicemailUpdate(upDateValuesBucket, predicates);
     EXPECT_EQ(upDateCode, 0);
 
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = VoicemailQuery(columns, predicates);
     // resultSet count 1
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
 
     CheckResultSet(upDateValuesBucket, resultSet, "voicemail_Update_test_1200");
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(rawId));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(rawId));
     // test end delete data
-    int deleteCode = VoicemailDelete(predicates);
+    int deleteCode = VoicemailDelete(predicates2);
     EXPECT_EQ(deleteCode, 0);
     HILOG_INFO("-----voicemail_Update_test_1200 is edn!-----");
     ClearVoicemail();
@@ -639,43 +653,44 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_1200, testing::ext::TestSiz
 HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_1300, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Update_test_1300 is starting!---");
-    OHOS::NativeRdb::ValuesBucket voicemailValues;
-    string phoneNumber = random_number_utils.Generating(6);
-    voicemailValues.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket voicemailValues;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(6);
+    voicemailValues.Put("phone_number", phoneNumber);
     int voicemailIdOne = VoicemailInsertValues(voicemailValues);
     EXPECT_GT(voicemailIdOne, 0);
-    voicemailValues.PutString("phone_number", phoneNumber);
+    voicemailValues.Put("phone_number", phoneNumber);
     int voicemailIdTwo = VoicemailInsertValues(voicemailValues);
     EXPECT_GT(voicemailIdTwo, 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailIdOne));
     predicates.Or();
     predicates.EqualTo("id", std::to_string(voicemailIdTwo));
-    std::shared_ptr<OHOS::NativeRdb::ValuesBucket> values =
-        std::make_shared<OHOS::NativeRdb::ValuesBucket>(voicemailValues);
-    std::shared_ptr<OHOS::NativeRdb::DataAbilityPredicates> executePredicates =
-        std::make_shared<OHOS::NativeRdb::DataAbilityPredicates>(predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareValuesBucket> values =
+        std::make_shared<OHOS::DataShare::DataShareValuesBucket>(voicemailValues);
+    std::shared_ptr<OHOS::DataShare::DataSharePredicates> executePredicates =
+        std::make_shared<OHOS::DataShare::DataSharePredicates>(predicates);
     std::shared_ptr<Uri> uri = std::make_shared<Uri>(VoicemailUri::VOICEMAIL);
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityOperation> operation =
-        OHOS::AppExecFwk::DataAbilityOperation::NewUpdateBuilder(uri)
+    std::shared_ptr<OHOS::DataShare::DataShareOperation> operation =
+        OHOS::DataShare::DataShareOperation::NewUpdateBuilder(uri)
             ->WithValuesBucket(values)
             ->WithPredicatesBackReference(0, 0)
             ->WithPredicates(executePredicates)
             ->WithInterruptionAllowed(true)
             ->Build();
-    std::vector<std::shared_ptr<OHOS::AppExecFwk::DataAbilityOperation>> executeBatchOperations;
+    std::vector<std::shared_ptr<OHOS::DataShare::DataShareOperation>> executeBatchOperations;
     executeBatchOperations.push_back(operation);
     InitAbility();
-    std::vector<std::shared_ptr<OHOS::AppExecFwk::DataAbilityResult>> dataAbilityResult =
+    std::vector<std::shared_ptr<OHOS::DataShare::DataShareResult>> dataShareResult =
         voicemailAbility.ExecuteBatch(executeBatchOperations);
-    EXPECT_EQ(0, dataAbilityResult[0]->GetCount());
+    EXPECT_EQ(0, dataShareResult[0]->GetCount());
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetInsertQuery = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetInsertQuery = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     resultSetInsertQuery->GetRowCount(rowCount);
     EXPECT_EQ(2, rowCount);
-    std::vector<OHOS::NativeRdb::ValuesBucket> listValue;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listValue;
     listValue.push_back(voicemailValues);
     listValue.push_back(voicemailValues);
     CheckResultSetList(listValue, resultSetInsertQuery, "voicemail_Update_test_1300");
@@ -693,24 +708,25 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_1300, testing::ext::TestSiz
 HWTEST_F(VoicemailAbilityTest, voicemail_Query_test_1400, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Query_test_1400 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    string phoneNumber = random_number_utils.Generating(9);
-    values.PutString("phone_number", phoneNumber);
-    values.PutInt("voice_status", 1);
+    OHOS::DataShare::DataShareValuesBucket values;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(9);
+    values.Put("phone_number", phoneNumber);
+    values.Put("voice_status", 1);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("voicemail_Query_test_1400 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
-    values.PutInt("id", voicemailId);
+    values.Put("id", voicemailId);
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
     columns.push_back("voice_status");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("voice_status", "1");
     predicates.And();
     predicates.EqualTo("id", std::to_string(voicemailId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -729,18 +745,19 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Query_test_1400, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_Query_test_1500, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Query_test_1500 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    string phoneNumber = random_number_utils.Generating(5);
-    values.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket values;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(5);
+    values.Put("phone_number", phoneNumber);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("voicemail_Query_test_1500 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -759,16 +776,17 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Query_test_1500, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_Query_test_1600, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Query_test_1600 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    string phoneNumber = random_number_utils.Generating(5);
-    values.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket values;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(5);
+    values.Put("phone_number", phoneNumber);
     int voicemailIdOne = VoicemailInsertValues(values);
     HILOG_INFO("voicemail_Query_test_1600 : voicemailIdOne = %{public}d", voicemailIdOne);
     EXPECT_GT(voicemailIdOne, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesTwo;
-    string phoneNumber_test = random_number_utils.Generating(6);
-    valuesTwo.PutString("phone_number", phoneNumber_test);
+    OHOS::DataShare::DataShareValuesBucket valuesTwo;
+    std::string phoneNumber_test = randomNumberUtils.Generating(6);
+    valuesTwo.Put("phone_number", phoneNumber_test);
     int voicemailIdTwo = VoicemailInsertValues(valuesTwo);
     HILOG_INFO("voicemail_Query_test_1600 : voicemailIdTwo = %{public}d", voicemailIdTwo);
     EXPECT_GT(voicemailIdTwo, 0);
@@ -776,16 +794,16 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Query_test_1600, testing::ext::TestSize
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailIdOne));
     predicates.Or();
     predicates.EqualTo("id", std::to_string(voicemailIdTwo));
     predicates.OrderByAsc("id");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(2, rowCount);
-    std::vector<OHOS::NativeRdb::ValuesBucket> valuesVector;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> valuesVector;
     valuesVector.push_back(values);
     valuesVector.push_back(valuesTwo);
     CheckResultSetList(valuesVector, result, "voicemail_Query_test_1600");
@@ -807,9 +825,9 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Query_test_1700, testing::ext::TestSize
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     result->Close();
@@ -829,26 +847,27 @@ HWTEST_F(VoicemailAbilityTest, voicemail_BatchInsert_test_1800, testing::ext::Te
     HILOG_INFO("--- voicemail_BatchInsert_test_1800 is starting! ---");
 
     OHOS::Uri uriData(VoicemailUri::VOICEMAIL);
-    OHOS::NativeRdb::ValuesBucket voicemailValuesOne;
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    voicemailValuesOne.PutString("phone_number", std::string(phoneNumber));
-    voicemailValuesOne.PutInt("voice_status", 1);
-    OHOS::NativeRdb::ValuesBucket voicemailValuesTwo;
-    voicemailValuesTwo.PutString("phone_number", std::string(phoneNumber));
-    voicemailValuesTwo.PutInt("voice_status", 0);
-    OHOS::NativeRdb::ValuesBucket voicemailValuesThree;
-    voicemailValuesThree.PutString("phone_number", std::string(phoneNumber));
-    voicemailValuesThree.PutInt("voice_status", 0);
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesOne;
+    int number = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    voicemailValuesOne.Put("phone_number", std::string(phoneNumber));
+    voicemailValuesOne.Put("voice_status", 1);
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesTwo;
+    voicemailValuesTwo.Put("phone_number", std::string(phoneNumber));
+    voicemailValuesTwo.Put("voice_status", 0);
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesThree;
+    voicemailValuesThree.Put("phone_number", std::string(phoneNumber));
+    voicemailValuesThree.Put("voice_status", 0);
 
-    std::vector<OHOS::NativeRdb::ValuesBucket> listAddBluk;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listAddBluk;
     listAddBluk.push_back(voicemailValuesOne);
     listAddBluk.push_back(voicemailValuesTwo);
     listAddBluk.push_back(voicemailValuesThree);
     int batchInsertCode = voicemailAbility.BatchInsert(uriData, listAddBluk);
     EXPECT_EQ(batchInsertCode, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("phone_number", phoneNumber);
     predicates.Or();
     predicates.EqualTo("phone_number", phoneNumber);
@@ -856,11 +875,11 @@ HWTEST_F(VoicemailAbilityTest, voicemail_BatchInsert_test_1800, testing::ext::Te
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("voice_status");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(2, rowCount);
-    std::vector<OHOS::NativeRdb::ValuesBucket> listValue;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listValue;
     listValue.push_back(voicemailValuesOne);
     listValue.push_back(voicemailValuesThree);
     CheckResultSetList(listValue, result, "voicemail_BatchInsert_test_1800");
@@ -879,24 +898,25 @@ HWTEST_F(VoicemailAbilityTest, voicemail_BatchInsert_test_1900, testing::ext::Te
 {
     HILOG_INFO("--- voicemail_BatchInsert_test_1900 is staring! ---");
     OHOS::Uri uriData(VoicemailUri::VOICEMAIL);
-    OHOS::NativeRdb::ValuesBucket voicemailValuesOne;
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    voicemailValuesOne.PutString("phone_number", std::string(phoneNumber));
-    voicemailValuesOne.PutString("display_name", std::string("xiaoming"));
-    OHOS::NativeRdb::ValuesBucket voicemailValuesTwo;
-    voicemailValuesTwo.PutString("phone_number", std::string(phoneNumber));
-    voicemailValuesTwo.PutString("display_name", std::string("xiaozi"));
-    OHOS::NativeRdb::ValuesBucket voicemailValuesThree;
-    voicemailValuesThree.PutString("phone_number", std::string(phoneNumber));
-    voicemailValuesThree.PutString("display_name", std::string("xiaozhi"));
-    OHOS::NativeRdb::ValuesBucket voicemailValuesFour;
-    voicemailValuesFour.PutString("phone_number", std::string(phoneNumber));
-    voicemailValuesFour.PutString("display_name", std::string("xiaohei"));
-    OHOS::NativeRdb::ValuesBucket voicemailValuesFive;
-    voicemailValuesFive.PutString("phone_number", std::string(phoneNumber));
-    voicemailValuesFive.PutString("display_name", std::string("xiaohong"));
-    std::vector<OHOS::NativeRdb::ValuesBucket> listAddBluk;
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesOne;
+    int number = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    voicemailValuesOne.Put("phone_number", std::string(phoneNumber));
+    voicemailValuesOne.Put("display_name", std::string("xiaoming"));
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesTwo;
+    voicemailValuesTwo.Put("phone_number", std::string(phoneNumber));
+    voicemailValuesTwo.Put("display_name", std::string("xiaozi"));
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesThree;
+    voicemailValuesThree.Put("phone_number", std::string(phoneNumber));
+    voicemailValuesThree.Put("display_name", std::string("xiaozhi"));
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesFour;
+    voicemailValuesFour.Put("phone_number", std::string(phoneNumber));
+    voicemailValuesFour.Put("display_name", std::string("xiaohei"));
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesFive;
+    voicemailValuesFive.Put("phone_number", std::string(phoneNumber));
+    voicemailValuesFive.Put("display_name", std::string("xiaohong"));
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listAddBluk;
     listAddBluk.push_back(voicemailValuesOne);
     listAddBluk.push_back(voicemailValuesTwo);
     listAddBluk.push_back(voicemailValuesThree);
@@ -910,17 +930,12 @@ HWTEST_F(VoicemailAbilityTest, voicemail_BatchInsert_test_1900, testing::ext::Te
     columns.push_back("phone_number");
     columns.push_back("display_name");
     for (int i = 0; i < size; i++) {
-        OHOS::NativeRdb::DataAbilityPredicates predicates;
-        std::string name;
-        OHOS::NativeRdb::ValueObject value;
-        listAddBluk[i].GetObject("display_name", value);
-        value.GetString(name);
+        OHOS::DataShare::DataSharePredicates predicates;
+        bool isValid = false;
+        std::string name = listAddBluk[i].Get("display_name", isValid);
         predicates.EqualTo("display_name", name);
         predicates.And();
-        std::string phoneNumber;
-        OHOS::NativeRdb::ValueObject phoneNumberValue;
-        listAddBluk[i].GetObject("phone_number", phoneNumberValue);
-        phoneNumberValue.GetString(phoneNumber);
+        std::string phoneNumber = listAddBluk[i].Get("phone_number", isValid);
         predicates.EqualTo("phone_number", phoneNumber);
         CheckResultSetBatch(predicates, columns, listAddBluk[i], "voicemail_BatchInsert_test_1900");
     }
@@ -940,19 +955,20 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Insert_test_2000, testing::ext
     HILOG_INFO("--- abnormal_voicemail_Insert_test_2000 is starting! ---");
 
     OHOS::Uri uriVoicemail(VoicemailUri::VOICEMAIL);
-    OHOS::NativeRdb::ValuesBucket voicemailValues;
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    voicemailValues.PutString("phone_numbers", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket voicemailValues;
+    int number = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    voicemailValues.Put("phone_numbers", phoneNumber);
     int64_t voicemailId = voicemailAbility.Insert(uriVoicemail, voicemailValues);
-    HILOG_INFO("abnormal_voicemail_Insert_test_2000: voicemailId = %{public}lld", voicemailId);
+    HILOG_INFO("abnormal_voicemail_Insert_test_2000: voicemailId = %{public}ld", voicemailId);
     EXPECT_EQ(voicemailId, -1);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("phone_number", phoneNumber);
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -973,21 +989,21 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Insert_test_2100, testing::ext
     HILOG_INFO("--- abnormal_voicemail_Insert_test_2100 is starting! ---");
 
     OHOS::Uri errorUriVoicemails(VoicemailUri::ERROR_URI);
-    OHOS::NativeRdb::ValuesBucket voicemailValues;
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    voicemailValues.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket voicemailValues;
+    int number = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    voicemailValues.Put("phone_number", phoneNumber);
     int64_t voicemailId = voicemailAbility.Insert(errorUriVoicemails, voicemailValues);
-    HILOG_INFO("abnormal_voicemail_Insert_test_2100: voicemailId = %{public}lld", voicemailId);
+    HILOG_INFO("abnormal_voicemail_Insert_test_2100: voicemailId = %{public}ld", voicemailId);
     EXPECT_EQ(voicemailId, -1);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    predicates.EqualTo("phone_number", phoneNumber);
+    OHOS::DataShare::DataSharePredicates predicates;
+    std::string phoneNumber2 = randomNumberUtils.Generating(number);
+    predicates.EqualTo("phone_number", phoneNumber2);
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -1007,27 +1023,28 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2200, testing::ext
 {
     HILOG_INFO("--- abnormal_voicemail_Update_test_2200 is starting! ---");
     int64_t voicemailId = VoicemailStatusInsert("123456", 1);
-    HILOG_INFO("abnormal_voicemail_Update_test_2200: voicemailId = %{public}lld", voicemailId);
+    HILOG_INFO("abnormal_voicemail_Update_test_2200: voicemailId = %{public}ld", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutInt("voice_status", 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("voice_status", 0);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("ids", std::to_string(voicemailId));
     int updateCode = VoicemailUpdate(updateValues, predicates);
     HILOG_INFO("abnormal_voicemail_Update_test_2200 : updateCode = %{public}d", updateCode);
     EXPECT_EQ(updateCode, -1);
 
-    predicates.Clear();
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    predicates.EqualTo("phone_number", phoneNumber);
-    predicates.And();
-    predicates.EqualTo("voice_status", "0");
+    OHOS::DataShare::DataSharePredicates predicates2;
+    int number = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    predicates2.EqualTo("phone_number", phoneNumber);
+    predicates2.And();
+    predicates2.EqualTo("voice_status", "0");
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("voice_status");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates2);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -1046,24 +1063,25 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2200, testing::ext
 HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Delete_test_2300, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- abnormal_voicemail_Delete_test_2300 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    std::int number = 8;
-    string phoneNumber = random_number_utils.Generating(number);
-    values.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket values;
+    int number = 8;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    values.Put("phone_number", phoneNumber);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("abnormal_voicemail_Delete_test_2300 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("ids", std::to_string(voicemailId));
     int deleteCode = VoicemailDelete(predicates);
     HILOG_INFO("abnormal_voicemail_Delete_test_2300: deleteCode = %{public}d", deleteCode);
     EXPECT_EQ(deleteCode, -1);
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(voicemailId));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(voicemailId));
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates2);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -1082,16 +1100,17 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Delete_test_2300, testing::ext
 HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Delete_test_2400, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- abnormal_voicemail_Delete_test_2400 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    values.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket values;
+    int number = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    values.Put("phone_number", phoneNumber);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("abnormal_voicemail_Delete_test_2400 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
     OHOS::Uri uriVoicemails(VoicemailUri::ERROR_URI);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
     int deleteCode = voicemailAbility.Delete(uriVoicemails, predicates);
     HILOG_INFO("abnormal_voicemail_Delete_test_2400: deleteCode = %{public}d", deleteCode);
@@ -1099,7 +1118,7 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Delete_test_2400, testing::ext
 
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -1119,27 +1138,28 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2500, testing::ext
 {
     HILOG_INFO("--- abnormal_voicemail_Update_test_2500 is starting! ---");
     int64_t voicemailId = VoicemailStatusInsert("123456", 1);
-    HILOG_INFO("abnormal_voicemail_Update_test_2500: voicemailId = %{public}lld", voicemailId);
+    HILOG_INFO("abnormal_voicemail_Update_test_2500: voicemailId = %{public}ld", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutInt("voice_status", 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("voice_status", 0);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("ids", std::to_string(voicemailId));
     int updateCode = VoicemailUpdate(updateValues, predicates);
     HILOG_INFO("abnormal_voicemail_Update_test_2500 : updateCode = %{public}d", updateCode);
     EXPECT_EQ(updateCode, -1);
 
-    predicates.Clear();
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    predicates.EqualTo("phone_number", phoneNumber);
-    predicates.And();
-    predicates.EqualTo("voice_status", "0");
+    OHOS::DataShare::DataSharePredicates predicates2;
+    int number = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    predicates2.EqualTo("phone_number", phoneNumber);
+    predicates2.And();
+    predicates2.EqualTo("voice_status", "0");
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("voice_status");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates2);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -1158,17 +1178,18 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2500, testing::ext
 HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2600, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- abnormal_voicemail_Update_test_2600 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    std::int number = 11;
-    string phoneNumber = random_number_utils.Generating(number);
-    values.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket values;
+    int number = 11;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    values.Put("phone_number", phoneNumber);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("abnormal_voicemail_Update_test_2600 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutString("phone_number", std::string(phoneNumber));
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("phone_number", std::string(phoneNumber));
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("ids", std::to_string(voicemailId));
     int updateCode = VoicemailUpdate(updateValues, predicates);
     HILOG_INFO("abnormal_voicemail_Update_test_2600: updateCode = %{public}d", updateCode);
@@ -1187,27 +1208,28 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2600, testing::ext
 HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2700, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- abnormal_voicemail_Update_test_2700 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    std::int number_test = 6;
-    string phoneNumber_test = random_number_utils.Generating(number_test);
-    values.PutString("phone_number", phoneNumber_test);
+    OHOS::DataShare::DataShareValuesBucket values;
+    int number_test = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber_test = randomNumberUtils.Generating(number_test);
+    values.Put("phone_number", phoneNumber_test);
     int voicemailId = VoicemailInsertValues(values);
     HILOG_INFO("abnormal_voicemail_Update_test_2700 : voicemailId = %{public}d", voicemailId);
     EXPECT_GT(voicemailId, 0);
 
     OHOS::Uri uriVoicemails(VoicemailUri::ERROR_URI);
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    std::int number = 11;
-    string phoneNumber = random_number_utils.Generating(number);
-    updateValues.PutString("phone_number", std::string(phoneNumber));
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    int number = 11;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    updateValues.Put("phone_number", std::string(phoneNumber));
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
-    int updateCode = voicemailAbility.Update(uriVoicemails, updateValues, predicates);
+    int updateCode = voicemailAbility.Update(uriVoicemails, predicates, updateValues);
     HILOG_INFO("abnormal_voicemail_Update_test_2700: updateCode = %{public}d", updateCode);
     EXPECT_EQ(updateCode, -1);
     std::vector<std::string> columns;
     columns.push_back("phone_number");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -1230,9 +1252,9 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Query_test_2800, testing::ext:
     columns.push_back("id");
     columns.push_back("phone_numbers");
     columns.push_back("voice_status");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("voice_status", "1");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(-1, rowCount);
@@ -1254,9 +1276,9 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Query_test_2900, testing::ext:
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_numbers");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = VoicemailQuery(columns, predicates);
     int rowCount = -1;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(-1, rowCount);
@@ -1278,9 +1300,9 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Query_test_3000, testing::ext:
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", "10000000");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     result->Close();
@@ -1303,10 +1325,10 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Query_test_3100, testing::ext:
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        voicemailAbility.Query(errorUri, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        voicemailAbility.Query(errorUri, predicates, columns);
     EXPECT_EQ(resultSet, nullptr);
     ClearVoicemail();
 }
@@ -1323,28 +1345,29 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_BatchInsert_test_3200, testing
 {
     HILOG_INFO("--- abnormal_voicemail_BatchInsert_test_3200 is starting! ---");
     OHOS::Uri uriData(VoicemailUri::VOICEMAIL);
-    OHOS::NativeRdb::ValuesBucket voicemailValuesOne;
-    std::int number = 15;
-    string phoneNumber = random_number_utils.Generating(number);
-    std::int number_test = 6;
-    string phoneNumber_test = random_number_utils.Generating(number_test);
-    voicemailValuesOne.PutString("phone_number", std::string(phoneNumber));
-    voicemailValuesOne.PutInt("voice_status", 1);
-    OHOS::NativeRdb::ValuesBucket voicemailValuesTwo;
-    voicemailValuesTwo.PutString("phone_numbers", std::string(phoneNumber_test));
-    voicemailValuesTwo.PutInt("voice_statuss", 0);
-    OHOS::NativeRdb::ValuesBucket voicemailValuesThree;
-    voicemailValuesThree.PutString("phone_number", std::string(phoneNumber_test));
-    voicemailValuesThree.PutInt("voice_status", 0);
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesOne;
+    int number = 15;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    int number_test = 6;
+    std::string phoneNumber_test = randomNumberUtils.Generating(number_test);
+    voicemailValuesOne.Put("phone_number", std::string(phoneNumber));
+    voicemailValuesOne.Put("voice_status", 1);
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesTwo;
+    voicemailValuesTwo.Put("phone_numbers", std::string(phoneNumber_test));
+    voicemailValuesTwo.Put("voice_statuss", 0);
+    OHOS::DataShare::DataShareValuesBucket voicemailValuesThree;
+    voicemailValuesThree.Put("phone_number", std::string(phoneNumber_test));
+    voicemailValuesThree.Put("voice_status", 0);
 
-    std::vector<OHOS::NativeRdb::ValuesBucket> listAddBluk;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listAddBluk;
     listAddBluk.push_back(voicemailValuesOne);
     listAddBluk.push_back(voicemailValuesTwo);
     listAddBluk.push_back(voicemailValuesThree);
     int batchInsertCode = voicemailAbility.BatchInsert(uriData, listAddBluk);
     EXPECT_EQ(batchInsertCode, -1);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("phone_number", phoneNumber);
     predicates.Or();
     predicates.EqualTo("phone_numbers", phoneNumber_test);
@@ -1355,7 +1378,7 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_BatchInsert_test_3200, testing
     columns.push_back("phone_number");
     columns.push_back("phone_numbers");
     columns.push_back("voice_status");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(-1, rowCount);
@@ -1375,20 +1398,20 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_BatchInsert_test_3300, testing
 {
     HILOG_INFO("--- abnormal_voicemail_BatchInsert_test_3300 is starting! ---");
     OHOS::Uri uriData(VoicemailUri::VOICEMAIL);
-    OHOS::NativeRdb::ValuesBucket voicemailValues;
-    std::vector<OHOS::NativeRdb::ValuesBucket> listAddBluk;
+    OHOS::DataShare::DataShareValuesBucket voicemailValues;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> listAddBluk;
     int batchInserCode = 0;
     for (int i = 0; i < 10; i++) {
         listAddBluk.clear();
         for (int j = 10 * i + 1; j <= 10 * (i + 1); j++) {
             voicemailValues.Clear();
-            voicemailValues.PutString("phone_number", std::to_string(j));
+            voicemailValues.Put("phone_number", std::to_string(j));
             std::string name("zhangsan");
             name.append(std::to_string(j));
             if (j == 14 || j == 27 || j == 57) {
-                voicemailValues.PutString("display_names", name);
+                voicemailValues.Put("display_names", name);
             } else {
-                voicemailValues.PutString("display_name", name);
+                voicemailValues.Put("display_name", name);
             }
             listAddBluk.push_back(voicemailValues);
         }
@@ -1402,7 +1425,7 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_BatchInsert_test_3300, testing
         }
     }
     // clear data
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     int deleteCode = VoicemailDelete(predicates);
     EXPECT_EQ(0, deleteCode);
@@ -1420,20 +1443,21 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_BatchInsert_test_3300, testing
 HWTEST_F(VoicemailAbilityTest, voicemail_Insert_test_3400, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Insert_test_3400 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    std::int number = 6;
-    string phoneNumber = random_number_utils.Generating(number);
-    values.PutString("phone_number", phoneNumber);
-    values.PutInt("voice_status", 0);
+    OHOS::DataShare::DataShareValuesBucket values;
+    int number = 6;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    values.Put("phone_number", phoneNumber);
+    values.Put("voice_status", 0);
     int voicemailId = VoicemailInsertValues(values);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("voice_status");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -1453,29 +1477,29 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Insert_test_3400, testing::ext::TestSiz
 HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_3500, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Update_test_3500 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    std::int number = 9;
-    string phoneNumber = random_number_utils.Generating(number);
-    values.PutString("phone_number", phoneNumber);
-    values.PutInt("voice_status", 1);
+    OHOS::DataShare::DataShareValuesBucket values;
+    int number = 9;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    values.Put("phone_number", phoneNumber);
+    values.Put("voice_status", 1);
     int voicemailId = VoicemailInsertValues(values);
     EXPECT_GT(voicemailId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutInt("voice_status", 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("voice_status", 0);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(voicemailId));
     int updateCode = VoicemailUpdate(updateValues, predicates);
     EXPECT_EQ(updateCode, 0);
-    std::int number = 9;
-    string phoneNumber = random_number_utils.Generating(number);
-    updateValues.PutString("phone_number", phoneNumber);
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(voicemailId));
+    std::string phoneNumber2 = randomNumberUtils.Generating(number);
+    updateValues.Put("phone_number", phoneNumber2);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(voicemailId));
     std::vector<std::string> columns;
     columns.push_back("phone_number");
     columns.push_back("voice_status");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates2);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -1494,24 +1518,25 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Update_test_3500, testing::ext::TestSiz
 HWTEST_F(VoicemailAbilityTest, voicemail_Query_test_3600, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_Query_test_3600 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket values;
-    std::int number = 9;
-    string phoneNumber = random_number_utils.Generating(number);
-    values.PutString("phone_number", phoneNumber);
-    values.PutInt("voice_status", 0);
+    OHOS::DataShare::DataShareValuesBucket values;
+    int number = 9;
+    RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(number);
+    values.Put("phone_number", phoneNumber);
+    values.Put("voice_status", 0);
     int voicemailId = VoicemailInsertValues(values);
     EXPECT_GT(voicemailId, 0);
 
-    values.PutInt("id", voicemailId);
+    values.Put("id", voicemailId);
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
     columns.push_back("voice_status");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("voice_status", "0");
     predicates.And();
     predicates.EqualTo("id", std::to_string(voicemailId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> result = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     result->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
@@ -1530,15 +1555,15 @@ HWTEST_F(VoicemailAbilityTest, voicemail_Query_test_3600, testing::ext::TestSize
 HWTEST_F(VoicemailAbilityTest, voicemail_async_insert_test_3700, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_async_insert_test_3700 is staring! ---");
-    std::map<int, OHOS::NativeRdb::ValuesBucket> result;
+    std::map<int, OHOS::DataShare::DataShareValuesBucket> result;
     std::vector<VoicemailAsync *> voicemailAsyncVector;
     int threadNum = 6;
     for (int i = 0; i < threadNum; ++i) {
-        OHOS::NativeRdb::ValuesBucket values;
+        OHOS::DataShare::DataShareValuesBucket values;
         std::string name;
         name.append("asyncTest");
         name.append(std::to_string(i));
-        values.PutString("display_name", name);
+        values.Put("display_name", name);
         VoicemailAsync *contactAsync = new VoicemailAsync(values, result);
         std::thread asyncThread(&VoicemailAsync::Insert, contactAsync);
         voicemailAsyncVector.push_back(contactAsync);
@@ -1548,11 +1573,11 @@ HWTEST_F(VoicemailAbilityTest, voicemail_async_insert_test_3700, testing::ext::T
     std::this_thread::sleep_for(dura);
     std::vector<std::string> columns;
     columns.push_back("display_name");
-    std::map<int, OHOS::NativeRdb::ValuesBucket>::iterator it;
+    std::map<int, OHOS::DataShare::DataShareValuesBucket>::iterator it;
     for (it = result.begin(); it != result.end(); it++) {
-        OHOS::NativeRdb::DataAbilityPredicates predicates;
+        OHOS::DataShare::DataSharePredicates predicates;
         predicates.EqualTo("id", std::to_string(it->first));
-        std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = VoicemailQuery(columns, predicates);
+        std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = VoicemailQuery(columns, predicates);
         CheckResultSet(it->second, resultSet, "voicemail_async_insert_test_3700");
     }
     for (int i = 0; i < threadNum; ++i) {
@@ -1572,7 +1597,7 @@ HWTEST_F(VoicemailAbilityTest, voicemail_async_insert_test_3700, testing::ext::T
 HWTEST_F(VoicemailAbilityTest, voicemail_async_update_test_3800, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_async_update_test_3800 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket voicemailValues;
+    OHOS::DataShare::DataShareValuesBucket voicemailValues;
     std::vector<int64_t> voicemailId;
     voicemailId.push_back(VoicemailInsertValue("async_update1", voicemailValues));
     voicemailValues.Clear();
@@ -1586,15 +1611,15 @@ HWTEST_F(VoicemailAbilityTest, voicemail_async_update_test_3800, testing::ext::T
     voicemailValues.Clear();
     voicemailId.push_back(VoicemailInsertValue("async_update6", voicemailValues));
     voicemailValues.Clear();
-    std::vector<OHOS::NativeRdb::ValuesBucket> upDateValues;
-    OHOS::NativeRdb::DataAbilityPredicates queryPredicates;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> upDateValues;
+    OHOS::DataShare::DataSharePredicates queryPredicates;
     std::vector<VoicemailAsync *> voicemailAsyncVector;
     int size = voicemailId.size();
     for (int i = 0; i < size; ++i) {
-        OHOS::NativeRdb::ValuesBucket values;
+        OHOS::DataShare::DataShareValuesBucket values;
         std::string name;
         name.append("asyncTest");
-        values.PutString("display_name", name);
+        values.Put("display_name", name);
         upDateValues.push_back(values);
         int id = voicemailId[i];
         VoicemailAsync *contactAsync = new VoicemailAsync(values, id);
@@ -1610,7 +1635,7 @@ HWTEST_F(VoicemailAbilityTest, voicemail_async_update_test_3800, testing::ext::T
     std::this_thread::sleep_for(dura);
     std::vector<std::string> columns;
     columns.push_back("display_name");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = VoicemailQuery(columns, queryPredicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = VoicemailQuery(columns, queryPredicates);
     CheckResultSetList(upDateValues, resultSet, "voicemail_async_update_test_3800");
     for (int i = 0; i < size; ++i) {
         delete voicemailAsyncVector[i];
@@ -1629,7 +1654,7 @@ HWTEST_F(VoicemailAbilityTest, voicemail_async_update_test_3800, testing::ext::T
 HWTEST_F(VoicemailAbilityTest, voicemail_async_query_test_3900, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_async_query_test_4000 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket voicemailValues;
+    OHOS::DataShare::DataShareValuesBucket voicemailValues;
     std::vector<int64_t> voicemailId;
     voicemailId.push_back(VoicemailInsertValue("async_query1", voicemailValues));
     voicemailValues.Clear();
@@ -1644,7 +1669,7 @@ HWTEST_F(VoicemailAbilityTest, voicemail_async_query_test_3900, testing::ext::Te
     voicemailId.push_back(VoicemailInsertValue("async_query6", voicemailValues));
     voicemailValues.Clear();
     std::vector<VoicemailAsync *> voicemailAsyncVector;
-    std::vector<std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet>> resultSetVector;
+    std::vector<std::shared_ptr<OHOS::DataShare::DataShareResultSet>> resultSetVector;
     int threadNum = 6;
     for (int i = 0; i < threadNum; ++i) {
         VoicemailAsync *contactAsync = new VoicemailAsync(resultSetVector, voicemailId);
@@ -1677,7 +1702,7 @@ HWTEST_F(VoicemailAbilityTest, voicemail_async_query_test_3900, testing::ext::Te
 HWTEST_F(VoicemailAbilityTest, voicemail_async_delete_test_4000, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- voicemail_async_delete_test_4000 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket voicemailValues;
+    OHOS::DataShare::DataShareValuesBucket voicemailValues;
     std::vector<int64_t> voicemailId;
     voicemailId.push_back(VoicemailInsertValue("async_update1", voicemailValues));
     voicemailValues.Clear();
@@ -1692,7 +1717,7 @@ HWTEST_F(VoicemailAbilityTest, voicemail_async_delete_test_4000, testing::ext::T
     voicemailId.push_back(VoicemailInsertValue("async_update6", voicemailValues));
     voicemailValues.Clear();
     int size = voicemailId.size();
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.BeginWrap();
     std::vector<VoicemailAsync *> voicemailAsyncVector;
     for (int i = 0; i < size; ++i) {
@@ -1710,7 +1735,7 @@ HWTEST_F(VoicemailAbilityTest, voicemail_async_delete_test_4000, testing::ext::T
     std::chrono::milliseconds dura(Time::ASYNC_SLEEP_TIME);
     std::this_thread::sleep_for(dura);
     std::vector<std::string> columns;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = VoicemailQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = VoicemailQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
