@@ -18,6 +18,7 @@
 
 #include "contacts_build.h"
 #include "contacts_napi_object.h"
+#include "napi_base_context.h"
 
 namespace OHOS {
 namespace ContactsApi {
@@ -50,7 +51,7 @@ void ExecuteAsync(napi_env env, void *data);
 void ExecuteDone(napi_env env, napi_status status, void *data);
 void ExecuteSyncDone(napi_env env, napi_status status, void *data);
 void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
-int GetRawIdByResultSet(const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
+int GetRawIdByResultSet(const std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
 napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper);
@@ -66,33 +67,33 @@ void LocalExecuteIsLocalContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper);
 napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper, int actionCode);
 void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelper);
-NativeRdb::DataAbilityPredicates ConvertParamsSwitchSplit(
-    int code, napi_env env, napi_value &key, napi_value &hold, napi_value &attr);
-std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_env env);
-void HolderPredicates(const Holder &holder, NativeRdb::DataAbilityPredicates &predicates);
+DataShare::DataSharePredicates ConvertParamsSwitchSplit(
+    int code, napi_env env, const napi_value &key, const napi_value &hold, const napi_value &attr);
+std::shared_ptr<DataShare::DataShareHelper> GetDataShareHelper(napi_env env, napi_callback_info info);
+void HolderPredicates(const Holder &holder, DataShare::DataSharePredicates &predicates);
 void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holder);
-void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredicates &predicates);
+void AttributesPredicates(ContactAttributes &attrs, DataShare::DataSharePredicates &predicates);
 void CheckAttributes(ContactAttributes &attrs);
-NativeRdb::DataAbilityPredicates BuildQueryContactPredicates(
+DataShare::DataSharePredicates BuildQueryContactPredicates(
     napi_env env, std::string key, napi_value hold, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildUpdateContactPredicates(napi_env env, napi_value contacts, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildQueryContactData(napi_env env, napi_value &contactsObject,
-    napi_value &attrObject, std::vector<NativeRdb::ValuesBucket> &valueContactData);
+DataShare::DataSharePredicates BuildUpdateContactPredicates(napi_env env, napi_value contacts, napi_value attr);
+DataShare::DataSharePredicates BuildQueryContactData(napi_env env, napi_value &contactsObject,
+    napi_value &attrObject, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
 std::vector<std::string> BuildUpdateContactColumns();
 void BuildUpdateContactConvertParams(
     napi_env env, napi_value &contacts, napi_value &attr, ExecuteHelper &executeHelper);
-NativeRdb::DataAbilityPredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildQueryContactsByEmailPredicates(
+DataShare::DataSharePredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr);
+DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(
     napi_env env, std::string email, napi_value hold, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildQueryContactsByPhoneNumberPredicates(
+DataShare::DataSharePredicates BuildQueryContactsByPhoneNumberPredicates(
     napi_env env, std::string phoneNumber, napi_value hold, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildQueryGroupsPredicates(napi_env env, napi_value hold);
-NativeRdb::DataAbilityPredicates BuildQueryKeyPredicates(napi_env env, int id, napi_value hold);
-NativeRdb::DataAbilityPredicates BuildQueryMyCardPredicates(napi_env env, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildIsLocalContactPredicates(napi_env env, napi_value id);
-NativeRdb::DataAbilityPredicates BuildIsMyCardPredicates(napi_env env, napi_value id);
-NativeRdb::DataAbilityPredicates BuildDeleteContactDataPredicates(napi_env env, napi_value attr);
-NativeRdb::DataAbilityPredicates BuildDeleteContactPredicates(napi_env env, ExecuteHelper &executeHelper);
+DataShare::DataSharePredicates BuildQueryGroupsPredicates(napi_env env, napi_value hold);
+DataShare::DataSharePredicates BuildQueryKeyPredicates(napi_env env, int id, napi_value hold);
+DataShare::DataSharePredicates BuildQueryMyCardPredicates(napi_env env, napi_value attr);
+DataShare::DataSharePredicates BuildIsLocalContactPredicates(napi_env env, napi_value id);
+DataShare::DataSharePredicates BuildIsMyCardPredicates(napi_env env, napi_value id);
+DataShare::DataSharePredicates BuildDeleteContactDataPredicates(napi_env env, napi_value attr);
+DataShare::DataSharePredicates BuildDeleteContactPredicates(napi_env env, ExecuteHelper &executeHelper);
 void ObjectInit(napi_env env, napi_value object, napi_value &hold, napi_value &attr, napi_value &contacts);
 void ObjectInitId(napi_env env, napi_value object, napi_value &id);
 void ObjectInitString(napi_env env, napi_value object, napi_value &key);

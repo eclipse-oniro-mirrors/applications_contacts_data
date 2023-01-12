@@ -19,8 +19,8 @@
 #include "ability.h"
 #include "ability_context.h"
 #include "context.h"
-#include "data_ability_helper.h"
-#include "data_ability_predicates.h"
+#include "datashare_helper.h"
+#include "datashare_predicates.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
 #include "rdb_errno.h"
@@ -42,16 +42,17 @@ public:
     ~ContactsBuild();
     void GetContactDataByObject(napi_env env, napi_value object, Contacts &contacts);
     int GetInt(napi_env env, napi_value id);
-    void GetContactData(napi_env env, napi_value object, std::vector<NativeRdb::ValuesBucket> &valueContact,
-        std::vector<NativeRdb::ValuesBucket> &valueContactData);
+    void GetContactData(napi_env env, napi_value object, std::vector<DataShare::DataShareValuesBucket> &valueContact,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     std::string NapiGetValueString(napi_env env, napi_value value);
     ContactAttributes GetContactAttributes(napi_env env, napi_value object);
     Holder GetHolder(napi_env env, napi_value object);
     void BuildValueContactDataByType(
-        Contacts &contacts, int typeId, std::vector<NativeRdb::ValuesBucket> &valueContactData);
+        Contacts &contacts, int typeId, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
 
 private:
-    void TypeSwitchSplit(int typeId, Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
+    void TypeSwitchSplit(int typeId, Contacts &contacts,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     napi_value GetArrayByKey(napi_env env, napi_value valueObject, std::string key);
     napi_value GetObjectByKey(napi_env env, napi_value object, std::string key);
     std::string GetStringValueByKey(napi_env env, napi_value valueObject, std::string key);
@@ -71,22 +72,25 @@ private:
     Note GetNote(napi_env env, napi_value object);
     Organization GetOrganization(napi_env env, napi_value object);
     // structure parameter and ValuesBucket
-    void BuildValueContact(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContact);
-    void BuildValueContactData(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketEmail(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketEvent(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketGroup(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketImAddress(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketPortrait(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketPhoneNumber(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketPostalAddress(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketRelation(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketSipAddress(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketWebsite(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketName(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketNickName(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketNote(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
-    void GetValuesBucketOrganization(Contacts &contacts, std::vector<NativeRdb::ValuesBucket> &valueContactData);
+    void BuildValueContact(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContact);
+    void BuildValueContactData(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketEmail(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketEvent(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketGroup(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketImAddress(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketPortrait(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketPhoneNumber(Contacts &contacts,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketPostalAddress(Contacts &contacts,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketRelation(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketSipAddress(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketWebsite(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketName(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketNickName(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketNote(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+    void GetValuesBucketOrganization(Contacts &contacts,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
 };
 } // namespace ContactsApi
 } // namespace OHOS

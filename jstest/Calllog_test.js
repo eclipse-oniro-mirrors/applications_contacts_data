@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
+import dataShare from '@ohos.data.dataShare';
 import {afterAll, describe, expect, it} from 'deccjsunit/index'
 
-const URI_CALLLOG = "dataability:///com.ohos.calllogability";
-const calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
+const URI_CALLLOG = "datashare:///com.ohos.calllogability";
+const calllogUri = "datashare:///com.ohos.calllogability/calls/calllog";
 import common from './common.js';
 
 describe('CalllogTest', function() {
@@ -26,13 +25,13 @@ describe('CalllogTest', function() {
 
     async function calllogQueryForALL(map, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info(tag + ': calllogQueryByInsert start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info(tag + ': calllogQueryByInsert start ! dataShareHelper = ' + dataShareHelper);
         let resultColumns = common.getCallLogResultColumns();
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -55,13 +54,13 @@ describe('CalllogTest', function() {
 
     async function calllogQueryForDelete(map, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info(tag + ': calllogQueryForDelete start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info(tag + ': calllogQueryForDelete start ! dataShareHelper = ' + dataShareHelper);
         let resultColumns = common.getCallLogResultColumns();
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
             expect(resultSet.goToFirstRow() == false).assertTrue();
             console.info(tag + " :logMessage calllogQueryForDelete: goToFirstRow " + resultSet.goToFirstRow());
             resultSet.close();
@@ -72,13 +71,13 @@ describe('CalllogTest', function() {
 
     async function calllogQueryForBatchInsert(array, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info(tag + ': calllogQueryForBatchInsert start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info(tag + ': calllogQueryForBatchInsert start ! dataShareHelper = ' + dataShareHelper);
         let resultColumns = common.getCallLogResultColumns();
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("phone_number", array[0].get("phone_number"));
         try {
-            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
             var size = array.size();
             console.info(tag + ' : logMessage calllogQueryForBatchInsert: size' + size);
             expect(resultSet.rowCount == size).assertEqual(true);
@@ -105,10 +104,10 @@ describe('CalllogTest', function() {
 
     async function calllogDelete(tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
-        var deleteCode = await DAHelper.delete(calllogUri, condition);
+        var deleteCode = await dataShareHelper.delete(calllogUri, condition);
         console.info(tag + ': calllogDelete deleteCode = ' + deleteCode);
         expect(deleteCode == 0).assertTrue();
     }
@@ -120,10 +119,10 @@ describe('CalllogTest', function() {
      */
     it("calllog_insert_test_100", 0, async function(done) {
         console.info("--------logMessage calllog_insert_test_100 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var calllogId = await DAHelper.insert(calllogUri, common.getCallLogInsert());
+            var calllogId = await dataShareHelper.insert(calllogUri, common.getCallLogInsert());
             console.info("logMessage calllog_insert_test_100: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             var map = common.getCallLogInsertMap()
@@ -144,11 +143,11 @@ describe('CalllogTest', function() {
      */
     it("calllog_update_test_400", 0, async function(done) {
         console.info("--------logMessage calllog_update_test_400 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         try {
-            var calllogId = await DAHelper.insert(calllogUri, common.getCallLogInsert());
+            var calllogId = await dataShareHelper.insert(calllogUri, common.getCallLogInsert());
             console.info("logMessage calllog_update_test_400: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await UpdateOneCalllog();
@@ -161,9 +160,9 @@ describe('CalllogTest', function() {
         async function UpdateOneCalllog()
         {
             try {
-                let condition = new ohos_data_ability.DataAbilityPredicates();
+                let condition = new dataShare.DataSharePredicates();
                 condition.equalTo("id", calllogId.toString());
-                var updateCode = await DAHelper.update(calllogUri, common.getCallLogUpdate(), condition);
+                var updateCode = await dataShareHelper.update(calllogUri, common.getCallLogUpdate(), condition);
                 console.info("logMessage calllog_update_test_400: updateCode = " + updateCode);
                 expect(updateCode == 0).assertTrue();
                 var map = common.getCallLogUpdateMap();
@@ -184,12 +183,12 @@ describe('CalllogTest', function() {
      */
     it("calllog_update_test_500", 0, async function(done) {
         console.info("--------logMessage calllog_update_test_500 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(12);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "500"};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_update_test_500: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await UpdateAllCalllog();
@@ -201,10 +200,10 @@ describe('CalllogTest', function() {
         async function UpdateAllCalllog()
         {
             var updateValues = {"answer_state" : "1"};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.greaterThan("id", "0");
             try {
-                var updateCode = await DAHelper.update(calllogUri, updateValues, condition)
+                var updateCode = await dataShareHelper.update(calllogUri, updateValues, condition)
                 console.info("logMessage calllog_update_test_500: updateCode = " + updateCode);
                 expect(updateCode == 0).assertTrue();
                 var map = new Map([ [ "phone_number", phoneNumber ], [ "ring_duration", "500" ] ])
@@ -226,12 +225,12 @@ describe('CalllogTest', function() {
      */
     it("calllog_delete_test_1300", 0, async function(done) {
         console.info("--------logMessage calllog_delete_test_1300 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(5);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "200"};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_delete_test_1300: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await DeleteOneCalllog();
@@ -244,9 +243,9 @@ describe('CalllogTest', function() {
         async function DeleteOneCalllog()
         {
             try {
-                let condition = new ohos_data_ability.DataAbilityPredicates();
+                let condition = new dataShare.DataSharePredicates();
                 condition.equalTo("id", calllogId.toString());
-                var deleteCode = await DAHelper.delete(calllogUri, condition);
+                var deleteCode = await dataShareHelper.delete(calllogUri, condition);
                 console.info("logMessage calllog_delete_test_1300: deleteCode = " + deleteCode);
                 expect(deleteCode == 0).assertTrue();
                 var map = new Map();
@@ -266,8 +265,8 @@ describe('CalllogTest', function() {
      */
     it("calllog_batchInset_test_1600", 0, async function(done) {
         console.info("--------logMessage calllog_batchInset_test_1600 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(13);
         var addBulk_value1 = {"phone_number" : phoneNumber, "ring_duration" : "333"};
         var addBulk_value2 = {"phone_number" : phoneNumber, "ring_duration" : "600"};
@@ -281,7 +280,7 @@ describe('CalllogTest', function() {
         listAddBluk[3] = addBulk_value4;
         listAddBluk[4] = addBulk_value5;
         try {
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
             console.info("logMessage calllog_batchInset_test_1600: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == 0).assertTrue();
             await calllogQueryForBatchInsert(common.getCallLogBatchInsert(), "calllog_batchInset_test_1600");
@@ -300,12 +299,12 @@ describe('CalllogTest', function() {
      */
     it("calllog_query_test_1200", 0, async function(done) {
         console.info("------------calllog_query_test_1200  is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(5);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "200"};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_query_test_1200: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             var map = new Map([ [ "phone_number", phoneNumber ], [ "ring_duration", "200" ] ]);
@@ -325,12 +324,12 @@ describe('CalllogTest', function() {
      */
     it("calllog_query_test_1100", 0, async function(done) {
         console.info("------------calllog_query_test_1100 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(7);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "100"};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_query_test_1100: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await QueryCalllog();
@@ -344,12 +343,12 @@ describe('CalllogTest', function() {
         async function QueryCalllog()
         {
             var resultColumns = [ "id", "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.greaterThan("id", "0");
             condition.and();
             condition.lessThan("ring_duration", "200").orderByAsc("id");
             try {
-                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_query_test_1100: columnNames:" + resultSet.columnNames);
@@ -375,12 +374,12 @@ describe('CalllogTest', function() {
      */
     it("calllog_query_test_800", 0, async function(done) {
         console.info("------------calllog_query_test_800 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "100"};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_query_test_800: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await QueryOneCalllog();
@@ -394,10 +393,10 @@ describe('CalllogTest', function() {
         async function QueryOneCalllog()
         {
             var resultColumns = [ "id", "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", calllogId.toString());
             try {
-                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_query_test_800: columnNames:" + resultSet.columnNames);
@@ -423,13 +422,13 @@ describe('CalllogTest', function() {
      */
     it("calllog_fuzzyquery_test_100", 0, async function(done) {
         console.info("------------calllog_fuzzyquery_test_100 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(8);
         var phoneNumber_Test = phoneNumber.substring(0,3);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_fuzzyquery_test_100: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await QueryByStartsWithPhoneNumber();
@@ -443,10 +442,10 @@ describe('CalllogTest', function() {
         async function QueryByStartsWithPhoneNumber()
         {
             var resultColumns = [ "id", "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.like("phone_number", phoneNumber_Test + "%");
             try {
-                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_fuzzyquery_test_100: columnNames:" + resultSet.columnNames);
@@ -473,13 +472,13 @@ describe('CalllogTest', function() {
      */
     it("calllog_fuzzyquery_test_200", 0, async function(done) {
         console.info("------------calllog_fuzzyquery_test_200 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(8);
         var phoneNumber_Test = phoneNumber.substring(6,9);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_fuzzyquery_test_200: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await QueryByEndWithPhoneNumber();
@@ -493,10 +492,10 @@ describe('CalllogTest', function() {
         async function QueryByEndWithPhoneNumber()
         {
             var resultColumns = [ "id", "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.like("phone_number", "%" + phoneNumber_Test);
             try {
-                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_fuzzyquery_test_200: columnNames:" + resultSet.columnNames);
@@ -523,12 +522,12 @@ describe('CalllogTest', function() {
      */
     it("calllog_fuzzyquery_test_300", 0, async function(done) {
         console.info("------------calllog_fuzzyquery_test_300 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(15);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_fuzzyquery_test_300: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await QueryByPhoneNumberContainsField();
@@ -542,11 +541,11 @@ describe('CalllogTest', function() {
         async function QueryByPhoneNumberContainsField()
         {
             var resultColumns = [ "id", "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             var phoneNumber_Test = phoneNumber.substring(7,10);
             condition.like("phone_number", "%" + phoneNumber_Test + "%");
             try {
-                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info("logMessage calllog_fuzzyquery_test_300: columnNames:" + resultSet.columnNames);
@@ -573,12 +572,12 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_insert_test_200", 0, async function(done) {
         console.info("------------abnormal_calllog_insert_test_200 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(9);
         var insertValues = {"phone_numbers" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_insert_test_200: calllogId = " + calllogId);
             expect(calllogId == -1).assertTrue();
             done();
@@ -595,13 +594,13 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_insert_test_300", 0, async function(done) {
         console.info("------------abnormal_calllog_insert_test_300 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var errorUri = "dataability:///com.ohos.calllogability/calls/calllogs";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        var errorUri = "datashare:///com.ohos.calllogability/calls/calllogs";
         var phoneNumber = randomNum(8);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(errorUri, insertValues);
+            var calllogId = await dataShareHelper.insert(errorUri, insertValues);
             console.info("logMessage abnormal_calllog_insert_test_300: calllogId = " + calllogId);
             expect(calllogId == -1).assertTrue();
             done();
@@ -618,12 +617,12 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_update_test_600", 0, async function(done) {
         console.info("------------abnormal_calllog_update_test_600 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(9);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_update_test_600: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await abnormalUpdate();
@@ -638,10 +637,10 @@ describe('CalllogTest', function() {
         {
             var phoneNumber_Test = randomNum(7);
             var updateValues = {"phone_numbers" : phoneNumber_Test};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", calllogId.toString());
             try {
-                var updataCode = await DAHelper.update(calllogUri, updateValues, condition);
+                var updataCode = await dataShareHelper.update(calllogUri, updateValues, condition);
                 console.info("logMessage abnormal_calllog_update_test_600: updataCode = " + updataCode);
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
@@ -662,13 +661,13 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_update_test_700", 0, async function(done) {
         console.info("------------abnormal_calllog_update_test_700 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var errorUri = "dataability:///com.ohos.calllogability/calls/calllogs";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        var errorUri = "datashare:///com.ohos.calllogability/calls/calllogs";
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_update_test_700: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await abnormalUpdate();
@@ -683,10 +682,10 @@ describe('CalllogTest', function() {
         {
             var phoneNumber_Test = randomNum(7);
             var updateValues = {"phone_numbers" : phoneNumber_Test};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", calllogId.toString());
             try {
-                var updataCode = await DAHelper.update(errorUri, updateValues, condition);
+                var updataCode = await dataShareHelper.update(errorUri, updateValues, condition);
                 console.info("logMessage abnormal_calllog_update_test_700: updataCode = " + updataCode);
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
@@ -708,12 +707,12 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_delete_test_1400", 0, async function(done) {
         console.info("------------abnormal_calllog_delete_test_1400 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(5);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_delete_test_1400: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await abnormalDelete();
@@ -726,10 +725,10 @@ describe('CalllogTest', function() {
 
         async function abnormalDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", calllogId.toString());
             try {
-                var deleteCode = await DAHelper.delete(calllogUri, condition);
+                var deleteCode = await dataShareHelper.delete(calllogUri, condition);
                 console.info("logMessage abnormal_calllog_delete_test_1400: deleteCode = " + deleteCode);
                 expect(deleteCode == -1).assertTrue();
                 var map = new Map();
@@ -750,13 +749,13 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_delete_test_1500", 0, async function(done) {
         console.info("------------abnormal_calllog_delete_test_1500 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var errorUri = "dataability:///com.ohos.calllogability/calls/calllogs";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        var errorUri = "datashare:///com.ohos.calllogability/calls/calllogs";
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_delete_test_1500: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await abnormalDelete();
@@ -769,10 +768,10 @@ describe('CalllogTest', function() {
 
         async function abnormalDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", calllogId.toString());
             try {
-                var deleteCode = await DAHelper.delete(errorUri, condition);
+                var deleteCode = await dataShareHelper.delete(errorUri, condition);
                 console.info("logMessage abnormal_calllog_delete_test_1500: deleteCode = " + deleteCode);
                 expect(deleteCode == -1).assertTrue();
                 done()
@@ -794,12 +793,12 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_query_test_900", 0, async function(done) {
         console.info("------------abnormal_calllog_query_test_900 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_query_test_900: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await abnormalQuery();
@@ -813,10 +812,10 @@ describe('CalllogTest', function() {
         async function abnormalQuery()
         {
             var resultColumns = [ "id", "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", calllogId.toString());
             try {
-                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
                 console.info('logMessage abnormal_calllog_query_test_900: goToFirstRow' + resultSet.goToFirstRow());
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 resultSet.close();
@@ -834,8 +833,8 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_batchinsert_test_1700", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_batchinsert_test_1700 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(9);
         var phoneNumber_Test = randomNum(6);
         var addBulk_value1 = {"phone_number" : phoneNumber, "ring_duration" : "500"};
@@ -850,7 +849,7 @@ describe('CalllogTest', function() {
         listAddBluk[3] = addBulk_value4;
         listAddBluk[4] = addBulk_value5;
         try {
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
             console.info("logMessage abnormal_calllog_batchinsert_test_1700: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == -1).assertTrue();
             done();
@@ -867,10 +866,10 @@ describe('CalllogTest', function() {
      */
     it("calllog_delete_test_1800", 0, async function(done) {
         console.info("--------logMessage calllog_delete_test_1800 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var calllogId = await DAHelper.insert(calllogUri, common.getCallLogInsert());
+            var calllogId = await dataShareHelper.insert(calllogUri, common.getCallLogInsert());
             console.info("logMessage calllog_delete_test_1800: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             var map = common.getCallLogInsertMap()
@@ -885,9 +884,9 @@ describe('CalllogTest', function() {
         async function executeBatch()
         {
             console.info("logMessage calllog_delete_test_1800:  executeBatch start ");
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", calllogId.toString());
-            DAHelper.executeBatch(URI_CALLLOG, [ {
+            dataShareHelper.executeBatch(URI_CALLLOG, [ {
                 uri : calllogUri,
                 type : featureAbility.DataAbilityOperationType.TYPE_DELETE,
                 predicates : condition,
@@ -912,10 +911,10 @@ describe('CalllogTest', function() {
      */
     it("calllog_update_test_1900", 0, async function(done) {
         console.info("--------logMessage calllog_update_test_1900 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var calllogId = await DAHelper.insert(calllogUri, common.getCallLogInsert());
+            var calllogId = await dataShareHelper.insert(calllogUri, common.getCallLogInsert());
             console.info("logMessage calllog_update_test_1900: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             var map = common.getCallLogInsertMap()
@@ -931,9 +930,9 @@ describe('CalllogTest', function() {
         {
             var phoneNumber = randomNum(8);
             var updateValues = {"phone_number" : phoneNumber};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", calllogId.toString());
-            DAHelper.executeBatch(URI_CALLLOG, [ {
+            dataShareHelper.executeBatch(URI_CALLLOG, [ {
                 uri : calllogUri,
                 type : featureAbility.DataAbilityOperationType.TYPE_UPDATE,
                 valuesBucket : updateValues,
@@ -959,14 +958,14 @@ describe('CalllogTest', function() {
      */
     it("calllog_Delete_test_2000", 0, async function(done) {
         console.info("--------logMessage calllog_Delete_test_2000 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(5);
         var insertValues = {"phone_number" : phoneNumber, "ring_duration" : "200"};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
-            var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
-            var calllogIdThree = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
+            var calllogIdTwo = await dataShareHelper.insert(calllogUri, insertValues);
+            var calllogIdThree = await dataShareHelper.insert(calllogUri, insertValues);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
             expect(calllogIdThree > 0).assertTrue();
@@ -980,17 +979,17 @@ describe('CalllogTest', function() {
         async function DeleteCalllog()
         {
             try {
-                let condition = new ohos_data_ability.DataAbilityPredicates();
+                let condition = new dataShare.DataSharePredicates();
                 condition.equalTo("id", calllogId.toString());
                 condition.or();
                 condition.equalTo("id", calllogIdTwo.toString());
                 condition.or();
                 condition.equalTo("id", calllogIdThree.toString());
-                var deleteCode = await DAHelper.delete(calllogUri, condition);
+                var deleteCode = await dataShareHelper.delete(calllogUri, condition);
                 console.info("logMessage calllog_Delete_test_2000: deleteCode = " + deleteCode);
                 expect(deleteCode == 0).assertTrue();
                 var resultColumns = [];
-                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
                 expect(resultSet.rowCount == 0).assertTrue();
                 resultSet.close();
             } catch (error) {
@@ -1007,20 +1006,20 @@ describe('CalllogTest', function() {
      */
     it("calllog_Delete_test_2100", 0, async function(done) {
         console.info("--------logMessage calllog_Delete_test_2100 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var calllogId = await DAHelper.insert(calllogUri, common.getCallLogInsert());
+            var calllogId = await dataShareHelper.insert(calllogUri, common.getCallLogInsert());
             console.info("logMessage calllog_Delete_test_2100: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             var map = common.getCallLogInsertMap()
             map.set("id", calllogId.toString());
             await calllogQueryForALL(map, "calllog_Delete_test_2100");
             await calllogDelete("calllog_Delete_test_2100");
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", calllogId);
             var resultColumns = [];
-            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
             expect(resultSet.rowCount == 0).assertTrue();
             resultSet.close();
             done();
@@ -1037,20 +1036,20 @@ describe('CalllogTest', function() {
      */
     it("calllog_queryContains_test_2200", 0, async function(done) {
         console.info("--------logMessage calllog_queryContains_test_2200 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(17);
         var phoneNumber_Test = phoneNumber.substring(13,18);
         var insertValues = {"phone_number" : phoneNumber}
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_queryContains_test_2200: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
 
             var resultColumns = [ "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.contains("phone_number", phoneNumber_Test);
-            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -1076,13 +1075,13 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_update_test_2300", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_update_test_2300 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
-            var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
+            var calllogIdTwo = await dataShareHelper.insert(calllogUri, insertValues);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
             await UpdateOneCalllog();
@@ -1096,8 +1095,8 @@ describe('CalllogTest', function() {
             try {
                 var insertValues = {phone_number : phoneNumber, display_names : "nameUpdateError2300"};
                  var condition =
-                    new ohos_data_ability.DataAbilityPredicates();
-                var updateCode = await DAHelper.update(calllogUri, insertValues, condition);
+                    new dataShare.DataSharePredicates();
+                var updateCode = await dataShareHelper.update(calllogUri, insertValues, condition);
                 console.info("logMessage abnormal_calllog_update_test_2300: updateCode = " + updateCode);
                 expect(updateCode == -1).assertTrue();
                 var map = new Map();
@@ -1122,19 +1121,19 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_query_test_2400", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_query_test_2400 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
-            var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
+            var calllogIdTwo = await dataShareHelper.insert(calllogUri, insertValues);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", calllogId.toString() + "ksks");
             var resultColumns = [ "display_names" ];
-            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
             console.info("abnormal_calllog_query_test_2400: resultSet.rowCount = " + resultSet.rowCount);
             expect(resultSet.rowCount == -1).assertTrue();
             resultSet.close();
@@ -1154,20 +1153,20 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_query_test_2500", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_query_test_2500 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info('abnormal_calllog_query_test_2500 calllogId = ' + calllogId);
-            var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
+            var calllogIdTwo = await dataShareHelper.insert(calllogUri, insertValues);
             console.info('abnormal_calllog_query_test_2500 calllogIdTwo = ' + calllogIdTwo);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             var resultColumns = [ "display_names" ];
-            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
             console.info('abnormal_calllog_query_test_2500 resultSet.goToFirstRow() = ' + resultSet.goToFirstRow());
             console.info('abnormal_calllog_query_test_2500 resultSet.rowCount = ' + resultSet.rowCount);
             expect(resultSet.goToFirstRow() == false).assertTrue();
@@ -1187,29 +1186,29 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_delete_test_2600", 0, async function(done) {
         console.info("--------logMessage abnormal_calllog_delete_test_2600 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {phone_number : phoneNumber, display_name : "name2300"}
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
-            var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
+            var calllogIdTwo = await dataShareHelper.insert(calllogUri, insertValues);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
         } catch (error) {
             console.info("logMessage abnormal_calllog_delete_test_2600: calllog insert error = " + error);
             done();
         }
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("ids", calllogIdTwo.toString());
         condition.or();
         condition.equalTo("id", calllogId.toString());
-        var code = await DAHelper.delete(calllogUri, condition);
+        var code = await dataShareHelper.delete(calllogUri, condition);
         console.info("logMessage abnormal_calllog_delete_test_2600: code = " + code);
         expect(code == -1).assertTrue();
         condition.clear();
         var resultColumns = [];
-        let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+        let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
         var count = 2;
         expect(resultSet.rowCount == count).assertTrue();
         resultSet.close();
@@ -1223,13 +1222,13 @@ describe('CalllogTest', function() {
      * @tc.desc    Function test
      */
     it("abnormal_calllog_delete_test_2700", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(14);
         var insertValues = {phone_number : phoneNumber, display_name : "name2700"}
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
-            var calllogIdTwo = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
+            var calllogIdTwo = await dataShareHelper.insert(calllogUri, insertValues);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
             await UpdateOneCalllog();
@@ -1242,11 +1241,11 @@ describe('CalllogTest', function() {
         {
             try {
                 var insertValues = {phone_number : phoneNumber, display_names : "nameUpdateError2700"};
-                let condition = new ohos_data_ability.DataAbilityPredicates();
+                let condition = new dataShare.DataSharePredicates();
                 condition.equalTo("ids", calllogIdTwo.toString());
                 condition.or();
                 condition.equalTo("id", calllogId.toString());
-                var updateCode = await DAHelper.update(calllogUri, insertValues, condition);
+                var updateCode = await dataShareHelper.update(calllogUri, insertValues, condition);
                 console.info("logMessage abnormal_calllog_delete_test_2700: updateCode = " + updateCode);
                 expect(updateCode == -1).assertTrue();
                 var map = new Map();
@@ -1270,13 +1269,13 @@ describe('CalllogTest', function() {
      */
     it("abnormal_calllog_query_test_2800", 0, async function(done) {
         console.info("------------abnormal_calllog_query_test_2800 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(8);
         var phoneNumber_Test = phoneNumber.substring(0,3);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var calllogId = await DAHelper.insert(calllogUri, insertValues);
+            var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_query_test_2800: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
             await QueryByStartsWithPhoneNumberError();
@@ -1290,10 +1289,10 @@ describe('CalllogTest', function() {
         async function QueryByStartsWithPhoneNumberError()
         {
             var resultColumns = [ "id", "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.like("phone_numbers", phoneNumber_Test + "%");
             try {
-                let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+                let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
                 console.info("logMessage abnormal_calllog_query_test_2800: resultSet.rowCount = " + resultSet.rowCount);
                 expect(resultSet.rowCount == -1).assertTrue();
                 resultSet.close();
@@ -1305,11 +1304,11 @@ describe('CalllogTest', function() {
     });
 
     afterAll(async function() {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('callllog afterAll logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('callllog afterAll logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
-        var deleteCode = await DAHelper.delete(calllogUri, condition);
+        var deleteCode = await dataShareHelper.delete(calllogUri, condition);
         console.info('callllog afterAll end logMessage deleteCode = ' + deleteCode);
     });
 

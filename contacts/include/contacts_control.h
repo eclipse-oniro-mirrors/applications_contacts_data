@@ -19,8 +19,8 @@
 #include "ability.h"
 #include "ability_context.h"
 #include "context.h"
-#include "data_ability_helper.h"
-#include "data_ability_predicates.h"
+#include "datashare_helper.h"
+#include "datashare_predicates.h"
 #include "rdb_errno.h"
 #include "rdb_helper.h"
 #include "rdb_open_callback.h"
@@ -36,33 +36,33 @@ class ContactsControl {
 public:
     ContactsControl();
     ~ContactsControl();
-    int64_t RawContactInsert(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-        OHOS::NativeRdb::ValuesBucket rawContactValues);
-    int ContactDataInsert(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-        std::vector<OHOS::NativeRdb::ValuesBucket> contactsDataValues);
-    int RawContactUpdate(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-        OHOS::NativeRdb::ValuesBucket updateValues, OHOS::NativeRdb::DataAbilityPredicates predicates);
-    int ContactDataUpdate(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-        OHOS::NativeRdb::ValuesBucket updateValues, OHOS::NativeRdb::DataAbilityPredicates predicates);
-    int ContactDelete(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-        OHOS::NativeRdb::DataAbilityPredicates predicates);
-    int ContactDataDelete(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-        OHOS::NativeRdb::DataAbilityPredicates predicates);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactQuery(
-        std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-        OHOS::NativeRdb::DataAbilityPredicates predicates);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactDataQuery(
-        std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-        OHOS::NativeRdb::DataAbilityPredicates predicates);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> GroupsQuery(
-        std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-        OHOS::NativeRdb::DataAbilityPredicates predicates);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> MyCardQuery(
-        std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-        OHOS::NativeRdb::DataAbilityPredicates predicates);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> HolderQuery(
-        std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-        OHOS::NativeRdb::DataAbilityPredicates predicates);
+    int64_t RawContactInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+        DataShare::DataShareValuesBucket rawContactValues);
+    int ContactDataInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+        std::vector<DataShare::DataShareValuesBucket> contactsDataValues);
+    int RawContactUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+        DataShare::DataShareValuesBucket updateValues, DataShare::DataSharePredicates predicates);
+    int ContactDataUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+        DataShare::DataShareValuesBucket updateValues, DataShare::DataSharePredicates predicates);
+    int ContactDelete(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+        DataShare::DataSharePredicates predicates);
+    int ContactDataDelete(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+        DataShare::DataSharePredicates predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> ContactQuery(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+        DataShare::DataSharePredicates predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> ContactDataQuery(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+        DataShare::DataSharePredicates predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> GroupsQuery(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+        DataShare::DataSharePredicates predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> MyCardQuery(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+        DataShare::DataSharePredicates predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> HolderQuery(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+        DataShare::DataSharePredicates predicates);
 };
 } // namespace ContactsApi
 } // namespace OHOS

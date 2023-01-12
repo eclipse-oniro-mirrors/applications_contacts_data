@@ -15,6 +15,7 @@
 
 #include "calllogfuzzyquery_test.h"
 
+#include "random_number_utils.h"
 #include "test_common.h"
 
 namespace Contacts {
@@ -27,23 +28,23 @@ CalllogFuzzyQueryTest::~CalllogFuzzyQueryTest()
 {
 }
 
-int CalllogFuzzyQueryTest::CalllogDelete(OHOS::NativeRdb::DataAbilityPredicates predicates)
+int CalllogFuzzyQueryTest::CalllogDelete(OHOS::DataShare::DataSharePredicates predicates)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
     int code = calllogAbility.Delete(uriCalllog, predicates);
     return code;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> CalllogFuzzyQueryTest::CalllogQuery(
-    std::vector<std::string> columns, OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<OHOS::DataShare::DataShareResultSet> CalllogFuzzyQueryTest::CalllogQuery(
+    std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        calllogAbility.Query(uriCalllog, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        calllogAbility.Query(uriCalllog, predicates, columns);
     return resultSet;
 }
 
-int64_t CalllogFuzzyQueryTest::CalllogInsertValues(OHOS::NativeRdb::ValuesBucket &values)
+int64_t CalllogFuzzyQueryTest::CalllogInsertValues(OHOS::DataShare::DataShareValuesBucket &values)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
     int64_t code = calllogAbility.Insert(uriCalllog, values);
@@ -53,7 +54,7 @@ int64_t CalllogFuzzyQueryTest::CalllogInsertValues(OHOS::NativeRdb::ValuesBucket
 void CalllogFuzzyQueryTest::ClearCallLog()
 {
     // clear all callLog data
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     int deleteCode = CalllogDelete(predicates);
     EXPECT_EQ(deleteCode, 0);
@@ -70,30 +71,31 @@ void CalllogFuzzyQueryTest::ClearCallLog()
 HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_100, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("----calllog_Query_test_100 is starting!----");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(9);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    OHOS::Contacts::RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(9);
+    valuesBucket.Put("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
-    valuesBucket.PutInt("id", rawId);
-    OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    string phoneNumber_test = random_number_utils.Generating(10);
-    valuesBucketTwo.PutString("phone_number", phoneNumber_test);
+    valuesBucket.Put("id", rawId);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketTwo;
+    std::string phoneNumber_test = randomNumberUtils.Generating(10);
+    valuesBucketTwo.Put("phone_number", phoneNumber_test);
     rawId = CalllogInsertValues(valuesBucketTwo);
-    valuesBucketTwo.PutInt("id", rawId);
+    valuesBucketTwo.Put("id", rawId);
     EXPECT_GT(rawId, 0);
 
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.Like("phone_number", "123%");
     predicates.OrderByAsc("id");
-    std::vector<OHOS::NativeRdb::ValuesBucket> valuesBucketVector;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> valuesBucketVector;
     valuesBucketVector.push_back(valuesBucket);
     valuesBucketVector.push_back(valuesBucketTwo);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count 1
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
@@ -115,24 +117,25 @@ HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_100, testing::ext::TestSize.L
 HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_200, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("----calllog_Query_test_200 is starting!----");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(11);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    OHOS::Contacts::RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(11);
+    valuesBucket.Put("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
-    valuesBucket.PutInt("id", rawId);
-    OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", phoneNumber);
+    valuesBucket.Put("id", rawId);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketTwo;
+    valuesBucketTwo.Put("phone_number", phoneNumber);
     rawId = CalllogInsertValues(valuesBucketTwo);
-    valuesBucketTwo.PutInt("id", rawId);
+    valuesBucketTwo.Put("id", rawId);
     EXPECT_GT(rawId, 0);
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.Like("phone_number", "%750");
     predicates.OrderByAsc("id");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count 1
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
@@ -154,25 +157,26 @@ HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_200, testing::ext::TestSize.L
 HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_300, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("----calllog_Query_test_300 is starting!----");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(11);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    OHOS::Contacts::RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(11);
+    valuesBucket.Put("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
-    valuesBucket.PutInt("id", rawId);
-    OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", phoneNumber);
+    valuesBucket.Put("id", rawId);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketTwo;
+    valuesBucketTwo.Put("phone_number", phoneNumber);
     rawId = CalllogInsertValues(valuesBucketTwo);
-    valuesBucketTwo.PutInt("id", rawId);
+    valuesBucketTwo.Put("id", rawId);
     EXPECT_GT(rawId, 0);
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    string phoneNumber_test = random_number_utils.Generating(17);
+    OHOS::DataShare::DataSharePredicates predicates;
+    std::string phoneNumber_test = randomNumberUtils.Generating(17);
     predicates.Like("phone_number", phoneNumber_test);
     predicates.OrderByAsc("id");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count 0
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
@@ -192,24 +196,25 @@ HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_300, testing::ext::TestSize.L
 HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_400, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("----calllog_Query_test_400 is starting!----");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(11);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    OHOS::Contacts::RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(11);
+    valuesBucket.Put("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
-    valuesBucket.PutInt("id", rawId);
-    OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", phoneNumber);
+    valuesBucket.Put("id", rawId);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketTwo;
+    valuesBucketTwo.Put("phone_number", phoneNumber);
     rawId = CalllogInsertValues(valuesBucketTwo);
-    valuesBucketTwo.PutInt("id", rawId);
+    valuesBucketTwo.Put("id", rawId);
     EXPECT_GT(rawId, 0);
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.Like("phone_number", "%37845%");
     predicates.OrderByAsc("id");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     // resultSet count 0
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
@@ -230,27 +235,28 @@ HWTEST_F(CalllogFuzzyQueryTest, calllog_Query_test_400, testing::ext::TestSize.L
 HWTEST_F(CalllogFuzzyQueryTest, abnormal_calllog_Query_test_500, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("----abnormal_calllog_Query_test_500 is starting!----");
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
-    string phoneNumber = random_number_utils.Generating(11);
-    valuesBucket.PutString("phone_number", phoneNumber);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    OHOS::Contacts::RandomNumberUtils randomNumberUtils;
+    std::string phoneNumber = randomNumberUtils.Generating(11);
+    valuesBucket.Put("phone_number", phoneNumber);
     int rawId = CalllogInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
-    valuesBucket.PutInt("id", rawId);
-    OHOS::NativeRdb::ValuesBucket valuesBucketTwo;
-    valuesBucketTwo.PutString("phone_number", phoneNumber);
+    valuesBucket.Put("id", rawId);
+    OHOS::DataShare::DataShareValuesBucket valuesBucketTwo;
+    valuesBucketTwo.Put("phone_number", phoneNumber);
     rawId = CalllogInsertValues(valuesBucketTwo);
-    valuesBucketTwo.PutInt("id", rawId);
+    valuesBucketTwo.Put("id", rawId);
     EXPECT_GT(rawId, 0);
 
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    string phoneNumber_test = random_number_utils.Generating(17);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    std::string phoneNumber_test = randomNumberUtils.Generating(17);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.Like("phone_numbers", phoneNumber_test);
     predicates.OrderByAsc("id");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = CalllogQuery(columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = CalllogQuery(columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(-1, rowCount);

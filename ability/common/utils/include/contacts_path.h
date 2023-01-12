@@ -26,7 +26,6 @@ public:
     ~ContactsPath();
     static std::string RDB_PATH;
     static std::string RDB_BACKUP_PATH;
-    static std::string DUMP_PATH;
 };
 } // namespace Contacts
 } // namespace OHOS

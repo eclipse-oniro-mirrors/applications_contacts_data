@@ -17,6 +17,7 @@
 
 #include <cstdio>
 #include <fcntl.h>
+#include "rdb_utils.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -29,7 +30,6 @@ BaseTest::BaseTest()
 {
     OHOS::Contacts::ContactsPath::RDB_PATH = DataPath::RDB_PATH;
     OHOS::Contacts::ContactsPath::RDB_BACKUP_PATH = DataPath::RDB_BACKUP_PATH;
-    OHOS::Contacts::ContactsPath::DUMP_PATH = DataPath::DUMP_PATH;
 }
 
 BaseTest::~BaseTest()
@@ -53,11 +53,14 @@ void BaseTest::InitAbility()
     abilityInfo->name = "AbilityClassName";
     abilityInfo->type = OHOS::AppExecFwk::AbilityType::DATA;
     abilityInfo->isNativeAbility = true;
+    std::shared_ptr<OHOS::AppExecFwk::AbilityLocalRecord> abilityLocalRecord =
+        std::make_shared<OHOS::AppExecFwk::AbilityLocalRecord>(abilityInfo, nullptr);
     std::shared_ptr<OHOS::AppExecFwk::OHOSApplication> application;
     std::shared_ptr<OHOS::AppExecFwk::AbilityHandler> handler;
-    calllogAbility.Init(abilityInfo, application, handler, nullptr);
-    voicemailAbility.Init(abilityInfo, application, handler, nullptr);
-    contactsDataAbility.Init(abilityInfo, application, handler, nullptr);
+    OHOS::sptr<IRemoteObject> remoteObject;
+    calllogAbility.Init(abilityLocalRecord, application, handler, remoteObject);
+    voicemailAbility.Init(abilityLocalRecord, application, handler, remoteObject);
+    contactsDataAbility.Init(abilityLocalRecord, application, handler, remoteObject);
 }
 
 /**
@@ -67,39 +70,38 @@ void BaseTest::InitAbility()
  * @param resultSet of database
  * @param test name
  */
-void BaseTest::CheckResultSet(OHOS::NativeRdb::ValuesBucket &values,
-    const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet, std::string testName)
+void BaseTest::CheckResultSet(OHOS::DataShare::DataShareValuesBucket &values,
+    const std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, std::string testName)
 {
     std::vector<std::string> columnNames;
     resultSet->GetAllColumnNames(columnNames);
-    int resultSetNum = resultSet->GoToFirstRow();
-    while (resultSetNum == OHOS::NativeRdb::E_OK) {
+    if (resultSet->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
         int size = columnNames.size();
         for (int i = 0; i < size; i++) {
             CheckData(values, resultSet, columnNames[i], testName);
         }
-        break;
     }
     resultSet->Close();
 }
 
-void BaseTest::CheckData(OHOS::NativeRdb::ValuesBucket &values,
-    const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet, std::string &columnName,
+void BaseTest::CheckData(OHOS::DataShare::DataShareValuesBucket &values,
+    const std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, std::string &columnName,
     std::string testName)
 {
     std::string typeValue = columnName;
     int columnIndex = 0;
     resultSet->GetColumnIndex(typeValue, columnIndex);
-    OHOS::NativeRdb::ColumnType columnType;
-    resultSet->GetColumnType(columnIndex, columnType);
+    OHOS::DataShare::DataType columnType;
+    resultSet->GetDataType(columnIndex, columnType);
+    OHOS::NativeRdb::ValuesBucket valuesBucket = OHOS::RdbDataShareAdapter::RdbUtils::ToValuesBucket(values);
     // Compare values and resultSet column value  equality
-    if (columnType == OHOS::NativeRdb::ColumnType::TYPE_INTEGER) {
+    if (columnType == OHOS::DataShare::DataType::TYPE_INTEGER) {
         int resultSetIntValue = 0;
         resultSet->GetInt(columnIndex, resultSetIntValue);
-        if (values.HasColumn(typeValue)) {
+        if (valuesBucket.HasColumn(typeValue)) {
             int valuesIntValue = 0;
             OHOS::NativeRdb::ValueObject valuesObject;
-            values.GetObject(typeValue, valuesObject);
+            valuesBucket.GetObject(typeValue, valuesObject);
             valuesObject.GetInt(valuesIntValue);
             std::string tempName = testName;
             tempName.append("CheckResultSet columnName : %{public}s insertValue = %{public}d  ");
@@ -107,13 +109,13 @@ void BaseTest::CheckData(OHOS::NativeRdb::ValuesBucket &values,
             HILOG_INFO(tempName.c_str(), typeValue.c_str(), valuesIntValue, resultSetIntValue);
             EXPECT_EQ(resultSetIntValue, valuesIntValue);
         }
-    } else if (columnType == OHOS::NativeRdb::ColumnType::TYPE_STRING) {
+    } else if (columnType == OHOS::DataShare::DataType::TYPE_STRING) {
         std::string resultSetStringValue;
-        std::string valuesStringValue;
         resultSet->GetString(columnIndex, resultSetStringValue);
-        if (values.HasColumn(typeValue)) {
+        if (valuesBucket.HasColumn(typeValue)) {
             OHOS::NativeRdb::ValueObject valuesObject;
-            values.GetObject(typeValue, valuesObject);
+            std::string valuesStringValue;
+            valuesBucket.GetObject(typeValue, valuesObject);
             valuesObject.GetString(valuesStringValue);
             std::string tempName = testName;
             tempName.append("CheckResultSet columnName : %{public}s insertValue = %{public}s  ");
@@ -130,15 +132,15 @@ void BaseTest::CheckData(OHOS::NativeRdb::ValuesBucket &values,
  * @param values of data source
  * @param resultSet of database
  */
-void BaseTest::CheckResultSetList(std::vector<OHOS::NativeRdb::ValuesBucket> &valuesVector,
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet, std::string testName)
+void BaseTest::CheckResultSetList(std::vector<OHOS::DataShare::DataShareValuesBucket> &valuesVector,
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, std::string testName)
 {
     std::vector<std::string> columnNames;
     resultSet->GetAllColumnNames(columnNames);
     int resultSetNum = resultSet->GoToFirstRow();
     int index = 0;
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
-        OHOS::NativeRdb::ValuesBucket values = valuesVector[index];
+        OHOS::DataShare::DataShareValuesBucket values = valuesVector[index];
         int size = columnNames.size();
         for (int i = 0; i < size; i++) {
             CheckData(valuesVector[index], resultSet, columnNames[i], testName);

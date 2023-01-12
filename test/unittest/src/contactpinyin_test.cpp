@@ -28,68 +28,69 @@ ContactPinyinTest::~ContactPinyinTest()
 {
 }
 
-int64_t ContactPinyinTest::RawContactInsert(std::string displayName, OHOS::NativeRdb::ValuesBucket &rawContactValues)
+int64_t ContactPinyinTest::RawContactInsert(std::string displayName,
+    OHOS::DataShare::DataShareValuesBucket &rawContactValues)
 {
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    rawContactValues.PutString("display_name", displayName);
+    rawContactValues.Put("display_name", displayName);
     int64_t code = contactsDataAbility.Insert(uriRawContact, rawContactValues);
     return code;
 }
 
 int64_t ContactPinyinTest::ContactDataInsert(int64_t rawContactId, std::string contentType, std::string detailInfo,
-    std::string position, OHOS::NativeRdb::ValuesBucket &contactDataValues)
+    std::string position, OHOS::DataShare::DataShareValuesBucket &contactDataValues)
 {
     OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-    contactDataValues.PutInt("raw_contact_id", rawContactId);
-    contactDataValues.PutString("content_type", contentType);
-    contactDataValues.PutString("detail_info", detailInfo);
-    contactDataValues.PutString("position", position);
+    contactDataValues.Put("raw_contact_id", rawContactId);
+    contactDataValues.Put("content_type", contentType);
+    contactDataValues.Put("detail_info", detailInfo);
+    contactDataValues.Put("position", position);
     int64_t code = contactsDataAbility.Insert(uriContactData, contactDataValues);
     return code;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactPinyinTest::ContactQuery(
-    const std::string &tableName, std::vector<std::string> columns, OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<OHOS::DataShare::DataShareResultSet> ContactPinyinTest::ContactQuery(
+    const std::string &tableName, std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates)
 {
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet;
     if (tableName == ContactTabName::RAW_CONTACT) {
         OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-        resultSet = contactsDataAbility.Query(uriRawContact, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriRawContact, predicates, columns);
     } else if (tableName == ContactTabName::CONTACT_DATA) {
         OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-        resultSet = contactsDataAbility.Query(uriContactData, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriContactData, predicates, columns);
     } else if (tableName == ContactTabName::CONTACT) {
         OHOS::Uri uriContact(ContactsUri::CONTACT);
-        resultSet = contactsDataAbility.Query(uriContact, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriContact, predicates, columns);
     } else if (tableName == ContactTabName::GROUPS) {
         OHOS::Uri uriGroups(ContactsUri::GROUPS);
-        resultSet = contactsDataAbility.Query(uriGroups, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriGroups, predicates, columns);
     } else if (tableName == ContactTabName::CONTACT_BLOCKLIST) {
         OHOS::Uri uriBlocklist(ContactsUri::BLOCKLIST);
-        resultSet = contactsDataAbility.Query(uriBlocklist, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriBlocklist, predicates, columns);
     } else if (tableName == ContactTabName::DELETED_RAW_CONTACT) {
         OHOS::Uri uriDeletedRawContact(ContactsUri::DELETED_RAW_CONTACT);
-        resultSet = contactsDataAbility.Query(uriDeletedRawContact, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriDeletedRawContact, predicates, columns);
     } else if (tableName == ContactTabName::SEARCH_CONTACT) {
         OHOS::Uri uriSearchContact(ContactsUri::SEARCH);
-        resultSet = contactsDataAbility.Query(uriSearchContact, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriSearchContact, predicates, columns);
     } else {
         HILOG_ERROR("ContactsDataAbility ====>no match uri action");
     }
     return resultSet;
 }
 
-void ContactPinyinTest::QueryAndExpectResult(std::string &tableName, OHOS::NativeRdb::DataAbilityPredicates predicates,
-    OHOS::NativeRdb::ValuesBucket &values, std::string testName)
+void ContactPinyinTest::QueryAndExpectResult(std::string &tableName, OHOS::DataShare::DataSharePredicates predicates,
+    OHOS::DataShare::DataShareValuesBucket &values, std::string testName)
 {
     std::vector<std::string> columns;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = ContactQuery(tableName, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(tableName, columns, predicates);
     CheckResultSet(values, resultSet, testName);
 }
 
 void ContactPinyinTest::ClearData()
 {
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
     predicates.NotEqualTo("id", "0");
     predicates.And();
@@ -98,10 +99,10 @@ void ContactPinyinTest::ClearData()
     int time = 1000;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
-    predicates.Clear();
+    OHOS::DataShare::DataSharePredicates predicates2;
     OHOS::Uri uriRawContactComplete(ContactsUri::DELETED_RAW_CONTACT);
-    predicates.NotEqualTo("id", "0");
-    contactsDataAbility.Delete(uriRawContactComplete, predicates);
+    predicates2.NotEqualTo("id", "0");
+    contactsDataAbility.Delete(uriRawContactComplete, predicates2);
 }
 
 /*
@@ -117,15 +118,15 @@ HWTEST_F(ContactPinyinTest, pinyin_conversion_Insert_test_100, testing::ext::Tes
     HILOG_INFO("-------pinyin_conversion_Insert_test_100 is starting!------");
     std::string tag("pinyin_conversion_Insert_test_100");
     OHOS::Contacts::ConstructionName::local = "zh-CN";
-    OHOS::NativeRdb::ValuesBucket rawContactValues;
+    OHOS::DataShare::DataShareValuesBucket rawContactValues;
     int64_t rawContactId = RawContactInsert("李想", rawContactValues);
     EXPECT_GT(rawContactId, 0);
 
-    OHOS::NativeRdb::ValuesBucket values;
+    OHOS::DataShare::DataShareValuesBucket values;
     int64_t contactDataId = ContactDataInsert(rawContactId, "name", "李想", "", values);
     EXPECT_GT(contactDataId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("raw_contact_id", std::to_string(rawContactId));
     std::string searchContact = ContactTabName::SEARCH_CONTACT;
     QueryAndExpectResult(searchContact, predicates, values, "pinyin_conversion_Insert_test_100");
@@ -145,15 +146,15 @@ HWTEST_F(ContactPinyinTest, pinyin_conversion_Insert_test_200, testing::ext::Tes
     HILOG_INFO("-------pinyin_conversion_Insert_test_200 is starting!------");
     std::string tag("pinyin_conversion_Insert_test_200");
     OHOS::Contacts::ConstructionName::local = "zh-CN";
-    OHOS::NativeRdb::ValuesBucket rawContactValues;
+    OHOS::DataShare::DataShareValuesBucket rawContactValues;
     int64_t rawContactId = RawContactInsert("張三", rawContactValues);
     EXPECT_GT(rawContactId, 0);
 
-    OHOS::NativeRdb::ValuesBucket values;
+    OHOS::DataShare::DataShareValuesBucket values;
     int64_t contactDataId = ContactDataInsert(rawContactId, "name", "張三", "", values);
     EXPECT_GT(contactDataId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("raw_contact_id", std::to_string(rawContactId));
     std::string searchContact = ContactTabName::SEARCH_CONTACT;
     QueryAndExpectResult(searchContact, predicates, values, "pinyin_conversion_Insert_test_200");
@@ -172,16 +173,16 @@ HWTEST_F(ContactPinyinTest, pinyin_conversion_Insert_test_300, testing::ext::Tes
 {
     HILOG_INFO("-------pinyin_conversion_Insert_test_300 is starting!------");
     OHOS::Contacts::ConstructionName::local = "other";
-    OHOS::NativeRdb::ValuesBucket rawContactValues;
+    OHOS::DataShare::DataShareValuesBucket rawContactValues;
     int64_t rawContactId = RawContactInsert("Tom", rawContactValues);
     EXPECT_GT(rawContactId, 0);
 
-    OHOS::NativeRdb::ValuesBucket values;
+    OHOS::DataShare::DataShareValuesBucket values;
     int64_t contactDataId = ContactDataInsert(rawContactId, "name", "Tom", "", values);
-    HILOG_INFO("pinyin_conversion_Insert_test_300 : contactDataId = %{public}lld", contactDataId);
+    HILOG_INFO("pinyin_conversion_Insert_test_300 : contactDataId = %{public}ld", contactDataId);
     EXPECT_GT(contactDataId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("raw_contact_id", std::to_string(rawContactId));
     std::string searchContact = ContactTabName::SEARCH_CONTACT;
     QueryAndExpectResult(searchContact, predicates, values, "Tom||Tom||Tom");
@@ -200,15 +201,15 @@ HWTEST_F(ContactPinyinTest, abnormal_pinyin_conversion_Insert_test_400, testing:
 {
     HILOG_INFO("-------abnormal_pinyin_conversion_Insert_test_400 is starting!------");
     OHOS::Contacts::ConstructionName::local = "zh-CN";
-    OHOS::NativeRdb::ValuesBucket rawContactValues;
+    OHOS::DataShare::DataShareValuesBucket rawContactValues;
     int64_t rawContactId = RawContactInsert("李%^玉@成", rawContactValues);
     EXPECT_GT(rawContactId, 0);
 
-    OHOS::NativeRdb::ValuesBucket values;
+    OHOS::DataShare::DataShareValuesBucket values;
     int64_t contactDataId = ContactDataInsert(rawContactId, "name", "李%^玉@成", "", values);
     EXPECT_GT(contactDataId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("raw_contact_id", std::to_string(rawContactId));
     std::string searchContact = ContactTabName::SEARCH_CONTACT;
     QueryAndExpectResult(searchContact, predicates, values, "李%^玉@成||li%^yu@cheng||l%^y@c");
@@ -227,15 +228,15 @@ HWTEST_F(ContactPinyinTest, abnormal_pinyin_conversion_Insert_test_500, testing:
 {
     HILOG_INFO("-------abnormal_pinyin_conversion_Insert_test_500 is starting!------");
     OHOS::Contacts::ConstructionName::local = "zh-CN";
-    OHOS::NativeRdb::ValuesBucket rawContactValues;
+    OHOS::DataShare::DataShareValuesBucket rawContactValues;
     int64_t rawContactId = RawContactInsert("李bp玉成욱", rawContactValues);
     EXPECT_GT(rawContactId, 0);
 
-    OHOS::NativeRdb::ValuesBucket values;
+    OHOS::DataShare::DataShareValuesBucket values;
     int64_t contactDataId = ContactDataInsert(rawContactId, "name", "李bp玉成욱", "", values);
     EXPECT_GT(contactDataId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("raw_contact_id", std::to_string(rawContactId));
     std::string searchContact = ContactTabName::SEARCH_CONTACT;
     QueryAndExpectResult(searchContact, predicates, values, "李bp玉成욱||libpyucheng욱||lbpyc욱");

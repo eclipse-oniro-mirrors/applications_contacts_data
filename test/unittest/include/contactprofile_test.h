@@ -26,23 +26,23 @@ public:
 
     ContactProfileTest();
     ~ContactProfileTest();
-    int64_t RawContactInsert(std::string displayName, OHOS::NativeRdb::ValuesBucket &alues);
+    int64_t RawContactInsert(std::string displayName, OHOS::DataShare::DataShareValuesBucket &alues);
     int64_t RawContactExpandInsert(
-        std::vector<std::string> valueVector, int isFavorite, OHOS::NativeRdb::ValuesBucket &rawContactValues);
+        std::vector<std::string> valueVector, int isFavorite, OHOS::DataShare::DataShareValuesBucket &rawContactValues);
     int64_t RawContactLastContactedInsert(
-        std::string displayName, int lastestContactedTime, OHOS::NativeRdb::ValuesBucket &rawContactValues);
+        std::string displayName, int lastestContactedTime, OHOS::DataShare::DataShareValuesBucket &rawContactValues);
     int64_t ContactDataInsert(int64_t rawContactId, std::string contentType, std::string detailInfo,
-        std::string position, OHOS::NativeRdb::ValuesBucket &contactDataValues);
-    int64_t GroupsInsert(std::string groupName, OHOS::NativeRdb::ValuesBucket &groupValues);
-    int64_t ContactBlocklistInsert(std::string phoneNumber, OHOS::NativeRdb::ValuesBucket &rawContactValues);
-    int ContactUpdate(const std::string &tableName, OHOS::NativeRdb::ValuesBucket updateValues,
-        OHOS::NativeRdb::DataAbilityPredicates predicates);
-    int ContactDelete(const std::string &tableName, OHOS::NativeRdb::DataAbilityPredicates predicates);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactQuery(const std::string &tableName,
-        std::vector<std::string> &columns, OHOS::NativeRdb::DataAbilityPredicates predicates);
-    void QueryAndExpectResult(std::string &tableName, OHOS::NativeRdb::DataAbilityPredicates predicates,
-        OHOS::NativeRdb::ValuesBucket &values, std::string testName);
-    OHOS::NativeRdb::ValuesBucket GetAllColumnsValues(
+        std::string position, OHOS::DataShare::DataShareValuesBucket &contactDataValues);
+    int64_t GroupsInsert(std::string groupName, OHOS::DataShare::DataShareValuesBucket &groupValues);
+    int64_t ContactBlocklistInsert(std::string phoneNumber, OHOS::DataShare::DataShareValuesBucket &rawContactValues);
+    int ContactUpdate(const std::string &tableName, OHOS::DataShare::DataShareValuesBucket updateValues,
+        OHOS::DataShare::DataSharePredicates predicates);
+    int ContactDelete(const std::string &tableName, OHOS::DataShare::DataSharePredicates predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> ContactQuery(const std::string &tableName,
+        std::vector<std::string> &columns, OHOS::DataShare::DataSharePredicates predicates);
+    void QueryAndExpectResult(std::string &tableName, OHOS::DataShare::DataSharePredicates predicates,
+        OHOS::DataShare::DataShareValuesBucket &values, std::string testName);
+    OHOS::DataShare::DataShareValuesBucket GetAllColumnsValues(
         std::vector<std::string> &columnsInt, std::vector<std::string> &columnsStr);
     void GetAllRawContactColumns(std::vector<std::string> &columnsInt, std::vector<std::string> &columnsStr);
     void GetAllContactDataColumns(std::vector<std::string> &columnInt, std::vector<std::string> &columnStr);
@@ -51,11 +51,11 @@ public:
     void GetDetailsContactDataColumns(std::vector<std::string> &columns);
     void MergeColumns(
         std::vector<std::string> &columns, std::vector<std::string> &columnsInt, std::vector<std::string> &columnsStr);
-    int64_t RawContactInsertValues(OHOS::NativeRdb::ValuesBucket &values);
-    int64_t ContactDataInsertValues(OHOS::NativeRdb::ValuesBucket &values);
-    int64_t GroupsInsertValues(OHOS::NativeRdb::ValuesBucket &values);
-    int64_t ContactBlocklistInsertValues(OHOS::NativeRdb::ValuesBucket &values);
-    std::vector<OHOS::NativeRdb::ValuesBucket> GetBatchList(int64_t rawContactId);
+    int64_t RawContactInsertValues(OHOS::DataShare::DataShareValuesBucket &values);
+    int64_t ContactDataInsertValues(OHOS::DataShare::DataShareValuesBucket &values);
+    int64_t GroupsInsertValues(OHOS::DataShare::DataShareValuesBucket &values);
+    int64_t ContactBlocklistInsertValues(OHOS::DataShare::DataShareValuesBucket &values);
+    std::vector<OHOS::DataShare::DataShareValuesBucket> GetBatchList(int64_t rawContactId);
     void ClearContacts();
 };
 } // namespace Test

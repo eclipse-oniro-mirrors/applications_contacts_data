@@ -31,13 +31,12 @@ StabilityTest::~StabilityTest()
 
 void StabilityTest::DeleteContact()
 {
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
     predicates.NotEqualTo("id", "0");
     predicates.And();
     predicates.EqualTo("is_deleted", "0");
     contactsDataAbility.Delete(uriRawContact, predicates);
-    predicates.Clear();
     int count = 0;
     int deleteCount = 9999;
     std::vector<std::string> columns;
@@ -46,17 +45,18 @@ void StabilityTest::DeleteContact()
         int time = Time::SLEEP_TIME_MERGE_DELETE;
         std::chrono::milliseconds dura(time);
         std::this_thread::sleep_for(dura);
-        std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-            contactsDataAbility.Query(uriRawContactComplete, columns, predicates);
+        OHOS::DataShare::DataSharePredicates predicates2;
+        std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+            contactsDataAbility.Query(uriRawContactComplete, predicates2, columns);
         resultSet->GetRowCount(count);
         resultSet->Close();
     }
     int time = Time::SLEEP_TIME_MERGE_DELETE;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
-    predicates.Clear();
-    predicates.NotEqualTo("id", "0");
-    contactsDataAbility.Delete(uriRawContactComplete, predicates);
+    OHOS::DataShare::DataSharePredicates predicates3;
+    predicates3.NotEqualTo("id", "0");
+    contactsDataAbility.Delete(uriRawContactComplete, predicates3);
 }
 
 /*
@@ -71,14 +71,14 @@ HWTEST_F(StabilityTest, raw_contact_insert_performance_test_900, testing::ext::T
 {
     HILOG_INFO("--- raw_contact_insert_performance_test_900 is starting! ---");
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    std::vector<OHOS::NativeRdb::ValuesBucket> values;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> values;
     for (int i = 0; i < 10000; i++) {
-        OHOS::NativeRdb::ValuesBucket rawContactValues;
+        OHOS::DataShare::DataShareValuesBucket rawContactValues;
         std::string name("小严");
         name.append(std::to_string(i + 1));
-        rawContactValues.PutString("display_name", name);
-        rawContactValues.PutString("company", "company");
-        rawContactValues.PutString("position", "position");
+        rawContactValues.Put("display_name", name);
+        rawContactValues.Put("company", "company");
+        rawContactValues.Put("position", "position");
         values.push_back(rawContactValues);
     }
     int batchInsertCode = contactsDataAbility.BatchInsert(uriRawContact, values);
@@ -97,13 +97,13 @@ HWTEST_F(StabilityTest, raw_contact_update_performance_test_1000, testing::ext::
 {
     HILOG_INFO("--- raw_contact_update_performance_test_1000 is starting! ---");
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutInt("favorite", 1);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("favorite", 1);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     predicates.And();
     predicates.EqualTo("is_deleted", "0");
-    int updateCode = contactsDataAbility.Update(uriRawContact, updateValues, predicates);
+    int updateCode = contactsDataAbility.Update(uriRawContact, predicates, updateValues);
     EXPECT_EQ(updateCode, 0);
 }
 
@@ -124,12 +124,12 @@ HWTEST_F(StabilityTest, raw_contact_query_performance_test_1100, testing::ext::T
     columns.push_back("display_name");
     columns.push_back("company");
     columns.push_back("position");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     predicates.And();
     predicates.EqualTo("is_deleted", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uriRawContact, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uriRawContact, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_GT(rowCount, 9999);
@@ -148,7 +148,7 @@ HWTEST_F(StabilityTest, raw_contact_delete_performance_test_1200, testing::ext::
 {
     HILOG_INFO("--- raw_contact_delete_performance_test_1200 is starting! ---");
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     predicates.And();
     predicates.EqualTo("is_deleted", "0");
@@ -168,26 +168,26 @@ HWTEST_F(StabilityTest, raw_contact_delete_performance_test_1200, testing::ext::
 HWTEST_F(StabilityTest, contact_data_insert_performance_test_1300, testing::ext::TestSize.Level1)
 {
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    OHOS::NativeRdb::ValuesBucket rawContactValues;
+    OHOS::DataShare::DataShareValuesBucket rawContactValues;
     std::string rawName("xiaoyan");
-    rawContactValues.PutString("display_name", rawName);
-    rawContactValues.PutString("company", "company");
-    rawContactValues.PutString("position", "position");
+    rawContactValues.Put("display_name", rawName);
+    rawContactValues.Put("company", "company");
+    rawContactValues.Put("position", "position");
     int rawContactId = contactsDataAbility.Insert(uriRawContact, rawContactValues);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.NotEqualTo("id", "0");
     predicates.And();
     predicates.EqualTo("is_deleted", "0");
     contactsDataAbility.Delete(uriRawContact, predicates);
     OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-    std::vector<OHOS::NativeRdb::ValuesBucket> values;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> values;
     for (int i = 0; i < 10000; i++) {
-        OHOS::NativeRdb::ValuesBucket contactDataValues;
+        OHOS::DataShare::DataShareValuesBucket contactDataValues;
         std::string name("xiaoyan");
         name.append(std::to_string(i + 1));
-        contactDataValues.PutInt("raw_contact_id", rawContactId);
-        contactDataValues.PutString("content_type", "name");
-        contactDataValues.PutString("detail_info", name);
+        contactDataValues.Put("raw_contact_id", rawContactId);
+        contactDataValues.Put("content_type", "name");
+        contactDataValues.Put("detail_info", name);
         values.push_back(contactDataValues);
     }
     int batchInsertCode = contactsDataAbility.BatchInsert(uriContactData, values);
@@ -206,11 +206,11 @@ HWTEST_F(StabilityTest, contact_data_update_performance_test_1400, testing::ext:
 {
     HILOG_INFO("--- contact_data_update_performance_test_1400 is starting! ---");
     OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutString("syn_1", "test");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("syn_1", "test");
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    int updateCode = contactsDataAbility.Update(uriContactData, updateValues, predicates);
+    int updateCode = contactsDataAbility.Update(uriContactData, predicates, updateValues);
     EXPECT_EQ(updateCode, 0);
 }
 
@@ -229,10 +229,10 @@ HWTEST_F(StabilityTest, contact_data_query_performance_test_1500, testing::ext::
     std::vector<std::string> columns;
     columns.push_back("raw_contact_id");
     columns.push_back("detail_info");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uriContactData, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uriContactData, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_GT(rowCount, 9999);
@@ -251,7 +251,7 @@ HWTEST_F(StabilityTest, contact_data_delete_performance_test_1600, testing::ext:
 {
     HILOG_INFO("--- contact_data_delete_performance_test_1600 is starting! ---");
     OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     int deleteCode = contactsDataAbility.Delete(uriContactData, predicates);
     EXPECT_EQ(deleteCode, 0);
@@ -268,15 +268,15 @@ HWTEST_F(StabilityTest, contact_data_delete_performance_test_1600, testing::ext:
 HWTEST_F(StabilityTest, calllog_insert_performance_test_100, testing::ext::TestSize.Level1)
 {
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
-    OHOS::NativeRdb::DataAbilityPredicates predicatesOne;
+    OHOS::DataShare::DataSharePredicates predicatesOne;
     predicatesOne.GreaterThan("id", "0");
     HILOG_INFO("calllog_insert_performance_test_100 deleted  start! ");
     calllogAbility.Delete(uriCalllog, predicatesOne);
     HILOG_INFO("--- calllog_insert_performance_test_100 is starting! ---");
-    std::vector<OHOS::NativeRdb::ValuesBucket> values;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> values;
     for (int i = 0; i < 10000; i++) {
-        OHOS::NativeRdb::ValuesBucket calllogValues;
-        calllogValues.PutString("phone_number", std::to_string(i + 1));
+        OHOS::DataShare::DataShareValuesBucket calllogValues;
+        calllogValues.Put("phone_number", std::to_string(i + 1));
         values.push_back(calllogValues);
     }
     int batchInsertCode = calllogAbility.BatchInsert(uriCalllog, values);
@@ -295,11 +295,11 @@ HWTEST_F(StabilityTest, calllog_update_performance_test_200, testing::ext::TestS
 {
     HILOG_INFO("--- calllog_update_performance_test_200 is starting! ---");
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutInt("answer_state", 1);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("answer_state", 1);
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    int updateCode = calllogAbility.Update(uriCalllog, updateValues, predicates);
+    int updateCode = calllogAbility.Update(uriCalllog, predicates, updateValues);
     HILOG_INFO("calllog_update_performance_test_200 : updateCode = %{public}d", updateCode);
     EXPECT_EQ(updateCode, 0);
 }
@@ -319,10 +319,10 @@ HWTEST_F(StabilityTest, calllog_query_performance_test_300, testing::ext::TestSi
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        calllogAbility.Query(uriCalllog, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        calllogAbility.Query(uriCalllog, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_GT(rowCount, 9999);
@@ -341,7 +341,7 @@ HWTEST_F(StabilityTest, calllog_delete_performance_test_400, testing::ext::TestS
 {
     HILOG_INFO("--- calllog_delete_performance_test_400 is starting! ---");
     OHOS::Uri uriCalllog(CallLogUri::CALL_LOG);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     int deleteCode = calllogAbility.Delete(uriCalllog, predicates);
     EXPECT_EQ(deleteCode, 0);
@@ -358,15 +358,15 @@ HWTEST_F(StabilityTest, calllog_delete_performance_test_400, testing::ext::TestS
 HWTEST_F(StabilityTest, voicemail_insert_performance_test_500, testing::ext::TestSize.Level1)
 {
     OHOS::Uri uriVoiceMail(VoicemailUri::VOICEMAIL);
-    OHOS::NativeRdb::DataAbilityPredicates predicatesOne;
+    OHOS::DataShare::DataSharePredicates predicatesOne;
     predicatesOne.GreaterThan("id", "0");
     HILOG_INFO("voicemail_insert_performance_test_500 deleted  start! ");
     voicemailAbility.Delete(uriVoiceMail, predicatesOne);
     HILOG_INFO("--- voicemail_insert_performance_test_500 is starting! ---");
-    std::vector<OHOS::NativeRdb::ValuesBucket> values;
+    std::vector<OHOS::DataShare::DataShareValuesBucket> values;
     for (int i = 0; i < 10000; i++) {
-        OHOS::NativeRdb::ValuesBucket voicemailValues;
-        voicemailValues.PutString("phone_number", std::to_string(i + 1));
+        OHOS::DataShare::DataShareValuesBucket voicemailValues;
+        voicemailValues.Put("phone_number", std::to_string(i + 1));
         values.push_back(voicemailValues);
     }
     int batchInsertCode = voicemailAbility.BatchInsert(uriVoiceMail, values);
@@ -385,11 +385,11 @@ HWTEST_F(StabilityTest, voicemail_update_performance_test_600, testing::ext::Tes
 {
     HILOG_INFO("--- voicemail_update_performance_test_600 is starting! ---");
     OHOS::Uri uriVoiceMail(VoicemailUri::VOICEMAIL);
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutString("origin_type", "origin");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("origin_type", "origin");
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    int updateCode = voicemailAbility.Update(uriVoiceMail, updateValues, predicates);
+    int updateCode = voicemailAbility.Update(uriVoiceMail, predicates, updateValues);
     EXPECT_EQ(updateCode, 0);
 }
 
@@ -408,10 +408,10 @@ HWTEST_F(StabilityTest, voicemail_query_performance_test_700, testing::ext::Test
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("phone_number");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        voicemailAbility.Query(uriVoiceMail, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        voicemailAbility.Query(uriVoiceMail, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_GT(rowCount, 9999);
@@ -430,7 +430,7 @@ HWTEST_F(StabilityTest, voicemail_delete_performance_test_800, testing::ext::Tes
 {
     HILOG_INFO("--- voicemail_delete_performance_test_800 is starting! ---");
     OHOS::Uri uriVoiceMail(VoicemailUri::VOICEMAIL);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     int deleteCode = voicemailAbility.Delete(uriVoiceMail, predicates);
     EXPECT_EQ(deleteCode, 0);

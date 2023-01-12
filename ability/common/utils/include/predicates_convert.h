@@ -16,7 +16,7 @@
 #ifndef PREDICATES_CONVERT_H
 #define PREDICATES_CONVERT_H
 
-#include "data_ability_predicates.h"
+#include "datashare_predicates.h"
 #include "predicates_utils.h"
 #include "rdb_predicates.h"
 
@@ -27,7 +27,7 @@ public:
     PredicatesConvert();
     ~PredicatesConvert();
     OHOS::NativeRdb::RdbPredicates ConvertPredicates(
-        std::string tableName, OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates);
+        std::string tableName, DataShare::DataSharePredicates &dataSharePredicates);
     OHOS::NativeRdb::RdbPredicates CopyPredicates(
         std::string tableName, OHOS::NativeRdb::RdbPredicates &oldRdbPredicates);
 };

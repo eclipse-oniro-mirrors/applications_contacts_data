@@ -13,22 +13,21 @@
  * limitations under the License.
  */
 
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
+import dataShare from '@ohos.data.dataShare';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
 
 import common from './common.js';
 
-const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
-const contactUri = "dataability:///com.ohos.contactsdataability/contacts/contact";
-const rawContactUri = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
-const contactDataUri = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
-const groupUri = "dataability:///com.ohos.contactsdataability/contacts/groups";
-const contactBlocklistUri = "dataability:///com.ohos.contactsdataability/contacts/contact_blocklist";
-const deletedRawContactUri = "dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
-const searchContactUri = "dataability:///com.ohos.contactsdataability/contacts/search_contact";
-const deletedUri = "dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
-const deleted_raw_contact_record = "dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact_record";
+const URI_CONTACTS = "datashare:///com.ohos.contactsdataability";
+const contactUri = "datashare:///com.ohos.contactsdataability/contacts/contact";
+const rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+const contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
+const groupUri = "datashare:///com.ohos.contactsdataability/contacts/groups";
+const contactBlocklistUri = "datashare:///com.ohos.contactsdataability/contacts/contact_blocklist";
+const deletedRawContactUri = "datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
+const searchContactUri = "datashare:///com.ohos.contactsdataability/contacts/search_contact";
+const deletedUri = "datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
+const deleted_raw_contact_record = "datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact_record";
 
 describe('ContactsTest', function() {
     console.info("-------ContactsTest is starting!--------");
@@ -52,13 +51,13 @@ describe('ContactsTest', function() {
 
     async function contactsQuery(map, tag, uri)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': contactsQuery start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': contactsQuery start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            var resultSet = await DAHelper.query(uri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(uri, resultColumns, condition);
             sleep(sleep_two);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
@@ -80,13 +79,13 @@ describe('ContactsTest', function() {
 
     async function queryBatch(map, tag, size)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': queryBatch start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': queryBatch start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", map.get("raw_contact_id"));
         try {
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             sleep(sleep_one);
             console.info(tag + ': queryBatch start ! resultSet.rowCount = ' + resultSet.rowCount);
             expect(resultSet.rowCount == size).assertEqual(true);
@@ -98,13 +97,13 @@ describe('ContactsTest', function() {
 
     async function queryIdForDelete(map, tag, uri)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': queryIdForDelete start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': queryIdForDelete start ! dataShareHelper = ' + dataShareHelper);
         let resultColumns = common.getCallLogResultColumns();
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            var resultSet = await DAHelper.query(uri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(uri, resultColumns, condition);
             sleep(sleep_one);
             expect(resultSet.goToFirstRow() == false).assertTrue();
             console.info(tag + " :logMessage queryIdForDelete: goToFirstRow " + resultSet.goToFirstRow());
@@ -117,10 +116,10 @@ describe('ContactsTest', function() {
     async function deleteAll(uri, tag)
     {
         try {
-            let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+            let condition = new dataShare.DataSharePredicates();
             condition.greaterThan("id", "0");
-            var deleteCode = await DAHelper.delete(uri, condition);
+            var deleteCode = await dataShareHelper.delete(uri, condition);
             console.info(tag + ': deleteAll deleteCode = ' + deleteCode);
             expect(deleteCode == 0).assertTrue();
         } catch (error) {
@@ -131,18 +130,18 @@ describe('ContactsTest', function() {
     async function deleteRawContact(tag)
     {
         try {
-            let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+            let condition = new dataShare.DataSharePredicates();
             condition.greaterThan("id", "0");
             condition.and();
             condition.equalTo("is_deleted", "0");
-            var deleteCode = await DAHelper.delete(rawContactUri, condition);
+            var deleteCode = await dataShareHelper.delete(rawContactUri, condition);
             console.info(tag + ': deleteRawContact deleteCode = ' + deleteCode);
             expect(deleteCode == 0).assertTrue();
             sleep(sleep_one);
-            var conditionAll = new ohos_data_ability.DataAbilityPredicates();
+            var conditionAll = new dataShare.DataSharePredicates();
             conditionAll.greaterThan("id", "0");
-            var code = await DAHelper.delete(deletedUri, conditionAll);
+            var code = await dataShareHelper.delete(deletedUri, conditionAll);
             console.info(tag + ': Completely delete code = ' + code);
             expect(code == 0).assertTrue();
         } catch (error) {
@@ -152,11 +151,11 @@ describe('ContactsTest', function() {
 
     async function insertData(rawContactId, type, value, position)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
         var contactDataValues1 =
             {"raw_contact_id" : rawContactId, "content_type" : type, "detail_info" : value, "position" : position};
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             console.info("logMessage : contactDataId1 " + contactDataId1);
             expect(contactDataId > 0).assertTrue();
         } catch (error) {
@@ -172,10 +171,10 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_100", 0, async function(done) {
         console.info("------logMessage contact_insert_test_100 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
+            var rawContactId = await dataShareHelper.insert(rawContactUri, common.getProfileRawContact());
             sleep(sleep_one);
             console.info('logMessage contact_insert_test_100: rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -197,19 +196,19 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_400", 0, async function(done) {
         console.info("------logMessage contact_insert_test_400 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocheng",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insert_test_400: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await dataNameInsert(DAHelper, rawContactId);
-            await dataCompanyInsert(DAHelper, rawContactId);
-            await dataPhoneInsert(DAHelper, rawContactId);
+            await dataNameInsert(dataShareHelper, rawContactId);
+            await dataCompanyInsert(dataShareHelper, rawContactId);
+            await dataPhoneInsert(dataShareHelper, rawContactId);
             await deleteRawContact("contact_insert_test_400");
             await deleteAll(contactDataUri, "contact_insert_test_400");
             done();
@@ -219,7 +218,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function dataNameInsert(DAHelper, rawContactId)
+    async function dataNameInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
@@ -227,7 +226,7 @@ describe('ContactsTest', function() {
             "detail_info" : "xiaocheng"
         };
         try {
-            var contactDataId1 = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId1 = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             console.info("logMessage contact_insert_test_400: contactDataId1 " + contactDataId1);
             expect(contactDataId1 > 0).assertTrue();
             var map = new Map();
@@ -241,7 +240,7 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataCompanyInsert(DAHelper, rawContactId)
+    async function dataCompanyInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues2 = {
             "raw_contact_id" : rawContactId,
@@ -250,7 +249,7 @@ describe('ContactsTest', function() {
             "position" : "developer"
         };
         try {
-            var contactDataId2 = await DAHelper.insert(contactDataUri, contactDataValues2);
+            var contactDataId2 = await dataShareHelper.insert(contactDataUri, contactDataValues2);
             console.info("logMessage contact_insert_test_400: contactDataId2 " + contactDataId2);
             expect(contactDataId2 > 0).assertTrue();
             var map = new Map();
@@ -264,7 +263,7 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataPhoneInsert(DAHelper, rawContactId)
+    async function dataPhoneInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues3 = {
             "raw_contact_id" : rawContactId,
@@ -272,7 +271,7 @@ describe('ContactsTest', function() {
             "detail_info" : "12345678"
         };
         try {
-            var contactDataId3 = await DAHelper.insert(contactDataUri, contactDataValues3);
+            var contactDataId3 = await dataShareHelper.insert(contactDataUri, contactDataValues3);
             sleep(sleep_one);
             console.info("logMessage contact_insert_test_400: contactDataId3 " + contactDataId3);
             expect(contactDataId3 > 0).assertTrue();
@@ -293,19 +292,19 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_500", 0, async function(done) {
         console.info("------logMessage contact_insert_test_500 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocheng",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insert_test_500: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await dataEmailInsert(DAHelper, rawContactId);
-            await dataNickNameInsert(DAHelper, rawContactId);
-            await dataPostalAddressInsert(DAHelper, rawContactId);
+            await dataEmailInsert(dataShareHelper, rawContactId);
+            await dataNickNameInsert(dataShareHelper, rawContactId);
+            await dataPostalAddressInsert(dataShareHelper, rawContactId);
             await deleteRawContact("contact_insert_test_500");
             await deleteAll(contactDataUri, "contact_insert_test_500");
             done();
@@ -315,7 +314,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function dataEmailInsert(DAHelper, rawContactId)
+    async function dataEmailInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
@@ -323,7 +322,7 @@ describe('ContactsTest', function() {
             "detail_info" : "166@163.com"
         };
         try {
-            var contactDataId1 = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId1 = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             sleep(sleep_one);
             console.info("logMessage contact_insert_test_500: contactDataId1 " + contactDataId1);
             expect(contactDataId1 > 0).assertTrue();
@@ -336,7 +335,7 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataNickNameInsert(DAHelper, rawContactId)
+    async function dataNickNameInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues2 = {
             "raw_contact_id" : rawContactId,
@@ -344,7 +343,7 @@ describe('ContactsTest', function() {
             "detail_info" : "xiaocheng"
         };
         try {
-            var contactDataId2 = await DAHelper.insert(contactDataUri, contactDataValues2);
+            var contactDataId2 = await dataShareHelper.insert(contactDataUri, contactDataValues2);
             console.info("logMessage contact_insert_test_500: contactDataId2 " + contactDataId2);
             expect(contactDataId2 > 0).assertTrue();
             var map = new Map();
@@ -356,7 +355,7 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataPostalAddressInsert(DAHelper, rawContactId)
+    async function dataPostalAddressInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues3 = {
             "raw_contact_id" : rawContactId,
@@ -364,7 +363,7 @@ describe('ContactsTest', function() {
             "detail_info" : "NanJingSoftRoad"
         };
         try {
-            var contactDataId3 = await DAHelper.insert(contactDataUri, contactDataValues3);
+            var contactDataId3 = await dataShareHelper.insert(contactDataUri, contactDataValues3);
             console.info("logMessage contact_insert_test_500: contactDataId3 " + contactDataId3);
             expect(contactDataId3 > 0).assertTrue();
             var map = new Map();
@@ -383,19 +382,19 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_600", 0, async function(done) {
         console.info("------logMessage contact_insert_test_600 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocheng",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues)
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues)
             console.info("logMessage contact_insert_test_600: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await dataNoteInsert(DAHelper, rawContactId);
-            await dataAimInsert(DAHelper, rawContactId);
-            await dataEventInsert(DAHelper, rawContactId);
+            await dataNoteInsert(dataShareHelper, rawContactId);
+            await dataAimInsert(dataShareHelper, rawContactId);
+            await dataEventInsert(dataShareHelper, rawContactId);
             await deleteRawContact("contact_insert_test_600");
             await deleteAll(contactDataUri, "contact_insert_test_600");
             done();
@@ -405,7 +404,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function dataNoteInsert(DAHelper, rawContactId)
+    async function dataNoteInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
@@ -413,7 +412,7 @@ describe('ContactsTest', function() {
             "detail_info" : "javaGangster"
         };
         try {
-            var contactDataId1 = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId1 = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             console.info("logMessage contact_insert_test_600: contactDataId1 " + contactDataId1);
             expect(contactDataId1 > 0).assertTrue();
             var map = new Map();
@@ -426,11 +425,11 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataAimInsert(DAHelper, rawContactId)
+    async function dataAimInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues2 = {"raw_contact_id" : rawContactId, "content_type" : "im", "detail_info" : "aaaaa"};
         try {
-            var contactDataId2 = await DAHelper.insert(contactDataUri, contactDataValues2);
+            var contactDataId2 = await dataShareHelper.insert(contactDataUri, contactDataValues2);
             console.info("logMessage contact_insert_test_600: contactDataId2 " + contactDataId2);
             expect(contactDataId2 > 0).assertTrue();
             var map = new Map();
@@ -442,7 +441,7 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataEventInsert(DAHelper, rawContactId)
+    async function dataEventInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues3 = {
             "raw_contact_id" : rawContactId,
@@ -450,7 +449,7 @@ describe('ContactsTest', function() {
             "detail_info" : "19960229"
         };
         try {
-            var contactDataId3 = await DAHelper.insert(contactDataUri, contactDataValues3);
+            var contactDataId3 = await dataShareHelper.insert(contactDataUri, contactDataValues3);
             console.info("logMessage contact_insert_test_600: contactDataId3 " + contactDataId3);
             expect(contactDataId3 > 0).assertTrue();
             var map = new Map();
@@ -469,19 +468,19 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_700", 0, async function(done) {
         console.info("------logMessage contact_insert_test_700 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocheng",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insert_test_700: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await dataWebsiteInsert(DAHelper, rawContactId);
-            await dataRelationInsert(DAHelper, rawContactId);
-            await dataWebsiteInsert(DAHelper, rawContactId);
+            await dataWebsiteInsert(dataShareHelper, rawContactId);
+            await dataRelationInsert(dataShareHelper, rawContactId);
+            await dataWebsiteInsert(dataShareHelper, rawContactId);
             await deleteRawContact("contact_insert_test_700");
             await deleteAll(contactDataUri, "contact_insert_test_700");
             done();
@@ -491,7 +490,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function dataWebsiteInsert(DAHelper, rawContactId)
+    async function dataWebsiteInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
@@ -499,7 +498,7 @@ describe('ContactsTest', function() {
             "detail_info" : "www.com"
         };
         try {
-            var contactDataId1 = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId1 = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             sleep(sleep_one);
             console.info("logMessage contact_insert_test_700: contactDataId1 " + contactDataId1);
             expect(contactDataId1 > 0).assertTrue();
@@ -513,7 +512,7 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataRelationInsert(DAHelper, rawContactId)
+    async function dataRelationInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues2 = {
             "raw_contact_id" : rawContactId,
@@ -521,7 +520,7 @@ describe('ContactsTest', function() {
             "detail_info" : "Secretary"
         };
         try {
-            var contactDataId2 = await DAHelper.insert(contactDataUri, contactDataValues2);
+            var contactDataId2 = await dataShareHelper.insert(contactDataUri, contactDataValues2);
             sleep(sleep_one);
             console.info("logMessage contact_insert_test_700: contactDataId2 " + contactDataId2);
             expect(contactDataId2 > 0).assertTrue();
@@ -535,7 +534,7 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataGroupInsert(DAHelper, rawContactId)
+    async function dataGroupInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues3 = {
             "raw_contact_id" : rawContactId,
@@ -543,7 +542,7 @@ describe('ContactsTest', function() {
             "detail_info" : "1"
         };
         try {
-            var contactDataId3 = await DAHelper.insert(contactDataUri, contactDataValues3);
+            var contactDataId3 = await dataShareHelper.insert(contactDataUri, contactDataValues3);
             sleep(sleep_one);
             console.info("logMessage contact_insert_test_700: contactDataId3 " + contactDataId3);
             expect(contactDataId3 > 0).assertTrue();
@@ -564,17 +563,17 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_800", 0, async function(done) {
         console.info("------logMessage contact_insert_test_800 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocheng",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insert_test_800: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await dataMiscInsert(DAHelper, rawContactId);
+            await dataMiscInsert(dataShareHelper, rawContactId);
             await deleteRawContact("contact_insert_test_800");
             await deleteAll(contactDataUri, "contact_insert_test_800");
             done();
@@ -584,7 +583,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function dataMiscInsert(DAHelper, rawContactId)
+    async function dataMiscInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
@@ -592,7 +591,7 @@ describe('ContactsTest', function() {
             "detail_info" : "1234"
         };
         try {
-            var contactDataId1 = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId1 = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             sleep(sleep_one);
             console.info("logMessage contact_insert_test_800: contactDataId1 " + contactDataId1);
             expect(contactDataId1 > 0).assertTrue();
@@ -612,8 +611,8 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_900", 0, async function(done) {
         console.info("------logMessage contact_update_test_900 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "licheng",
@@ -623,10 +622,10 @@ describe('ContactsTest', function() {
             "phonetic_name" : "licheng||lc"
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_900: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await rawContactUpdate(DAHelper, rawContactId);
+            await rawContactUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_900");
             await deleteAll(contactDataUri, "contact_update_test_900");
             done();
@@ -636,7 +635,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function rawContactUpdate(DAHelper, rawContactId)
+    async function rawContactUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {
             "display_name" : "dacheng",
@@ -645,10 +644,10 @@ describe('ContactsTest', function() {
             "favorite" : 0,
             "phonetic_name" : "dacheng||dc"
         };
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(rawContactUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(rawContactUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_900: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -672,15 +671,15 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1200", 0, async function(done) {
         console.info("------logMessage contact_update_test_1200 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_1200: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforedataNameInsert(DAHelper, rawContactId);
-            await dataNameUpdate(DAHelper, rawContactId);
+            await beforedataNameInsert(dataShareHelper, rawContactId);
+            await dataNameUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_1200");
             await deleteAll(contactDataUri, "contact_update_test_1200");
             done();
@@ -690,11 +689,11 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforedataNameInsert(DAHelper, rawContactId)
+    async function beforedataNameInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {"raw_contact_id" : rawContactId, "content_type" : "name", "detail_info" : "xiaoyuan"};
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1200: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -703,13 +702,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataNameUpdate(DAHelper, rawContactId)
+    async function dataNameUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "dayuan"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1200: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -729,15 +728,15 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1300", 0, async function(done) {
         console.info("------logMessage contact_update_test_1300 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_1300: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforedataCompanyInsert(DAHelper, rawContactId);
-            await dataCompanyUpdate(DAHelper, rawContactId);
+            await beforedataCompanyInsert(dataShareHelper, rawContactId);
+            await dataCompanyUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_1300");
             await deleteAll(contactDataUri, "contact_update_test_1300");
             done();
@@ -747,7 +746,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforedataCompanyInsert(DAHelper, rawContactId)
+    async function beforedataCompanyInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -756,7 +755,7 @@ describe('ContactsTest', function() {
             "position" : "Testers",
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1300: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -765,13 +764,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataCompanyUpdate(DAHelper, rawContactId)
+    async function dataCompanyUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "OOOO", "position" : "developer"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1300: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -792,15 +791,15 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1400", 0, async function(done) {
         console.info("------logMessage contact_update_test_1400 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_1400: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforeDataPhoneInsert(DAHelper, rawContactId);
-            await dataPhoneUpdate(DAHelper, rawContactId);
+            await beforeDataPhoneInsert(dataShareHelper, rawContactId);
+            await dataPhoneUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_1400");
             await deleteAll(contactDataUri, "contact_update_test_1400");
             done();
@@ -810,11 +809,11 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforeDataPhoneInsert(DAHelper, rawContactId)
+    async function beforeDataPhoneInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {"raw_contact_id" : rawContactId, "content_type" : "phone", "detail_info" : "123456"};
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1400: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -823,13 +822,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataPhoneUpdate(DAHelper, rawContactId)
+    async function dataPhoneUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "99663355"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1400: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -849,16 +848,16 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1500", 0, async function(done) {
         console.info("------logMessage contact_update_test_1500 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_1500: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforedataNickNameInsert(DAHelper, rawContactId);
-            await dataNickNameUpdate(DAHelper, rawContactId);
+            await beforedataNickNameInsert(dataShareHelper, rawContactId);
+            await dataNickNameUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_1500");
             await deleteAll(contactDataUri, "contact_update_test_1500");
             done();
@@ -868,7 +867,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforedataNickNameInsert(DAHelper, rawContactId)
+    async function beforedataNickNameInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -876,7 +875,7 @@ describe('ContactsTest', function() {
             "detail_info" : "xiaoyuan"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1500: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -885,13 +884,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataNickNameUpdate(DAHelper, rawContactId)
+    async function dataNickNameUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "fengyuan"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1500: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -911,16 +910,16 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1600", 0, async function(done) {
         console.info("------logMessage contact_update_test_1600 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_1600: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforeDataEmailInsert(DAHelper, rawContactId);
-            await dataEmailUpdate(DAHelper, rawContactId);
+            await beforeDataEmailInsert(dataShareHelper, rawContactId);
+            await dataEmailUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_1600");
             await deleteAll(contactDataUri, "contact_update_test_1600");
             done();
@@ -930,7 +929,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforeDataEmailInsert(DAHelper, rawContactId)
+    async function beforeDataEmailInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -938,7 +937,7 @@ describe('ContactsTest', function() {
             "detail_info" : "166@163.com"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1600: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -947,13 +946,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataEmailUpdate(DAHelper, rawContactId)
+    async function dataEmailUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "199@163.com"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition)
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition)
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1600: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -973,15 +972,15 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1700", 0, async function(done) {
         console.info("------logMessage contact_update_test_1700 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_1700: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforeDataPostalInsert(DAHelper, rawContactId);
+            await beforeDataPostalInsert(dataShareHelper, rawContactId);
             await dataPostalUpdate();
             await deleteRawContact("contact_update_test_1700");
             await deleteAll(contactDataUri, "contact_update_test_1700");
@@ -992,7 +991,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforeDataPostalInsert(DAHelper, rawContactId)
+    async function beforeDataPostalInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -1000,7 +999,7 @@ describe('ContactsTest', function() {
             "detail_info" : "NanJing"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1700: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -1009,13 +1008,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataPostalUpdate(DAHelper, rawContactId)
+    async function dataPostalUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "BeiJing"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1700: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1035,16 +1034,16 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1800", 0, async function(done) {
         console.info("------logMessage contact_update_test_1800 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_1800: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforedataNoteInsert(DAHelper, rawContactId);
-            await dataNoteUpdate(DAHelper, rawContactId);
+            await beforedataNoteInsert(dataShareHelper, rawContactId);
+            await dataNoteUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_1800");
             await deleteAll(contactDataUri, "contact_update_test_1800");
             done();
@@ -1054,11 +1053,11 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforedataNoteInsert(DAHelper, rawContactId)
+    async function beforedataNoteInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {"raw_contact_id" : rawContactId, "content_type" : "note", "detail_info" : "Gangster"};
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1800: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -1067,13 +1066,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataNoteUpdate(DAHelper, rawContactId)
+    async function dataNoteUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "God"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1800: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1093,16 +1092,16 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_1900", 0, async function(done) {
         console.info("------logMessage contact_update_test_1900 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues)
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues)
             console.info("logMessage contact_update_test_1900: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforeDataAimInsert(DAHelper, rawContactId);
-            await dataAimUpdate(DAHelper, rawContactId);
+            await beforeDataAimInsert(dataShareHelper, rawContactId);
+            await dataAimUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_1900");
             await deleteAll(contactDataUri, "contact_update_test_1900");
             done();
@@ -1112,11 +1111,11 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforeDataAimInsert(DAHelper, rawContactId)
+    async function beforeDataAimInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {"raw_contact_id" : rawContactId, "content_type" : "im", "detail_info" : "aaaaa"};
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1900: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -1125,13 +1124,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataAimUpdate(DAHelper, rawContactId)
+    async function dataAimUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "bbbbb"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_1900: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1151,16 +1150,16 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2000", 0, async function(done) {
         console.info("------logMessage contact_update_test_2000 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_2000: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforeDataEventInsert(DAHelper, rawContactId);
-            await dataEventUpdate(DAHelper, rawContactId);
+            await beforeDataEventInsert(dataShareHelper, rawContactId);
+            await dataEventUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_2000");
             await deleteAll(contactDataUri, "contact_update_test_2000");
             done();
@@ -1170,7 +1169,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforeDataEventInsert(DAHelper, rawContactId)
+    async function beforeDataEventInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
@@ -1178,7 +1177,7 @@ describe('ContactsTest', function() {
             "detail_info" : "19960229"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_2000: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -1187,13 +1186,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataEventUpdate(DAHelper, rawContactId)
+    async function dataEventUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "19971021"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_2000: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1213,16 +1212,16 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2100", 0, async function(done) {
         console.info("------logMessage contact_update_test_2100 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_2100: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforeDataWebsiteInsert(DAHelper, rawContactId);
-            await dataWebsiteUpdate(DAHelper, rawContactId);
+            await beforeDataWebsiteInsert(dataShareHelper, rawContactId);
+            await dataWebsiteUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_2100");
             await deleteAll(contactDataUri, "contact_update_test_2100");
             done();
@@ -1232,7 +1231,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforeDataWebsiteInsert(DAHelper, rawContactId)
+    async function beforeDataWebsiteInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
@@ -1240,7 +1239,7 @@ describe('ContactsTest', function() {
             "detail_info" : "www.com"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_2100: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -1249,13 +1248,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataWebsiteUpdate(DAHelper, rawContactId)
+    async function dataWebsiteUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "www.123.com"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_2100: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1275,16 +1274,16 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2200", 0, async function(done) {
         console.info("------logMessage contact_update_test_2200 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_2200: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforeDataRelationInsert(DAHelper, rawContactId);
-            await dataRelationUpdate(DAHelper, rawContactId);
+            await beforeDataRelationInsert(dataShareHelper, rawContactId);
+            await dataRelationUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_2200");
             await deleteAll(contactDataUri, "contact_update_test_2200");
             done();
@@ -1294,7 +1293,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforeDataRelationInsert(DAHelper, rawContactId)
+    async function beforeDataRelationInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -1302,7 +1301,7 @@ describe('ContactsTest', function() {
             "detail_info" : "Secretary"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             console.info('logMessage contact_update_test_2200: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
         } catch (error) {
@@ -1310,13 +1309,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataRelationUpdate(DAHelper, rawContactId)
+    async function dataRelationUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "spouse"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_2200: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1336,16 +1335,16 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2300", 0, async function(done) {
         console.info("------logMessage contact_update_test_2300 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_update_test_2300: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforeDataGroupInsert(DAHelper, rawContactId);
-            await dataGroupUpdate(DAHelper, rawContactId);
+            await beforeDataGroupInsert(dataShareHelper, rawContactId);
+            await dataGroupUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_2300");
             await deleteAll(contactDataUri, "contact_update_test_2300");
             done();
@@ -1355,7 +1354,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforeDataGroupInsert(DAHelper, rawContactId)
+    async function beforeDataGroupInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -1363,7 +1362,7 @@ describe('ContactsTest', function() {
             "detail_info" : "2"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_2300: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -1372,13 +1371,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataGroupUpdate(DAHelper, rawContactId)
+    async function dataGroupUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "7"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_2300: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1398,17 +1397,17 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_2400", 0, async function(done) {
         console.info("------logMessage contact_update_test_2400 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoyuan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_update_test_2400: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await beforeDataMiscInsert(DAHelper, rawContactId);
-            await dataMiscUpdate(DAHelper, rawContactId);
+            await beforeDataMiscInsert(dataShareHelper, rawContactId);
+            await dataMiscUpdate(dataShareHelper, rawContactId);
             await deleteRawContact("contact_update_test_2400");
             await deleteAll(contactDataUri, "contact_update_test_2400");
             done();
@@ -1418,7 +1417,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function beforeDataMiscInsert(DAHelper, rawContactId)
+    async function beforeDataMiscInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
@@ -1426,7 +1425,7 @@ describe('ContactsTest', function() {
             "detail_info" : "1234"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_2400: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -1435,13 +1434,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function dataMiscUpdate(DAHelper, rawContactId)
+    async function dataMiscUpdate(dataShareHelper, rawContactId)
     {
         var updateValues = {"detail_info" : "999"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contact_update_test_2400: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1461,15 +1460,15 @@ describe('ContactsTest', function() {
      */
     it("contact_favorite_test_2500", 0, async function(done) {
         console.info("-------logMessage contact_favorite_test_2500 is starting!------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaocai", "company" : "TT", "position" : "Testers"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues)
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues)
             console.info('logMessage contact_favorite_test_2500: rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await updateFavorite(DAHelper, rawContactId);
+            await updateFavorite(dataShareHelper, rawContactId);
             await deleteRawContact("contact_favorite_test_2500");
             done();
         } catch (error) {
@@ -1478,13 +1477,13 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function updateFavorite(DAHelper, rawContactId)
+    async function updateFavorite(dataShareHelper, rawContactId)
     {
         var updateValues = {"favorite" : 1};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(rawContactUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(rawContactUri, updateValues, condition);
             sleep(sleep_one);
             console.info("logMessage contact_favorite_test_2500: updateCode = " + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1507,14 +1506,14 @@ describe('ContactsTest', function() {
      */
     it("contact_unfavorite_test_2600", 0, async function(done) {
         console.info("-------logMessage contact_unfavorite_test_2600 is starting!------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var rawContactValues = {"display_name" : "xiaohong", "company" : "TT", "position" : "Testers", "favorite" : 1};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info('logMessage contact_unfavorite_test_2600: rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await updateUnFavorite(DAHelper, rawContactId);
+            await updateUnFavorite(dataShareHelper, rawContactId);
             await deleteRawContact("contact_unfavorite_test_2600");
             done();
         } catch (error) {
@@ -1523,13 +1522,13 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function updateUnFavorite(DAHelper, rawContactId)
+    async function updateUnFavorite(dataShareHelper, rawContactId)
     {
         var updateValues = {"favorite" : 0};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
-            var updateCode = await DAHelper.update(rawContactUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(rawContactUri, updateValues, condition);
             sleep(sleep_one);
             console.info("logMessage contact_unfavorite_test_2600: updateCode = " + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -1552,10 +1551,10 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_2700", 0, async function(done) {
         console.info("-------logMessage contact_insert_test_2700 is starting!------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var blocklistId = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
+            var blocklistId = await dataShareHelper.insert(contactBlocklistUri, common.getProfileBlockList());
             sleep(sleep_one);
             console.info('logMessage contact_insert_test_2700: blocklistId = ' + blocklistId);
             expect(blocklistId > 0).assertTrue();
@@ -1577,10 +1576,10 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_2800", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_2800 is starting!------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var blocklistId = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
+            var blocklistId = await dataShareHelper.insert(contactBlocklistUri, common.getProfileBlockList());
             sleep(sleep_one);
             console.info('logMessage contact_delete_test_2800: blocklistId = ' + blocklistId);
             expect(blocklistId > 0).assertTrue();
@@ -1593,10 +1592,10 @@ describe('ContactsTest', function() {
 
         async function BlocklistDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", blocklistId.toString());
             try {
-                var deleteCode = await DAHelper.delete(contactBlocklistUri, condition);
+                var deleteCode = await dataShareHelper.delete(contactBlocklistUri, condition);
                 sleep(sleep_one);
                 console.info("logMessage contact_delete_test_2800: deleteCode = " + deleteCode);
                 expect(deleteCode == 0).assertTrue();
@@ -1617,16 +1616,16 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_2900", 0, async function(done) {
         console.info("-------logMessage contact_insert_test_2900 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var groupValues = {"group_name" : "TestersThird"};
         try {
-            var groupId = await DAHelper.insert(groupUri, groupValues);
+            var groupId = await dataShareHelper.insert(groupUri, groupValues);
             sleep(sleep_one);
             console.info("logMessage contact_insert_test_2900: groupId =" + groupId);
             expect(groupId > 0).assertTrue();
-            await groupRawContactInsert(DAHelper);
+            await groupRawContactInsert(dataShareHelper);
             await deleteRawContact("contact_insert_test_2900");
             await deleteAll(groupUri, "contact_insert_test_2900");
             await deleteAll(contactDataUri, "contact_insert_test_2900");
@@ -1637,21 +1636,21 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function groupRawContactInsert(DAHelper)
+    async function groupRawContactInsert(dataShareHelper)
     {
         var rawContactValues = {"display_name" : "liyu"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_insert_test_2900: rawContactId =" + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await groupDataInsert(DAHelper, rawContactId);
+            await groupDataInsert(dataShareHelper, rawContactId);
         } catch (error) {
             console.info("logMessage contact_insert_test_2900: raw_contact insert error =" + error);
         }
     }
 
-    async function groupDataInsert(DAHelper, rawContactId)
+    async function groupDataInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -1659,7 +1658,7 @@ describe('ContactsTest', function() {
             "detail_info" : groupId.toString()
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues)
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues)
             sleep(sleep_one);
             console.info("logMessage contact_insert_test_2900: contactDataId =" + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -1680,16 +1679,16 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_3000", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_3000 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var groupValues = {"group_name" : "TestersFourth"};
         try {
-            var groupId = await DAHelper.insert(groupUri, groupValues);
+            var groupId = await dataShareHelper.insert(groupUri, groupValues);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_3000: groupId =" + groupId);
             expect(groupId > 0).assertTrue();
-            await groupAfterRawContactInsert(DAHelper);
+            await groupAfterRawContactInsert(dataShareHelper);
             await deleteRawContact("contact_delete_test_3000");
             await deleteAll(groupUri, "contact_delete_test_3000");
             await deleteAll(contactDataUri, "contact_delete_test_3000");
@@ -1700,21 +1699,21 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function groupAfterRawContactInsert(DAHelper)
+    async function groupAfterRawContactInsert(dataShareHelper)
     {
         var rawContactValues = {"display_name" : "liyuchen"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_3000: rawContactId =" + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await deleteGroupContactDataInsert(DAHelper, rawContactId);
+            await deleteGroupContactDataInsert(dataShareHelper, rawContactId);
         } catch (error) {
             console.info("logMessage contact_delete_test_3000: raw_contact insert error =" + error);
         }
     }
 
-    async function deleteGroupContactDataInsert(DAHelper, rawContactId)
+    async function deleteGroupContactDataInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -1722,21 +1721,21 @@ describe('ContactsTest', function() {
             "detail_info" : groupId.toString()
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             console.info("logMessage contact_delete_test_3000: contactDataId =" + contactDataId);
             expect(contactDataId > 0).assertTrue();
-            await deleteGroup(DAHelper, contactDataId);
+            await deleteGroup(dataShareHelper, contactDataId);
         } catch (error) {
             console.info("logMessage contact_delete_test_3000: contact_data insert error =" + error);
         }
     }
 
-    async function deleteGroup(DAHelper, contactDataId)
+    async function deleteGroup(dataShareHelper, contactDataId)
     {
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", contactDataId.toString());
         try {
-            var deleteCode = await DAHelper.delete(contactDataUri, condition);
+            var deleteCode = await dataShareHelper.delete(contactDataUri, condition);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_3000: deleteCode =" + deleteCode);
             expect(deleteCode == 0).assertTrue();
@@ -1755,16 +1754,16 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3100", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3100 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoyu"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3100: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await RawContactQuery(DAHelper, rawContactId);
+            await RawContactQuery(dataShareHelper, rawContactId);
             await deleteRawContact("contact_query_test_3100");
             done();
         } catch (error) {
@@ -1773,13 +1772,13 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function RawContactQuery(DAHelper, rawContactId)
+    async function RawContactQuery(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "id", "display_name" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             sleep(sleep_two);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -1802,12 +1801,12 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3200", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3200 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues1 = {"display_name" : "xiaoyu"};
         try {
-            var rawContactIdOne = await DAHelper.insert(rawContactUri, rawContactValues1);
+            var rawContactIdOne = await dataShareHelper.insert(rawContactUri, rawContactValues1);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3200: rawContactId = " + rawContactIdOne);
             expect(rawContactIdOne > 0).assertTrue();
@@ -1818,11 +1817,11 @@ describe('ContactsTest', function() {
 
         var rawContactValues2 = {"display_name" : "xiaohong"};
         try {
-            var rawContactIdTwo = await DAHelper.insert(rawContactUri, rawContactValues2);
+            var rawContactIdTwo = await dataShareHelper.insert(rawContactUri, rawContactValues2);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3200: rawContactId = " + rawContactIdTwo);
             expect(rawContactIdTwo > 0).assertTrue();
-            await queryTwoRaw(DAHelper, rawContactIdOne, rawContactIdTwo);
+            await queryTwoRaw(dataShareHelper, rawContactIdOne, rawContactIdTwo);
             await deleteRawContact("contact_query_test_3200");
             done();
         } catch (error) {
@@ -1831,15 +1830,15 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryTwoRaw(DAHelper, rawContactIdOne, rawContactIdTwo)
+    async function queryTwoRaw(dataShareHelper, rawContactIdOne, rawContactIdTwo)
     {
         var resultColumns = [ "id", "display_name" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactIdOne.toString());
         condition.or();
         condition.equalTo("id", rawContactIdTwo.toString());
         try {
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             sleep(sleep_one);
             console.info('logMessage contact_query_test_3200: goToFirstRow' + resultSet.goToFirstRow());
             expect(resultSet.goToFirstRow()).assertEqual(true);
@@ -1864,12 +1863,12 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3300", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3300 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues1 = {"display_name" : "xiaoyu"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues1);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues1);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3300: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -1878,10 +1877,10 @@ describe('ContactsTest', function() {
             done();
         }
         var resultColumns = [ "id", "display_name" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         try {
-            var resultSet = await DAHelper.query(profileRawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(profileRawContactUri, resultColumns, condition);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -1907,8 +1906,8 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3400", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3400 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {
             "display_name" : "xiaoyuzhou",
@@ -1918,11 +1917,11 @@ describe('ContactsTest', function() {
             "phonetic_name" : "xiaoyu||xy"
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3400: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await queryAllInformation(DAHelper, rawContactId);
+            await queryAllInformation(dataShareHelper, rawContactId);
             await deleteRawContact("contact_query_test_3400");
             done();
         } catch (error) {
@@ -1931,13 +1930,13 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryAllInformation(DAHelper, rawContactId)
+    async function queryAllInformation(dataShareHelper, rawContactId)
     {
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -1971,11 +1970,11 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3500", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3500 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var rawContactValues = {"display_name" : "xiaoyuzhou"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3500: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -1985,7 +1984,7 @@ describe('ContactsTest', function() {
         }
         var groupValues = {"group_name" : "BossBoard3500"};
         try {
-            var groupId = await DAHelper.insert(groupUri, groupValues);
+            var groupId = await dataShareHelper.insert(groupUri, groupValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3500: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
@@ -1993,14 +1992,14 @@ describe('ContactsTest', function() {
             console.info("logMessage contact_query_test_3500: group insert error = " + error);
             done();
         }
-        await groupBossBoardInsert(DAHelper, rawContactId, groupId);
+        await groupBossBoardInsert(dataShareHelper, rawContactId, groupId);
         await deleteRawContact("contact_query_test_3500");
         await deleteAll(groupUri, "contact_query_test_3500");
         await deleteAll(contactDataUri, "contact_query_test_3500");
         done();
     });
 
-    async function groupBossBoardInsert(DAHelper, rawContactId, groupId)
+    async function groupBossBoardInsert(dataShareHelper, rawContactId, groupId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -2008,26 +2007,26 @@ describe('ContactsTest', function() {
             "detail_info" : groupId.toString()
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3500: contactDataId = " + contactDataId);
             expect(contactDataId > 0).assertTrue();
-            await groupBossBoardQuery(DAHelper, rawContactId, groupId);
+            await groupBossBoardQuery(dataShareHelper, rawContactId, groupId);
         } catch (error) {
             console.info("logMessage contact_query_test_3500: query error = " + error);
         }
     }
 
-    async function groupBossBoardQuery(DAHelper, rawContactId, groupId)
+    async function groupBossBoardQuery(dataShareHelper, rawContactId, groupId)
     {
         var resultColumns = [ "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         // type_id = 9 data is group
         condition.equalTo("type_id", "9");
         condition.and();
         condition.equalTo("detail_info", groupId.toString());
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -2050,11 +2049,11 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3600", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3600 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var rawContactValues = {"display_name" : "xiaoyuzhou", "favorite" : 1};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3600: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -2069,12 +2068,12 @@ describe('ContactsTest', function() {
         async function queryFavorite()
         {
             var resultColumns = [ "id", "display_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("favorite", "1");
             condition.and();
             condition.equalTo("is_deleted", "0");
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 sleep(sleep_one);
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -2099,11 +2098,11 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3700", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3700 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var rawContactValues = {"display_name" : "xiaoyuzhou", "lastest_contacted_time" : 60};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3700: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -2118,12 +2117,12 @@ describe('ContactsTest', function() {
         async function queryContacted()
         {
             var resultColumns = [ "id", "display_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.lessThan("lastest_contacted_time", "100");
             condition.and();
             condition.equalTo("is_deleted", "0");
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 sleep(sleep_one);
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -2148,16 +2147,16 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3800", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3800 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var rawContactValues = {"display_name" : "xiaocai"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3800: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await rawContactDelete(DAHelper, rawContactId);
-            await deletedRawContactQuery(DAHelper, rawContactId);
+            await rawContactDelete(dataShareHelper, rawContactId);
+            await deletedRawContactQuery(dataShareHelper, rawContactId);
             await deleteAll(deletedUri, "contact_query_test_3800")
             done();
         } catch (error) {
@@ -2166,12 +2165,12 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function rawContactDelete(DAHelper, rawContactId)
+    async function rawContactDelete(dataShareHelper, rawContactId)
     {
-        var condition1 = new ohos_data_ability.DataAbilityPredicates();
+        var condition1 = new dataShare.DataSharePredicates();
         condition1.equalTo("id", rawContactId.toString());
         try {
-            var deleteCode = await DAHelper.delete(rawContactUri, condition1);
+            var deleteCode = await dataShareHelper.delete(rawContactUri, condition1);
             sleep(sleep_one);
             console.info('logMessage contact_query_test_3800: deleteCode = ' + deleteCode);
             expect(deleteCode == 0).assertTrue();
@@ -2181,13 +2180,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function deletedRawContactQuery(DAHelper, rawContactId)
+    async function deletedRawContactQuery(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "id", "raw_contact_id", "display_name", "is_deleted" ];
-        var condition2 = new ohos_data_ability.DataAbilityPredicates();
+        var condition2 = new dataShare.DataSharePredicates();
         condition2.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(deletedRawContactUri, resultColumns, condition2);
+            var resultSet = await dataShareHelper.query(deletedRawContactUri, resultColumns, condition2);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 console.info('logMessage contact_query_test_3800: id = ' + resultSet.getString(0));
@@ -2212,11 +2211,11 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_3900", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_3900 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var rawContactValues = {"display_name" : "xiaocai"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3900: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -2231,7 +2230,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryPhoneInsert(DAHelper, rawContactId)
+    async function queryPhoneInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -2239,7 +2238,7 @@ describe('ContactsTest', function() {
             "detail_info" : "1853696321"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_3900: contactDataId = " + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -2248,14 +2247,14 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function phoneQuery(DAHelper, rawContactId)
+    async function phoneQuery(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         // type_id = 5 data is phone
         condition.equalTo("content_type", "phone");
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -2279,17 +2278,17 @@ describe('ContactsTest', function() {
     it("contact_query_test_4000", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_4000 is starting!------------");
 
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoyu"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_4000: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await queryEmailInsert(DAHelper, rawContactId);
-            await emailQuery(DAHelper, contactDataId, rawContactId);
+            await queryEmailInsert(dataShareHelper, rawContactId);
+            await emailQuery(dataShareHelper, contactDataId, rawContactId);
             await deleteRawContact("contact_query_test_4000");
             await deleteAll(contactDataUri, "contact_query_test_4000");
             done();
@@ -2299,7 +2298,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryEmailInsert(DAHelper, rawContactId)
+    async function queryEmailInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -2307,7 +2306,7 @@ describe('ContactsTest', function() {
             "detail_info" : "16658@163.com"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_4000: contactDataId = " + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -2316,14 +2315,14 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function emailQuery(DAHelper, contactDataId, rawContactId)
+    async function emailQuery(dataShareHelper, contactDataId, rawContactId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         // type_id = 1 data content_type is  email
         condition.equalTo("type_id", "1").limitAs(array_three).orderByDesc("id");
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -2348,18 +2347,18 @@ describe('ContactsTest', function() {
      */
     it("contact_query_test_4100", 0, async function(done) {
         console.info("-----------logMessage contact_query_test_4100 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoyu"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_4100: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await queryTwoDataInsert(DAHelper, rawContactId);
-            await queryTwoDataInsertCompany(DAHelper, rawContactId);
-            await queryTwo(DAHelper, rawContactId);
+            await queryTwoDataInsert(dataShareHelper, rawContactId);
+            await queryTwoDataInsertCompany(dataShareHelper, rawContactId);
+            await queryTwo(dataShareHelper, rawContactId);
             await deleteRawContact("contact_query_test_4100");
             await deleteAll(contactDataUri, "contact_query_test_4100");
             del
@@ -2370,11 +2369,11 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryTwoDataInsert(DAHelper, rawContactId)
+    async function queryTwoDataInsert(dataShareHelper, rawContactId)
     {
         var contactDataValues = {"raw_contact_id" : rawContactId, "content_type" : "name", "detail_info" : "xiaoyu"};
         try {
-            var contactDataId1 = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId1 = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info("logMessage contact_query_test_4100: contactDataId = " + contactDataId1);
             expect(contactDataId1 > 0).assertTrue();
@@ -2383,7 +2382,7 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function queryTwoDataInsertCompany(DAHelper, rawContactId)
+    async function queryTwoDataInsertCompany(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -2392,7 +2391,7 @@ describe('ContactsTest', function() {
             "position" : "Testers"
         };
         try {
-            var contactDataId2 = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId2 = await dataShareHelper.insert(contactDataUri, contactDataValues);
             console.info("logMessage contact_query_test_4100: contactDataId = " + contactDataId2);
             expect(contactDataId2 > 0).assertTrue();
         } catch (error) {
@@ -2400,13 +2399,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function queryTwo(DAHelper, rawContactId)
+    async function queryTwo(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info", "position" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             sleep(sleep_one);
             var array = [ {detail_info : "xiaoyu", position : ""}, {detail_info : "OOOO", position : "Testers"} ];
             var i = 0;
@@ -2437,17 +2436,17 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_4400", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_4400 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaoming"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_4400: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await deleteRaw(DAHelper, rawContactId);
-            await queryDelete(DAHelper, rawContactId);
+            await deleteRaw(dataShareHelper, rawContactId);
+            await queryDelete(dataShareHelper, rawContactId);
             done();
         } catch (error) {
             console.info("logMessage contact_delete_test_4400: raw_contact insert error :" + error);
@@ -2455,12 +2454,12 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function deleteRaw(DAHelper, rawContactId)
+    async function deleteRaw(dataShareHelper, rawContactId)
     {
-        var condition1 = new ohos_data_ability.DataAbilityPredicates();
+        var condition1 = new dataShare.DataSharePredicates();
         condition1.equalTo("id", rawContactId.toString());
         try {
-            var deleteCode = await DAHelper.delete(rawContactUri, condition1);
+            var deleteCode = await dataShareHelper.delete(rawContactUri, condition1);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_4400: deleteCode = " + deleteCode);
             expect(deleteCode == 0).assertTrue();
@@ -2469,13 +2468,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function queryDelete(DAHelper, rawContactId)
+    async function queryDelete(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "id", "delete_time", "display_name" ];
-        var condition2 = new ohos_data_ability.DataAbilityPredicates();
+        var condition2 = new dataShare.DataSharePredicates();
         condition2.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(deletedRawContactUri, resultColumns, condition2);
+            var resultSet = await dataShareHelper.query(deletedRawContactUri, resultColumns, condition2);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 console.info("logMessage contact_delete_test_4400: columnNames:" + resultSet.columnNames);
@@ -2498,18 +2497,18 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_4700", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_4700 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaozhang", "company" : "OOOO", "position" : "TestManager"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_4700: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await queryDeleteCompanyData(DAHelper, rawContactId);
-            await rawContactDelete(DAHelper, rawContactId);
-            await companyRawContactDeleteQuery(DAHelper, rawContactId);
+            await queryDeleteCompanyData(dataShareHelper, rawContactId);
+            await rawContactDelete(dataShareHelper, rawContactId);
+            await companyRawContactDeleteQuery(dataShareHelper, rawContactId);
             await deleteAll(contactDataUri, "contact_delete_test_4700");
             done();
         } catch (error) {
@@ -2518,7 +2517,7 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryDeleteCompanyData(DAHelper, rawContactId)
+    async function queryDeleteCompanyData(dataShareHelper, rawContactId)
     {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
@@ -2527,7 +2526,7 @@ describe('ContactsTest', function() {
             "position" : "TestManager"
         };
         try {
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_4700: contactDataId = " + contactDataId);
             expect(contactDataId > 0).assertTrue();
@@ -2536,12 +2535,12 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function rawContactDelete(DAHelper, rawContactId)
+    async function rawContactDelete(dataShareHelper, rawContactId)
     {
-        var condition1 = new ohos_data_ability.DataAbilityPredicates();
+        var condition1 = new dataShare.DataSharePredicates();
         condition1.equalTo("id", rawContactId.toString());
         try {
-            var deleteCode = await DAHelper.delete(rawContactUri, condition1);
+            var deleteCode = await dataShareHelper.delete(rawContactUri, condition1);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_4700: deleteCode = " + deleteCode);
             expect(deleteCode == 0).assertTrue();
@@ -2551,13 +2550,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function companyRawContactDeleteQuery(DAHelper, rawContactId)
+    async function companyRawContactDeleteQuery(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "id", "display_name", "backup_data" ];
-        var condition2 = new ohos_data_ability.DataAbilityPredicates();
+        var condition2 = new dataShare.DataSharePredicates();
         condition2.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(deletedRawContactUri, resultColumns, condition2);
+            var resultSet = await dataShareHelper.query(deletedRawContactUri, resultColumns, condition2);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 console.info("logMessage contact_delete_test_4700: columnNames:" + resultSet.columnNames);
@@ -2580,17 +2579,17 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_4800", 0, async function(done) {
         console.info("-------logMessage contact_delete_test_4800 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {"display_name" : "xiaopeng"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_4800: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await ContactDelete(DAHelper, rawContactId);
-            await DeletedRawContactQuery(DAHelper, rawContactId)
+            await ContactDelete(dataShareHelper, rawContactId);
+            await DeletedRawContactQuery(dataShareHelper, rawContactId)
                 await deleteAll(contactDataUri, "contact_delete_test_4800");
             done();
         } catch (error) {
@@ -2599,12 +2598,12 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function ContactDelete(DAHelper, rawContactId)
+    async function ContactDelete(dataShareHelper, rawContactId)
     {
-        var condition1 = new ohos_data_ability.DataAbilityPredicates();
+        var condition1 = new dataShare.DataSharePredicates();
         condition1.equalTo("name_raw_contact_id", rawContactId.toString());
         try {
-            var deleteCode = await DAHelper.delete(contactUri, condition1);
+            var deleteCode = await dataShareHelper.delete(contactUri, condition1);
             sleep(sleep_one);
             console.info("logMessage contact_delete_test_4800: deleteCode = " + deleteCode);
             expect(deleteCode == 0).assertTrue();
@@ -2613,13 +2612,13 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function DeletedRawContactQuery(DAHelper, rawContactId)
+    async function DeletedRawContactQuery(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "id", "delete_time", "display_name" ];
-        var condition2 = new ohos_data_ability.DataAbilityPredicates();
+        var condition2 = new dataShare.DataSharePredicates();
         condition2.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(deletedRawContactUri, resultColumns, condition2);
+            var resultSet = await dataShareHelper.query(deletedRawContactUri, resultColumns, condition2);
             sleep(sleep_one)
             if (resultSet.goToFirstRow())
             {
@@ -2643,17 +2642,17 @@ describe('ContactsTest', function() {
      */
     it("contact_batchinsert_test_4900", 0, async function(done) {
         console.info("--------logMessage contact_batchinsert_test_4900 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, common.getContactBatchCompany());
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, common.getContactBatchCompany());
             sleep(sleep_one);
             console.info("logMessage contact_batchinsert_test_4900: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == 0).assertTrue();
             var resultColumns = [];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("company", "TT4900");
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             console.info(
                 'contact_batchinsert_test_4900 : queryBatch start ! resultSet.rowCount = ' + resultSet.rowCount);
             expect(resultSet.rowCount == 5).assertEqual(true);
@@ -2673,11 +2672,11 @@ describe('ContactsTest', function() {
      */
     it("contact_batchinsert_test_5000", 0, async function(done) {
         console.info("--------logMessage contact_batchinsert_test_5000  start!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var rawContactValues = {"display_name" : "xiaozhi"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info("logMessage contact_batchinsert_test_5000: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -2690,7 +2689,7 @@ describe('ContactsTest', function() {
         async function ContactDataBatchInsert()
         {
             try {
-                var batchInsertCode = await DAHelper.batchInsert(contactDataUri, common.getContactBatchCompanyTwo());
+                var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, common.getContactBatchCompanyTwo());
                 sleep(sleep_one);
                 console.info("logMessage contact_batchinsert_test_5000: batchInsertCode = " + batchInsertCode);
                 expect(batchInsertCode == 0).assertTrue();
@@ -2713,11 +2712,11 @@ describe('ContactsTest', function() {
      */
     it("contact_batchinsert_test_5400", 0, async function(done) {
         console.info("--------logMessage contact_batchinsert_test_5400 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(13);
         try {
-            var batchInsertCode = await DAHelper.batchInsert(contactBlocklistUri, common.getPhoneNumberBatch());
+            var batchInsertCode = await dataShareHelper.batchInsert(contactBlocklistUri, common.getPhoneNumberBatch());
             sleep(sleep_one);
             console.info("logMessage contact_batchinsert_test_5400: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == 0).assertTrue();
@@ -2731,10 +2730,10 @@ describe('ContactsTest', function() {
 
         async function BlocklistDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("phone_number", phoneNumber);
             try {
-                var deleteCode = await DAHelper.delete(contactBlocklistUri, condition);
+                var deleteCode = await dataShareHelper.delete(contactBlocklistUri, condition);
                 console.info("logMessage contact_batchinsert_test_5400: deleteCode = " + deleteCode);
                 expect(deleteCode == 0).assertTrue();
                 await query(0);
@@ -2748,10 +2747,10 @@ describe('ContactsTest', function() {
         async function query(size)
         {
             var resultColumns = [];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("phone_number", phoneNumber);
             try {
-                var resultSet = await DAHelper.query(contactBlocklistUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(contactBlocklistUri, resultColumns, condition);
                 sleep(sleep_one);
                 console.info(
                     'contact_batchinsert_test_5400 : queryBatch start ! resultSet.rowCount = ' + resultSet.rowCount);
@@ -2770,8 +2769,8 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_5300", 0, async function(done) {
         console.info("--------logMessage contact_update_test_5300 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValuesOne = {"display_name" : "fengyuan", "favorite" : 1};
         var rawContactValuesTwo = {"display_name" : "xiaoli", "favorite" : 1};
@@ -2781,12 +2780,12 @@ describe('ContactsTest', function() {
         listAddBluk[1] = rawContactValuesTwo;
         listAddBluk[array_two] = rawContactValuesThree;
         try {
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
             sleep(sleep_one);
             console.info("logMessage contact_update_test_5300: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == 0).assertTrue();
-            await RawContactUpdateUnFavorites(DAHelper);
-            await queryUnFavorites(DAHelper);
+            await RawContactUpdateUnFavorites(dataShareHelper);
+            await queryUnFavorites(dataShareHelper);
             await deleteRawContact("contact_update_test_5300");
             done();
         } catch (error) {
@@ -2795,15 +2794,15 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function RawContactUpdateUnFavorites(DAHelper)
+    async function RawContactUpdateUnFavorites(dataShareHelper)
     {
         var updateValues = {"favorite" : 0};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("display_name", "fengyuan");
         condition.or();
         condition.equalTo("display_name", "xiaoma");
         try {
-            var updateCode = await DAHelper.update(rawContactUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(rawContactUri, updateValues, condition);
             sleep(sleep_one);
             console.info("logMessage contact_update_test_5300: updateCode = " + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -2812,15 +2811,15 @@ describe('ContactsTest', function() {
         }
     }
 
-    async function queryUnFavorites(DAHelper)
+    async function queryUnFavorites(dataShareHelper)
     {
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("display_name", "fengyuan");
         condition.or();
         condition.equalTo("display_name", "xiaoma");
         try {
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             sleep(sleep_one);
             console.info('contact_update_test_5300 : queryBatch start ! resultSet.rowCount = ' + resultSet.rowCount);
             expect(resultSet.rowCount == array_two).assertEqual(true);
@@ -2847,11 +2846,11 @@ describe('ContactsTest', function() {
      */
     it("contact_batchinsert_test_5500", 0, async function(done) {
         console.info("--------logMessage contact_batchinsert_test_5500 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var groupValues = {"group_name" : "ManagerGroup"};
         try {
-            var groupId = await DAHelper.insert(groupUri, groupValues);
+            var groupId = await dataShareHelper.insert(groupUri, groupValues);
             console.info("logMessage contact_batchinsert_test_5500: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
         } catch (error) {
@@ -2861,7 +2860,7 @@ describe('ContactsTest', function() {
 
         try {
             var rawContactValues1 = {"display_name" : "xiaohuang"};
-            var rawContactIdOne = await DAHelper.insert(rawContactUri, rawContactValues1);
+            var rawContactIdOne = await dataShareHelper.insert(rawContactUri, rawContactValues1);
             console.info("logMessage contact_batchinsert_test_5500: rawContactIdOne = " + rawContactIdOne);
             expect(rawContactIdOne > 0).assertTrue();
         } catch (error) {
@@ -2871,7 +2870,7 @@ describe('ContactsTest', function() {
 
         try {
             var rawContactValues2 = {"display_name" : "xiaolv"};
-            var rawContactIdTwo = await DAHelper.insert(rawContactUri, rawContactValues2);
+            var rawContactIdTwo = await dataShareHelper.insert(rawContactUri, rawContactValues2);
             console.info("logMessage contact_batchinsert_test_5500: rawContactIdTwo = " + rawContactIdTwo);
             expect(rawContactIdTwo > 0).assertTrue();
         } catch (error) {
@@ -2881,21 +2880,21 @@ describe('ContactsTest', function() {
 
         try {
             var rawContactValues3 = {"display_name" : "xiaobai"};
-            var rawContactId3 = await DAHelper.insert(rawContactUri, rawContactValues3);
+            var rawContactId3 = await dataShareHelper.insert(rawContactUri, rawContactValues3);
             console.info("logMessage contact_batchinsert_test_5500: rawContactId3 = " + rawContactId3);
             expect(rawContactId3 > 0).assertTrue();
         } catch (error) {
             console.info("logMessage contact_batchinsert_test_5500: raw_contact_3 insert error = " + error);
             done();
         }
-        await threeDataInsert(DAHelper, rawContactIdOne, rawContactIdTwo, rawContactId3, groupId);
+        await threeDataInsert(dataShareHelper, rawContactIdOne, rawContactIdTwo, rawContactId3, groupId);
         await deleteRawContact("contact_batchinsert_test_5500");
         await deleteAll(groupUri, "contact_batchinsert_test_5500");
         await deleteAll(contactDataUri, "contact_batchinsert_test_5500");
         done();
     });
 
-    async function threeDataInsert(DAHelper, rawContactIdOne, rawContactIdTwo, rawContactId3, groupId)
+    async function threeDataInsert(dataShareHelper, rawContactIdOne, rawContactIdTwo, rawContactId3, groupId)
     {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactIdOne,
@@ -2917,42 +2916,42 @@ describe('ContactsTest', function() {
         listAddBluk[1] = contactDataValues2;
         listAddBluk[array_two] = contactDataValues3;
         try {
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
             sleep(sleep_one);
             console.info("logMessage contact_batchinsert_test_5500: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == 0).assertTrue();
-            await ContactDataDelete(DAHelper, rawContactIdOne, rawContactId3);
+            await ContactDataDelete(dataShareHelper, rawContactIdOne, rawContactId3);
         } catch (error) {
             console.info("logMessage contact_batchinsert_test_5500: batchInsert error = " + error);
         }
     }
 
-    async function ContactDataDelete(DAHelper, rawContactIdOne, rawContactId3)
+    async function ContactDataDelete(dataShareHelper, rawContactIdOne, rawContactId3)
     {
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactIdOne.toString());
         condition.or();
         condition.equalTo("raw_contact_id", rawContactId3.toString());
         try {
-            var deleteCode = await DAHelper.delete(contactDataUri, condition);
+            var deleteCode = await dataShareHelper.delete(contactDataUri, condition);
             sleep(sleep_one);
             console.info("logMessage contact_batchinsert_test_5500: deleteCode = " + deleteCode);
             expect(deleteCode == 0).assertTrue();
-            await queryTwoData(DAHelper, rawContactIdOne, rawContactId3);
+            await queryTwoData(dataShareHelper, rawContactIdOne, rawContactId3);
         } catch (error) {
             console.info("logMessage contact_batchinsert_test_5500: delete error = " + error);
         }
     }
 
-    async function queryTwoData(DAHelper, rawContactIdOne, rawContactId3)
+    async function queryTwoData(dataShareHelper, rawContactIdOne, rawContactId3)
     {
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactIdOne.toString());
         condition.or();
         condition.equalTo("raw_contact_id", rawContactId3.toString());
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             sleep(sleep_one);
             console.info(
                 'contact_batchinsert_test_5500 : queryBatch start ! resultSet.rowCount = ' + resultSet.rowCount);
@@ -2970,12 +2969,12 @@ describe('ContactsTest', function() {
      */
     it("contact_pinyin_query_test_200", 0, async function(done) {
         console.info("--------logMessage contact_pinyin_query_test_200 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "小黄"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info('logMessage contact_pinyin_query_test_200 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await ContactDataInsert();
@@ -2995,10 +2994,10 @@ describe('ContactsTest', function() {
                 "detail_info" : "xiaohuang"
             };
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 console.info('logMessage contact_pinyin_query_test_200 contactDataId = ' + contactDataId);
                 expect(contactDataId > 0).assertTrue();
-                await SearchQuery(DAHelper, rawContactId);
+                await SearchQuery(dataShareHelper, rawContactId);
             } catch (error) {
                 console.info('logMessage contact_pinyin_query_test_200 contact_data insert error = ' + error);
                 done();
@@ -3006,13 +3005,13 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function SearchQuery(DAHelper, rawContactId)
+    async function SearchQuery(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "id", "search_name" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(searchContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(searchContactUri, resultColumns, condition);
             var map = common.getSearchMap();
             map.set("raw_contact_id", rawContactId.toString());
             if (resultSet.goToFirstRow()) {
@@ -3038,12 +3037,12 @@ describe('ContactsTest', function() {
      */
     it("contact_pinyin_query_test_100", 0, async function(done) {
         console.info("--------logMessage contact_pinyin_query_test_100 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "鍵盤"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_pinyin_query_test_100 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -3060,11 +3059,11 @@ describe('ContactsTest', function() {
         {
             var contactDataValues = {"raw_contact_id" : rawContactId, "content_type" : "name", "detail_info" : "鍵盤"};
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 sleep(sleep_one);
                 console.info('logMessage contact_pinyin_query_test_100 contactDataId = ' + contactDataId);
                 expect(contactDataId > 0).assertTrue();
-                await SearchContactQueryChinese(DAHelper, rawContactId);
+                await SearchContactQueryChinese(dataShareHelper, rawContactId);
             } catch (error) {
                 console.info('logMessage contact_pinyin_query_test_100 contact_data insert error = ' + error);
                 done();
@@ -3072,13 +3071,13 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function SearchContactQueryChinese(DAHelper, rawContactId)
+    async function SearchContactQueryChinese(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "raw_contact_id", "search_name" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(searchContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(searchContactUri, resultColumns, condition);
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contact_pinyin_query_test_100: id = ' + resultSet.getString(0));
@@ -3100,12 +3099,12 @@ describe('ContactsTest', function() {
      */
     it("contact_pinyin_query_test_300", 0, async function(done) {
         console.info("--------logMessage contact_pinyin_query_test_300 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "Tom"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_pinyin_query_test_300 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -3121,10 +3120,10 @@ describe('ContactsTest', function() {
         {
             var contactDataValues = {"raw_contact_id" : rawContactId, "content_type" : "name", "detail_info" : "Tom"};
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 console.info('logMessage contact_pinyin_query_test_300 contactDataId = ' + contactDataId);
                 expect(contactDataId > 0).assertTrue();
-                await SearchContactQuery(DAHelper, rawContactId);
+                await SearchContactQuery(dataShareHelper, rawContactId);
             } catch (error) {
                 console.info('logMessage contact_pinyin_query_test_300 contact_data insert error = ' + error);
                 done();
@@ -3132,13 +3131,13 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function SearchContactQuery(DAHelper, rawContactId)
+    async function SearchContactQuery(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "raw_contact_id", "search_name" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(searchContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(searchContactUri, resultColumns, condition);
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contact_pinyin_query_test_300: id = ' + resultSet.getString(0));
@@ -3160,12 +3159,12 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_400", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_400 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "400xiaoming400"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_fuzzyquery_test_400 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -3180,12 +3179,12 @@ describe('ContactsTest', function() {
         async function RawContactNameQuery()
         {
             var resultColumns = [ "id", "display_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.like("display_name", "%xiaoming40%");
             condition.and();
             condition.equalTo("is_deleted", "0");
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info('logMessage contact_fuzzyquery_test_400: id = ' + resultSet.getString(0));
@@ -3210,10 +3209,10 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_500", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_500 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
         var rawContactValues = {"display_name" : "500xiaoming500", "phonetic_name" : "500xiaoming500||xm"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_fuzzyquery_test_500 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -3228,7 +3227,7 @@ describe('ContactsTest', function() {
         async function RawContactPhoneticNameQuery()
         {
             var resultColumns = [ "id", "display_name", "phonetic_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.like("phonetic_name", "%xiaoming%");
             condition.and();
             condition.equalTo("is_deleted", "0");
@@ -3237,7 +3236,7 @@ describe('ContactsTest', function() {
             condition.and();
             condition.equalTo("is_deleted", "0");
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info('logMessage contact_fuzzyquery_test_500: id = ' + resultSet.getString(0));
@@ -3265,16 +3264,16 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_600", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_600 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoming", "company" : "TT600", "position" : "Testers600"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_fuzzyquery_test_600 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            await RawContactCompanyQuery(DAHelper, rawContactId);
+            await RawContactCompanyQuery(dataShareHelper, rawContactId);
             await deleteRawContact("contact_fuzzyquery_test_600");
             done();
         } catch (error) {
@@ -3283,10 +3282,10 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function RawContactCompanyQuery(DAHelper, rawContactId)
+    async function RawContactCompanyQuery(dataShareHelper, rawContactId)
     {
         var resultColumns = [ "id", "display_name", "company", "position" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.like("company", "%TT6%");
         condition.and();
         condition.equalTo("is_deleted", "0");
@@ -3295,7 +3294,7 @@ describe('ContactsTest', function() {
         condition.and();
         condition.equalTo("is_deleted", "0");
         try {
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contact_fuzzyquery_test_600: id = ' + resultSet.getString(0));
@@ -3321,12 +3320,12 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_700", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_700 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_fuzzyquery_test_700 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -3347,11 +3346,11 @@ describe('ContactsTest', function() {
                 "detail_info" : "14528963"
             };
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 sleep(sleep_one);
                 console.info('logMessage contact_fuzzyquery_test_700 contactDataId  = ' + contactDataId);
                 expect(contactDataId > 0).assertTrue();
-                await fuzzyQueryPhone(DAHelper, rawContactId, contactDataId);
+                await fuzzyQueryPhone(dataShareHelper, rawContactId, contactDataId);
             } catch (error) {
                 console.info('logMessage contact_fuzzyquery_test_700 contact_data insert error = ' + contactDataId);
                 done();
@@ -3359,16 +3358,16 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function fuzzyQueryPhone(DAHelper, rawContactId, contactDataId)
+    async function fuzzyQueryPhone(dataShareHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         // type_id = 5 data is phone
         condition.like("detail_info", "%52896%");
         condition.and();
         condition.equalTo("type_id", "5");
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -3393,12 +3392,12 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_800", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_800 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_fuzzyquery_test_800 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -3419,10 +3418,10 @@ describe('ContactsTest', function() {
                 "detail_info" : "daming"
             };
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 console.info('logMessage contact_fuzzyquery_test_800 contactDataId = ' + contactDataId);
                 expect(contactDataId > 0).assertTrue();
-                await fuzzyQueryPhoneNickName(DAHelper, rawContactId, contactDataId);
+                await fuzzyQueryPhoneNickName(dataShareHelper, rawContactId, contactDataId);
             } catch (error) {
                 console.info('logMessage contact_fuzzyquery_test_800 contact_data insert error = ' + contactDataId);
                 done();
@@ -3430,16 +3429,16 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function fuzzyQueryPhoneNickName(DAHelper, rawContactId, contactDataId)
+    async function fuzzyQueryPhoneNickName(dataShareHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         // type_id = 3 data is nickname
         condition.like("detail_info", "%daming%");
         condition.and();
         condition.equalTo("type_id", "3");
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -3463,12 +3462,12 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_900", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_900 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_fuzzyquery_test_900 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -3489,10 +3488,10 @@ describe('ContactsTest', function() {
                 "detail_info" : "1564@163.com"
             };
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 console.info('logMessage contact_fuzzyquery_test_900 ; = ' + contactDataId);
                 expect(contactDataId > 0).assertTrue();
-                await fuzzyQueryEmail(DAHelper, rawContactId, contactDataId);
+                await fuzzyQueryEmail(dataShareHelper, rawContactId, contactDataId);
             } catch (error) {
                 console.info('logMessage contact_fuzzyquery_test_900 contact_data insert error = ' + error);
                 done();
@@ -3500,16 +3499,16 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function fuzzyQueryEmail(DAHelper, rawContactId, contactDataId)
+    async function fuzzyQueryEmail(dataShareHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         // type_id = 1 data is email
         condition.like("detail_info", "%1564%");
         condition.and();
         condition.equalTo("type_id", "1");
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -3534,12 +3533,12 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_1000", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_1000 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_fuzzyquery_test_1000 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -3560,11 +3559,11 @@ describe('ContactsTest', function() {
                 "detail_info" : "nanjing1000"
             };
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 sleep(sleep_one);
                 console.info('logMessage contact_fuzzyquery_test_1000 contactDataId = ' + contactDataId);
                 expect(contactDataId > 0).assertTrue();
-                await fuzzyQueryAddress(DAHelper, rawContactId, contactDataId);
+                await fuzzyQueryAddress(dataShareHelper, rawContactId, contactDataId);
             } catch (error) {
                 console.info('logMessage contact_fuzzyquery_test_1000 contact_data insert error = ' + error);
                 done();
@@ -3572,16 +3571,16 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function fuzzyQueryAddress(DAHelper, rawContactId, contactDataId)
+    async function fuzzyQueryAddress(dataShareHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         // type_id = 1 data is postal_address
         condition.like("detail_info", "%nanjing10%");
         condition.and();
         condition.equalTo("type_id", "7");
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             sleep(sleep_one);
             if (resultSet.goToFirstRow()) {
                 do {
@@ -3606,12 +3605,12 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_1100", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_1100 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage contact_fuzzyquery_test_1100 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -3632,11 +3631,11 @@ describe('ContactsTest', function() {
                 "detail_info" : "java1100"
             };
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 sleep(sleep_one);
                 console.info('logMessage contact_fuzzyquery_test_1100 contactDataId = ' + contactDataId);
                 expect(contactDataId > 0).assertTrue();
-                await fuzzyQueryNote(DAHelper, rawContactId, contactDataId);
+                await fuzzyQueryNote(dataShareHelper, rawContactId, contactDataId);
             } catch (error) {
                 console.info('logMessage contact_fuzzyquery_test_1100 contact_data insert error = ' + error);
                 done();
@@ -3644,16 +3643,16 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function fuzzyQueryNote(DAHelper, rawContactId, contactDataId)
+    async function fuzzyQueryNote(dataShareHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         // type_id = 10 data is note
         condition.like("detail_info", "%java11%");
         condition.and();
         condition.equalTo("type_id", "10");
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contact_fuzzyquery_test_1100: id = ' + resultSet.getString(0));
@@ -3677,12 +3676,12 @@ describe('ContactsTest', function() {
      */
     it("contact_fuzzyquery_test_1200", 0, async function(done) {
         console.info("--------logMessage contact_fuzzyquery_test_1200 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoming"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info('logMessage contact_fuzzyquery_test_1200 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await ContactDataAimInsert();
@@ -3702,10 +3701,10 @@ describe('ContactsTest', function() {
                 "detail_info" : "aaaa1200"
             };
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 console.info('logMessage contact_fuzzyquery_test_1200 ; = ' + contactDataId);
                 expect(contactDataId > 0).assertTrue();
-                await fuzzyQueryIM(DAHelper, rawContactId, contactDataId);
+                await fuzzyQueryIM(dataShareHelper, rawContactId, contactDataId);
             } catch (error) {
                 console.info('logMessage contact_fuzzyquery_test_1200 contact_data insert error = ' + error);
                 done();
@@ -3713,16 +3712,16 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function fuzzyQueryIM(DAHelper, rawContactId, contactDataId)
+    async function fuzzyQueryIM(dataShareHelper, rawContactId, contactDataId)
     {
         var resultColumns = [ "id", "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         // type_id = 10 data is im account number
         condition.like("detail_info", "%aa12%");
         condition.and();
         condition.equalTo("type_id", "2");
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contact_fuzzyquery_test_1200: id = ' + resultSet.getString(0));
@@ -3746,12 +3745,12 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insert_test_200", 0, async function(done) {
         console.info("------------abnormal_contact_insert_test_200 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_names" : "xiaoshan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_insert_test_200: rawContactId = " + rawContactId);
             expect(rawContactId).assertEqual(-1);
             done();
@@ -3768,13 +3767,13 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insert_test_300", 0, async function(done) {
         console.info("------------abnormal_contact_insert_test_300 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var errorUri = "dataability:///com.ohos.calllogability/contacts/raw_contacts";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        var errorUri = "datashare:///com.ohos.calllogability/contacts/raw_contacts";
 
         var rawContactValues = {"display_name" : "xiaoshan"};
         try {
-            var rawContactId = await DAHelper.insert(errorUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(errorUri, rawContactValues);
             console.info("logMessage abnormal_contact_insert_test_300: rawContactId = " + rawContactId);
             expect(rawContactId == -1).assertTrue();
             done();
@@ -3791,12 +3790,12 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_update_test_1100", 0, async function(done) {
         console.info("------------abnormal_contact_update_test_1100 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaoshan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_update_test_1100: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await AbnormalUpdate();
@@ -3810,10 +3809,10 @@ describe('ContactsTest', function() {
         async function AbnormalUpdate()
         {
             var updateValues = {"display_names" : "xiaosan"};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", rawContactId.toString());
             try {
-                var updataCode = await DAHelper.update(rawContactUri, updateValues, condition)
+                var updataCode = await dataShareHelper.update(rawContactUri, updateValues, condition)
                 console.info("logMessage abnormal_contact_update_test_1100: updataCode = " + updataCode);
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
@@ -3834,13 +3833,13 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_update_test_1000", 0, async function(done) {
         console.info("------------abnormal_contact_update_test_1000 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var errorUri = "dataability:///com.ohos.calllogability/contacts/raw_contacts";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        var errorUri = "datashare:///com.ohos.calllogability/contacts/raw_contacts";
 
         var rawContactValues = {"display_name" : "xiaoshan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_update_test_1000: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await AbnormalUpdate();
@@ -3854,10 +3853,10 @@ describe('ContactsTest', function() {
         async function AbnormalUpdate()
         {
             var updateValues = {"display_name" : "xiaosan"};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
             try {
-                var updataCode = await DAHelper.update(errorUri, updateValues, condition);
+                var updataCode = await dataShareHelper.update(errorUri, updateValues, condition);
                 console.info("logMessage abnormal_contact_update_test_1000: updataCode = " + updataCode);
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
@@ -3878,12 +3877,12 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_4500", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_4500 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaozhi"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_delete_test_4500: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await AbnormalDelete();
@@ -3896,10 +3895,10 @@ describe('ContactsTest', function() {
 
         async function AbnormalDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", rawContactId.toString());
             try {
-                var deleteCode = await DAHelper.delete(rawContactUri, condition);
+                var deleteCode = await dataShareHelper.delete(rawContactUri, condition);
                 console.info("logMessage abnormal_contact_delete_test_4500: deleteCode = " + deleteCode);
                 expect(deleteCode == -1).assertTrue();
                 var map = new Map();
@@ -3921,13 +3920,13 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_4600", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_4600 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var errorUri = "dataability:///com.ohos.calllogability/contacts/raw_contacts";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        var errorUri = "datashare:///com.ohos.calllogability/contacts/raw_contacts";
 
         var rawContactValues = {"display_name" : "xiaoshan"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_delete_test_4600: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await AbnormalDelete();
@@ -3940,10 +3939,10 @@ describe('ContactsTest', function() {
 
         async function AbnormalDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
             try {
-                var deleteCode = await DAHelper.delete(errorUri, condition);
+                var deleteCode = await dataShareHelper.delete(errorUri, condition);
                 console.info("logMessage abnormal_contact_delete_test_4600: deleteCode = " + deleteCode);
                 expect(deleteCode == -1).assertTrue();
                 var map = new Map();
@@ -3965,12 +3964,12 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_4200", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_4200 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaozhicheng"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_4200: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await AbnormalQuery();
@@ -3984,10 +3983,10 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [ "id", "display_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", rawContactId.toString());
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_4200: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -4005,8 +4004,8 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_batchinsert_test_5100", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_batchinsert_test_5100 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var addBulk_value1 = {"display_name" : "zhangsan"};
         var addBulk_value2 = {"display_names" : "lisi"};
@@ -4020,7 +4019,7 @@ describe('ContactsTest', function() {
         listAddBluk[array_three] = addBulk_value4;
         listAddBluk[array_four] = addBulk_value5;
         try {
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
             console.info("logMessage abnormal_contact_batchinsert_test_5100: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == -1).assertTrue();
             done();
@@ -4037,12 +4036,12 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insert_data_5300", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_insert_data_5300 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaotian"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage abnormal_contact_insert_data_5300 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -4058,7 +4057,7 @@ describe('ContactsTest', function() {
         {
             var contactDataValues = {"content_type" : "im", "detail_info" : "aaaa"};
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 console.info('logMessage abnormal_contact_insert_data_5300 ; = ' + contactDataId);
                 expect(contactDataId == -1).assertTrue();
             } catch (error) {
@@ -4075,12 +4074,12 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insert_data_5400", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_insert_data_5400 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "xiaotian"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info('logMessage abnormal_contact_insert_data_5400 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await ContactDataAimInsert();
@@ -4095,7 +4094,7 @@ describe('ContactsTest', function() {
         {
             var contactDataValues = {"raw_contact_id" : rawContactId, "detail_info" : "aaaa"};
             try {
-                var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+                var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 console.info('logMessage abnormal_contact_insert_data_5400 ; = ' + contactDataId);
                 expect(contactDataId == -1).assertTrue();
             } catch (error) {
@@ -4112,10 +4111,10 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_5500", 0, async function(done) {
         console.info("--------logMessage contact_delete_test_5500 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
+            var rawContactId = await dataShareHelper.insert(rawContactUri, common.getProfileRawContact());
             console.info("logMessage contact_delete_test_5500: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var map = common.getProfileRawContactMap();
@@ -4128,9 +4127,9 @@ describe('ContactsTest', function() {
         }
         async function executeBatch()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
-            DAHelper.executeBatch(URI_CONTACTS, [ {
+            dataShareHelper.executeBatch(URI_CONTACTS, [ {
                 uri : rawContactUri,
                 type : featureAbility.DataAbilityOperationType.TYPE_DELETE,
                 predicates : condition,
@@ -4155,10 +4154,10 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_5600", 0, async function(done) {
         console.info("--------logMessage contact_update_test_5600 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
+            var rawContactId = await dataShareHelper.insert(rawContactUri, common.getProfileRawContact());
             console.info("logMessage contact_update_test_5600: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var map = common.getProfileRawContactMap();
@@ -4173,9 +4172,9 @@ describe('ContactsTest', function() {
         async function executeBatch()
         {
             var updateValues = {"display_name" : "xiaoxiaoxiao"};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
-            DAHelper.executeBatch(URI_CONTACTS, [ {
+            dataShareHelper.executeBatch(URI_CONTACTS, [ {
                 uri : rawContactUri,
                 type : featureAbility.DataAbilityOperationType.TYPE_UPDATE,
                 valuesBucket : updateValues,
@@ -4201,24 +4200,24 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_5700", 0, async function(done) {
         console.info("------logMessage contact_insert_test_5700 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
+            var rawContactId = await dataShareHelper.insert(rawContactUri, common.getProfileRawContact());
             sleep(sleep_one);
             console.info('logMessage contact_insert_test_5700: rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var map = common.getProfileRawContactMap();
             map.set("id", rawContactId.toString());
             await contactsQuery(map, "contact_insert_test_5700", rawContactUri);
-            var rawContactIdOne = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
+            var rawContactIdOne = await dataShareHelper.insert(rawContactUri, common.getProfileRawContact());
             sleep(sleep_one);
             console.info('logMessage contact_insert_test_5700: rawContactIdOne = ' + rawContactIdOne);
             expect(rawContactIdOne > 0).assertTrue();
             var map = common.getProfileRawContactMap();
             map.set("id", rawContactIdOne.toString());
             await contactsQuery(map, "contact_insert_test_5700", rawContactUri);
-            var rawContactIdTwo = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
+            var rawContactIdTwo = await dataShareHelper.insert(rawContactUri, common.getProfileRawContact());
             sleep(sleep_one);
             console.info('logMessage contact_insert_test_5700: rawContactIdTwo = ' + rawContactIdTwo);
             expect(rawContactIdTwo > 0).assertTrue();
@@ -4240,15 +4239,15 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_5800", 0, async function(done) {
         console.info("------logMessage contact_insert_test_5800 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var name;
         for (var i = 0; i < 20000; i++) {
             name += "i";
         }
         var contcatvalues = {"display_name" : name}
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, contcatvalues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, contcatvalues);
             sleep(sleep_one);
             console.info('logMessage contact_insert_test_5800: rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -4271,11 +4270,11 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_5900", 0, async function(done) {
         console.info("------logMessage contact_insert_test_5900 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var contcatvalues = {"display_name" : "xiao5900"}
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, contcatvalues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, contcatvalues);
             console.info('logMessage contact_insert_test_5900: rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var contactDataValues1 = {
@@ -4283,7 +4282,7 @@ describe('ContactsTest', function() {
                 "content_type" : "phone",
                 "detail_info" : "19960229"
             };
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             console.info('logMessage contact_insert_test_5900: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
 
@@ -4292,7 +4291,7 @@ describe('ContactsTest', function() {
             map.set("detail_info", "19960229");
             await contactsQuery(map, "contact_insert_test_5900", contactDataUri);
 
-            var rawContactIdOne = await DAHelper.insert(rawContactUri, contcatvalues);
+            var rawContactIdOne = await dataShareHelper.insert(rawContactUri, contcatvalues);
             console.info('logMessage contact_insert_test_5900: rawContactId = ' + rawContactIdOne);
             expect(rawContactIdOne > 0).assertTrue();
             var contactDataValues2 = {
@@ -4300,7 +4299,7 @@ describe('ContactsTest', function() {
                 "content_type" : "phone",
                 "detail_info" : "111111032"
             };
-            var contactDataId1 = await DAHelper.insert(contactDataUri, contactDataValues2);
+            var contactDataId1 = await dataShareHelper.insert(contactDataUri, contactDataValues2);
             console.info('logMessage contact_insert_test_5900: contactDataId = ' + contactDataId1);
             expect(contactDataId1 > 0).assertTrue();
 
@@ -4326,8 +4325,8 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_6000", 0, async function(done) {
         console.info("------logMessage contact_insert_test_6000 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "licheng",
@@ -4337,7 +4336,7 @@ describe('ContactsTest', function() {
             "phonetic_name" : "licheng||lc"
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insert_test_6000: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
 
@@ -4366,21 +4365,21 @@ describe('ContactsTest', function() {
      */
     it("contact_insertData_test_6100", 0, async function(done) {
         console.info("------logMessage contact_insertData_test_6100 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocai",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insertData_test_6100: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var contactDataValues = common.getProfileContactData();
             contactDataValues["raw_contact_id"] = rawContactId;
             console.info('logMessage contact_insertData_test_6100: contactDataValues["raw_contact_id"] = ' +
                          contactDataValues.raw_contact_id);
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             console.info('logMessage contact_insertData_test_6100: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
             var map = common.getProfileContactDataMap();
@@ -4403,41 +4402,41 @@ describe('ContactsTest', function() {
      */
     it("contact_update_test_6200", 0, async function(done) {
         console.info("--------logMessage contact_update_test_6200 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var insertRawContactValues = {
                 "display_name" : "xiaocai",
             };
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             expect(rawContactId > 0).assertTrue();
             console.info("logMessage contact_update_test_6200: rawContactId = " + rawContactId);
             var insertRawContactValuesOne = {
                 "display_name" : "xiaocai1",
             };
-            var rawContactIdOne = await DAHelper.insert(rawContactUri, insertRawContactValuesOne);
+            var rawContactIdOne = await dataShareHelper.insert(rawContactUri, insertRawContactValuesOne);
             expect(rawContactIdOne > 0).assertTrue();
             console.info("logMessage contact_update_test_6200: rawContactIdOne = " + rawContactIdOne);
             var insertRawContactValuesTwo = {
                 "display_name" : "xiaocai1",
             };
-            var rawContactIdTwo = await DAHelper.insert(rawContactUri, insertRawContactValuesTwo);
+            var rawContactIdTwo = await dataShareHelper.insert(rawContactUri, insertRawContactValuesTwo);
             expect(rawContactIdTwo > 0).assertTrue();
             console.info("logMessage contact_update_test_6200: rawContactIdTwo = " + rawContactIdTwo);
 
             var updateValues = {"display_name" : "xiaosan"};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
             condition.or();
             condition.equalTo("id", rawContactIdOne.toString());
             condition.or();
             condition.equalTo("id", rawContactIdTwo.toString());
-            var updataCode = await DAHelper.update(rawContactUri, updateValues, condition);
+            var updataCode = await dataShareHelper.update(rawContactUri, updateValues, condition);
             console.info("logMessage contact_update_test_6200: updataCode = " + updataCode);
             expect(updataCode == 0).assertTrue();
             sleep(sleep_one);
             await queryUpdateThree(
-                "contact_update_test_6200", DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo);
+                "contact_update_test_6200", dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo);
             await deleteRawContact("contact_update_test_6200");
             done();
         } catch (error) {
@@ -4446,20 +4445,20 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryUpdateThree(tag, DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo)
+    async function queryUpdateThree(tag, dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo)
     {
 
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': contactsQuery start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': contactsQuery start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [ "display_name" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactId.toString());
         condition.or();
         condition.equalTo("id", rawContactIdOne.toString());
         condition.or();
         condition.equalTo("id", rawContactIdTwo.toString());
         try {
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -4482,17 +4481,17 @@ describe('ContactsTest', function() {
      */
     it("contact_UpdateRawContcat_test_6300", 0, async function(done) {
         console.info("------logMessage contact_UpdateRawContcat_test_6300 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
+            var rawContactId = await dataShareHelper.insert(rawContactUri, common.getProfileRawContact());
             console.info("logMessage contact_UpdateRawContcat_test_6300: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             sleep(sleep_two);
             var updateValues = common.getProfileRawContactUpdate();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
-            var updataCode = await DAHelper.update(rawContactUri, updateValues, condition);
+            var updataCode = await dataShareHelper.update(rawContactUri, updateValues, condition);
             console.info('logMessage contact_UpdateRawContcat_test_6300: updataCode = ' + updataCode);
             sleep(3000);
             var map = common.getProfileRawContactUpdateMap();
@@ -4514,14 +4513,14 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataUpdate_test_6400", 0, async function(done) {
         console.info("------logMessage contact_insertDataUpdate_test_6400 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocai",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insertDataUpdate_test_6400: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
 
@@ -4529,14 +4528,14 @@ describe('ContactsTest', function() {
             contactDataValues["raw_contact_id"] = rawContactId;
             console.info('logMessage contact_insertDataUpdate_test_6400: contactDataValues.raw_contact_id = ' +
                          contactDataValues.raw_contact_id);
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             console.info('logMessage contact_insertDataUpdate_test_6400: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
 
             var updateValues = common.getProfileContactDataUpdate();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", contactDataId.toString());
-            var updataCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updataCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             console.info('logMessage contact_insertDataUpdate_test_6400: updataCode = ' + updataCode);
             sleep(sleep_one);
             var map = common.getProfileContactDataUpdateMap();
@@ -4559,14 +4558,14 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataUpdateAll_test_6500", 0, async function(done) {
         console.info("------logMessage contact_insertDataUpdateAll_test_6500 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocai",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insertDataUpdateAll_test_6500: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await insertData(rawContactId, "name", "xiaocai", "");
@@ -4583,12 +4582,12 @@ describe('ContactsTest', function() {
             await insertData(rawContactId, "group_membership", 1, "");
             await insertData(rawContactId, "contact_misc", "5678", "");
             var updateValues = {"detail_info" : "xiaocai"};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("raw_contact_id", rawContactId.toString());
-            var updataCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updataCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             console.info('logMessage contact_insertDataUpdateAll_test_6500: updataCode = ' + updataCode);
             sleep(sleep_one);
-            await queryUpdateAllData("contact_insertDataUpdateAll_test_6500", DAHelper, rawContactId);
+            await queryUpdateAllData("contact_insertDataUpdateAll_test_6500", dataShareHelper, rawContactId);
             await deleteRawContact("contact_insertDataUpdateAll_test_6500");
             await deleteAll(contactDataUri, "contact_insertDataUpdateAll_test_6500");
             done();
@@ -4598,16 +4597,16 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryUpdateAllData(tag, DAHelper, rawContactId)
+    async function queryUpdateAllData(tag, dataShareHelper, rawContactId)
     {
 
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': contactsQuery start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': contactsQuery start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [ "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("row_contact_id", rawContactId.toString());
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -4629,25 +4628,25 @@ describe('ContactsTest', function() {
      */
     it("contact_insertFavorite_test_6600", 0, async function(done) {
         console.info("------logMessage contact_insertFavorite_test_6600 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         try {
             var insertRawContactValues = {"display_name" : "xiaocai", "favorite" : 1};
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insertFavorite_test_6600: rawContactId = " + rawContactId);
 
             var insertRawContactValuesOne = {"display_name" : "xiaotian", "favorite" : 1};
-            var rawContactIdOne = await DAHelper.insert(rawContactUri, insertRawContactValuesOne);
+            var rawContactIdOne = await dataShareHelper.insert(rawContactUri, insertRawContactValuesOne);
             console.info("logMessage contact_insertFavorite_test_6600: rawContactId = " + rawContactIdOne);
 
             var insertRawContactValuesTwo = {"display_name" : "xiaoli", "favorite" : 1};
-            var rawContactIdTwo = await DAHelper.insert(rawContactUri, insertRawContactValuesTwo);
+            var rawContactIdTwo = await dataShareHelper.insert(rawContactUri, insertRawContactValuesTwo);
             console.info("logMessage contact_insertFavorite_test_6600: rawContactId = " + rawContactIdTwo);
 
             sleep(sleep_one);
             await queryThreeFavorite(
-                "contact_insertFavorite_test_6600", DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo, 1);
+                "contact_insertFavorite_test_6600", dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo, 1);
             await deleteRawContact("contact_insertFavorite_test_6600");
             done();
         } catch (error) {
@@ -4656,20 +4655,20 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryThreeFavorite(tag, DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo, favoritevalue)
+    async function queryThreeFavorite(tag, dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo, favoritevalue)
     {
 
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': queryThreeFavorite start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': queryThreeFavorite start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [ "favorite" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactId.toString());
         condition.or();
         condition.equalTo("id", rawContactIdOne.toString());
         condition.or();
         condition.equalTo("id", rawContactIdTwo.toString());
         try {
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -4691,34 +4690,34 @@ describe('ContactsTest', function() {
      */
     it("contact_unFavorite_test_6700", 0, async function(done) {
         console.info("------logMessage contact_unFavorite_test_6700 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         try {
             var insertRawContactValues = {"display_name" : "xiaocai", "favorite" : 1};
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_unFavorite_test_6700: rawContactId = " + rawContactId);
 
             var insertRawContactValuesOne = {"display_name" : "xiaotian", "favorite" : 1};
-            var rawContactIdOne = await DAHelper.insert(rawContactUri, insertRawContactValuesOne);
+            var rawContactIdOne = await dataShareHelper.insert(rawContactUri, insertRawContactValuesOne);
             console.info("logMessage contact_unFavorite_test_6700: rawContactId = " + rawContactIdOne);
 
             var insertRawContactValuesTwo = {"display_name" : "xiaoli", "favorite" : 1};
-            var rawContactIdTwo = await DAHelper.insert(rawContactUri, insertRawContactValuesTwo);
+            var rawContactIdTwo = await dataShareHelper.insert(rawContactUri, insertRawContactValuesTwo);
             console.info("logMessage contact_unFavorite_test_6700: rawContactId = " + rawContactIdTwo);
 
             var updateValues = {"favorite" : 0};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
             condition.or();
             condition.equalTo("id", rawContactIdOne.toString());
             condition.or();
             condition.equalTo("id", rawContactIdTwo.toString());
-            var updataCode = await DAHelper.update(rawContactUri, updateValues, condition);
+            var updataCode = await dataShareHelper.update(rawContactUri, updateValues, condition);
             console.info("logMessage contact_unFavorite_test_6700: updataCode = " + updataCode);
             sleep(sleep_one);
             await queryThreeFavorite(
-                "contact_unFavorite_test_6700", DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo, 0);
+                "contact_unFavorite_test_6700", dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo, 0);
             await deleteRawContact("contact_unFavorite_test_6700");
             done();
         } catch (error) {
@@ -4734,14 +4733,14 @@ describe('ContactsTest', function() {
      */
     it("contact_insertContactBlocklist_test_6800", 0, async function(done) {
         console.info("--------logMessage contact_insertContactBlocklist_test_6800 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var batchInsertCode = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
+            var batchInsertCode = await dataShareHelper.insert(contactBlocklistUri, common.getProfileBlockList());
             console.info("logMessage contact_insertContactBlocklist_test_6800: insert = " + batchInsertCode);
-            var batchInsertCodeOne = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
+            var batchInsertCodeOne = await dataShareHelper.insert(contactBlocklistUri, common.getProfileBlockList());
             console.info("logMessage contact_insertContactBlocklist_test_6800: insert = " + batchInsertCodeOne);
-            var batchInsertCodeTwo = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
+            var batchInsertCodeTwo = await dataShareHelper.insert(contactBlocklistUri, common.getProfileBlockList());
             console.info("logMessage contact_insertContactBlocklist_test_6800: insert = " + batchInsertCodeTwo);
             sleep(sleep_one);
             expect(batchInsertCode > 0).assertTrue();
@@ -4756,11 +4755,11 @@ describe('ContactsTest', function() {
         async function query(size)
         {
             var resultColumns = [];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             var phoneNumber = randomNum(8);
             condition.equalTo("phone_number", phoneNumber);
             try {
-                var resultSet = await DAHelper.query(contactBlocklistUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(contactBlocklistUri, resultColumns, condition);
                 sleep(sleep_one);
                 console.info('contact_insertContactBlocklist_test_6800 :resultSet.goToFirstRow()  = ' +
                              resultSet.goToFirstRow());
@@ -4781,14 +4780,14 @@ describe('ContactsTest', function() {
      */
     it("contact_removeContactBlocklist_test_6900", 0, async function(done) {
         console.info("--------logMessage contact_removeContactBlocklist_test_6900 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var batchInsertCode = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
+            var batchInsertCode = await dataShareHelper.insert(contactBlocklistUri, common.getProfileBlockList());
             console.info("logMessage contact_removeContactBlocklist_test_6900: batchInsertCode = " + batchInsertCode);
-            var batchInsertCodeOne = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
+            var batchInsertCodeOne = await dataShareHelper.insert(contactBlocklistUri, common.getProfileBlockList());
             console.info("logMessage contact_removeContactBlocklist_test_6900: insert = " + batchInsertCodeOne);
-            var batchInsertCodeTwo = await DAHelper.insert(contactBlocklistUri, common.getProfileBlockList());
+            var batchInsertCodeTwo = await dataShareHelper.insert(contactBlocklistUri, common.getProfileBlockList());
             console.info("logMessage contact_removeContactBlocklist_test_6900: insert = " + batchInsertCodeTwo);
             sleep(sleep_one);
             expect(batchInsertCode > 0).assertTrue();
@@ -4802,11 +4801,11 @@ describe('ContactsTest', function() {
         async function query(size)
         {
             var resultColumns = [];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             var phoneNumber = randomNum(8);
             condition.equalTo("phone_number", phoneNumber);
             try {
-                var resultSet = await DAHelper.query(contactBlocklistUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(contactBlocklistUri, resultColumns, condition);
                 console.info('contact_removeContactBlocklist_test_6900 : resultSet  = ' + resultSet);
                 expect(resultSet.rowCount == size).assertEqual(true);
                 resultSet.close();
@@ -4823,32 +4822,32 @@ describe('ContactsTest', function() {
      */
     it("contact_insertGroup_test_7000", 0, async function(done) {
         console.info("------logMessage contact_insertGroup_test_7000 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         try {
             var insertRawContactValues = {
                 "display_name" : "xiaocai",
             };
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insertGroup_test_7000: rawContactId = " + rawContactId);
             await insertData(rawContactId, "group_membership", 1, "");
 
             var insertRawContactValuesOne = {
                 "display_name" : "xiaotian",
             };
-            var rawContactIdOne = await DAHelper.insert(rawContactUri, insertRawContactValuesOne);
+            var rawContactIdOne = await dataShareHelper.insert(rawContactUri, insertRawContactValuesOne);
             console.info("logMessage contact_insertGroup_test_7000: rawContactId = " + rawContactIdOne);
             await insertData(rawContactIdOne, "group_membership", 1, "");
             var insertRawContactValuesTwo = {
                 "display_name" : "xiaoli",
             };
-            var rawContactIdTwo = await DAHelper.insert(rawContactUri, insertRawContactValuesTwo);
+            var rawContactIdTwo = await dataShareHelper.insert(rawContactUri, insertRawContactValuesTwo);
             console.info("logMessage contact_insertGroup_test_7000: rawContactId = " + rawContactIdTwo);
             await insertData(rawContactIdTwo, "group_membership", 1, "");
             sleep(sleep_one);
             await queryThreeGroup(
-                "contact_insertGroup_test_7000", DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo, 1);
+                "contact_insertGroup_test_7000", dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo, 1);
             await deleteRawContact("contact_insertGroup_test_7000");
             done();
         } catch (error) {
@@ -4857,19 +4856,19 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryThreeGroup(tag, DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo, groupId)
+    async function queryThreeGroup(tag, dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo, groupId)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': queryThreeGroup start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': queryThreeGroup start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [ "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactId.toString());
         condition.or();
         condition.equalTo("id", rawContactIdOne.toString());
         condition.or();
         condition.equalTo("id", rawContactIdTwo.toString());
         try {
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -4891,10 +4890,10 @@ describe('ContactsTest', function() {
      */
     it("contact_insert_test_7100", 0, async function(done) {
         console.info("---------logMessage contact_insert_test_7100 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
+            var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage contact_insert_test_7100: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
             var map = common.getProfileGroupMap();
@@ -4915,33 +4914,33 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_7200", 0, async function(done) {
         console.info("------logMessage contact_delete_test_7200 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         try {
             var insertRawContactValues = {
                 "display_name" : "xiaocai",
             };
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_delete_test_7200: rawContactId = " + rawContactId);
             await insertData(rawContactId, "group_membership", 1, "");
 
             var insertRawContactValuesOne = {
                 "display_name" : "xiaotian",
             };
-            var rawContactIdOne = await DAHelper.insert(rawContactUri, insertRawContactValuesOne);
+            var rawContactIdOne = await dataShareHelper.insert(rawContactUri, insertRawContactValuesOne);
             console.info("logMessage contact_delete_test_7200: rawContactId = " + rawContactIdOne);
             await insertData(rawContactIdOne, "group_membership", 1, "");
             var insertRawContactValuesTwo = {
                 "display_name" : "xiaoli",
             };
-            var rawContactIdTwo = await DAHelper.insert(rawContactUri, insertRawContactValuesTwo);
+            var rawContactIdTwo = await dataShareHelper.insert(rawContactUri, insertRawContactValuesTwo);
             console.info("logMessage contact_delete_test_7200: rawContactId = " + rawContactIdTwo);
             await insertData(rawContactIdTwo, "group_membership", 1, "");
             sleep(sleep_one);
             await deleteAll(contactDataUri, "contact_delete_test_7200");
             sleep(sleep_one);
-            await queryZeroGroup("contact_delete_test_7200", DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo);
+            await queryZeroGroup("contact_delete_test_7200", dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo);
             await deleteRawContact("contact_delete_test_7200");
             done();
         } catch (error) {
@@ -4950,20 +4949,20 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryZeroGroup(tag, DAHelper, rawContactId, rawContactIdOne, rawContactIdTwo)
+    async function queryZeroGroup(tag, dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo)
     {
 
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': queryZeroGroup start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': queryZeroGroup start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [ "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         condition.or();
         condition.equalTo("raw_contact_id", rawContactIdOne.toString());
         condition.or();
         condition.equalTo("raw_contact_id", rawContactIdTwo.toString());
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             console.info(tag + ': queryZeroGroup! resultSet.rowCount  = ' + resultSet.rowCount);
             expect(resultSet.rowCount == 0).assertEqual(true);
             resultSet.close();
@@ -4979,10 +4978,10 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_7300", 0, async function(done) {
         console.info("---------logMessage contact_delete_test_7300 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
+            var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage contact_delete_test_7300: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
             var map = common.getProfileGroupMap();
@@ -5003,10 +5002,10 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_7400", 0, async function(done) {
         console.info("------logMessage contact_Delete_test_7400 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, common.getProfileRawContact());
+            var rawContactId = await dataShareHelper.insert(rawContactUri, common.getProfileRawContact());
             sleep(sleep_one);
             console.info('logMessage contact_Delete_test_7400: rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -5017,9 +5016,9 @@ describe('ContactsTest', function() {
             await deleteAll(rawContactUri, "contact_Delete_test_7400");
             sleep(sleep_one);
             await contactsQuery(map, "contact_Delete_test_7400", rawContactUri);
-            var conditionAll = new ohos_data_ability.DataAbilityPredicates();
+            var conditionAll = new dataShare.DataSharePredicates();
             conditionAll.greaterThan("id", "0");
-            var code = await DAHelper.delete(deletedUri, conditionAll);
+            var code = await dataShareHelper.delete(deletedUri, conditionAll);
             console.info('contact_Delete_test_7400 : Completely delete code = ' + code);
             expect(code == 0).assertTrue();
             done();
@@ -5036,19 +5035,19 @@ describe('ContactsTest', function() {
      */
     it("contact_delete_test_7500", 0, async function(done) {
         console.info("------logMessage contact_delete_test_7500 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocai",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_delete_test_7500: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var contactDataValues = common.getProfileContactData();
             contactDataValues["raw_contact_id"] = rawContactId;
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
             console.info('logMessage contact_delete_test_7500: contactDataId = ' + contactDataId);
             expect(contactDataId > 0).assertTrue();
             await deleteAll(contactDataUri, "contact_delete_test_7500");
@@ -5071,32 +5070,32 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataAll_test_7600", 0, async function(done) {
         console.info("------logMessage contact_insertDataAll_test_7600 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocai",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insertDataAll_test_7600: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var contactdata1 = await insertData(rawContactId, "name", "xiaocai", "");
-            await queryAlldata("contact_insertDataAll_test_7600", DAHelper, rawContactId, contactdata1, "xiaocai");
+            await queryAlldata("contact_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdata1, "xiaocai");
             var contactdata2 = await insertData(rawContactId, "phone", "6500", "");
-            await queryAlldata("contact_insertDataAll_test_7600", DAHelper, rawContactId, contactdata2, "6500");
+            await queryAlldata("contact_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdata2, "6500");
             var contactdatd3 = await insertData(rawContactId, "organization", "TTTTT", "Deve");
-            await queryAlldata("contact_insertDataAll_test_7600", DAHelper, rawContactId, contactdatd3, "TTTTT");
+            await queryAlldata("contact_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd3, "TTTTT");
             var contactdatd4 = await insertData(rawContactId, "nickname", "xxxxcai", "");
-            await queryAlldata("contact_insertDataAll_test_7600", DAHelper, rawContactId, contactdatd4, "xxxxcai");
+            await queryAlldata("contact_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd4, "xxxxcai");
             var contactdatd5 = await insertData(rawContactId, "email", "111@fox.com", "");
-            await queryAlldata("contact_insertDataAll_test_7600", DAHelper, rawContactId, contactdatd5, "111@fox.com");
+            await queryAlldata("contact_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd5, "111@fox.com");
             var contactdatd6 = await insertData(rawContactId, "postal_address", "dddd", "");
-            await queryAlldata("contact_insertDataAll_test_7600", DAHelper, rawContactId, contactdatd6, "dddd");
+            await queryAlldata("contact_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd6, "dddd");
             var contactdatd7 = await insertData(rawContactId, "note", "caicai", "");
-            await queryAlldata("contact_insertDataAll_test_7600", DAHelper, rawContactId, contactdatd7, "caicai");
+            await queryAlldata("contact_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd7, "caicai");
             var contactdatd8 = await insertData(rawContactId, "im", "999999999", "");
-            await queryAlldata("contact_insertDataAll_test_7600", DAHelper, rawContactId, contactdatd8, "999999999");
+            await queryAlldata("contact_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd8, "999999999");
             sleep(sleep_one);
             await deleteRawContact("contact_insertDataAll_test_7600");
             await deleteAll(contactDataUri, "contact_insertDataAll_test_7600");
@@ -5107,13 +5106,13 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function queryAlldata(tag, DAHelper, rawContactId, contactdata, values)
+    async function queryAlldata(tag, dataShareHelper, rawContactId, contactdata, values)
     {
         var resultColumns = [ "raw_contact_id", "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", contactdata.toString());
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -5140,43 +5139,43 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataAll_test_7700", 0, async function(done) {
         console.info("------logMessage contact_insertDataAll_test_7700 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertRawContactValues = {
             "display_name" : "xiaocai",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insertDataAll_test_7700: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var contactdata1 = await insertData(rawContactId, "name", "xiaocai", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdata1, "xiaocai");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdata1, "xiaocai");
             var contactdata2 = await insertData(rawContactId, "phone", "6500", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdata2, "6500");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdata2, "6500");
             var contactdatd3 = await insertData(rawContactId, "organization", "TTTTT", "Deve");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd3, "TTTTT");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd3, "TTTTT");
             var contactdatd4 = await insertData(rawContactId, "nickname", "xxxxcai", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd4, "xxxxcai");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd4, "xxxxcai");
             var contactdatd5 = await insertData(rawContactId, "email", "111@fox.com", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd5, "111@fox.com");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd5, "111@fox.com");
             var contactdatd6 = await insertData(rawContactId, "postal_address", "dddd", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd6, "dddd");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd6, "dddd");
             var contactdatd7 = await insertData(rawContactId, "note", "caicai", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd7, "caicai");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd7, "caicai");
             var contactdatd8 = await insertData(rawContactId, "im", "999999999", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd8, "999999999");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd8, "999999999");
             var contactdatd9 = await insertData(rawContactId, "contact_event", "1125", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd9, "1125");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd9, "1125");
             var contactdatd10 = await insertData(rawContactId, "website", "wwww.xxx.com", "");
             await queryAlldata(
-                "contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd10, "wwww.xxx.com");
+                "contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd10, "wwww.xxx.com");
             var contactdatd11 = await insertData(rawContactId, "relation", "xiaobai", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd11, "xiaobai");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd11, "xiaobai");
             var contactdatd12 = await insertData(rawContactId, "group_membership", 1, "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd12, 1);
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd12, 1);
             var contactdatd13 = await insertData(rawContactId, "contact_misc", "5678", "");
-            await queryAlldata("contact_insertDataAll_test_7700", DAHelper, rawContactId, contactdatd13, "5678");
+            await queryAlldata("contact_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd13, "5678");
             sleep(sleep_one);
             await deleteRawContact("contact_insertDataAll_test_7700");
             await deleteAll(contactDataUri, "contact_insertDataAll_test_7700");
@@ -5194,31 +5193,31 @@ describe('ContactsTest', function() {
      */
     it("contact_insertDataUpdateMore_test_7800", 0, async function(done) {
         console.info("------logMessage contact_insertDataUpdateMore_test_7800 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var insertRawContactValues = {"display_name" : "xiaocai"};
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_insertDataUpdateMore_test_7800: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await insertData(rawContactId, "name", "xiaotian", "");
 
             var insertRawContactValues1 = {"display_name" : "xiaotian"};
-            var rawContactId1 = await DAHelper.insert(rawContactUri, insertRawContactValues1);
+            var rawContactId1 = await dataShareHelper.insert(rawContactUri, insertRawContactValues1);
             console.info("logMessage contact_insertDataUpdateMore_test_7800: rawContactId1 = " + rawContactId1);
             expect(rawContactId1 > 0).assertTrue();
             await insertData(rawContactId, "name", "xiaotian", "");
 
             var updateValues = {"detail_info" : "xiaocai7800"};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("raw_contact_id", rawContactId.toString());
             condition.or();
             condition.equalTo("raw_contact_id", rawContactId1.toString())
-            var updataCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updataCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             console.info('logMessage contact_insertDataUpdateMore_test_7800: updataCode = ' + updataCode);
             sleep(sleep_one);
             await insertDataUpdateMoreQuery(
-                "contact_insertDataUpdateMore_test_7800", DAHelper, rawContactId, rawContactId1);
+                "contact_insertDataUpdateMore_test_7800", dataShareHelper, rawContactId, rawContactId1);
             await deleteRawContact("contact_insertDataUpdateMore_test_7800");
             await deleteAll(contactDataUri, "contact_insertDataUpdateMore_test_7800");
             done();
@@ -5228,15 +5227,15 @@ describe('ContactsTest', function() {
         }
     });
 
-    async function insertDataUpdateMoreQuery(tag, DAHelper, rawContactId, rawContactId1)
+    async function insertDataUpdateMoreQuery(tag, dataShareHelper, rawContactId, rawContactId1)
     {
         var resultColumns = [ "detail_info" ];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         condition.or();
         condition.equalTo("raw_contact_id", rawContactId1.toString())
         try {
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -5259,32 +5258,32 @@ describe('ContactsTest', function() {
      */
     it("contact_deleterestore_test_7900", 0, async function(done) {
         console.info("------logMessage contact_deleterestore_test_7900 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var insertRawContactValues = {"display_name" : "xaioli7900"};
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage contact_deleterestore_test_7900: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             sleep(sleep_one);
-            var condition1 = new ohos_data_ability.DataAbilityPredicates();
+            var condition1 = new dataShare.DataSharePredicates();
             condition1.equalTo("id", rawContactId.toString());
-            var deleteCode = await DAHelper.delete(rawContactUri, condition1);
+            var deleteCode = await dataShareHelper.delete(rawContactUri, condition1);
             console.info("contact_deleterestore_test_7900 " +
                          ': deleteCode = ' + deleteCode);
             expect(deleteCode == 0).assertTrue();
             sleep(sleep_one);
 
-            var condition2 = new ohos_data_ability.DataAbilityPredicates();
+            var condition2 = new dataShare.DataSharePredicates();
             condition2.equalTo("id", rawContactId.toString());
             var updatevalue = {"is_deleted" : 0};
-            var updateCode = await DAHelper.update(rawContactUri, updatevalue, condition2);
+            var updateCode = await dataShareHelper.update(rawContactUri, updatevalue, condition2);
             console.info('contact_deleterestore_test_7900 : update = ' + updateCode);
             sleep(sleep_one);
 
-            var condition3 = new ohos_data_ability.DataAbilityPredicates();
+            var condition3 = new dataShare.DataSharePredicates();
             condition3.equalTo("id", rawContactId.toString());
-            var code = await DAHelper.delete(deleted_raw_contact_record, condition3);
+            var code = await dataShareHelper.delete(deleted_raw_contact_record, condition3);
             console.info('contact_deleterestore_test_7900 : record code = ' + code);
             var map = new Map();
             map.set("id", rawContactId.toString());
@@ -5305,11 +5304,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_updateData_test_8000", 0, async function(done) {
         console.info("------logMessage abnormal_contact_updateData_test_8000 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var insertRawContactValues = {"display_name" : "xaioli8000"};
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage abnormal_contact_updateData_test_8000: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             sleep(sleep_one);
@@ -5317,10 +5316,10 @@ describe('ContactsTest', function() {
             console.info("logMessage abnormal_contact_updateData_test_8000: contactDataId = " + contactDataId);
             expect(contactDataId > 0).assertTrue();
 
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             var updateValues = {"display_namess" : "xaioli80000000"};
             condition.equalTo("id", contactDataId.toString());
-            var code = await DAHelper.update(contactDataUri, updateValues, condition);
+            var code = await dataShareHelper.update(contactDataUri, updateValues, condition);
             console.info('abnormal_contact_updateData_test_8000 : update code = ' + code);
             expect(code == -1).assertTrue();
             var map = new Map();
@@ -5343,11 +5342,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_favorite_test_8100", 0, async function(done) {
         console.info("------logMessage abnormal_contact_favorite_test_8100 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var insertRawContactValues = {"display_name" : "xaioli8100", "favoriteeee" : 1};
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage abnormal_contact_favorite_test_8100: rawContactId = " + rawContactId);
             expect(rawContactId == -1).assertTrue();
             sleep(sleep_one);
@@ -5365,14 +5364,14 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_blocklist_test_8200", 0, async function(done) {
         console.info("------logMessage abnormal_contact_blocklist_test_8200 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(6);
         try {
             var insertValues = {
                 "phone_numberss" : phoneNumber,
             };
-            var id = await DAHelper.insert(contactBlocklistUri, insertValues);
+            var id = await dataShareHelper.insert(contactBlocklistUri, insertValues);
             console.info("logMessage abnormal_contact_blocklist_test_8200: id = " + id);
             expect(id == -1).assertTrue();
             sleep(sleep_one);
@@ -5390,11 +5389,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_group_test_8300", 0, async function(done) {
         console.info("------logMessage abnormal_contact_group_test_8300 is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var insertRawContactValues = {"display_name" : "xaioli8100"};
-            var rawContactId = await DAHelper.insert(rawContactUri, insertRawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertRawContactValues);
             console.info("logMessage abnormal_contact_group_test_8300: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var contactDataValues1 = {
@@ -5402,7 +5401,7 @@ describe('ContactsTest', function() {
                 "content_typess" : "group_membership",
                 "detail_info" : 1
             };
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             console.info("abnormal_contact_group_test_8300 logMessage : contactDataId " + contactDataId);
             expect(contactDataId == -1).assertTrue();
             done();
@@ -5419,15 +5418,15 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8400", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8400 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8400"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_8400: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var rawContactValues = {"display_name" : "xiaoli8400"};
-            var rawContactId1 = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId1 = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_8400: rawContactId1 = " + rawContactId1);
             expect(rawContactId1 > 0).assertTrue();
             await AbnormalQuery();
@@ -5441,12 +5440,12 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [ "id", "display_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", rawContactId.toString());
             condition.or();
             condition.equalTo("ids", rawContactId1.toString());
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_8400: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -5464,15 +5463,15 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8500", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8500 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8500"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_8500: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var rawContactValues = {"display_name" : "xiaoli8500"};
-            var rawContactId1 = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId1 = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_8500: rawContactId1 = " + rawContactId1);
             expect(rawContactId1 > 0).assertTrue();
             await AbnormalQuery();
@@ -5486,10 +5485,10 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [ "id", "display_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.greaterThan("ids", "0");
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_8500: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -5507,11 +5506,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8600", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8600 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8600"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_8600: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await AbnormalQuery();
@@ -5525,10 +5524,10 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [ "id", "display_names" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_8600: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -5546,11 +5545,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8700", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8700 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8700"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_8700: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var dataId = await insertData(rawContactId, "group_membership", 1, "");
@@ -5567,10 +5566,10 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [ "raw_contact_id" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("content_typess", "group_membership");
             try {
-                var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_8700: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -5588,11 +5587,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8800", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8800 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian8700", "favorite" : 1};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_8800: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await AbnormalQuery();
@@ -5606,10 +5605,10 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", rawContactId.toString());
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_8800: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -5627,11 +5626,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_8900", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_8900 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaoyuzhou", "lastest_contacted_time" : 60};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_8900: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             await AbnormalQuery();
@@ -5645,10 +5644,10 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.greaterThan("lastest_contacted_timess", "50");
             try {
-                var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_8900: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -5666,22 +5665,22 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_9000", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_9000 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_9000: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
-            var deleteCode = await DAHelper.delete(rawContactUri, condition);
+            var deleteCode = await dataShareHelper.delete(rawContactUri, condition);
             console.info('abnormal_contact_query_test_9000 : deleteRawContact deleteCode = ' + deleteCode);
             expect(deleteCode == 0).assertTrue();
             await AbnormalQuery();
-            var conditionAll = new ohos_data_ability.DataAbilityPredicates();
+            var conditionAll = new dataShare.DataSharePredicates();
             conditionAll.greaterThan("id", "0");
-            var code = await DAHelper.delete(deletedUri, conditionAll);
+            var code = await dataShareHelper.delete(deletedUri, conditionAll);
             console.info('abnormal_contact_query_test_9000 : Completely delete code = ' + code);
             expect(code == 0).assertTrue();
             done();
@@ -5693,10 +5692,10 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.orderByDesc("delete_timess");
             try {
-                var resultSet = await DAHelper.query(deletedRawContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(deletedRawContactUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_9000: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -5714,11 +5713,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_9100", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_9100 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9100"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_9100: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var dataId = await insertData(rawContactId, "phone", "11159100", "");
@@ -5737,10 +5736,10 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [ "detail_info" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("content_typess", "phone");
             try {
-                var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_9100: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -5758,11 +5757,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_9200", 0, async function(done) {
         console.info("------------abnormal_contact_query_test_9200 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9100"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_query_test_9200: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var dataId = await insertData(rawContactId, "email", "fox@1.com", "");
@@ -5781,10 +5780,10 @@ describe('ContactsTest', function() {
         async function AbnormalQuery()
         {
             var resultColumns = [ "detail_info" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("content_typess", "email");
             try {
-                var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 console.info('logMessage abnormal_contact_query_test_9200: goToFirstRow' + resultSet.goToFirstRow());
                 resultSet.close();
@@ -5802,11 +5801,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_10000", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_10000 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9300"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_delete_test_10000: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var dataId = await insertData(rawContactId, "email", "fox@1.com", "");
@@ -5814,10 +5813,10 @@ describe('ContactsTest', function() {
             var dataId1 = await insertData(rawContactId, "phone", "fox@2.com", "");
             console.info("logMessage abnormal_contact_delete_test_10000: dataId1 = " + dataId1);
 
-            var errorUri = "dataability:///com.ohos.contactsdataability/contacts/contact_datasss";
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            var errorUri = "datashare:///com.ohos.contactsdataability/contacts/contact_datasss";
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", dataId.toString());
-            var deleteCode = await DAHelper.delete(errorUri, condition);
+            var deleteCode = await dataShareHelper.delete(errorUri, condition);
             console.info(' abnormal_contact_delete_test_10000 : deleteAll deleteCode = ' + deleteCode);
             expect(deleteCode == -1).assertTrue();
             var map = new Map();
@@ -5840,11 +5839,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_9300", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_9300 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9300"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_delete_test_9300: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var dataId = await insertData(rawContactId, "email", "fox@1.com", "");
@@ -5852,10 +5851,10 @@ describe('ContactsTest', function() {
             var dataId1 = await insertData(rawContactId, "phone", "fox@2.com", "");
             console.info("logMessage abnormal_contact_delete_test_9300: dataId1 = " + dataId1);
 
-            var errorUri = "dataability:///com.ohos.contactsdataability/contacts/raw_contactsss";
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            var errorUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contactsss";
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", rawContactId.toString());
-            var deleteCode = await DAHelper.delete(errorUri, condition);
+            var deleteCode = await dataShareHelper.delete(errorUri, condition);
             console.info(' abnormal_contact_delete_test_9300 : deleteAll deleteCode = ' + deleteCode);
             expect(deleteCode == -1).assertTrue();
             var map = new Map();
@@ -5878,23 +5877,23 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_delete_test_9400", 0, async function(done) {
         console.info("------------abnormal_contact_delete_test_9400 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9400"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_delete_test_9400: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var rawContactValues = {"display_name" : "xiaoli9400"};
-            var rawContactId1 = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId1 = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_delete_test_9400: rawContactId1 = " + rawContactId1);
             expect(rawContactId1 > 0).assertTrue();
 
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", rawContactId.toString());
             condition.or();
             condition.equalTo("ids", rawContactId1.toString())
-            var deleteCode = await DAHelper.delete(rawContactUri, condition);
+            var deleteCode = await dataShareHelper.delete(rawContactUri, condition);
             console.info('abnormal_contact_delete_test_9400 :  deleteCode = ' + deleteCode);
             expect(deleteCode == -1).assertTrue();
             await deleteRawContact("abnormal_contact_delete_test_9400");
@@ -5912,24 +5911,24 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_favorite_test_9500", 0, async function(done) {
         console.info("------------abnormal_contact_favorite_test_9500 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9500", "favorite" : 0};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_favorite_test_9500: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var rawContactValues = {"display_name" : "xiaoli9500", "favorite" : 0};
-            var rawContactId1 = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId1 = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_favorite_test_9500: rawContactId1 = " + rawContactId1);
             expect(rawContactId1 > 0).assertTrue();
 
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             var updateValues = {"favorites" : 1};
             condition.equalTo("id", rawContactId.toString());
             condition.or();
             condition.equalTo("id", rawContactId1.toString())
-            var code = await DAHelper.update(rawContactUri, updateValues, condition);
+            var code = await dataShareHelper.update(rawContactUri, updateValues, condition);
             console.info(' abnormal_contact_favorite_test_9500 : update code = ' + code);
             expect(code == -1).assertTrue();
             await deleteRawContact("abnormal_contact_favorite_test_9500");
@@ -5947,14 +5946,14 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insertblocklist_test_9600", 0, async function(done) {
         console.info("------------abnormal_contact_insertblocklist_test_9600 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {
                 "display_name" : "xiaotian9600",
             };
             var phoneNumber = randomNum(12);
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_insertblocklist_test_9600: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var dataId = await insertData(rawContactId, "phone", phoneNumber, "");
@@ -5962,14 +5961,14 @@ describe('ContactsTest', function() {
             var rawContactValues = {
                 "display_name" : "xiaoli9600",
             };
-            var rawContactId1 = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId1 = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_insertblocklist_test_9600: rawContactId1 = " + rawContactId1);
             expect(rawContactId1 > 0).assertTrue();
             var dataId1 = await insertData(rawContactId1, "phone", phoneNumber, "");
             console.info("logMessage abnormal_contact_insertblocklist_test_9600: dataId1 = " + dataId1);
 
             var blocklist = {"phone_numbers" : phoneNumber};
-            var code = await DAHelper.insert(contactBlocklistUri, blocklist);
+            var code = await dataShareHelper.insert(contactBlocklistUri, blocklist);
             expect(code == -1).assertTrue();
             await deleteRawContact("abnormal_contact_insertblocklist_test_9600");
             await deleteAll(contactDataUri, "abnormal_contact_insertblocklist_test_9600");
@@ -5987,11 +5986,11 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_insertGroup_test_9700", 0, async function(done) {
         console.info("------------abnormal_contact_insertGroup_test_9700 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
             var rawContactValues = {"display_name" : "xiaotian9700"};
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_insertGroup_test_9700: rawContactId = " + rawContactId);
             expect(rawContactId > 0).assertTrue();
             var contactDataValues1 = {
@@ -5999,11 +5998,11 @@ describe('ContactsTest', function() {
                 "content_typess" : "group_membership",
                 "detail_info" : 1
             };
-            var contactDataId = await DAHelper.insert(contactDataUri, contactDataValues1);
+            var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues1);
             console.info("abnormal_contact_insertGroup_test_9700 logMessage : contactDataId " + contactDataId);
             expect(contactDataId == -1).assertTrue();
             var rawContactValues = {"display_name" : "xiaoli9700"};
-            var rawContactId1 = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId1 = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info("logMessage abnormal_contact_insertGroup_test_9700: rawContactId1 = " + rawContactId1);
             expect(rawContactId1 > 0).assertTrue();
             var contactDataValues2 = {
@@ -6011,7 +6010,7 @@ describe('ContactsTest', function() {
                 "content_typess" : "group_membership",
                 "detail_info" : 1
             };
-            var contactDataId1 = await DAHelper.insert(contactDataUri, contactDataValues2);
+            var contactDataId1 = await dataShareHelper.insert(contactDataUri, contactDataValues2);
             console.info("abnormal_contact_insertGroup_test_9700 logMessage : contactDataId1 " + contactDataId1);
             expect(contactDataId1 == -1).assertTrue();
             await deleteRawContact("abnormal_contact_insertGroup_test_9700");
@@ -6029,12 +6028,12 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_pinyinquery_test_9800", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_pinyinquery_test_9800 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "李bp玉成욱"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage abnormal_contact_pinyinquery_test_9800 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -6053,10 +6052,10 @@ describe('ContactsTest', function() {
         async function query()
         {
             var resultColumns = [ "search_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("raw_contact_id", rawContactId.toString());
             try {
-                var resultSet = await DAHelper.query(searchContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(searchContactUri, resultColumns, condition);
                 if (resultSet.rowCount > 0) {
                     if (resultSet.goToFirstRow()) {
                         do {
@@ -6082,12 +6081,12 @@ describe('ContactsTest', function() {
      */
     it("abnormal_contact_query_test_9900", 0, async function(done) {
         console.info("--------logMessage abnormal_contact_query_test_9900 is starting!-------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {"display_name" : "键盘"};
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage abnormal_contact_query_test_9900 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
@@ -6106,10 +6105,10 @@ describe('ContactsTest', function() {
         async function query()
         {
             var resultColumns = [];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.like("search_namesss", "%jp%");
             try {
-                var resultSet = await DAHelper.query(searchContactUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(searchContactUri, resultColumns, condition);
                 console.info(
                     ' abnormal_contact_query_test_9900 :resultSet.goToFirstRow() = ' + resultSet.goToFirstRow());
                 expect(resultSet.goToFirstRow() == false).assertTrue();
@@ -6123,21 +6122,21 @@ describe('ContactsTest', function() {
 
     afterAll(async function() {
         var tag = "Contacts_test_start_deleted";
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
-        let DAHelperContact = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': start ! DAHelperContact = ' + DAHelperContact);
-        var deleteBlockList = await DAHelperContact.delete(contactBlocklistUri, condition);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
+        var deleteBlockList = await dataShareHelper.delete(contactBlocklistUri, condition);
         console.info(tag + " : logMessage : deleteBlockList = " + deleteBlockList);
-        var deletedGroup = await DAHelperContact.delete(groupUri, condition);
+        var deletedGroup = await dataShareHelper.delete(groupUri, condition);
         console.info(tag + " : logMessage : deletedGroup = " + deletedGroup);
-        var dataDeletedCode = await DAHelperContact.delete(contactDataUri, condition);
+        var dataDeletedCode = await dataShareHelper.delete(contactDataUri, condition);
         sleep(sleep_two);
         console.info(tag + " : logMessage : dataDeletedCode = " + dataDeletedCode);
-        var rawContactDeleted = await DAHelperContact.delete(rawContactUri, condition);
+        var rawContactDeleted = await dataShareHelper.delete(rawContactUri, condition);
         sleep(sleep_two);
         console.info(tag + " : logMessage : rawContactDeleted = " + rawContactDeleted);
-        var deleted = await DAHelperContact.delete(deletedUri, condition);
+        var deleted = await dataShareHelper.delete(deletedUri, condition);
         sleep(sleep_two);
         console.info(tag + " : logMessage : deleted = " + deleted);
     });

@@ -44,8 +44,10 @@ ohos_shared_library("contact") {
   external_deps = [
     "ability_base:zuri",
     "ability_runtime:abilitykit_native",
-    "ability_runtime:data_ability_helper",
+    "ability_runtime:app_context",
+    "ability_runtime:napi_base_context",
     "c_utils:utils",
+    "data_share:datashare_consumer",
     "napi:ace_napi",
     "relational_store:native_dataability",
     "relational_store:native_rdb",

@@ -22,8 +22,8 @@ namespace Contacts {
 namespace Test {
 void RecoveryTest::ClearData()
 {
-    OHOS::AppExecFwk::ContactsDataAbility contactsDataAbility;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::AbilityRuntime::ContactsDataAbility contactsDataAbility;
+    OHOS::DataShare::DataSharePredicates predicates;
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
     predicates.NotEqualTo("id", "0");
     predicates.And();
@@ -33,18 +33,18 @@ void RecoveryTest::ClearData()
     int time = 3000;
     std::chrono::milliseconds dura(time);
     std::this_thread::sleep_for(dura);
-    predicates.Clear();
+    OHOS::DataShare::DataSharePredicates predicates2;
     OHOS::Uri uriRawContactComplete(ContactsUri::DELETED_RAW_CONTACT);
-    predicates.NotEqualTo("id", "0");
-    int code = contactsDataAbility.Delete(uriRawContactComplete, predicates);
+    predicates2.NotEqualTo("id", "0");
+    int code = contactsDataAbility.Delete(uriRawContactComplete, predicates2);
     HILOG_INFO("RecoveryTest ClearData code is %{public}d", code);
 }
 
 int64_t RecoveryTest::RawContactInsert(std::string displayName)
 {
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-    OHOS::NativeRdb::ValuesBucket rawContactValues;
-    rawContactValues.PutString("display_name", displayName);
+    OHOS::DataShare::DataShareValuesBucket rawContactValues;
+    rawContactValues.Put("display_name", displayName);
     int64_t code = contactsDataAbility.Insert(uriRawContact, rawContactValues);
     rawContactValues.Clear();
     return code;
@@ -89,9 +89,9 @@ HWTEST_F(RecoveryTest, recovery_test_200, testing::ext::TestSize.Level1)
     RawContactInsert("xiaolilili");
     // backup
     OHOS::Uri uriRawContactBackUp(ContactsUri::BACKUP);
-    OHOS::NativeRdb::ValuesBucket value;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
-    int retCode = contactsDataAbility.Update(uriRawContactBackUp, value, predicates);
+    OHOS::DataShare::DataShareValuesBucket value;
+    OHOS::DataShare::DataSharePredicates predicates;
+    int retCode = contactsDataAbility.Update(uriRawContactBackUp, predicates, value);
     EXPECT_EQ(0, retCode);
 
     RawContactInsert("xiaobaibaibai");
@@ -99,19 +99,19 @@ HWTEST_F(RecoveryTest, recovery_test_200, testing::ext::TestSize.Level1)
     OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
     std::vector<std::string> columns;
     predicates.EqualTo("is_deleted", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataAbility.Query(uriRawContact, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet =
+        contactsDataAbility.Query(uriRawContact, predicates, columns);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     resultSet->Close();
     EXPECT_EQ(4, rowCount);
 
     OHOS::Uri uriRawContactRecover(ContactsUri::RECOVER);
-    int retCodeRecover = contactsDataAbility.Update(uriRawContactRecover, value, predicates);
+    int retCodeRecover = contactsDataAbility.Update(uriRawContactRecover, predicates, value);
     EXPECT_EQ(0, retCodeRecover);
 
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetRecover =
-        contactsDataAbility.Query(uriRawContact, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetRecover =
+        contactsDataAbility.Query(uriRawContact, predicates, columns);
     int rowCountRecover = 0;
     resultSetRecover->GetRowCount(rowCountRecover);
     resultSetRecover->Close();

@@ -28,7 +28,7 @@ SqlAnalyzer::~SqlAnalyzer()
 {
 }
 
-bool SqlAnalyzer::CheckValuesBucket(const NativeRdb::ValuesBucket &value)
+bool SqlAnalyzer::CheckValuesBucket(const OHOS::NativeRdb::ValuesBucket &value)
 {
     std::map<std::string, NativeRdb::ValueObject> valuesMap;
     value.GetAll(valuesMap);

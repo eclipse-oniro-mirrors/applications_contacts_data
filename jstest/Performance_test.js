@@ -13,20 +13,19 @@
  * limitations under the License.
  */
 
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
+import dataShare from '@ohos.data.dataShare';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
 
-const URI_CALLLOG = "dataability:///com.ohos.calllogability";
-const calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
+const URI_CALLLOG = "datashare:///com.ohos.calllogability";
+const calllogUri = "datashare:///com.ohos.calllogability/calls/calllog";
 
-const URI_VOICEMAIL = "dataability:///com.ohos.voicemailability";
-const voicemailUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
+const URI_VOICEMAIL = "datashare:///com.ohos.voicemailability";
+const voicemailUri = "datashare:///com.ohos.voicemailability/calls/voicemail";
 
-const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
-const rawContactUri = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
-const contactDataUri = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
-const deletedUri = "dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
+const URI_CONTACTS = "datashare:///com.ohos.contactsdataability";
+const rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+const contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
+const deletedUri = "datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
 
 describe('PerformanceTest', function() {
     console.log(' PerformanceTest is start');
@@ -48,8 +47,8 @@ describe('PerformanceTest', function() {
      * @tc.desc    Function test
      */
     it("raw_contact_insert_performance_test_900", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var listAddBluk = [];
         for (var i = 0; i < 1000; i++) {
             var add = {"display_name" : "xiaoli" + i, "company" : "testCompany" + i, "position" : "testPosition" + i};
@@ -57,16 +56,16 @@ describe('PerformanceTest', function() {
         }
         try {
             let old = new Date();
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
             let now = new Date();
             let usedTime = now - old;
             console.info('raw_contact_insert_performance_test_900  usedTime = ' + usedTime);
@@ -88,16 +87,16 @@ describe('PerformanceTest', function() {
      * @tc.desc    Function test
      */
     it("raw_contact_update_performance_test_1000", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var updateValues = {"favorite" : 1};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         condition.and();
         condition.equalTo("is_deleted", "0");
         try {
             let old = new Date();
-            var updateCode = await DAHelper.update(rawContactUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(rawContactUri, updateValues, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('raw_contact_update_performance_test_1000  usedTime = ' + usedTime);
@@ -120,16 +119,16 @@ describe('PerformanceTest', function() {
      */
     it("raw_contact_query_performance_test_1100", 0, async function(done) {
         var tag = "raw_contact_query_performance_test_1100";
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         condition.and();
         condition.equalTo("is_deleted", "0");
         try {
             let old = new Date();
-            var resultSet = await DAHelper.query(rawContactUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('raw_contact_query_performance_test_1100  usedTime = ' + usedTime);
@@ -152,15 +151,15 @@ describe('PerformanceTest', function() {
      * @tc.desc    Function test
      */
     it("raw_contact_delete_performance_test_1200", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('raw_contact_delete_performance_test_1200 : start ! DAHelper = ' + DAHelper);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('raw_contact_delete_performance_test_1200 : start ! dataShareHelper = ' + dataShareHelper);
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         condition.and();
         condition.equalTo("is_deleted", "0");
         try {
             let old = new Date();
-            var deleteCode = await DAHelper.delete(rawContactUri, condition);
+            var deleteCode = await dataShareHelper.delete(rawContactUri, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('raw_contact_delete_performance_test_1200  usedTime = ' + usedTime);
@@ -182,23 +181,23 @@ describe('PerformanceTest', function() {
      * @tc.desc    Function test
      */
     it("contact_data_insert_performance_test_1300", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var rawContactValues = {
             "display_name" : "xiaoli",
         };
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, rawContactValues);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(1000);
             console.info("logMessage contact_data_insert_performance_test_1300: rawContactId = " + rawContactId);
         } catch (error) {
             console.info("logMessage contact_data_insert_performance_test_1300: raw_contact insert error = " + error);
         }
 
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", rawContactId.toString());
-        var deleteCode = await DAHelper.delete(rawContactUri, condition);
+        var deleteCode = await dataShareHelper.delete(rawContactUri, condition);
         sleep(1000);
         console.info("logMessage contact_data_insert_performance_test_1300: deleteCode = " + deleteCode);
 
@@ -209,16 +208,16 @@ describe('PerformanceTest', function() {
         }
         try {
             let old = new Date();
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
             let now = new Date();
             let usedTime = now - old;
             console.info('contact_data_insert_performance_test_1300  usedTime = ' + usedTime);
@@ -240,14 +239,14 @@ describe('PerformanceTest', function() {
      * @tc.desc    Function test
      */
     it("contact_data_update_performance_test_1400", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage contact_data_update_performance_test_1400 DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage contact_data_update_performance_test_1400 dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var updateValues = {"syn_1" : "test"};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         try {
             let old = new Date();
-            var updateCode = await DAHelper.update(contactDataUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('contact_data_update_performance_test_1400  usedTime = ' + usedTime);
@@ -269,14 +268,14 @@ describe('PerformanceTest', function() {
      * @tc.desc    Function test
      */
     it("contact_data_query_performance_test_1500", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('contact_data_query_performance_test_1500 start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('contact_data_query_performance_test_1500 start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         try {
             let old = new Date();
-            var resultSet = await DAHelper.query(contactDataUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('contact_data_query_performance_test_1500  usedTime = ' + usedTime);
@@ -299,13 +298,13 @@ describe('PerformanceTest', function() {
      * @tc.desc    Function test
      */
     it("contact_data_delete_performance_test_1600", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('contact_data_delete_performance_test_1600 : start ! DAHelper = ' + DAHelper);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('contact_data_delete_performance_test_1600 : start ! dataShareHelper = ' + dataShareHelper);
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         try {
             let old = new Date();
-            var deleteCode = await DAHelper.delete(contactDataUri, condition);
+            var deleteCode = await dataShareHelper.delete(contactDataUri, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('contact_data_delete_performance_test_1600  usedTime = ' + usedTime);
@@ -328,8 +327,8 @@ describe('PerformanceTest', function() {
      */
     it("calllog_insert_performance_test_100", 0, async function(done) {
         console.info("---------logMessage calllog_insert_performance_test_100 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var listAddBluk = [];
         var phoneNumber = randomNum(6);
         for (var i = 0; i < 1000; i++) {
@@ -338,16 +337,16 @@ describe('PerformanceTest', function() {
         }
         try {
             let old = new Date();
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
             let now = new Date();
             let usedTime = now - old;
             console.info('calllog_insert_performance_test_100  usedTime = ' + usedTime);
@@ -369,14 +368,14 @@ describe('PerformanceTest', function() {
      * @tc.desc    Function test
      */
     it("calllog_update_performance_test_200", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var updateValues = {"answer_state" : "1"};
         try {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.notEqualTo("id", 0);
             let old = new Date();
-            var updateCode = await DAHelper.update(calllogUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(calllogUri, updateValues, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('calllog_update_performance_test_200  usedTime = ' + usedTime);
@@ -398,15 +397,15 @@ describe('PerformanceTest', function() {
      */
     it("calllog_query_performance_test_300", 0, async function(done) {
         var tag = "calllog_query_performance_test_300";
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info(tag + ': start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.notEqualTo("id", 0);
 
         try {
             let old = new Date();
-            let resultSet = await DAHelper.query(calllogUri, resultColumns, condition);
+            let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('calllog_query_performance_test_300  usedTime = ' + usedTime);
@@ -430,12 +429,12 @@ describe('PerformanceTest', function() {
      */
     it("calllog_delete_performance_test_400", 0, async function(done) {
         var tag = "calllog_delete_performance_test_400";
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CALLLOG);
-        console.info(tag + ': start ! DAHelper = ' + DAHelper);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
+        console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         let old = new Date();
-        var deleteCode = await DAHelper.delete(calllogUri, condition);
+        var deleteCode = await dataShareHelper.delete(calllogUri, condition);
         let now = new Date();
         let usedTime = now - old;
         console.info('calllog_delete_performance_test_400  usedTime = ' + usedTime);
@@ -454,8 +453,8 @@ describe('PerformanceTest', function() {
      */
     it("voicemail_insert_performance_test_500", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_performance_test_500 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var listAddBluk = [];
         var phoneNumber = randomNum(4);
@@ -465,16 +464,16 @@ describe('PerformanceTest', function() {
         }
         try {
             let old = new Date();
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
             let now = new Date();
             let usedTime = now - old;
             console.info('voicemail_insert_performance_test_500  usedTime = ' + usedTime);
@@ -496,14 +495,14 @@ describe('PerformanceTest', function() {
      * @tc.desc    Function test
      */
     it("voicemail_update_performance_test_600", 0, async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var updateValues = {"origin_type" : "test"};
         try {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.notEqualTo("id", 0);
             let old = new Date();
-            var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(voicemailUri, updateValues, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('voicemail_update_performance_test_600  usedTime = ' + usedTime);
@@ -526,14 +525,14 @@ describe('PerformanceTest', function() {
      */
     it("voicemail_query_performance_test_700", 0, async function(done) {
         var tag = "voicemail_query_performance_test_700";
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info(tag + ': start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         try {
             let old = new Date();
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('voicemail_query_performance_test_700  usedTime = ' + usedTime);
@@ -557,13 +556,13 @@ describe('PerformanceTest', function() {
      */
     it("voicemail_delete_performance_test_800", 0, async function(done) {
         var tag = "voicemail_delete_performance_test_800";
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info(tag + ': start ! DAHelper = ' + DAHelper);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         try {
             let old = new Date();
-            var deleteCode = await DAHelper.delete(voicemailUri, condition);
+            var deleteCode = await dataShareHelper.delete(voicemailUri, condition);
             let now = new Date();
             let usedTime = now - old;
             console.info('voicemail_delete_performance_test_800  usedTime = ' + usedTime);
@@ -579,24 +578,24 @@ describe('PerformanceTest', function() {
     });
 
     afterAll(async function() {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('DeleteContact : start ! DAHelper = ' + DAHelper);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('DeleteContact : start ! dataShareHelper = ' + dataShareHelper);
+        let condition = new dataShare.DataSharePredicates();
         condition.notEqualTo("id", "0");
         try {
             var resultColumns = [ "id" ];
-            var conditionDelete = new ohos_data_ability.DataAbilityPredicates();
+            var conditionDelete = new dataShare.DataSharePredicates();
             conditionDelete.greaterThan("id", "0");
             var count = 0;
             var deleteCount = 9999;
             while (count < deleteCount) {
-                var result = await DAHelper.query(deletedUri, resultColumns, conditionDelete);
+                var result = await dataShareHelper.query(deletedUri, resultColumns, conditionDelete);
                 console.info("performance : result.rowCount = " + result.rowCount);
                 count = result.rowCount;
                 result.close();
                 sleep(5000);
             }
-            var deleteCode = await DAHelper.delete(deletedUri, condition);
+            var deleteCode = await dataShareHelper.delete(deletedUri, condition);
             console.info("afterAll logMessage DeleteContact: deleteCode = " + deleteCode);
         } catch (error) {
             console.info('afterAll logMessage DeleteContact: delete error = ' + error);

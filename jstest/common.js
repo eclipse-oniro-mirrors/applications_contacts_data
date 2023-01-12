@@ -15,22 +15,22 @@
 
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
 
-const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
-const contactUri = "dataability:///com.ohos.contactsdataability/contacts/contact";
-const rawContactUri = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
-const contactDataUri = "dataability:///com.ohos.contactsdataability/contacts/contact_data";
-const groupUri = "dataability:///com.ohos.contactsdataability/contacts/groups";
-const contactBlocklistUri = "dataability:///com.ohos.contactsdataability/contacts/contact_blocklist";
-const deletedRawContactUri = "dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
-const profileRawContactUri = "dataability:///com.ohos.contactsdataability/profile/raw_contact";
-const profilecontactUri = "dataability:///com.ohos.contactsdataability/profile/contact";
-const profileContactDataUri = "dataability:///com.ohos.contactsdataability/profile/contact_data";
-const profileGroupUri = "dataability:///com.ohos.contactsdataability/profile/groups";
-const profileBlocklistUri = "dataability:///com.ohos.contactsdataability/profile/contact_blocklist";
-const profileDeletedContactsUri = "dataability:///com.ohos.contactsdataability/profile/deleted_raw_contact";
+const URI_CONTACTS = "datashare:///com.ohos.contactsdataability";
+const contactUri = "datashare:///com.ohos.contactsdataability/contacts/contact";
+const rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+const contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
+const groupUri = "datashare:///com.ohos.contactsdataability/contacts/groups";
+const contactBlocklistUri = "datashare:///com.ohos.contactsdataability/contacts/contact_blocklist";
+const deletedRawContactUri = "datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
+const profileRawContactUri = "datashare:///com.ohos.contactsdataability/profile/raw_contact";
+const profilecontactUri = "datashare:///com.ohos.contactsdataability/profile/contact";
+const profileContactDataUri = "datashare:///com.ohos.contactsdataability/profile/contact_data";
+const profileGroupUri = "datashare:///com.ohos.contactsdataability/profile/groups";
+const profileBlocklistUri = "datashare:///com.ohos.contactsdataability/profile/contact_blocklist";
+const profileDeletedContactsUri = "datashare:///com.ohos.contactsdataability/profile/deleted_raw_contact";
 
-const URI_CALLLOG = "dataability:///com.ohos.calllogability";
-const calllogUri = "dataability:///com.ohos.calllogability/calls/calllog";
+const URI_CALLLOG = "datashare:///com.ohos.calllogability";
+const calllogUri = "datashare:///com.ohos.calllogability/calls/calllog";
 
 export default {
     data: {},

@@ -36,7 +36,7 @@ ResultConvert::~ResultConvert()
  * @return The result returned by convert operation
  */
 napi_value ResultConvert::ResultSetToObject(
-    napi_env env, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (resultSet == nullptr) {
         HILOG_ERROR("ResultConvert::ResultSetToObject resultSet is nullptr");
@@ -72,7 +72,7 @@ napi_value ResultConvert::ResultSetToObject(
     return array;
 }
 
-void ResultConvert::PutQuickSearchKey(napi_env env, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet,
+void ResultConvert::PutQuickSearchKey(napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet,
     std::map<int, std::string> &quickSearchMap, int contactIdValue)
 {
     std::string quickSearchValue = "";
@@ -122,7 +122,7 @@ napi_value ResultConvert::ConvertContactArray(
  * @param resultSet Target of convert operation
  */
 void ResultConvert::ConvertContactObject(
-    napi_env env, napi_value napiObject, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     int typeIdValue = 0;
     std::string typeId = "type_id";
@@ -145,7 +145,7 @@ void ResultConvert::ConvertContactObject(
     ConvertOrganization(env, napiObject, typeIdValue, resultSet);
 }
 
-bool ResultConvert::IsEmpty(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+bool ResultConvert::IsEmpty(std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (resultSet == nullptr) {
         HILOG_ERROR("ResultSetToHolder resultSet is nullptr");
@@ -161,7 +161,7 @@ bool ResultConvert::IsEmpty(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet>
 }
 
 napi_value ResultConvert::ResultSetToHolder(
-    napi_env env, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     napi_value array;
     napi_create_array(env, &array);
@@ -212,7 +212,7 @@ napi_value ResultConvert::ResultSetToHolder(
 }
 
 napi_value ResultConvert::ResultSetToGroup(
-    napi_env env, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     napi_value array;
     NAPI_CALL(env, napi_create_array(env, &array));
@@ -313,26 +313,26 @@ napi_value ResultConvert::GetNapiElementArray(napi_env env, napi_value napiObjec
 }
 
 napi_value ResultConvert::GetResultValue(
-    napi_env env, std::string &contentKey, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, std::string &contentKey, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     int columnIndex = ERROR;
     resultSet->GetColumnIndex(contentKey, columnIndex);
-    OHOS::NativeRdb::ColumnType columnType;
-    resultSet->GetColumnType(columnIndex, columnType);
+    OHOS::DataShare::DataType columnType;
+    resultSet->GetDataType(columnIndex, columnType);
     napi_value napiValue = nullptr;
-    if (columnType == OHOS::NativeRdb::ColumnType::TYPE_NULL) {
+    if (columnType == OHOS::DataShare::DataType::TYPE_NULL) {
         return napiValue;
-    } else if (columnType == OHOS::NativeRdb::ColumnType::TYPE_BLOB) {
+    } else if (columnType == OHOS::DataShare::DataType::TYPE_BLOB) {
         return napiValue;
-    } else if (columnType == OHOS::NativeRdb::ColumnType::TYPE_INTEGER) {
+    } else if (columnType == OHOS::DataShare::DataType::TYPE_INTEGER) {
         int intValue = 0;
         resultSet->GetInt(columnIndex, intValue);
         napi_create_int64(env, intValue, &napiValue);
-    } else if (columnType == OHOS::NativeRdb::ColumnType::TYPE_FLOAT) {
+    } else if (columnType == OHOS::DataShare::DataType::TYPE_FLOAT) {
         double doubleValue = 0;
         resultSet->GetDouble(columnIndex, doubleValue);
         napi_create_double(env, doubleValue, &napiValue);
-    } else if (columnType == OHOS::NativeRdb::ColumnType::TYPE_STRING) {
+    } else if (columnType == OHOS::DataShare::DataType::TYPE_STRING) {
         std::string stringValue;
         resultSet->GetString(columnIndex, stringValue);
         napi_create_string_utf8(env, stringValue.c_str(), NAPI_AUTO_LENGTH, &napiValue);
@@ -348,7 +348,7 @@ napi_value ResultConvert::CreateNapiStringValue(napi_env env, const std::string 
 }
 
 void ResultConvert::ConvertEmail(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == EMAIL) {
         const std::string emails = "emails";
@@ -381,7 +381,7 @@ void ResultConvert::ConvertEmail(
 }
 
 void ResultConvert::ConvertName(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == NAME) {
         const std::string name = "name";
@@ -429,7 +429,7 @@ void ResultConvert::ConvertName(
 }
 
 void ResultConvert::ConvertUri(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == PHOTO) {
         const std::string portrait = "portrait";
@@ -445,7 +445,7 @@ void ResultConvert::ConvertUri(
 }
 
 void ResultConvert::ConvertEvent(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == CONTACT_EVENT) {
         const std::string events = "events";
@@ -474,7 +474,7 @@ void ResultConvert::ConvertEvent(
 }
 
 void ResultConvert::ConvertGroup(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == GROUP_MEMBERSHIP) {
         const std::string groups = "groups";
@@ -498,7 +498,7 @@ void ResultConvert::ConvertGroup(
 }
 
 void ResultConvert::ConvertImAddress(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == IM) {
         const std::string imAddresses = "imAddresses";
@@ -527,7 +527,7 @@ void ResultConvert::ConvertImAddress(
 }
 
 void ResultConvert::ConvertPhoneNumber(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == PHONE) {
         const std::string phoneNumbers = "phoneNumbers";
@@ -556,7 +556,7 @@ void ResultConvert::ConvertPhoneNumber(
 }
 
 void ResultConvert::ConvertPostalAddress(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == POSTAL_ADDRESS) {
         const std::string postalAddresses = "postalAddresses";
@@ -603,7 +603,7 @@ void ResultConvert::ConvertPostalAddress(
 }
 
 void ResultConvert::ConvertRelation(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == RELATION) {
         const std::string relations = "relations";
@@ -632,7 +632,7 @@ void ResultConvert::ConvertRelation(
 }
 
 void ResultConvert::ConvertSipAddress(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == SIP_ADDRESS) {
         const std::string sipAddresses = "sipAddresses";
@@ -661,7 +661,7 @@ void ResultConvert::ConvertSipAddress(
 }
 
 void ResultConvert::ConvertWebsite(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == WEBSITE) {
         const std::string websites = "websites";
@@ -690,7 +690,7 @@ void ResultConvert::ConvertWebsite(
 }
 
 void ResultConvert::ConvertNickName(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == NICKNAME) {
         const std::string nickName = "nickName";
@@ -706,7 +706,7 @@ void ResultConvert::ConvertNickName(
 }
 
 void ResultConvert::ConvertNote(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == NOTE) {
         const std::string note = "note";
@@ -722,7 +722,7 @@ void ResultConvert::ConvertNote(
 }
 
 void ResultConvert::ConvertOrganization(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == ORGANIZATION) {
         const std::string organization = "organization";

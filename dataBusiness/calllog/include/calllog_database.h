@@ -18,13 +18,14 @@
 
 #include <pthread.h>
 
-#include "data_ability_predicates.h"
+#include "datashare_predicates.h"
+#include "datashare_result_set.h"
+#include "datashare_values_bucket.h"
 #include "rdb_errno.h"
 #include "rdb_helper.h"
 #include "rdb_open_callback.h"
 #include "rdb_predicates.h"
 #include "rdb_store.h"
-#include "result_set.h"
 #include "value_object.h"
 
 #include "common.h"

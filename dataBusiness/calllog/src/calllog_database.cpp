@@ -258,8 +258,8 @@ void CallLogDataBase::QueryContactsByInsertCalls(OHOS::NativeRdb::ValuesBucket &
     selectionArgs.push_back(phoneNumber);
     std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
         contactsDataBase->contactStore_->QuerySql(sql, selectionArgs);
-    int resultSetNum = resultSet->GoToFirstRow();
-    if (resultSetNum == OHOS::NativeRdb::E_OK) {
+
+    if (resultSet->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
         std::string quickSearchKey;
         std::string name;
         resultSet->GetString(0, name);
