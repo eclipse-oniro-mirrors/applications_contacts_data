@@ -13,26 +13,25 @@
  * limitations under the License.
  */
 
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
+import dataShare from '@ohos.data.dataShare';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
 import common from './common.js';
 
-const URI_VOICEMAIL = "dataability:///com.ohos.voicemailability";
-const voicemailUri = "dataability:///com.ohos.voicemailability/calls/voicemail";
+const URI_VOICEMAIL = "datashare:///com.ohos.voicemailability";
+const voicemailUri = "datashare:///com.ohos.voicemailability/calls/voicemail";
 
 describe('VoicemailTest', function() {
     console.log("----------VoicemailTest is starting!----------");
 
     async function voicemailQuery(map, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info(tag + ':calllogInsertQuery start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info(tag + ':calllogInsertQuery start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -53,13 +52,13 @@ describe('VoicemailTest', function() {
 
     async function voicemailQueryForDelete(map, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info(tag + ': voicemailQueryForDelete start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info(tag + ': voicemailQueryForDelete start ! dataShareHelper = ' + dataShareHelper);
         let resultColumns = common.getCallLogResultColumns();
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.goToFirstRow() == false).assertTrue();
             console.info(tag + " :logMessage voicemailQueryForDelete: goToFirstRow " + resultSet.goToFirstRow());
             resultSet.close();
@@ -70,13 +69,13 @@ describe('VoicemailTest', function() {
 
     async function voicemailQueryError(map, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info(tag + ': voicemailQueryError start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info(tag + ': voicemailQueryError start ! dataShareHelper = ' + dataShareHelper);
         let resultColumns = common.getCallLogResultColumns();
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("phone_number", map.get("phone_number"));
         try {
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.goToFirstRow() == false).assertTrue();
             console.info(tag + " :logMessage voicemailQueryError: goToFirstRow " + resultSet.goToFirstRow());
             resultSet.close();
@@ -87,13 +86,13 @@ describe('VoicemailTest', function() {
 
     async function voicemailQueryForBatchInsert(array, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info(tag + ': voicemailQueryForBatchInsert start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info(tag + ': voicemailQueryForBatchInsert start ! dataShareHelper = ' + dataShareHelper);
         let resultColumns = common.getCallLogResultColumns();
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("phone_number", array[0].get("phone_number"));
         try {
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             var size = array.size();
             console.info(tag + ' : logMessage voicemailQueryForBatchInsert: size' + size);
             expect(resultSet.rowCount == size).assertEqual(true);
@@ -121,10 +120,10 @@ describe('VoicemailTest', function() {
 
     async function voiceMailDelete(tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
-        var deleteCode = await DAHelper.delete(voicemailUri, condition);
+        var deleteCode = await dataShareHelper.delete(voicemailUri, condition);
         console.info(tag + ': voiceMailDelete deleteCode = ' + deleteCode);
         expect(deleteCode == 0).assertTrue();
     }
@@ -136,11 +135,11 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_100", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_100 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, common.getVoiceMail());
+            var voicemailId = await dataShareHelper.insert(voicemailUri, common.getVoiceMail());
             console.info("logMessage voicemail_insert_test_100: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             var map = common.getVoiceMailMap();
@@ -161,13 +160,13 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_200", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_200 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(6);
         var stringValue = {"phone_number" : phoneNumber, "voice_status" : 1};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
+            var voicemailId = await dataShareHelper.insert(voicemailUri, stringValue)
             console.info("logMessage voicemail_insert_test_200: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             var map = new Map();
@@ -190,13 +189,13 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_100000", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_100000 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(6);
         var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
+            var voicemailId = await dataShareHelper.insert(voicemailUri, stringValue)
             console.info("logMessage voicemail_insert_test_100000: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             var map = new Map();
@@ -219,11 +218,11 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_update_test_1000", 0, async function(done) {
         console.info("------------logMessage voicemail_update_test_1000 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, common.getVoiceMail());
+            var voicemailId = await dataShareHelper.insert(voicemailUri, common.getVoiceMail());
             console.info("logMessage voicemail_update_test_1000: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await VoicemailUpdate();
@@ -236,10 +235,10 @@ describe('VoicemailTest', function() {
 
         async function VoicemailUpdate()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
-                var updateCode = await DAHelper.update(voicemailUri, common.getVoiceMailUpdate(), condition);
+                var updateCode = await dataShareHelper.update(voicemailUri, common.getVoiceMailUpdate(), condition);
                 console.info("logMessage voicemail_update_test_1000: updateCode = " + updateCode);
                 expect(updateCode == 0).assertTrue();
                 var map = common.getVoiceMailUpdateMap();
@@ -259,12 +258,12 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_update_test_900", 0, async function(done) {
         console.info("------------logMessage voicemail_update_test_900 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(7);
         var insertValues = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_update_test_900: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await VoicemailUpdate();
@@ -278,10 +277,10 @@ describe('VoicemailTest', function() {
         async function VoicemailUpdate()
         {
             var updateValues = {"voice_status" : 1};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
-                var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
+                var updateCode = await dataShareHelper.update(voicemailUri, updateValues, condition);
                 console.info("logMessage voicemail_update_test_900: updateCode = " + updateCode);
                 expect(updateCode == 0).assertTrue();
                 var map = new Map();
@@ -302,12 +301,12 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_delete_test_500", 0, async function(done) {
         console.info("-------------logMessage voicemail_delete_test_500 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(8);
         var insertValues = {"phone_number" : phoneNumber, "display_name" : "zhangming"};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_delete_test_500: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await VoicemailDelete();
@@ -320,10 +319,10 @@ describe('VoicemailTest', function() {
 
         async function VoicemailDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
-                var deleteCode = await DAHelper.delete(voicemailUri, condition);
+                var deleteCode = await dataShareHelper.delete(voicemailUri, condition);
                 console.info('logMessage voicemail_delete_test_500: deleteCode = ' + deleteCode);
                 expect(deleteCode == 0).assertTrue();
                 var map = new Map();
@@ -343,12 +342,12 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_update_test_600", 0, async function(done) {
         console.info("-------------logMessage voicemail_update_test_600 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(8);
         var insertValues1 = {"phone_number" : phoneNumber, "voice_status" : 1};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues1);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues1);
             console.info("logMessage voicemail_update_test_600: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await VoicemailUpdate();
@@ -362,10 +361,10 @@ describe('VoicemailTest', function() {
         async function VoicemailUpdate()
         {
             var updateValues = {"voice_status" : 0};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
-                var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
+                var updateCode = await dataShareHelper.update(voicemailUri, updateValues, condition);
                 console.info('logMessage voicemail_update_test_600: deleteCode = ' + updateCode);
                 expect(updateCode == 0).assertTrue();
                 var map = new Map();
@@ -386,8 +385,8 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_batchInsert_test_1800", 0, async function(done) {
         console.info("-------------logMessage voicemail_batchInsert_test_1800 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(4);
         var insertValuesOne = {"phone_number" : phoneNumber, "display_name" : "xiaoming"};
         var insertValuesTwo = {"phone_number" : phoneNumber, "display_name" : "xiaohei"};
@@ -401,7 +400,7 @@ describe('VoicemailTest', function() {
         listAddBluk[3] = insertValuesFour;
         listAddBluk[4] = insertValuesFive;
         try {
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
             console.info("logMessage voicemail_batchInsert_test_1800: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == 0).assertTrue();
             await voiceMailDelete("voicemail_batchInsert_test_1800");
@@ -419,8 +418,8 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_batchInsert_test_1700", 0, async function(done) {
         console.info("-------------logMessage voicemail_batchInsert_test_1700 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(3);
         var insertValuesOne = {"phone_number" : phoneNumber, "display_name" : "xiaoming", "voice_status" : 0};
         var insertValuesTwo = {"phone_number" : phoneNumber, "display_name" : "xiaohei", "voice_status" : 1};
@@ -434,7 +433,7 @@ describe('VoicemailTest', function() {
         listAddBluk[3] = insertValuesFour;
         listAddBluk[4] = insertValuesFive;
         try {
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
             console.info("logMessage voicemail_batchInsert_test_1700: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == 0).assertTrue();
             var array = common.getVoiceMailBatchInsert();
@@ -454,12 +453,12 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_query_test_1400", 0, async function(done) {
         console.info("------------voicemail_query_test_1400 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(9);
         var insertValues = {"phone_number" : phoneNumber, "display_name" : "daming"};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_query_test_1400: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await VoicemailQuery();
@@ -472,10 +471,10 @@ describe('VoicemailTest', function() {
         async function VoicemailQuery()
         {
             var resultColumns = [ "id", "display_name", "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
-                var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info('voicemail_query_test_1400 id = ' + resultSet.getString(0));
@@ -501,12 +500,12 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_query_test_1300", 0, async function(done) {
         console.info("------------voicemail_query_test_1300  is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(9);
         var insertValues = {"phone_number" : phoneNumber, "display_name" : "xiaoming", "voice_status" : 1};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_query_test_1300: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await VoicemailQuery();
@@ -519,12 +518,12 @@ describe('VoicemailTest', function() {
         async function VoicemailQuery()
         {
             var resultColumns = [ "id", "display_name", "phone_number" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("voice_status", "1");
             condition.and();
             condition.equalTo("phone_number", phoneNumber);
             try {
-                var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info('voicemail_query_test_1300 id = ' + resultSet.getString(0));
@@ -550,12 +549,12 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_insert_test_300", 0, async function(done) {
         console.info("------------abnormal_voicemail_insert_test_300 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {"phone_numbers" : phoneNumber, "display_name" : "xiaoming"};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_insert_test_300: voicemialId = " + voicemailId);
             expect(voicemailId == -1).assertTrue();
             done();
@@ -572,14 +571,14 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_insert_test_400", 0, async function(done) {
         console.info("------------abnormal_voicemail_insert_test_400 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var errorUri = "dataability:///com.ohos.calllogability/calls/voicemails";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        var errorUri = "datashare:///com.ohos.calllogability/calls/voicemails";
         
         var phoneNumber = randomNum(9);
         var insertValues = {"phone_number" : phoneNumber, "display_name" : "xiaoming"};
         try {
-            var voicemialId = await DAHelper.insert(errorUri, insertValues)
+            var voicemialId = await dataShareHelper.insert(errorUri, insertValues)
             console.info("logMessage abnormal_voicemail_insert_test_400: voicemialId = " + voicemialId);
             expect(voicemialId == -1).assertTrue();
             var map = new Map();
@@ -599,12 +598,12 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_update_test_1100", 0, async function(done) {
         console.info("------------abnormal_voicemail_update_test_1100 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(10);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_update_test_1100: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await AbnormalUpdate();
@@ -618,10 +617,10 @@ describe('VoicemailTest', function() {
         {
             var phoneNumber_Test = randomNum(15);
             var updateValues = {"phone_numbers" : phoneNumber_Test};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", voicemailId.toString());
             try {
-                var updataCode = await DAHelper.update(voicemailUri, updateValues, condition);
+                var updataCode = await dataShareHelper.update(voicemailUri, updateValues, condition);
                 console.info("logMessage abnormal_voicemail_update_test_1100: updataCode = " + updataCode);
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
@@ -641,13 +640,13 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_update_test_1200", 0, async function(done) {
         console.info("------------abnormal_voicemail_update_test_1200 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var errorUri = "dataability:///com.ohos.calllogability/calls/voicemails";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        var errorUri = "datashare:///com.ohos.calllogability/calls/voicemails";
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_update_test_1200: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await AbnormalUpdate();
@@ -662,10 +661,10 @@ describe('VoicemailTest', function() {
         {
             var phoneNumber_Test = randomNum(6);
             var updateValues = {"phone_number" : phoneNumber_Test};
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
-                var updataCode = await DAHelper.update(errorUri, updateValues, condition)
+                var updataCode = await dataShareHelper.update(errorUri, updateValues, condition)
                 console.info("logMessage abnormal_voicemail_update_test_1200: updataCode = " + updataCode);
                 expect(updataCode == -1).assertTrue();
                 var map = new Map();
@@ -685,12 +684,12 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_delete_test_700", 0, async function(done) {
         console.info("------------abnormal_voicemail_delete_test_700 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_delete_test_700: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await AbnormalDelete();
@@ -703,10 +702,10 @@ describe('VoicemailTest', function() {
 
         async function AbnormalDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", voicemailId.toString());
             try {
-                var deleteCode = await DAHelper.delete(voicemailUri, condition);
+                var deleteCode = await dataShareHelper.delete(voicemailUri, condition);
                 console.info("logMessage abnormal_voicemail_delete_test_700: deleteCode = " + deleteCode);
                 expect(deleteCode == -1).assertTrue();
             } catch (error) {
@@ -723,13 +722,13 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_delete_test_800", 0, async function(done) {
         console.info("------------abnormal_voicemail_delete_test_800 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        var errorUri = "dataability:///com.ohos.calllogability/calls/voicemails";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        var errorUri = "datashare:///com.ohos.calllogability/calls/voicemails";
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_delete_test_800: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await AbnormalDelete();
@@ -742,10 +741,10 @@ describe('VoicemailTest', function() {
 
         async function AbnormalDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             try {
-                var deleteCode = await DAHelper.delete(errorUri, condition);
+                var deleteCode = await dataShareHelper.delete(errorUri, condition);
                 console.info("logMessage abnormal_voicemail_delete_test_800: deleteCode = " + deleteCode);
                 expect(deleteCode == -1).assertTrue();
             } catch (error) {
@@ -762,12 +761,12 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_query_test_1500", 0, async function(done) {
         console.info("------------abnormal_voicemail_query_test_1500 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(6);
         var insertValues = {"phone_number" : phoneNumber};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_query_test_1500: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             await AbnormalQuery();
@@ -782,10 +781,10 @@ describe('VoicemailTest', function() {
         {
             var resultColumns = [ "id", "phone_number" ];
 
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", voicemailId.toString());
             try {
-                var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition)
+                var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition)
                 console.info('logMessage abnormal_voicemail_query_test_1500: goToFirstRow' + resultSet.goToFirstRow());
                 expect(resultSet.goToFirstRow()).assertEqual(false);
                 resultSet.close();
@@ -803,8 +802,8 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_batchinsert_test_1900", 0, async function(done) {
         console.info("--------logMessage abnormal_voicemail_batchinsert_test_1900 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var phoneNumber = randomNum(9);
         var phoneNumber_Test = randomNum(6);
         var addBulk_value1 = {"phone_number" : phoneNumber, "ring_duration" : "500"};
@@ -819,7 +818,7 @@ describe('VoicemailTest', function() {
         listAddBluk[3] = addBulk_value4;
         listAddBluk[4] = addBulk_value5;
         try {
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk)
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk)
             console.info("logMessage abnormal_voicemail_batchinsert_test_1900: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == -1).assertTrue();
             done();
@@ -836,10 +835,10 @@ describe('VoicemailTest', function() {
      */
     it("voiceMail_delete_test_2000", 0, async function(done) {
         console.info("--------logMessage voiceMail_delete_test_2000 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var voiceMailId = await DAHelper.insert(voicemailUri, common.getVoiceMail());
+            var voiceMailId = await dataShareHelper.insert(voicemailUri, common.getVoiceMail());
             console.info("logMessage voiceMail_delete_test_2000: voiceMailId = " + voiceMailId);
             expect(voiceMailId > 0).assertTrue();
             var map = common.getVoiceMailMap()
@@ -853,9 +852,9 @@ describe('VoicemailTest', function() {
         async function executeBatch()
         {
             console.info("logMessage voiceMail_delete_test_2000:  executeBatch start ");
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voiceMailId.toString());
-            DAHelper.executeBatch(URI_VOICEMAIL, [ {
+            dataShareHelper.executeBatch(URI_VOICEMAIL, [ {
                 uri : voicemailUri,
                 type : featureAbility.DataAbilityOperationType.TYPE_DELETE,
                 predicates : condition,
@@ -880,10 +879,10 @@ describe('VoicemailTest', function() {
      */
     it("voiceMail_update_test_2100", 0, async function(done) {
         console.info("--------logMessage voiceMail_update_test_2100 is starting!------------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var voiceMailId = await DAHelper.insert(voicemailUri, common.getVoiceMail());
+            var voiceMailId = await dataShareHelper.insert(voicemailUri, common.getVoiceMail());
             console.info("logMessage voiceMail_update_test_2100: voiceMailId = " + voiceMailId);
             expect(voiceMailId > 0).assertTrue();
             var map = common.getVoiceMailMap();
@@ -899,9 +898,9 @@ describe('VoicemailTest', function() {
             var phoneNumber = randomNum(8);
             var updateValues = {"phone_number" : phoneNumber};
             console.info("logMessage voiceMail_update_test_2100:  executeBatch start ");
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voiceMailId.toString());
-            DAHelper.executeBatch(URI_VOICEMAIL, [ {
+            dataShareHelper.executeBatch(URI_VOICEMAIL, [ {
                 uri : voicemailUri,
                 type : featureAbility.DataAbilityOperationType.TYPE_UPDATE,
                 valuesBucket : updateValues,
@@ -927,13 +926,13 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_2200", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_2200 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(15);
         var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
+            var voicemailId = await dataShareHelper.insert(voicemailUri, stringValue)
             console.info("logMessage voicemail_insert_test_2200: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
             var map = new Map();
@@ -957,23 +956,23 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_2300", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_2300 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(11);
         var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
-            var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue)
-            var voicemailIdTwo = await DAHelper.insert(voicemailUri, stringValue)
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            var voicemailId = await dataShareHelper.insert(voicemailUri, stringValue)
+            var voicemailIdOne = await dataShareHelper.insert(voicemailUri, stringValue)
+            var voicemailIdTwo = await dataShareHelper.insert(voicemailUri, stringValue)
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             condition.or();
             condition.equalTo("id", voicemailIdOne.toString());
-            var deleteCode = await DAHelper.delete(voicemailUri, condition);
+            var deleteCode = await dataShareHelper.delete(voicemailUri, condition);
             console.info("logMessage voicemail_insert_test_2300: deleteCode = " + deleteCode);
             var resultColumns = [];
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.rowCount == 0).assertTrue();
             resultSet.close();
             await voiceMailDelete("voicemail_insert_test_2300");
@@ -992,22 +991,22 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_insert_test_2400", 0, async function(done) {
         console.info("---------logMessage voicemail_insert_test_2400 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber_Test = randomNum(8);
         var stringValue = {"phone_number" : phoneNumber_Test, "voice_status" : 0};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
-            var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue)
-            var voicemailIdTwo = await DAHelper.insert(voicemailUri, stringValue)
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            var voicemailId = await dataShareHelper.insert(voicemailUri, stringValue)
+            var voicemailIdOne = await dataShareHelper.insert(voicemailUri, stringValue)
+            var voicemailIdTwo = await dataShareHelper.insert(voicemailUri, stringValue)
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             condition.or();
             condition.equalTo("id", voicemailIdOne.toString());
             var phoneNumber = randomNum(13);
             var updateValue = {"phone_number" : phoneNumber, "voice_status" : 1};
-            var updateCode = await DAHelper.update(voicemailUri, updateValue, condition);
+            var updateCode = await dataShareHelper.update(voicemailUri, updateValue, condition);
             console.info("logMessage voicemail_insert_test_2400: deleteCode = " + updateCode);
 
             var map = new Map();
@@ -1036,15 +1035,15 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_query_test_2500", 0, async function(done) {
         console.info("---------logMessage voicemail_query_test_2500 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(10);
         var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, stringValue)
-            var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue)
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            var voicemailId = await dataShareHelper.insert(voicemailUri, stringValue)
+            var voicemailIdOne = await dataShareHelper.insert(voicemailUri, stringValue)
+            let condition = new dataShare.DataSharePredicates();
             condition.beginWrap();
             condition.equalTo("id", voicemailId.toString());
             condition.or();
@@ -1053,7 +1052,7 @@ describe('VoicemailTest', function() {
             condition.and();
             condition.equalTo("voice_status", "0");
             var resultColumns = [];
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.rowCount == 2).assertTrue();
             resultSet.close();
             await voiceMailDelete("voicemail_query_test_2500");
@@ -1071,19 +1070,19 @@ describe('VoicemailTest', function() {
      */
     it("voicemail_query_test_2600", 0, async function(done) {
         console.info("---------logMessage voicemail_query_test_2600 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         var phoneNumber = randomNum(12);
         var stringValue = {"phone_number" : phoneNumber, "voice_status" : 0};
         try {
-            var voicemailId = await DAHelper.insert(voicemailUri, stringValue);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, stringValue);
             console.info('voicemail_query_test_2600 voicemailId = ' + voicemailId);
-            var voicemailIdOne = await DAHelper.insert(voicemailUri, stringValue);
+            var voicemailIdOne = await dataShareHelper.insert(voicemailUri, stringValue);
             console.info('voicemail_query_test_2600  voicemailIdOne = ' + voicemailIdOne);
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             var resultColumns = [];
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.rowCount == 2).assertTrue();
             resultSet.close();
             await voiceMailDelete("voicemail_query_test_2600");
@@ -1101,16 +1100,16 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_insert_test_2700", 0, async function(done) {
         console.info("---------logMessage abnormal_voicemail_insert_test_2700 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
             var insertValues = {display_name : "2700name", voice_statuss : "1"};
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             expect(voicemailId == -1).assertTrue();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             var resultColumns = [];
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.rowCount == 0).assertTrue();
             await voiceMailDelete("abnormal_voicemail_insert_test_2700");
             done();
@@ -1126,17 +1125,17 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_delete_test_2800", 0, async function(done) {
         console.info("---------logMessage abnormal_voicemail_delete_test_2800 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
             var insertValues = {display_name : "2800name", voice_status : "1"};
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             expect(voicemailId > 0).assertTrue();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             var updateValues = {display_name : "2800name", voice_statuss : "0"};
-            var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(voicemailUri, updateValues, condition);
             expect(updateCode == -1).assertTrue();
             var map = new Map();
             map.set("id", voicemailId.toString());
@@ -1157,17 +1156,17 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_update_test_2900", 0, async function(done) {
         console.info("---------logMessage abnormal_voicemail_update_test_2900 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
             var insertValues = {display_name : "2900name", voice_status : "1"};
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             expect(voicemailId > 0).assertTrue();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
             var updateValues = {display_name : "2900name", voice_statuss : "0"};
-            var updateCode = await DAHelper.update(voicemailUri, updateValues, condition);
+            var updateCode = await dataShareHelper.update(voicemailUri, updateValues, condition);
             expect(updateCode == -1).assertTrue();
             var map = new Map();
             map.set("id", voicemailId.toString());
@@ -1188,17 +1187,17 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_update_test_3000", 0, async function(done) {
         console.info("---------logMessage abnormal_voicemail_update_test_3000 is starting!---------")
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_VOICEMAIL)
         try {
             var insertValues = {display_name : "2900name", voice_status : "1"};
-            var voicemailId = await DAHelper.insert(voicemailUri, insertValues);
+            var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             expect(voicemailId > 0).assertTrue();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", voicemailId.toString());
             var resultColumns = [];
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.rowCount == -1).assertTrue();
             resultSet.close();
             await voiceMailDelete("abnormal_voicemail_update_test_3000");
@@ -1215,8 +1214,8 @@ describe('VoicemailTest', function() {
      */
     it("abnormal_voicemail_batchInsert_test_3100", 0, async function(done) {
         console.info("-------------logMessage abnormal_voicemail_batchInsert_test_3100 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertValuesOne = {"voice_status" : "0", "display_name" : "xiaoming"};
         var insertValuesTwo = {"voice_status" : "1", "display_name" : "xiaohei"};
@@ -1230,12 +1229,12 @@ describe('VoicemailTest', function() {
         listAddBluk[3] = insertValuesFour;
         listAddBluk[4] = insertValuesFive;
         try {
-            var batchInsertCode = await DAHelper.batchInsert(voicemailUri, listAddBluk);
+            var batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
             console.info("logMessage abnormal_voicemail_batchInsert_test_3100: batchInsertCode = " + batchInsertCode);
             expect(batchInsertCode == -1).assertTrue();
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             var resultColumns = [];
-            var resultSet = await DAHelper.query(voicemailUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
             expect(resultSet.rowCount == 0).assertTrue();
             resultSet.close();
             done();
@@ -1246,11 +1245,11 @@ describe('VoicemailTest', function() {
     });
 
     afterAll(async function() {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_VOICEMAIL);
-        console.info('voicemai afterAll logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
+        console.info('voicemai afterAll logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
-        var deleteCode = await DAHelper.delete(voicemailUri, condition);
+        var deleteCode = await dataShareHelper.delete(voicemailUri, condition);
         console.info('voicemai afterAll logMessage deleteCode = ' + deleteCode);
     });
 })

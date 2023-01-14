@@ -430,7 +430,7 @@ std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> MergerContacts::SelectCandi
  * @return The result returned by the ManualMerge operation
  */
 int MergerContacts::ReContactMerge(
-    std::shared_ptr<OHOS::NativeRdb::RdbStore> store, const OHOS::NativeRdb::DataAbilityPredicates &predicates)
+    std::shared_ptr<OHOS::NativeRdb::RdbStore> store, const DataShare::DataSharePredicates &predicates)
 {
     HILOG_INFO("MergerContacts::ReContactMerge is starting");
     std::vector<std::string> whereArgs = predicates.GetWhereArgs();
@@ -444,9 +444,8 @@ int MergerContacts::ReContactMerge(
     std::vector<std::set<int>> selectedIds = SelectIdsByName(store, ids);
     int minId = 0;
     bool isModeHasError = false;
-    std::set<int> currentIds;
     for (auto it = selectedIds.begin(); it != selectedIds.end(); ++it) {
-        currentIds = *it;
+        std::set<int> currentIds = *it;
         std::set<int> handledIds = HandleIds(store, currentIds);
         HILOG_INFO("ReContactMerge size = :%{public}zu", handledIds.size());
         if (handledIds.size() == 1) {

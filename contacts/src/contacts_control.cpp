@@ -27,112 +27,112 @@ ContactsControl::~ContactsControl()
 {
 }
 
-int64_t ContactsControl::RawContactInsert(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-    OHOS::NativeRdb::ValuesBucket rawContactValues)
+int ContactsControl::RawContactInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+    DataShare::DataShareValuesBucket rawContactValues)
 {
     int code = 0;
-    OHOS::Uri uriRawContact("dataability:///com.ohos.contactsdataability/contacts/raw_contact");
-    code = dataAbilityHelper->Insert(uriRawContact, rawContactValues);
+    OHOS::Uri uriRawContact("datashare:///com.ohos.contactsdataability/contacts/raw_contact");
+    code = dataShareHelper->Insert(uriRawContact, rawContactValues);
     HILOG_INFO(" ContactsControl::RawContactInsert insert code %{public}d", code);
     rawContactValues.Clear();
     return code;
 }
 
-int ContactsControl::ContactDataInsert(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-    std::vector<OHOS::NativeRdb::ValuesBucket> contactDataValues)
+int ContactsControl::ContactDataInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+    std::vector<DataShare::DataShareValuesBucket> contactDataValues)
 {
     int code = 0;
-    OHOS::Uri uriContactData("dataability:///com.ohos.contactsdataability/contacts/contact_data");
-    code = dataAbilityHelper->BatchInsert(uriContactData, contactDataValues);
+    OHOS::Uri uriContactData("datashare:///com.ohos.contactsdataability/contacts/contact_data");
+    code = dataShareHelper->BatchInsert(uriContactData, contactDataValues);
     HILOG_INFO(" ContactsControl::ContactDataInsert insert code %{public}d", code);
     contactDataValues.clear();
     return code;
 }
-int ContactsControl::ContactDataDelete(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-    OHOS::NativeRdb::DataAbilityPredicates predicates)
+int ContactsControl::ContactDataDelete(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+    DataShare::DataSharePredicates predicates)
 {
     int code = 0;
-    OHOS::Uri uriContactData("dataability:///com.ohos.contactsdataability/contacts/contact_data");
-    code = dataAbilityHelper->Delete(uriContactData, predicates);
+    OHOS::Uri uriContactData("datashare:///com.ohos.contactsdataability/contacts/contact_data");
+    code = dataShareHelper->Delete(uriContactData, predicates);
     HILOG_INFO(" ContactsControl::ContactDataDelete insert code %{public}d", code);
     return code;
 }
 
-int ContactsControl::RawContactUpdate(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-    OHOS::NativeRdb::ValuesBucket updateValues, OHOS::NativeRdb::DataAbilityPredicates predicates)
+int ContactsControl::RawContactUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+    DataShare::DataShareValuesBucket updateValues, DataShare::DataSharePredicates predicates)
 {
     int code = 0;
-    OHOS::Uri uriRawContact("dataability:///com.ohos.contactsdataability/contacts/raw_contact");
-    code = dataAbilityHelper->Update(uriRawContact, updateValues, predicates);
+    OHOS::Uri uriRawContact("datashare:///com.ohos.contactsdataability/contacts/raw_contact");
+    code = dataShareHelper->Update(uriRawContact, predicates, updateValues);
     return code;
 }
 
-int ContactsControl::ContactDataUpdate(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-    OHOS::NativeRdb::ValuesBucket updateValues, OHOS::NativeRdb::DataAbilityPredicates predicates)
+int ContactsControl::ContactDataUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+    DataShare::DataShareValuesBucket updateValues, DataShare::DataSharePredicates predicates)
 {
     int code = 0;
-    OHOS::Uri uriContactData("dataability:///com.ohos.contactsdataability/contacts/contact_data");
-    code = dataAbilityHelper->Update(uriContactData, updateValues, predicates);
+    OHOS::Uri uriContactData("datashare:///com.ohos.contactsdataability/contacts/contact_data");
+    code = dataShareHelper->Update(uriContactData, predicates, updateValues);
     return code;
 }
 
-int ContactsControl::ContactDelete(std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper,
-    OHOS::NativeRdb::DataAbilityPredicates predicates)
+int ContactsControl::ContactDelete(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+    DataShare::DataSharePredicates predicates)
 {
     int code = 0;
-    OHOS::Uri uriContact("dataability:///com.ohos.contactsdataability/contacts/contact");
-    code = dataAbilityHelper->Delete(uriContact, predicates);
+    OHOS::Uri uriContact("datashare:///com.ohos.contactsdataability/contacts/contact");
+    code = dataShareHelper->Delete(uriContact, predicates);
     return code;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsControl::HolderQuery(
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-    OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::HolderQuery(
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+    DataShare::DataSharePredicates predicates)
 {
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
-    OHOS::Uri uriContact("dataability:///com.ohos.contactsdataability/contacts/account");
-    resultSet = dataAbilityHelper->Query(uriContact, columns, predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet;
+    OHOS::Uri uriContact("datashare:///com.ohos.contactsdataability/contacts/account");
+    resultSet = dataShareHelper->Query(uriContact, predicates, columns);
     return resultSet;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsControl::ContactQuery(
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-    OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::ContactQuery(
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+    DataShare::DataSharePredicates predicates)
 {
     HILOG_INFO("ContactsControl::ContactQuery is start");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
-    OHOS::Uri uriContact("dataability:///com.ohos.contactsdataability/contacts/contact_data");
-    resultSet = dataAbilityHelper->Query(uriContact, columns, predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet;
+    OHOS::Uri uriContact("datashare:///com.ohos.contactsdataability/contacts/contact_data");
+    resultSet = dataShareHelper->Query(uriContact, predicates, columns);
     return resultSet;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsControl::ContactDataQuery(
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-    OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::ContactDataQuery(
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+    DataShare::DataSharePredicates predicates)
 {
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
-    OHOS::Uri uriContactData("dataability:///com.ohos.contactsdataability/contacts/contact_data");
-    resultSet = dataAbilityHelper->Query(uriContactData, columns, predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet;
+    OHOS::Uri uriContactData("datashare:///com.ohos.contactsdataability/contacts/contact_data");
+    resultSet = dataShareHelper->Query(uriContactData, predicates, columns);
     return resultSet;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsControl::GroupsQuery(
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-    OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::GroupsQuery(
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+    DataShare::DataSharePredicates predicates)
 {
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
-    OHOS::Uri uriGroups("dataability:///com.ohos.contactsdataability/contacts/groups");
-    resultSet = dataAbilityHelper->Query(uriGroups, columns, predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet;
+    OHOS::Uri uriGroups("datashare:///com.ohos.contactsdataability/contacts/groups");
+    resultSet = dataShareHelper->Query(uriGroups, predicates, columns);
     return resultSet;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsControl::MyCardQuery(
-    std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> dataAbilityHelper, std::vector<std::string> columns,
-    OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::MyCardQuery(
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+    DataShare::DataSharePredicates predicates)
 {
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
-    OHOS::Uri uriProfileContact("dataability:///com.ohos.contactsdataability/profile/contact_data");
-    resultSet = dataAbilityHelper->Query(uriProfileContact, columns, predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet;
+    OHOS::Uri uriProfileContact("datashare:///com.ohos.contactsdataability/profile/contact_data");
+    resultSet = dataShareHelper->Query(uriProfileContact, predicates, columns);
     return resultSet;
 }
 } // namespace ContactsApi

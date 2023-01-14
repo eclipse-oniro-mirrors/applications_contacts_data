@@ -29,44 +29,44 @@ ContactGroupTest::~ContactGroupTest()
 
 void ContactGroupTest::ClearData()
 {
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     std::string groups = "groups";
     int deleteCode = ContactDelete(groups, predicates);
     EXPECT_EQ(deleteCode, 0);
 }
 
-int64_t ContactGroupTest::GroupsInsert(std::string groupName, OHOS::NativeRdb::ValuesBucket &groupValues)
+int64_t ContactGroupTest::GroupsInsert(std::string groupName, OHOS::DataShare::DataShareValuesBucket &groupValues)
 {
     OHOS::Uri uriGroups(ContactsUri::GROUPS);
-    groupValues.PutString("group_name", groupName);
+    groupValues.Put("group_name", groupName);
     int64_t code = contactsDataAbility.Insert(uriGroups, groupValues);
     return code;
 }
 
-int ContactGroupTest::ContactUpdate(const std::string &tableName, OHOS::NativeRdb::ValuesBucket updateValues,
-    OHOS::NativeRdb::DataAbilityPredicates predicates)
+int ContactGroupTest::ContactUpdate(const std::string &tableName, OHOS::DataShare::DataShareValuesBucket updateValues,
+    OHOS::DataShare::DataSharePredicates predicates)
 {
     int code = 0;
     if (tableName == ContactTabName::RAW_CONTACT) {
         OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-        code = contactsDataAbility.Update(uriRawContact, updateValues, predicates);
+        code = contactsDataAbility.Update(uriRawContact, predicates, updateValues);
     } else if (tableName == ContactTabName::CONTACT_DATA) {
         OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-        code = contactsDataAbility.Update(uriContactData, updateValues, predicates);
+        code = contactsDataAbility.Update(uriContactData, predicates, updateValues);
     } else if (tableName == ContactTabName::GROUPS) {
         OHOS::Uri uriGroups(ContactsUri::GROUPS);
-        code = contactsDataAbility.Update(uriGroups, updateValues, predicates);
+        code = contactsDataAbility.Update(uriGroups, predicates, updateValues);
     } else if (tableName == ContactTabName::CONTACT_BLOCKLIST) {
         OHOS::Uri uriBlocklist(ContactsUri::BLOCKLIST);
-        code = contactsDataAbility.Update(uriBlocklist, updateValues, predicates);
+        code = contactsDataAbility.Update(uriBlocklist, predicates, updateValues);
     } else {
         HILOG_ERROR("ContactsDataAbility ====>no match uri action");
     }
     return code;
 }
 
-int ContactGroupTest::ContactDelete(const std::string &tableName, OHOS::NativeRdb::DataAbilityPredicates predicates)
+int ContactGroupTest::ContactDelete(const std::string &tableName, OHOS::DataShare::DataSharePredicates predicates)
 {
     int code = 0;
     if (tableName == ContactTabName::RAW_CONTACT) {
@@ -90,31 +90,31 @@ int ContactGroupTest::ContactDelete(const std::string &tableName, OHOS::NativeRd
     return code;
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactGroupTest::ContactQuery(
-    const std::string &tableName, std::vector<std::string> columns, OHOS::NativeRdb::DataAbilityPredicates predicates)
+std::shared_ptr<OHOS::DataShare::DataShareResultSet> ContactGroupTest::ContactQuery(
+    const std::string &tableName, std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates)
 {
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet;
     if (tableName == ContactTabName::RAW_CONTACT) {
         OHOS::Uri uriRawContact(ContactsUri::RAW_CONTACT);
-        resultSet = contactsDataAbility.Query(uriRawContact, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriRawContact, predicates, columns);
     } else if (tableName == ContactTabName::CONTACT_DATA) {
         OHOS::Uri uriContactData(ContactsUri::CONTACT_DATA);
-        resultSet = contactsDataAbility.Query(uriContactData, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriContactData, predicates, columns);
     } else if (tableName == ContactTabName::CONTACT) {
         OHOS::Uri uriContact(ContactsUri::CONTACT);
-        resultSet = contactsDataAbility.Query(uriContact, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriContact, predicates, columns);
     } else if (tableName == ContactTabName::GROUPS) {
         OHOS::Uri uriGroups(ContactsUri::GROUPS);
-        resultSet = contactsDataAbility.Query(uriGroups, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriGroups, predicates, columns);
     } else if (tableName == ContactTabName::CONTACT_BLOCKLIST) {
         OHOS::Uri uriBlocklist(ContactsUri::BLOCKLIST);
-        resultSet = contactsDataAbility.Query(uriBlocklist, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriBlocklist, predicates, columns);
     } else if (tableName == ContactTabName::DELETED_RAW_CONTACT) {
         OHOS::Uri uriDeletedRawContact(ContactsUri::DELETED_RAW_CONTACT);
-        resultSet = contactsDataAbility.Query(uriDeletedRawContact, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriDeletedRawContact, predicates, columns);
     } else if (tableName == ContactTabName::SEARCH_CONTACT) {
         OHOS::Uri uriSearchContact(ContactsUri::SEARCH);
-        resultSet = contactsDataAbility.Query(uriSearchContact, columns, predicates);
+        resultSet = contactsDataAbility.Query(uriSearchContact, predicates, columns);
     } else {
         HILOG_ERROR("ContactsDataAbility ====>no match uri action");
     }
@@ -122,10 +122,11 @@ std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactGroupTest::ContactQu
 }
 
 void ContactGroupTest::QueryAndExpectResult(const std::string &tableName,
-    OHOS::NativeRdb::DataAbilityPredicates predicates, OHOS::NativeRdb::ValuesBucket &values, std::string testName)
+    OHOS::DataShare::DataSharePredicates predicates, OHOS::DataShare::DataShareValuesBucket &values,
+    std::string testName)
 {
     std::vector<std::string> columns;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = ContactQuery(tableName, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(tableName, columns, predicates);
     CheckResultSet(values, resultSet, testName);
 }
 
@@ -159,28 +160,28 @@ void ContactGroupTest::MergeColumns(
  * @params columnsEnd column end index
  * @return ValuesBucket
  */
-OHOS::NativeRdb::ValuesBucket ContactGroupTest::GetAllColumnsValues(
+OHOS::DataShare::DataShareValuesBucket ContactGroupTest::GetAllColumnsValues(
     std::vector<std::string> &columnsInt, std::vector<std::string> &columnsStr)
 {
-    OHOS::NativeRdb::ValuesBucket valuesBucket;
+    OHOS::DataShare::DataShareValuesBucket valuesBucket;
     int randomInt = 0;
     int columnsIntSize = columnsInt.size();
     for (int i = 0; i < columnsIntSize; i++) {
         randomInt = ContactsRand();
         HILOG_INFO("rand=%{public}d", randomInt);
-        valuesBucket.PutInt(columnsInt[i], randomInt);
+        valuesBucket.Put(columnsInt[i], randomInt);
     }
     std::string randomStr = "";
     int columnsStringSize = columnsStr.size();
     for (int i = 0; i < columnsStringSize; i++) {
         randomStr = columnsStr[i] + std::to_string(ContactsRand());
-        valuesBucket.PutString(columnsStr[i], randomStr);
+        valuesBucket.Put(columnsStr[i], randomStr);
     }
 
     return valuesBucket;
 }
 
-int64_t ContactGroupTest::GroupsInsertValues(OHOS::NativeRdb::ValuesBucket &values)
+int64_t ContactGroupTest::GroupsInsertValues(OHOS::DataShare::DataShareValuesBucket &values)
 {
     OHOS::Uri uriGroups(ContactsUri::GROUPS);
     int64_t code = contactsDataAbility.Insert(uriGroups, values);
@@ -198,12 +199,12 @@ int64_t ContactGroupTest::GroupsInsertValues(OHOS::NativeRdb::ValuesBucket &valu
 HWTEST_F(ContactGroupTest, groups_Insert_test_100, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- groups_Insert_test_100 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket valuesGroup;
+    OHOS::DataShare::DataShareValuesBucket valuesGroup;
     int64_t groupId = GroupsInsert("personnel", valuesGroup);
-    HILOG_INFO("groups_Insert_test_100: groupId = %{public}lld", groupId);
+    HILOG_INFO("groups_Insert_test_100: groupId = %{public}ld", groupId);
     EXPECT_GT(groupId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupId));
     std::string groups = ContactTabName::GROUPS;
     QueryAndExpectResult(groups, predicates, valuesGroup, "groups_Insert_test_100");
@@ -221,30 +222,30 @@ HWTEST_F(ContactGroupTest, groups_Insert_test_100, testing::ext::TestSize.Level1
 HWTEST_F(ContactGroupTest, groups_Insert_test_200, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- groups_Insert_test_200 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket valuesGroup;
+    OHOS::DataShare::DataShareValuesBucket valuesGroup;
     int64_t groupId = GroupsInsert("Test a set", valuesGroup);
-    HILOG_INFO("groups_Insert_test_200: groupId = %{public}lld", groupId);
+    HILOG_INFO("groups_Insert_test_200: groupId = %{public}ld", groupId);
     EXPECT_GT(groupId, 0);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupId));
     std::string groups = ContactTabName::GROUPS;
     QueryAndExpectResult(groups, predicates, valuesGroup, "groups_Insert_test_200");
 
     valuesGroup.Clear();
     groupId = GroupsInsert("Test group two", valuesGroup);
-    HILOG_INFO("groups_Insert_test_200: groupId = %{public}lld", groupId);
+    HILOG_INFO("groups_Insert_test_200: groupId = %{public}ld", groupId);
     EXPECT_GT(groupId, 0);
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(groupId));
-    QueryAndExpectResult(groups, predicates, valuesGroup, "groups_Insert_test_200");
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(groupId));
+    QueryAndExpectResult(groups, predicates2, valuesGroup, "groups_Insert_test_200");
 
     valuesGroup.Clear();
     groupId = GroupsInsert("Test three groups", valuesGroup);
-    HILOG_INFO("groups_Insert_test_200: groupId = %{public}lld", groupId);
+    HILOG_INFO("groups_Insert_test_200: groupId = %{public}ld", groupId);
     EXPECT_GT(groupId, 0);
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(groupId));
-    QueryAndExpectResult(groups, predicates, valuesGroup, "groups_Insert_test_200");
+    OHOS::DataShare::DataSharePredicates predicates3;
+    predicates3.EqualTo("id", std::to_string(groupId));
+    QueryAndExpectResult(groups, predicates3, valuesGroup, "groups_Insert_test_200");
     ClearData();
 }
 
@@ -264,14 +265,14 @@ HWTEST_F(ContactGroupTest, groups_Insert_test_300, testing::ext::TestSize.Level1
     std::vector<std::string> columns;
     std::string groups = ContactTabName::GROUPS;
     GetAllGroupsColumns(columnsInt, columnsStr);
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetAllColumnsValues(columnsInt, columnsStr);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetAllColumnsValues(columnsInt, columnsStr);
     int rawId = GroupsInsertValues(valuesBucket);
     EXPECT_GT(rawId, 0);
 
     MergeColumns(columns, columnsInt, columnsStr);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = ContactQuery(groups, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(groups, columns, predicates);
     // resultSet count 1
     int rowCount = -1;
     resultSet->GetRowCount(rowCount);
@@ -292,17 +293,17 @@ HWTEST_F(ContactGroupTest, groups_Insert_test_300, testing::ext::TestSize.Level1
 HWTEST_F(ContactGroupTest, groups_Delete_test_400, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- groups_Delete_test_400 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket valuesGroup;
+    OHOS::DataShare::DataShareValuesBucket valuesGroup;
     int64_t groupId = GroupsInsert("Personnel Group", valuesGroup);
     EXPECT_GT(groupId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupId));
     std::string groups = ContactTabName::GROUPS;
     int deleteCode = ContactDelete(groups, predicates);
     EXPECT_EQ(deleteCode, 0);
     std::vector<std::string> columns;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = ContactQuery(groups, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(groups, columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -320,19 +321,19 @@ HWTEST_F(ContactGroupTest, groups_Delete_test_400, testing::ext::TestSize.Level1
 HWTEST_F(ContactGroupTest, groups_Delete_test_500, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- groups_Delete_test_500 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket valuesGroup;
+    OHOS::DataShare::DataShareValuesBucket valuesGroup;
     int64_t groupIdOne = GroupsInsert("Personnel Group", valuesGroup);
     EXPECT_GT(groupIdOne, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesGroupTwo;
+    OHOS::DataShare::DataShareValuesBucket valuesGroupTwo;
     int64_t groupIdTwo = GroupsInsert("Sell one", valuesGroupTwo);
     EXPECT_GT(groupIdTwo, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesGroupThree;
+    OHOS::DataShare::DataShareValuesBucket valuesGroupThree;
     int64_t groupIdThree = GroupsInsert("Develop a group", valuesGroupThree);
     EXPECT_GT(groupIdThree, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupIdOne));
     predicates.Or();
     predicates.EqualTo("id", std::to_string(groupIdTwo));
@@ -342,14 +343,14 @@ HWTEST_F(ContactGroupTest, groups_Delete_test_500, testing::ext::TestSize.Level1
     int deleteCode = ContactDelete(groups, predicates);
     HILOG_INFO("groups_Delete_test_500: deleteCode = %{public}d", deleteCode);
     EXPECT_EQ(deleteCode, 0);
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(groupIdOne));
-    predicates.Or();
-    predicates.EqualTo("id", std::to_string(groupIdTwo));
-    predicates.Or();
-    predicates.EqualTo("id", std::to_string(groupIdThree));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(groupIdOne));
+    predicates2.Or();
+    predicates2.EqualTo("id", std::to_string(groupIdTwo));
+    predicates2.Or();
+    predicates2.EqualTo("id", std::to_string(groupIdThree));
     std::vector<std::string> columns;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = ContactQuery(groups, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(groups, columns, predicates2);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -372,12 +373,12 @@ HWTEST_F(ContactGroupTest, groups_Delete_test_600, testing::ext::TestSize.Level1
     std::vector<std::string> columnsInt;
     std::vector<std::string> columnsStr;
     GetAllGroupsColumns(columnsInt, columnsStr);
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetAllColumnsValues(columnsInt, columnsStr);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetAllColumnsValues(columnsInt, columnsStr);
     int groupId = GroupsInsertValues(valuesBucket);
     EXPECT_GT(groupId, 0);
 
     // test end delete data
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupId));
     EXPECT_GT(groupId, 0);
     std::string groups = ContactTabName::GROUPS;
@@ -385,7 +386,7 @@ HWTEST_F(ContactGroupTest, groups_Delete_test_600, testing::ext::TestSize.Level1
     EXPECT_EQ(deleteCode, 0);
 
     MergeColumns(columns, columnsInt, columnsStr);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetDeleteQuery =
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetDeleteQuery =
         ContactQuery(groups, columns, predicates);
     int rowCount = -1;
     resultSetDeleteQuery->GetRowCount(rowCount);
@@ -404,7 +405,7 @@ HWTEST_F(ContactGroupTest, groups_Delete_test_600, testing::ext::TestSize.Level1
 HWTEST_F(ContactGroupTest, groups_Query_test_700, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- groups_Query_test_700 is starting! ---");
-    OHOS::NativeRdb::ValuesBucket valuesGroupTwo;
+    OHOS::DataShare::DataShareValuesBucket valuesGroupTwo;
     GroupsInsert("Sell one1", valuesGroupTwo);
     valuesGroupTwo.Clear();
     GroupsInsert("Sell one2", valuesGroupTwo);
@@ -418,10 +419,10 @@ HWTEST_F(ContactGroupTest, groups_Query_test_700, testing::ext::TestSize.Level1)
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("group_name");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("id", "0");
     std::string groups = ContactTabName::GROUPS;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = ContactQuery(groups, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(groups, columns, predicates);
     int rowCount = 0;
     int currentCount = 5;
     resultSet->GetRowCount(rowCount);
@@ -440,13 +441,13 @@ HWTEST_F(ContactGroupTest, groups_Query_test_700, testing::ext::TestSize.Level1)
 HWTEST_F(ContactGroupTest, groups_Update_test_800, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- groups_Update_test_800 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket valuesGroup;
+    OHOS::DataShare::DataShareValuesBucket valuesGroup;
     int64_t groupId = GroupsInsert("physical education", valuesGroup);
     EXPECT_GT(groupId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutString("group_name", std::string("Language"));
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("group_name", std::string("Language"));
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupId));
     std::string groups = ContactTabName::GROUPS;
     int updateCode = ContactUpdate(groups, updateValues, predicates);
@@ -466,21 +467,21 @@ HWTEST_F(ContactGroupTest, groups_Update_test_800, testing::ext::TestSize.Level1
 HWTEST_F(ContactGroupTest, groups_Update_test_900, testing::ext::TestSize.Level1)
 {
     HILOG_INFO("--- groups_Update_test_900 is staring! ---");
-    OHOS::NativeRdb::ValuesBucket valuesGroupOne;
+    OHOS::DataShare::DataShareValuesBucket valuesGroupOne;
     int64_t groupIdOne = GroupsInsert("Develop a group", valuesGroupOne);
     EXPECT_GT(groupIdOne, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesGroupTwo;
+    OHOS::DataShare::DataShareValuesBucket valuesGroupTwo;
     int64_t groupIdTwo = GroupsInsert("Development Group 2", valuesGroupTwo);
     EXPECT_GT(groupIdTwo, 0);
 
-    OHOS::NativeRdb::ValuesBucket valuesGroupThree;
+    OHOS::DataShare::DataShareValuesBucket valuesGroupThree;
     int64_t groupIdThree = GroupsInsert("Development three groups", valuesGroupThree);
     EXPECT_GT(groupIdThree, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutString("group_name", std::string("Develop a group"));
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("group_name", std::string("Develop a group"));
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupIdOne));
     std::string groups = ContactTabName::GROUPS;
     int updateCode = ContactUpdate(groups, updateValues, predicates);
@@ -488,20 +489,20 @@ HWTEST_F(ContactGroupTest, groups_Update_test_900, testing::ext::TestSize.Level1
     QueryAndExpectResult(groups, predicates, updateValues, "groups_Update_test_900");
 
     updateValues.Clear();
-    updateValues.PutString("group_name", std::string("Development Second Group"));
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(groupIdTwo));
-    updateCode = ContactUpdate(groups, updateValues, predicates);
+    updateValues.Put("group_name", std::string("Development Second Group"));
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(groupIdTwo));
+    updateCode = ContactUpdate(groups, updateValues, predicates2);
     EXPECT_EQ(updateCode, 0);
-    QueryAndExpectResult(groups, predicates, updateValues, "groups_Update_test_900");
+    QueryAndExpectResult(groups, predicates2, updateValues, "groups_Update_test_900");
 
     updateValues.Clear();
-    updateValues.PutString("group_name", std::string("Develop three groups"));
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(groupIdThree));
-    updateCode = ContactUpdate(groups, updateValues, predicates);
+    updateValues.Put("group_name", std::string("Develop three groups"));
+    OHOS::DataShare::DataSharePredicates predicates3;
+    predicates3.EqualTo("id", std::to_string(groupIdThree));
+    updateCode = ContactUpdate(groups, updateValues, predicates3);
     EXPECT_EQ(updateCode, 0);
-    QueryAndExpectResult(groups, predicates, updateValues, "groups_Update_test_900");
+    QueryAndExpectResult(groups, predicates3, updateValues, "groups_Update_test_900");
     ClearData();
 }
 
@@ -521,19 +522,19 @@ HWTEST_F(ContactGroupTest, groups_Update_test_1000, testing::ext::TestSize.Level
     std::vector<std::string> columnsStr;
     std::string groups = ContactTabName::GROUPS;
     GetAllGroupsColumns(columnsInt, columnsStr);
-    OHOS::NativeRdb::ValuesBucket valuesBucket = GetAllColumnsValues(columnsInt, columnsStr);
+    OHOS::DataShare::DataShareValuesBucket valuesBucket = GetAllColumnsValues(columnsInt, columnsStr);
     int groupId = GroupsInsertValues(valuesBucket);
     EXPECT_GT(groupId, 0);
     MergeColumns(columns, columnsInt, columnsStr);
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetOne = ContactQuery(groups, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetOne = ContactQuery(groups, columns, predicates);
     CheckResultSet(valuesBucket, resultSetOne, "groups_Update_test_1000");
 
-    OHOS::NativeRdb::ValuesBucket upDateValuesBucket = GetAllColumnsValues(columnsInt, columnsStr);
+    OHOS::DataShare::DataShareValuesBucket upDateValuesBucket = GetAllColumnsValues(columnsInt, columnsStr);
     int upDateCode = ContactUpdate(groups, upDateValuesBucket, predicates);
     EXPECT_EQ(upDateCode, 0);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = ContactQuery(groups, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(groups, columns, predicates);
     // resultSet count 1
     int rowCount = -1;
     resultSet->GetRowCount(rowCount);
@@ -554,20 +555,20 @@ HWTEST_F(ContactGroupTest, abnormal_groups_Insert_test_1100, testing::ext::TestS
 {
     OHOS::Uri uriGroups(ContactsUri::GROUPS);
     OHOS::Uri errorUri(ContactsUri::GROUPS_ERROR);
-    OHOS::NativeRdb::ValuesBucket groupValues;
-    groupValues.PutString("group_names", "Board of Directors");
+    OHOS::DataShare::DataShareValuesBucket groupValues;
+    groupValues.Put("group_names", "Board of Directors");
     int64_t groupId = contactsDataAbility.Insert(uriGroups, groupValues);
     EXPECT_EQ(groupId, -1);
 
     groupValues.Clear();
-    groupValues.PutString("group_name", "Board of Directors");
+    groupValues.Put("group_name", "Board of Directors");
     groupId = contactsDataAbility.Insert(errorUri, groupValues);
     EXPECT_EQ(groupId, -1);
     std::vector<std::string> columns;
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("group_name", "Board of Directors");
     std::string groups = ContactTabName::GROUPS;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = ContactQuery(groups, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(groups, columns, predicates);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(0, rowCount);
@@ -585,39 +586,39 @@ HWTEST_F(ContactGroupTest, abnormal_groups_Insert_test_1100, testing::ext::TestS
 HWTEST_F(ContactGroupTest, abnormal_groups_Delete_test_1200, testing::ext::TestSize.Level1)
 {
     OHOS::Uri errorUri(ContactsUri::GROUPS_ERROR);
-    OHOS::NativeRdb::ValuesBucket values;
+    OHOS::DataShare::DataShareValuesBucket values;
     int64_t groupId = GroupsInsert("Board of Directors 2", values);
-    HILOG_INFO("abnormal_groups_Delete_test_1200: groupId = %{public}lld", groupId);
+    HILOG_INFO("abnormal_groups_Delete_test_1200: groupId = %{public}ld", groupId);
     EXPECT_GT(groupId, 0);
 
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("ids", std::to_string(groupId));
     std::string groups = ContactTabName::GROUPS;
     int deleteCode = ContactDelete(groups, predicates);
     HILOG_INFO("abnormal_groups_Delete_test_1200: deleteCode = %{public}d", deleteCode);
     EXPECT_EQ(deleteCode, -1);
     std::vector<std::string> columns;
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(groupId));
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = ContactQuery(groups, columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", std::to_string(groupId));
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(groups, columns, predicates2);
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     EXPECT_EQ(1, rowCount);
 
-    predicates.Clear();
-    predicates.EqualTo("id", std::to_string(groupId));
-    deleteCode = contactsDataAbility.Delete(errorUri, predicates);
+    OHOS::DataShare::DataSharePredicates predicates3;
+    predicates3.EqualTo("id", std::to_string(groupId));
+    deleteCode = contactsDataAbility.Delete(errorUri, predicates3);
     HILOG_INFO("abnormal_groups_Delete_test_1200: deleteCode = %{public}d", deleteCode);
     EXPECT_EQ(deleteCode, -1);
 
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetTwo = ContactQuery(groups, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetTwo = ContactQuery(groups, columns, predicates3);
     int rowCountTwo = 0;
     resultSetTwo->GetRowCount(rowCountTwo);
     EXPECT_EQ(1, rowCountTwo);
 
-    predicates.Clear();
-    predicates.EqualTo("id", "10000000");
-    deleteCode = ContactDelete(groups, predicates);
+    OHOS::DataShare::DataSharePredicates predicates4;
+    predicates4.EqualTo("id", "10000000");
+    deleteCode = ContactDelete(groups, predicates4);
     EXPECT_EQ(deleteCode, 0);
     ClearData();
 }
@@ -638,24 +639,24 @@ HWTEST_F(ContactGroupTest, abnormal_groups_Query_test_1300, testing::ext::TestSi
     std::vector<std::string> columns;
     columns.push_back("id");
     columns.push_back("group_name");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.GreaterThan("ids", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetOne = ContactQuery(groups, columns, predicates);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetOne = ContactQuery(groups, columns, predicates);
     int rowCountOne = 0;
     resultSetOne->GetRowCount(rowCountOne);
     EXPECT_EQ(-1, rowCountOne);
 
-    predicates.Clear();
-    predicates.EqualTo("id", "10000000");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetTwo = ContactQuery(groups, columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", "10000000");
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetTwo = ContactQuery(groups, columns, predicates2);
     int rowCountTwo = 0;
     resultSetTwo->GetRowCount(rowCountTwo);
     EXPECT_EQ(0, rowCountTwo);
 
-    predicates.Clear();
-    predicates.GreaterThan("id", "0");
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSetThree =
-        contactsDataAbility.Query(errorUri, columns, predicates);
+    OHOS::DataShare::DataSharePredicates predicates3;
+    predicates3.GreaterThan("id", "0");
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetThree =
+        contactsDataAbility.Query(errorUri, predicates3, columns);
     EXPECT_EQ(resultSetThree, nullptr);
     ClearData();
 }
@@ -671,14 +672,14 @@ HWTEST_F(ContactGroupTest, abnormal_groups_Query_test_1300, testing::ext::TestSi
 HWTEST_F(ContactGroupTest, abnormal_groups_Update_test_1400, testing::ext::TestSize.Level1)
 {
     OHOS::Uri errorUri(ContactsUri::GROUPS_ERROR);
-    OHOS::NativeRdb::ValuesBucket valuesInsert;
+    OHOS::DataShare::DataShareValuesBucket valuesInsert;
     int64_t groupId = GroupsInsert("Board of Directors", valuesInsert);
-    HILOG_INFO("abnormal_groups_Update_test_1400: groupId = %{public}lld", groupId);
+    HILOG_INFO("abnormal_groups_Update_test_1400: groupId = %{public}ld", groupId);
     EXPECT_GT(groupId, 0);
 
-    OHOS::NativeRdb::ValuesBucket updateValues;
-    updateValues.PutString("group_names", "Develop a group");
-    OHOS::NativeRdb::DataAbilityPredicates predicates;
+    OHOS::DataShare::DataShareValuesBucket updateValues;
+    updateValues.Put("group_names", "Develop a group");
+    OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupId));
     std::string groups = ContactTabName::GROUPS;
     int updateCode = ContactUpdate(groups, updateValues, predicates);
@@ -687,15 +688,15 @@ HWTEST_F(ContactGroupTest, abnormal_groups_Update_test_1400, testing::ext::TestS
     QueryAndExpectResult(groups, predicates, valuesInsert, "abnormal_groups_Update_test_1400");
 
     updateValues.Clear();
-    updateValues.PutString("group_name", "Develop a group");
-    updateCode = contactsDataAbility.Update(errorUri, updateValues, predicates);
+    updateValues.Put("group_name", "Develop a group");
+    updateCode = contactsDataAbility.Update(errorUri, predicates, updateValues);
     HILOG_INFO("abnormal_groups_Update_test_1400: updateCode = %{public}d", updateCode);
     EXPECT_EQ(updateCode, -1);
     QueryAndExpectResult(groups, predicates, valuesInsert, "abnormal_groups_Update_test_1400");
-    predicates.Clear();
 
-    predicates.EqualTo("id", "10000000");
-    updateCode = ContactUpdate(groups, updateValues, predicates);
+    OHOS::DataShare::DataSharePredicates predicates2;
+    predicates2.EqualTo("id", "10000000");
+    updateCode = ContactUpdate(groups, updateValues, predicates2);
     EXPECT_EQ(updateCode, 0);
     ClearData();
 }

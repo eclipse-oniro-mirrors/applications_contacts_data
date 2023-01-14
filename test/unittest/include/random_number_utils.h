@@ -23,9 +23,11 @@ namespace OHOS {
 namespace Contacts {
 class RandomNumberUtils {
 public:
+    static constexpr int DECIMAL_NUMBER = 10;
+
     RandomNumberUtils();
     ~RandomNumberUtils();
-    static std::string &Generating(std::string number);
+    static std::string &Generating(int number);
 };
 } // namespace Contacts
 } // namespace OHOS

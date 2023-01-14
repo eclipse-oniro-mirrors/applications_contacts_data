@@ -17,21 +17,24 @@
 
 #include <mutex>
 
+#include "ability_loader.h"
 #include "common.h"
 #include "contacts_columns.h"
 #include "contacts_common_event.h"
-#include "data_ability_predicates.h"
+#include "contacts_datashare_stub_impl.h"
+#include "datashare_ext_ability_context.h"
+#include "datashare_predicates.h"
 #include "database_disaster_recovery.h"
 #include "file_utils.h"
 #include "hilog_wrapper.h"
 #include "profile_database.h"
 #include "rdb_predicates.h"
+#include "rdb_utils.h"
 #include "sql_analyzer.h"
 #include "uri_utils.h"
 
 namespace OHOS {
-namespace AppExecFwk {
-REGISTER_AA(ContactsDataAbility);
+namespace AbilityRuntime {
 namespace {
 std::mutex g_mutex;
 }
@@ -69,7 +72,12 @@ std::map<std::string, int> ContactsDataAbility::uriValueMap_ = {
     {"/com.ohos.contactsdataability/profile/contact_type", Contacts::PROFILE_TYPE}
 };
 
-ContactsDataAbility::ContactsDataAbility(void)
+ContactsDataAbility* ContactsDataAbility::Create()
+{
+    return new ContactsDataAbility();
+}
+
+ContactsDataAbility::ContactsDataAbility() : DataShareExtAbility()
 {
 }
 
@@ -77,20 +85,42 @@ ContactsDataAbility::~ContactsDataAbility()
 {
 }
 
-void ContactsDataAbility::OnStart(const Want &want)
+static DataShare::DataShareExtAbility *ContactsDataShareCreator(const std::unique_ptr<Runtime> &runtime)
 {
-    Ability::OnStart(want);
-    std::string basePath = GetAbilityContext()->GetDatabaseDir();
-    Contacts::ContactsPath::RDB_PATH = basePath + "/";
-    Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
-    Contacts::ContactsPath::DUMP_PATH = GetFilesDir() + "/";
+    HILOG_INFO("ContactsDataCreator::%{public}s", __func__);
+    return ContactsDataAbility::Create();
 }
 
-void ContactsDataAbility::Dump(const std::string &extra)
+__attribute__((constructor)) void RegisterDataShareCreator()
 {
-    Contacts::FileUtils fileUtils;
-    std::string dirStr = Contacts::ContactsPath::DUMP_PATH;
-    fileUtils.WriteStringToFileAppend(dirStr, extra);
+    HILOG_INFO("ContactsDataCreator::%{public}s", __func__);
+    DataShare::DataShareExtAbility::SetCreator(ContactsDataShareCreator);
+}
+
+sptr<IRemoteObject> ContactsDataAbility::OnConnect(const AAFwk::Want &want)
+{
+    HILOG_INFO("ContactsDataAbility %{public}s begin.", __func__);
+    Extension::OnConnect(want);
+    sptr<DataShare::ContactsDataShareStubImpl> remoteObject = new (std::nothrow) DataShare::ContactsDataShareStubImpl(
+        std::static_pointer_cast<ContactsDataAbility>(shared_from_this()));
+    if (remoteObject == nullptr) {
+        HILOG_ERROR("%{public}s No memory allocated for DataShareStubImpl", __func__);
+        return nullptr;
+    }
+    HILOG_INFO("ContactsDataAbility %{public}s end.", __func__);
+    return remoteObject->AsObject();
+}
+
+void ContactsDataAbility::OnStart(const Want &want)
+{
+    HILOG_INFO("ContactsDataAbility %{public}s begin.", __func__);
+    Extension::OnStart(want);
+    auto context = AbilityRuntime::Context::GetApplicationContext();
+    if (context != nullptr) {
+        std::string basePath = context->GetDatabaseDir();
+        Contacts::ContactsPath::RDB_PATH = basePath + "/";
+        Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
+    }
 }
 
 /**
@@ -139,11 +169,12 @@ bool ContactsDataAbility::IsCommitOK(int code, std::mutex &mutex)
  *
  * @return Insert database results code
  */
-int ContactsDataAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &value)
+int ContactsDataAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
-    HILOG_INFO("Insert start");
+    HILOG_INFO("ContactsDataAbility Insert start");
+    OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
-    bool isOk = sqlAnalyzer.CheckValuesBucket(value);
+    bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
     if (!isOk) {
         HILOG_ERROR("ContactsDataAbility CheckValuesBucket error");
         return Contacts::RDB_EXECUTE_FAIL;
@@ -159,7 +190,7 @@ int ContactsDataAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &v
         g_mutex.unlock();
         return Contacts::RDB_EXECUTE_FAIL;
     }
-    resultId = InsertExecute(code, value);
+    resultId = InsertExecute(code, valuesBucket);
     HILOG_INFO("Insert id = %{public}d", resultId);
     if (resultId == Contacts::OPERATION_ERROR) {
         contactDataBase_->RollBack();
@@ -174,11 +205,11 @@ int ContactsDataAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &v
     }
     g_mutex.unlock();
     DataBaseNotifyChange(Contacts::CONTACT_INSERT, uri);
-    HILOG_INFO("Insert end");
+    HILOG_INFO("ContactsDataAbility Insert end");
     return resultId;
 }
 
-int ContactsDataAbility::InsertExecute(int &code, const NativeRdb::ValuesBucket &value)
+int ContactsDataAbility::InsertExecute(int &code, const OHOS::NativeRdb::ValuesBucket &value)
 {
     int rowId = Contacts::RDB_EXECUTE_FAIL;
     switch (code) {
@@ -218,7 +249,7 @@ int ContactsDataAbility::InsertExecute(int &code, const NativeRdb::ValuesBucket 
  *
  * @return BatchInsert database results code
  */
-int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::ValuesBucket> &values)
+int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
     unsigned int size = values.size();
     if (size <= 0) {
@@ -237,8 +268,9 @@ int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb
     int count = 0;
     for (unsigned int i = 0; i < size; i++) {
         ++count;
-        OHOS::NativeRdb::ValuesBucket rawContactValues = values[i];
-        int rowRet = InsertExecute(code, rawContactValues);
+        DataShare::DataShareValuesBucket rawContactValues = values[i];
+        OHOS::NativeRdb::ValuesBucket value = RdbDataShareAdapter::RdbUtils::ToValuesBucket(rawContactValues);
+        int rowRet = InsertExecute(code, value);
         if (rowRet == Contacts::OPERATION_ERROR) {
             contactDataBase_->RollBack();
             g_mutex.unlock();
@@ -273,10 +305,11 @@ int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb
  * @return Update database results code
  */
 int ContactsDataAbility::Update(
-    const Uri &uri, const NativeRdb::ValuesBucket &value, const NativeRdb::DataAbilityPredicates &predicates)
+    const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
+    OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
-    bool isOk = sqlAnalyzer.CheckValuesBucket(value);
+    bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
     if (!isOk) {
         HILOG_ERROR("ContactsDataAbility CheckValuesBucket error");
         return Contacts::RDB_EXECUTE_FAIL;
@@ -287,15 +320,15 @@ int ContactsDataAbility::Update(
     int retCode = Contacts::RDB_EXECUTE_FAIL;
     OHOS::Uri uriTemp = uri;
     int code = UriParseAndSwitch(uriTemp);
-    OHOS::NativeRdb::DataAbilityPredicates dataAbilityPredicates = predicates;
-    UpdateExecute(retCode, code, value, dataAbilityPredicates);
+    DataShare::DataSharePredicates dataSharePredicates = predicates;
+    UpdateExecute(retCode, code, valuesBucket, dataSharePredicates);
     g_mutex.unlock();
     DataBaseNotifyChange(Contacts::CONTACT_UPDATE, uri);
     return retCode;
 }
 
-void ContactsDataAbility::UpdateExecute(int &retCode, int code, const NativeRdb::ValuesBucket &value,
-    OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates)
+void ContactsDataAbility::UpdateExecute(int &retCode, int code, const OHOS::NativeRdb::ValuesBucket &value,
+    DataShare::DataSharePredicates &dataSharePredicates)
 {
     Contacts::PredicatesConvert predicatesConvert;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
@@ -306,44 +339,44 @@ void ContactsDataAbility::UpdateExecute(int &retCode, int code, const NativeRdb:
         case Contacts::CONTACTS_RAW_CONTACT:
         case Contacts::PROFILE_RAW_CONTACT:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::RAW_CONTACT, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::RAW_CONTACT, dataSharePredicates);
             retCode = contactDataBase_->UpdateRawContact(value, rdbPredicates);
             break;
         case Contacts::CONTACTS_CONTACT_DATA:
         case Contacts::PROFILE_CONTACT_DATA:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::CONTACT_DATA, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::CONTACT_DATA, dataSharePredicates);
             retCode = contactDataBase_->UpdateContactData(value, rdbPredicates);
             break;
         case Contacts::CONTACTS_GROUPS:
         case Contacts::PROFILE_GROUPS:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::GROUPS, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::GROUPS, dataSharePredicates);
             retCode = contactDataBase_->UpdateGroup(value, rdbPredicates);
             break;
         case Contacts::CONTACTS_BLOCKLIST:
         case Contacts::PROFILE_BLOCKLIST:
             rdbPredicates = predicatesConvert.ConvertPredicates(
-                Contacts::ContactTableName::CONTACT_BLOCKLIST, dataAbilityPredicates);
+                Contacts::ContactTableName::CONTACT_BLOCKLIST, dataSharePredicates);
             retCode = contactDataBase_->UpdateBlockList(value, rdbPredicates);
             break;
         default:
-            SwitchUpdate(retCode, code, value, dataAbilityPredicates);
+            SwitchUpdate(retCode, code, value, dataSharePredicates);
             break;
     }
 }
 
-void ContactsDataAbility::SwitchUpdate(int &retCode, int &code, const NativeRdb::ValuesBucket &value,
-    OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates)
+void ContactsDataAbility::SwitchUpdate(int &retCode, int &code, const OHOS::NativeRdb::ValuesBucket &value,
+    DataShare::DataSharePredicates &dataSharePredicates)
 {
     Contacts::PredicatesConvert predicatesConvert;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     switch (code) {
         case Contacts::SPLIT_CONTACT:
-            retCode = contactDataBase_->Split(dataAbilityPredicates);
+            retCode = contactDataBase_->Split(dataSharePredicates);
             break;
         case Contacts::MANUAL_MERGE:
-            retCode = contactDataBase_->ReContactMerge(dataAbilityPredicates);
+            retCode = contactDataBase_->ReContactMerge(dataSharePredicates);
             break;
         case Contacts::AUTO_MERGE:
             retCode = contactDataBase_->ContactMerge();
@@ -371,7 +404,7 @@ void ContactsDataAbility::SwitchUpdate(int &retCode, int &code, const NativeRdb:
  *
  * @return Delete database results code
  */
-int ContactsDataAbility::Delete(const Uri &uri, const NativeRdb::DataAbilityPredicates &predicates)
+int ContactsDataAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
     HILOG_INFO("ContactsDataAbility ====>Delete");
     g_mutex.lock();
@@ -380,15 +413,15 @@ int ContactsDataAbility::Delete(const Uri &uri, const NativeRdb::DataAbilityPred
     int retCode = Contacts::RDB_EXECUTE_FAIL;
     OHOS::Uri uriTemp = uri;
     int code = UriParseAndSwitch(uriTemp);
-    OHOS::NativeRdb::DataAbilityPredicates dataAbilityPredicates = predicates;
-    DeleteExecute(retCode, code, dataAbilityPredicates);
+    DataShare::DataSharePredicates dataSharePredicates = predicates;
+    DeleteExecute(retCode, code, dataSharePredicates);
     g_mutex.unlock();
     DataBaseNotifyChange(Contacts::CONTACT_DELETE, uri);
     return retCode;
 }
 
 void ContactsDataAbility::DeleteExecute(
-    int &retCode, int code, OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates)
+    int &retCode, int code, DataShare::DataSharePredicates &dataSharePredicates)
 {
     Contacts::PredicatesConvert predicatesConvert;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
@@ -396,43 +429,43 @@ void ContactsDataAbility::DeleteExecute(
         case Contacts::CONTACTS_CONTACT:
         case Contacts::PROFILE_CONTACT:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::CONTACT, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::CONTACT, dataSharePredicates);
             retCode = contactDataBase_->DeleteContact(rdbPredicates);
             break;
         case Contacts::CONTACTS_RAW_CONTACT:
         case Contacts::PROFILE_RAW_CONTACT:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::RAW_CONTACT, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::RAW_CONTACT, dataSharePredicates);
             retCode = contactDataBase_->DeleteRawContact(rdbPredicates);
             break;
         case Contacts::CONTACTS_CONTACT_DATA:
         case Contacts::PROFILE_CONTACT_DATA:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::CONTACT_DATA, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::CONTACT_DATA, dataSharePredicates);
             retCode = contactDataBase_->DeleteContactData(rdbPredicates);
             break;
         case Contacts::CONTACTS_GROUPS:
         case Contacts::PROFILE_GROUPS:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::GROUPS, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::GROUPS, dataSharePredicates);
             retCode = contactDataBase_->DeleteGroup(rdbPredicates);
             break;
         case Contacts::CONTACTS_BLOCKLIST:
         case Contacts::PROFILE_BLOCKLIST:
             rdbPredicates = predicatesConvert.ConvertPredicates(
-                Contacts::ContactTableName::CONTACT_BLOCKLIST, dataAbilityPredicates);
+                Contacts::ContactTableName::CONTACT_BLOCKLIST, dataSharePredicates);
             retCode = contactDataBase_->DeleteBlockList(rdbPredicates);
             break;
         case Contacts::CONTACTS_DELETE:
         case Contacts::PROFILE_DELETE:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_DELETED, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_DELETED, dataSharePredicates);
             retCode = contactDataBase_->CompletelyDelete(rdbPredicates);
             break;
         case Contacts::CONTACTS_DELETE_RECORD:
         case Contacts::PROFILE_DELETE_RECORD:
             rdbPredicates = predicatesConvert.ConvertPredicates(
-                Contacts::ContactTableName::DELETE_RAW_CONTACT, dataAbilityPredicates);
+                Contacts::ContactTableName::DELETE_RAW_CONTACT, dataSharePredicates);
             retCode = contactDataBase_->DeleteRecord(rdbPredicates);
             break;
         default:
@@ -451,84 +484,93 @@ void ContactsDataAbility::DeleteExecute(
  *
  * @return Database query result
  */
-std::shared_ptr<NativeRdb::AbsSharedResultSet> ContactsDataAbility::Query(
-    const Uri &uri, const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates)
+std::shared_ptr<DataShare::DataShareResultSet> ContactsDataAbility::Query(
+    const Uri &uri, const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns)
 {
     HILOG_INFO("ContactsDataAbility ====>Query start");
     g_mutex.lock();
     contactDataBase_ = Contacts::ContactsDataBase::GetInstance();
     profileDataBase_ = Contacts::ProfileDatabase::GetInstance();
-    std::shared_ptr<NativeRdb::AbsSharedResultSet> result;
+    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result;
     OHOS::Uri uriTemp = uri;
     int parseCode = UriParseAndSwitch(uriTemp);
     std::vector<std::string> columnsTemp = columns;
-    OHOS::NativeRdb::DataAbilityPredicates dataAbilityPredicates = predicates;
-    QueryExecute(result, dataAbilityPredicates, columnsTemp, parseCode);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> sharedPtrResult = std::move(result);
+    DataShare::DataSharePredicates dataSharePredicates = predicates;
+    bool isUriMatch = QueryExecute(result, dataSharePredicates, columnsTemp, parseCode);
+    if (!isUriMatch) {
+        g_mutex.unlock();
+        return nullptr;
+    }
+    auto queryResultSet = RdbDataShareAdapter::RdbUtils::ToResultSetBridge(result);
+    std::shared_ptr<DataShare::DataShareResultSet> sharedPtrResult =
+        std::make_shared<DataShare::DataShareResultSet>(queryResultSet);
     g_mutex.unlock();
     HILOG_INFO("ContactsDataAbility ====>Query end");
     return sharedPtrResult;
 }
 
-void ContactsDataAbility::QueryExecute(std::shared_ptr<NativeRdb::AbsSharedResultSet> &result,
-    OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates, std::vector<std::string> &columnsTemp,
+bool ContactsDataAbility::QueryExecute(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &result,
+    DataShare::DataSharePredicates &dataSharePredicates, std::vector<std::string> &columnsTemp,
     int &parseCode)
 {
     Contacts::PredicatesConvert predicatesConvert;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
+    bool isUriMatch = true;
     switch (parseCode) {
         case Contacts::CONTACTS_CONTACT:
         case Contacts::PROFILE_CONTACT:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_CONTACT, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_CONTACT, dataSharePredicates);
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         case Contacts::CONTACTS_RAW_CONTACT:
         case Contacts::PROFILE_RAW_CONTACT:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_RAW_CONTACT, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_RAW_CONTACT, dataSharePredicates);
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         case Contacts::CONTACTS_CONTACT_DATA:
         case Contacts::PROFILE_CONTACT_DATA:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_CONTACT_DATA, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_CONTACT_DATA, dataSharePredicates);
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         case Contacts::CONTACTS_GROUPS:
         case Contacts::PROFILE_GROUPS:
-            rdbPredicates = predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_GROUPS, dataAbilityPredicates);
+            rdbPredicates = predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_GROUPS, dataSharePredicates);
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         default:
-            QueryExecuteSwitchSplit(result, dataAbilityPredicates, columnsTemp, parseCode);
+            isUriMatch = QueryExecuteSwitchSplit(result, dataSharePredicates, columnsTemp, parseCode);
             break;
     }
+    return isUriMatch;
 }
 
-void ContactsDataAbility::QueryExecuteSwitchSplit(std::shared_ptr<NativeRdb::AbsSharedResultSet> &result,
-    OHOS::NativeRdb::DataAbilityPredicates &dataAbilityPredicates, std::vector<std::string> &columnsTemp,
+bool ContactsDataAbility::QueryExecuteSwitchSplit(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &result,
+    DataShare::DataSharePredicates &dataSharePredicates, std::vector<std::string> &columnsTemp,
     int &parseCode)
 {
     Contacts::PredicatesConvert predicatesConvert;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
+    bool isUriMatch = true;
     switch (parseCode) {
         case Contacts::CONTACTS_BLOCKLIST:
         case Contacts::PROFILE_BLOCKLIST:
             rdbPredicates = predicatesConvert.ConvertPredicates(
-                Contacts::ContactTableName::CONTACT_BLOCKLIST, dataAbilityPredicates);
+                Contacts::ContactTableName::CONTACT_BLOCKLIST, dataSharePredicates);
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         case Contacts::CONTACTS_DELETE:
         case Contacts::PROFILE_DELETE:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_DELETED, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ViewName::VIEW_DELETED, dataSharePredicates);
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         case Contacts::CONTACTS_SEARCH_CONTACT:
         case Contacts::PROFILE_SEARCH_CONTACT:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ViewName::SEARCH_CONTACT_VIEW, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ViewName::SEARCH_CONTACT_VIEW, dataSharePredicates);
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         case Contacts::QUERY_MERGE_LIST:
@@ -537,18 +579,20 @@ void ContactsDataAbility::QueryExecuteSwitchSplit(std::shared_ptr<NativeRdb::Abs
         case Contacts::CONTACT_TYPE:
         case Contacts::PROFILE_TYPE:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::CONTACT_TYPE, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::CONTACT_TYPE, dataSharePredicates);
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         case Contacts::ACCOUNT:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::ACCOUNT, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::ACCOUNT, dataSharePredicates);
             result = contactDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         default:
+            isUriMatch = false;
             HILOG_ERROR("ContactsDataAbility ====>no matching uri action");
             break;
     }
+    return isUriMatch;
 }
 
 int ContactsDataAbility::UriParseAndSwitch(Uri &uri)
@@ -603,5 +647,5 @@ void ContactsDataAbility::DataBaseNotifyChange(int code, Uri uri)
 {
     Contacts::ContactsCommonEvent::SendContactChange(code);
 }
-} // namespace AppExecFwk
+} // namespace AbilityRuntime
 } // namespace OHOS

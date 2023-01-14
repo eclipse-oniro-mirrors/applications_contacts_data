@@ -94,7 +94,6 @@ int ContactsType::LookupTypeId(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSto
     std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
     int ret = resultSet->GoToFirstRow();
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("ContactsType lookupTypeId ret :%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
     int columnIndex = RDB_EXECUTE_FAIL;

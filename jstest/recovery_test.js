@@ -13,15 +13,14 @@
  * limitations under the License.
  */
 
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
+import dataShare from '@ohos.data.dataShare';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
 
-const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
-const rawContactUri = "dataability:///com.ohos.contactsdataability/contacts/raw_contact";
-const backup = "dataability:///com.ohos.contactsdataability/contacts/backup";
-const recover = "dataability:///com.ohos.contactsdataability/contacts/recover";
-const deletedUri = "dataability:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
+const URI_CONTACTS = "datashare:///com.ohos.contactsdataability";
+const rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+const backup = "datashare:///com.ohos.contactsdataability/contacts/backup";
+const recover = "datashare:///com.ohos.contactsdataability/contacts/recover";
+const deletedUri = "datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact";
 
 describe('RecoveryTest', function() {
     function sleep(numberMillis)
@@ -37,13 +36,13 @@ describe('RecoveryTest', function() {
 
     async function ContactsQuery(tag, uri, size)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': ContactsQuery start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': ContactsQuery start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         try {
-            var resultSet = await DAHelper.query(uri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(uri, resultColumns, condition);
             console.info(tag + ' ContactsQuery resultSet.rowCount is = ' + resultSet.rowCount);
             console.info(tag + ' ContactsQuery size is = ' + size);
             expect(resultSet.rowCount == size).assertEqual(true);
@@ -66,13 +65,13 @@ describe('RecoveryTest', function() {
     async function rawContactInsert(name)
     {
         console.info("------logMessage rawContactInsert is starting!-----");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         var insertValue = {
             "display_name" : name,
         }
         try {
-            var rawContactId = await DAHelper.insert(rawContactUri, insertValue);
+            var rawContactId = await dataShareHelper.insert(rawContactUri, insertValue);
             console.info('logMessage rawContactInsert: rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
         } catch (error) {
@@ -84,16 +83,16 @@ describe('RecoveryTest', function() {
     async function deleteRawContact(tag)
     {
         try {
-            let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+            let condition = new dataShare.DataSharePredicates();
             condition.greaterThan("id", "0");
             condition.and();
             condition.equalTo("is_deleted", "0");
-            await DAHelper.delete(rawContactUri, condition);
+            await dataShareHelper.delete(rawContactUri, condition);
             sleep(5000);
-            var conditionAll = new ohos_data_ability.DataAbilityPredicates();
+            var conditionAll = new dataShare.DataSharePredicates();
             conditionAll.greaterThan("id", "0");
-            await DAHelper.delete(deletedUri, conditionAll);
+            await dataShareHelper.delete(deletedUri, conditionAll);
         } catch (error) {
             console.info(tag + ': deleteRawContact error = ' + error);
         }
@@ -106,11 +105,11 @@ describe('RecoveryTest', function() {
      */
     it("recovery_test_100", 0, async function(done) {
         await deleteRawContact("recovery_test_100");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
         var updateValues = {};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         try {
-            var updateCode = await DAHelper.update(backup, updateValues, condition);
+            var updateCode = await dataShareHelper.update(backup, updateValues, condition);
             sleep(2000);
             console.info('logMessage recovery_test_100: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
@@ -130,19 +129,19 @@ describe('RecoveryTest', function() {
      */
     it("recovery_test_200", 0, async function(done) {
         await deleteRawContact("recovery_test_200");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
         var updateValues = {};
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         rawContactInsert("liming");
         rawContactInsert("xiaolilili");
         sleep(2000);
-        var updateCode = await DAHelper.update(backup, updateValues, condition);
+        var updateCode = await dataShareHelper.update(backup, updateValues, condition);
         sleep(2000);
         console.info(' recovery_test_200: backup = ' + updateCode);
         expect(updateCode == 0).assertTrue();
         sleep(1000);
         try {
-            var updateCode = await DAHelper.update(recover, updateValues, condition);
+            var updateCode = await dataShareHelper.update(recover, updateValues, condition);
             sleep(3000);
             console.info('logMessage recovery_test_200: recover = ' + updateCode);
             expect(updateCode == 0).assertTrue();

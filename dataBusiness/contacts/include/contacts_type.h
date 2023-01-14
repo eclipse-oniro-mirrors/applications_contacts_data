@@ -16,7 +16,7 @@
 #ifndef CONTACT_TYPE_H
 #define CONTACT_TYPE_H
 
-#include "data_ability_predicates.h"
+#include "datashare_predicates.h"
 #include "rdb_errno.h"
 #include "rdb_store.h"
 #include "result_set.h"

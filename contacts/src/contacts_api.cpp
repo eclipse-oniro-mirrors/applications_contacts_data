@@ -17,11 +17,7 @@
 
 #include <mutex>
 
-#include "ability.h"
-#include "ability_context.h"
-#include "context.h"
-#include "data_ability_helper.h"
-#include "data_ability_predicates.h"
+#include "datashare_predicates.h"
 #include "rdb_errno.h"
 #include "rdb_helper.h"
 #include "rdb_open_callback.h"
@@ -147,29 +143,56 @@ int GetType(napi_env env, napi_value value)
 }
 
 /**
- * @brief Get dataAbilityHelper
+ * @brief Get dataShareHelper
  *
- * @param env Conditions for get dataAbilityHelper operation
+ * @param env Conditions for get dataShareHelper operation
  *
- * @return The result returned by get dataAbilityHelper
+ * @return The result returned by get dataShareHelper
  */
-std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_env env)
+std::shared_ptr<DataShare::DataShareHelper> GetDataShareHelper(napi_env env, napi_callback_info info)
 {
-    napi_value global = nullptr;
-    NAPI_CALL(env, napi_get_global(env, &global));
-    napi_value abilityObj = nullptr;
-    NAPI_CALL(env, napi_get_named_property(env, global, "ability", &abilityObj));
-    if (abilityObj == nullptr) {
-        HILOG_ERROR("abilityObj is nullptr!");
+    napi_value global;
+    napi_status status = napi_get_global(env, &global);
+    if (status != napi_ok) {
+        HILOG_ERROR("GetDataShareHelper napi_get_global != napi_ok");
     }
-    OHOS::AppExecFwk::Ability *ability = nullptr;
-    NAPI_CALL(env, napi_get_value_external(env, abilityObj, reinterpret_cast<void **>(&ability)));
-    if (ability == nullptr) {
-        HILOG_ERROR("ability is nullptr!");
-        return nullptr;
+    napi_value globalThis;
+    status = napi_get_named_property(env, global, "globalThis", &globalThis);
+    if (status != napi_ok) {
+        HILOG_ERROR("GetDataShareHelper napi_get_globalThis != napi_ok");
     }
-    std::shared_ptr<OHOS::Uri> uriPtr = std::make_shared<OHOS::Uri>("dataability:///com.ohos.contactsdataability");
-    return OHOS::AppExecFwk::DataAbilityHelper::Creator(ability->GetContext(), uriPtr);
+    napi_value abilityContext = nullptr;
+    status = napi_get_named_property(env, globalThis, "abilityContext", &abilityContext);
+    if (status != napi_ok) {
+        HILOG_ERROR("GetDataShareHelper napi_get_abilityContext != napi_ok");
+    }
+
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper = nullptr;
+    bool isStageMode = false;
+    status = OHOS::AbilityRuntime::IsStageContext(env, abilityContext, isStageMode);
+    if (status != napi_ok || !isStageMode) {
+        HILOG_INFO("GetFAModeContext");
+        auto ability = OHOS::AbilityRuntime::GetCurrentAbility(env);
+        if (ability == nullptr) {
+            HILOG_ERROR("Failed to get native ability instance");
+            return nullptr;
+        }
+        auto context = ability->GetContext();
+        if (context == nullptr) {
+            HILOG_ERROR("Failed to get native context instance");
+            return nullptr;
+        }
+        dataShareHelper = DataShare::DataShareHelper::Creator(context, CONTACTS_DATA_URI);
+    } else {
+        HILOG_INFO("GetStageModeContext");
+        auto context = OHOS::AbilityRuntime::GetStageModeContext(env, abilityContext);
+        if (context == nullptr) {
+            HILOG_ERROR("Failed to get native stage context instance");
+            return nullptr;
+        }
+        dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
+    }
+    return dataShareHelper;
 }
 
 /**
@@ -178,7 +201,7 @@ std::shared_ptr<OHOS::AppExecFwk::DataAbilityHelper> GetDataAbilityHelper(napi_e
  * @param holder Conditions for establish predicates operation
  * @param predicates Conditions for establish predicates operation
  */
-void HolderPredicates(Holder &holder, NativeRdb::DataAbilityPredicates &predicates)
+void HolderPredicates(Holder &holder, DataShare::DataSharePredicates &predicates)
 {
     if (!holder.bundleName.empty()) {
         predicates.And();
@@ -200,7 +223,7 @@ void HolderPredicates(Holder &holder, NativeRdb::DataAbilityPredicates &predicat
  * @param attrs Conditions for establish predicates operation
  * @param predicates Conditions for establish predicates operation
  */
-void AttributesPredicates(ContactAttributes &attrs, NativeRdb::DataAbilityPredicates &predicates)
+void AttributesPredicates(ContactAttributes &attrs, DataShare::DataSharePredicates &predicates)
 {
     unsigned int size = attrs.attributes.size();
     if (size > 0) {
@@ -246,9 +269,9 @@ void CheckAttributes(ContactAttributes &attrs)
  * @param env Conditions for resolve object interface operation
  * @param info Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildDeleteContactPredicates(napi_env env, ExecuteHelper *executeHelper)
+DataShare::DataSharePredicates BuildDeleteContactPredicates(napi_env env, ExecuteHelper *executeHelper)
 {
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     ContactsBuild contactsBuild;
     std::string keyValue = contactsBuild.NapiGetValueString(env, executeHelper->argv[0]);
     if (!keyValue.empty()) {
@@ -267,14 +290,14 @@ NativeRdb::DataAbilityPredicates BuildDeleteContactPredicates(napi_env env, Exec
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQueryContactPredicates(
+DataShare::DataSharePredicates BuildQueryContactPredicates(
     napi_env env, napi_value key, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
     std::string keyValue = contactsBuild.NapiGetValueString(env, key);
     Holder holder = contactsBuild.GetHolder(env, hold);
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     if (!keyValue.empty()) {
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
@@ -305,12 +328,12 @@ void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holde
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr)
+DataShare::DataSharePredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
     Holder holder = contactsBuild.GetHolder(env, hold);
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     std::map<std::string, std::string> holders;
     HoldersStructure(holders, holder);
     unsigned int size = attrs.attributes.size();
@@ -352,14 +375,14 @@ NativeRdb::DataAbilityPredicates BuildQueryContactsPredicates(napi_env env, napi
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQueryContactsByEmailPredicates(
+DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(
     napi_env env, napi_value emailobject, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
     std::string email = contactsBuild.NapiGetValueString(env, emailobject);
     Holder holder = contactsBuild.GetHolder(env, hold);
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     if (!email.empty() || email != "") {
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
@@ -380,14 +403,14 @@ NativeRdb::DataAbilityPredicates BuildQueryContactsByEmailPredicates(
  * @param hold Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQueryContactsByPhoneNumberPredicates(
+DataShare::DataSharePredicates BuildQueryContactsByPhoneNumberPredicates(
     napi_env env, napi_value number, napi_value hold, napi_value attr)
 {
     ContactsBuild contactsBuild;
     std::string phoneNumber = contactsBuild.NapiGetValueString(env, number);
     Holder holder = contactsBuild.GetHolder(env, hold);
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     if (!phoneNumber.empty() || phoneNumber != "") {
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
@@ -406,11 +429,11 @@ NativeRdb::DataAbilityPredicates BuildQueryContactsByPhoneNumberPredicates(
  * @param env Conditions for resolve object interface operation
  * @param hold Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQueryGroupsPredicates(napi_env env, napi_value hold)
+DataShare::DataSharePredicates BuildQueryGroupsPredicates(napi_env env, napi_value hold)
 {
     ContactsBuild contactsBuild;
     Holder holder = contactsBuild.GetHolder(env, hold);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     std::map<std::string, std::string> holders;
     HoldersStructure(holders, holder);
     predicates.EqualTo("is_deleted", "0");
@@ -435,12 +458,12 @@ NativeRdb::DataAbilityPredicates BuildQueryGroupsPredicates(napi_env env, napi_v
  * @param id Conditions for resolve object interface operation
  * @param hold Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQueryKeyPredicates(napi_env env, napi_value id, napi_value hold)
+DataShare::DataSharePredicates BuildQueryKeyPredicates(napi_env env, napi_value id, napi_value hold)
 {
     ContactsBuild contactsBuild;
     int value = contactsBuild.GetInt(env, id);
     Holder holder = contactsBuild.GetHolder(env, hold);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     if (value != 0) {
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
@@ -456,11 +479,11 @@ NativeRdb::DataAbilityPredicates BuildQueryKeyPredicates(napi_env env, napi_valu
  * @param env Conditions for resolve object interface operation
  * @param attr Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildQueryMyCardPredicates(napi_env env, napi_value attr)
+DataShare::DataSharePredicates BuildQueryMyCardPredicates(napi_env env, napi_value attr)
 {
     ContactsBuild contactsBuild;
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     unsigned int size = attrs.attributes.size();
     predicates.EqualTo("is_deleted", "0");
     if (size > 0) {
@@ -475,15 +498,15 @@ NativeRdb::DataAbilityPredicates BuildQueryMyCardPredicates(napi_env env, napi_v
     return predicates;
 }
 
-NativeRdb::DataAbilityPredicates BuildQueryContactData(napi_env env, napi_value &contactObject, napi_value &attrObject,
-    std::vector<NativeRdb::ValuesBucket> &valueContactData)
+DataShare::DataSharePredicates BuildQueryContactData(napi_env env, napi_value &contactObject, napi_value &attrObject,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
     ContactsBuild contactsBuild;
     Contacts contact;
     contactsBuild.GetContactDataByObject(env, contactObject, contact);
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attrObject);
     CheckAttributes(attrs);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     std::vector<std::string> fields;
     fields.push_back("raw_contact_id");
     if (contact.id != 0) {
@@ -506,7 +529,7 @@ std::vector<std::string> BuildUpdateContactColumns()
     return columns;
 }
 
-int GetRawIdByResultSet(const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+int GetRawIdByResultSet(const std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (resultSet == nullptr) {
         return -1;
@@ -524,18 +547,18 @@ int GetRawIdByResultSet(const std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSe
 void BuildUpdateContactConvertParams(napi_env env, napi_value &contact, napi_value &attr, ExecuteHelper *executeHelper)
 {
     executeHelper->valueContactData.clear();
-    NativeRdb::DataAbilityPredicates predicates =
+    DataShare::DataSharePredicates predicates =
         BuildQueryContactData(env, contact, attr, executeHelper->valueContactData);
     executeHelper->columns = BuildUpdateContactColumns();
     executeHelper->deletePredicates = BuildDeleteContactDataPredicates(env, attr);
 }
 
-NativeRdb::DataAbilityPredicates BuildDeleteContactDataPredicates(napi_env env, napi_value attr)
+DataShare::DataSharePredicates BuildDeleteContactDataPredicates(napi_env env, napi_value attr)
 {
     ContactsBuild contactsBuild;
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
     CheckAttributes(attrs);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     AttributesPredicates(attrs, predicates);
     return predicates;
 }
@@ -546,11 +569,11 @@ NativeRdb::DataAbilityPredicates BuildDeleteContactDataPredicates(napi_env env, 
  * @param env Conditions for resolve object interface operation
  * @param id Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildIsLocalContactPredicates(napi_env env, napi_value id)
+DataShare::DataSharePredicates BuildIsLocalContactPredicates(napi_env env, napi_value id)
 {
     ContactsBuild contactsBuild;
     int value = contactsBuild.GetInt(env, id);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     if (value != 0) {
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
@@ -569,11 +592,11 @@ NativeRdb::DataAbilityPredicates BuildIsLocalContactPredicates(napi_env env, nap
  * @param env Conditions for resolve object interface operation
  * @param id Conditions for resolve object interface operation
  */
-NativeRdb::DataAbilityPredicates BuildIsMyCardPredicates(napi_env env, napi_value id)
+DataShare::DataSharePredicates BuildIsMyCardPredicates(napi_env env, napi_value id)
 {
     ContactsBuild contactsBuild;
     int value = contactsBuild.GetInt(env, id);
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     if (value != 0) {
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
@@ -592,9 +615,9 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
     executeHelper->deferred = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, executeHelper->work));
-    if (executeHelper->dataAbilityHelper != nullptr) {
-        executeHelper->dataAbilityHelper->Release();
-        executeHelper->dataAbilityHelper = nullptr;
+    if (executeHelper->dataShareHelper != nullptr) {
+        executeHelper->dataShareHelper->Release();
+        executeHelper->dataShareHelper = nullptr;
     }
     delete executeHelper;
     executeHelper = nullptr;
@@ -634,9 +657,9 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         }
         executeHelper->work = nullptr;
         executeHelper->deferred = nullptr;
-        if (executeHelper->dataAbilityHelper != nullptr) {
-            executeHelper->dataAbilityHelper->Release();
-            executeHelper->dataAbilityHelper = nullptr;
+        if (executeHelper->dataShareHelper != nullptr) {
+            executeHelper->dataShareHelper->Release();
+            executeHelper->dataShareHelper = nullptr;
         }
         delete executeHelper;
     }
@@ -651,22 +674,30 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
         case ADD_CONTACT:
         case DELETE_CONTACT:
         case UPDATE_CONTACT:
-        case IS_LOCAL_CONTACT:
-        case IS_MY_CARD:
         case SELECT_CONTACT:
             napi_create_int64(env, executeHelper->resultData, &result);
             break;
+        case IS_LOCAL_CONTACT:
+        case IS_MY_CARD:
+            napi_get_boolean(env, executeHelper->resultData != 0, &result);
+            break;
         case QUERY_CONTACT:
+        case QUERY_MY_CARD:
             results = resultConvert.ResultSetToObject(env, executeHelper->resultSet);
             if (results != nullptr) {
                 napi_get_element(env, results, 0, &result);
             }
             break;
-        case QUERY_CONTACTS:
         case QUERY_KEY:
+            results = resultConvert.ResultSetToObject(env, executeHelper->resultSet);
+            if (results != nullptr) {
+                napi_get_element(env, results, 0, &result);
+            }
+            napi_get_named_property(env, result, "key", &result);
+            break;
+        case QUERY_CONTACTS:
         case QUERY_CONTACTS_BY_EMAIL:
         case QUERY_CONTACTS_BY_PHONE_NUMBER:
-        case QUERY_MY_CARD:
             result = resultConvert.ResultSetToObject(env, executeHelper->resultSet);
             break;
         case QUERY_GROUPS:
@@ -683,14 +714,14 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
-    int64_t rawId = contactsControl.RawContactInsert(
-        executeHelper->dataAbilityHelper, (executeHelper->valueContact)[0]);
-    std::vector<NativeRdb::ValuesBucket> value = executeHelper->valueContactData;
+    int rawId = contactsControl.RawContactInsert(
+        executeHelper->dataShareHelper, (executeHelper->valueContact)[0]);
+    std::vector<DataShare::DataShareValuesBucket> value = executeHelper->valueContactData;
     unsigned int size = value.size();
     for (unsigned int i = 0; i < size; ++i) {
-        (executeHelper->valueContactData)[i].PutInt("raw_contact_id", rawId);
+        (executeHelper->valueContactData)[i].Put("raw_contact_id", rawId);
     }
-    int code = contactsControl.ContactDataInsert(executeHelper->dataAbilityHelper, executeHelper->valueContactData);
+    int code = contactsControl.ContactDataInsert(executeHelper->dataShareHelper, executeHelper->valueContactData);
     if (code == 0) {
         executeHelper->resultData = rawId;
     } else {
@@ -701,7 +732,7 @@ void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
-    int ret = contactsControl.ContactDelete(executeHelper->dataAbilityHelper, executeHelper->predicates);
+    int ret = contactsControl.ContactDelete(executeHelper->dataShareHelper, executeHelper->predicates);
     HILOG_INFO("LocalExecuteDeleteContact contact ret = %{public}d", ret);
     executeHelper->resultData = ret;
 }
@@ -710,7 +741,7 @@ void LocalExecuteQueryContact(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
     executeHelper->resultSet = contactsControl.ContactQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     executeHelper->resultData = SUCCESS;
 }
 
@@ -718,7 +749,7 @@ void LocalExecuteQueryContactsOrKey(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
     executeHelper->resultSet = contactsControl.ContactQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     executeHelper->resultData = SUCCESS;
 }
 
@@ -726,7 +757,7 @@ void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
     executeHelper->resultSet = contactsControl.ContactDataQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     executeHelper->resultData = SUCCESS;
 }
 
@@ -734,7 +765,7 @@ void LocalExecuteQueryGroup(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
     executeHelper->resultSet = contactsControl.GroupsQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     executeHelper->resultData = SUCCESS;
 }
 
@@ -742,15 +773,15 @@ void LocalExecuteQueryHolders(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
     executeHelper->resultSet = contactsControl.HolderQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     executeHelper->resultData = SUCCESS;
 }
 
 void LocalExecuteQueryMyCard(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.MyCardQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+    executeHelper->resultSet = contactsControl.MyCardQuery(
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     executeHelper->resultData = SUCCESS;
 }
 
@@ -758,22 +789,22 @@ void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
     // query raw_contact_id
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactDataQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet = contactsControl.ContactDataQuery(
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     int rawId = GetRawIdByResultSet(resultSet);
-    std::vector<NativeRdb::ValuesBucket> value = executeHelper->valueContactData;
+    std::vector<DataShare::DataShareValuesBucket> value = executeHelper->valueContactData;
     unsigned int size = value.size();
     for (unsigned int i = 0; i < size; ++i) {
-        (executeHelper->valueContactData)[i].PutInt("raw_contact_id", rawId);
+        (executeHelper->valueContactData)[i].Put("raw_contact_id", rawId);
     }
     if (rawId != 0) {
         executeHelper->deletePredicates.EqualTo("raw_contact_id", std::to_string(rawId));
     }
     int resultCode = contactsControl.ContactDataDelete(
-        executeHelper->dataAbilityHelper, executeHelper->deletePredicates);
+        executeHelper->dataShareHelper, executeHelper->deletePredicates);
     if (resultCode == 0) {
         resultCode = contactsControl.ContactDataInsert(
-            executeHelper->dataAbilityHelper, executeHelper->valueContactData);
+            executeHelper->dataShareHelper, executeHelper->valueContactData);
     }
     executeHelper->resultData = resultCode;
 }
@@ -782,8 +813,8 @@ void LocalExecuteIsLocalContact(napi_env env, ExecuteHelper *executeHelper)
 {
     int64_t isLocal = 0;
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.ContactQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet = contactsControl.ContactQuery(
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     if (resultSet == nullptr) {
         executeHelper->resultData = isLocal;
         return;
@@ -800,8 +831,8 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
 {
     int64_t isMyCard = 0;
     ContactsControl contactsControl;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = contactsControl.MyCardQuery(
-        executeHelper->dataAbilityHelper, executeHelper->columns, executeHelper->predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet = contactsControl.MyCardQuery(
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     if (resultSet == nullptr) {
         executeHelper->resultData = isMyCard;
         return;
@@ -818,8 +849,8 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
 
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
-    if (executeHelper->dataAbilityHelper == nullptr) {
-        HILOG_ERROR("create dataAbilityHelper is null, please check your permission");
+    if (executeHelper->dataShareHelper == nullptr) {
+        HILOG_ERROR("create dataShareHelper is null, please check your permission");
         executeHelper->resultData = ERROR;
         return;
     }
@@ -895,10 +926,10 @@ napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper)
     return result;
 }
 
-NativeRdb::DataAbilityPredicates ConvertParamsSwitchSplit(
-    int code, napi_env env, napi_value &key, napi_value &hold, napi_value &attr)
+DataShare::DataSharePredicates ConvertParamsSwitchSplit(
+    int code, napi_env env, const napi_value &key, const napi_value &hold, const napi_value &attr)
 {
-    NativeRdb::DataAbilityPredicates predicates;
+    DataShare::DataSharePredicates predicates;
     switch (code) {
         case QUERY_CONTACT:
             predicates = BuildQueryContactPredicates(env, key, hold, attr);
@@ -985,7 +1016,7 @@ napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *exec
         }
     }
     SetChildActionCodeAndConvertParams(env, executeHelper);
-    executeHelper->dataAbilityHelper = GetDataAbilityHelper(env);
+    executeHelper->dataShareHelper = GetDataShareHelper(env, info);
 
     napi_value result = CreateAsyncWork(env, executeHelper);
     return result;

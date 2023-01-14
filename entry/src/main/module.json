@@ -1,0 +1,60 @@
+{
+  "module": {
+    "name": "contactsdata",
+    "type": "entry",
+    "srcEntrance": "./ets/Application/ContactsDataAbilityStage.ts",
+    "description": "$string:app_name",
+    "mainElement": "MainAbility",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "",
+    "abilities": [
+      {
+        "name": "MainAbility",
+        "srcEntrance": "",
+        "description": "dataability_description",
+        "visible": false
+      }
+    ],
+    "extensionAbilities": [
+      {
+        "name": "ContactsDataAbility",
+        "srcEntrance": "./ets/DataShareExtAbility/DataShareExtAbility.ts",
+        "readPermission": "ohos.permission.READ_CONTACTS",
+        "writePermission": "ohos.permission.WRITE_CONTACTS",
+        "description": "dataability_description",
+        "type": "dataShare",
+        "uri": "datashare://com.ohos.contactsdataability",
+        "visible": true,
+        "srcLanguage": "c++"
+      },
+      {
+        "name": "VoiceMailAbility",
+        "srcEntrance": "./ets/DataShareExtAbility/DataShareExtAbility.ts",
+        "permissions": [
+          "ohos.permission.MANAGE_VOICEMAIL"
+        ],
+        "description": "dataability_description",
+        "type": "dataShare",
+        "uri": "datashare://com.ohos.voicemailability",
+        "visible": true,
+        "srcLanguage": "c++"
+      },
+      {
+        "name": "CallLogAbility",
+        "srcEntrance": "./ets/DataShareExtAbility/DataShareExtAbility.ts",
+        "readPermission": "ohos.permission.READ_CALL_LOG",
+        "writePermission": "ohos.permission.WRITE_CALL_LOG",
+        "description": "dataability_description",
+        "type": "dataShare",
+        "uri": "datashare://com.ohos.calllogability",
+        "visible": true,
+        "srcLanguage": "c++"
+      }
+    ]
+  }
+}

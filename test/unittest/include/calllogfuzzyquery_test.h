@@ -24,10 +24,10 @@ class CalllogFuzzyQueryTest : public BaseTest {
 public:
     CalllogFuzzyQueryTest();
     ~CalllogFuzzyQueryTest();
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> CalllogQuery(
-        std::vector<std::string> columns, OHOS::NativeRdb::DataAbilityPredicates predicates);
-    int CalllogDelete(OHOS::NativeRdb::DataAbilityPredicates predicates);
-    int64_t CalllogInsertValues(OHOS::NativeRdb::ValuesBucket &values);
+    std::shared_ptr<OHOS::DataShare::DataShareResultSet> CalllogQuery(
+        std::vector<std::string> columns, OHOS::DataShare::DataSharePredicates predicates);
+    int CalllogDelete(OHOS::DataShare::DataSharePredicates predicates);
+    int64_t CalllogInsertValues(OHOS::DataShare::DataShareValuesBucket &values);
     void ClearCallLog();
 };
 } // namespace Test

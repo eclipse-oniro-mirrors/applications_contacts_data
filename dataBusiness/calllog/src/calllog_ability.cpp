@@ -20,16 +20,18 @@
 #include "ability_loader.h"
 #include "common.h"
 #include "contacts_common_event.h"
-#include "data_ability_predicates.h"
+#include "contacts_datashare_stub_impl.h"
+#include "datashare_ext_ability_context.h"
+#include "datashare_predicates.h"
 #include "file_utils.h"
 #include "predicates_convert.h"
 #include "rdb_predicates.h"
+#include "rdb_utils.h"
 #include "sql_analyzer.h"
 #include "uri_utils.h"
 
 namespace OHOS {
-namespace AppExecFwk {
-REGISTER_AA(CallLogAbility);
+namespace AbilityRuntime {
 namespace {
 std::mutex g_mutex;
 }
@@ -38,7 +40,12 @@ std::map<std::string, int> CallLogAbility::uriValueMap_ = {
     {"/com.ohos.calllogability/calls/calllog", Contacts::CALLLOG}
 };
 
-CallLogAbility::CallLogAbility()
+CallLogAbility* CallLogAbility::Create()
+{
+    return new CallLogAbility();
+}
+
+CallLogAbility::CallLogAbility() : DataShareExtAbility()
 {
 }
 
@@ -46,20 +53,30 @@ CallLogAbility::~CallLogAbility()
 {
 }
 
-void CallLogAbility::Dump(const std::string &extra)
+sptr<IRemoteObject> CallLogAbility::OnConnect(const AAFwk::Want &want)
 {
-    HILOG_ERROR("CallLogAbility ====>Dump:%{public}s", extra.c_str());
-    Contacts::FileUtils fileUtils;
-    std::string dirStr = Contacts::ContactsPath::DUMP_PATH;
-    fileUtils.WriteStringToFileAppend(dirStr, extra);
+    HILOG_INFO("CallLogAbility %{public}s begin.", __func__);
+    Extension::OnConnect(want);
+    sptr<DataShare::ContactsDataShareStubImpl> remoteObject = new (std::nothrow) DataShare::ContactsDataShareStubImpl(
+        std::static_pointer_cast<CallLogAbility>(shared_from_this()));
+    if (remoteObject == nullptr) {
+        HILOG_ERROR("%{public}s No memory allocated for DataShareStubImpl", __func__);
+        return nullptr;
+    }
+    HILOG_INFO("CallLogAbility %{public}s end.", __func__);
+    return remoteObject->AsObject();
 }
 
 void CallLogAbility::OnStart(const Want &want)
 {
-    std::string basePath = GetAbilityContext()->GetDatabaseDir();
-    Contacts::ContactsPath::RDB_PATH = basePath + "/";
-    Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
-    Contacts::ContactsPath::DUMP_PATH = GetFilesDir() + "/";
+    HILOG_INFO("CallLogAbility %{public}s begin.", __func__);
+    Extension::OnStart(want);
+    auto context = AbilityRuntime::Context::GetApplicationContext();
+    if (context != nullptr) {
+        std::string basePath = context->GetDatabaseDir();
+        Contacts::ContactsPath::RDB_PATH = basePath + "/";
+        Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
+    }
 }
 
 int CallLogAbility::UriParse(Uri &uri)
@@ -115,10 +132,11 @@ bool CallLogAbility::IsCommitOk(int code, std::mutex &mutex)
  *
  * @return Insert database results code
  */
-int CallLogAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &value)
+int CallLogAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
+    OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
-    bool isOk = sqlAnalyzer.CheckValuesBucket(value);
+    bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
     if (!isOk) {
         HILOG_ERROR("CallLogAbility CheckValuesBucket is error");
         return Contacts::RDB_EXECUTE_FAIL;
@@ -130,7 +148,7 @@ int CallLogAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &value)
         g_mutex.unlock();
         return Contacts::RDB_EXECUTE_FAIL;
     }
-    int resultId = InsertExecute(uri, value);
+    int resultId = InsertExecute(uri, valuesBucket);
     if (resultId == Contacts::OPERATION_ERROR) {
         callLogDataBase_->RollBack();
         g_mutex.unlock();
@@ -147,7 +165,7 @@ int CallLogAbility::Insert(const Uri &uri, const NativeRdb::ValuesBucket &value)
     return resultId;
 }
 
-int CallLogAbility::InsertExecute(const Uri &uri, const NativeRdb::ValuesBucket &value)
+int CallLogAbility::InsertExecute(const Uri &uri, const OHOS::NativeRdb::ValuesBucket &value)
 {
     int rowId = Contacts::RDB_EXECUTE_FAIL;
     OHOS::Uri uriTemp = uri;
@@ -171,7 +189,7 @@ int CallLogAbility::InsertExecute(const Uri &uri, const NativeRdb::ValuesBucket 
  *
  * @return Insert database results code
  */
-int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::ValuesBucket> &values)
+int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
     int rowRet = Contacts::RDB_EXECUTE_FAIL;
     unsigned int size = values.size();
@@ -189,8 +207,9 @@ int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::Val
     int count = 0;
     for (unsigned int i = 0; i < size; i++) {
         ++count;
-        OHOS::NativeRdb::ValuesBucket rawContactValues = values[i];
-        int code = InsertExecute(uri, rawContactValues);
+        DataShare::DataShareValuesBucket rawContactValues = values[i];
+        OHOS::NativeRdb::ValuesBucket value = RdbDataShareAdapter::RdbUtils::ToValuesBucket(rawContactValues);
+        int code = InsertExecute(uri, value);
         if (code == Contacts::RDB_EXECUTE_FAIL) {
             callLogDataBase_->RollBack();
             g_mutex.unlock();
@@ -226,10 +245,11 @@ int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<NativeRdb::Val
  * @return Update database results code
  */
 int CallLogAbility::Update(
-    const Uri &uri, const NativeRdb::ValuesBucket &value, const NativeRdb::DataAbilityPredicates &predicates)
+    const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
+    OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
-    bool isOk = sqlAnalyzer.CheckValuesBucket(value);
+    bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
     if (!isOk) {
         HILOG_ERROR("CallLogAbility CheckValuesBucket is error");
         return Contacts::RDB_EXECUTE_FAIL;
@@ -240,13 +260,13 @@ int CallLogAbility::Update(
     int ret = Contacts::RDB_EXECUTE_FAIL;
     OHOS::Uri uriTemp = uri;
     int parseCode = UriParse(uriTemp);
-    OHOS::NativeRdb::DataAbilityPredicates dataAbilityPredicates = predicates;
+    DataShare::DataSharePredicates dataSharePredicates = predicates;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     switch (parseCode) {
         case Contacts::CALLLOG:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::CALLLOG, dataAbilityPredicates);
-            ret = callLogDataBase_->UpdateCallLog(value, rdbPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::CALLLOG, dataSharePredicates);
+            ret = callLogDataBase_->UpdateCallLog(valuesBucket, rdbPredicates);
             break;
         default:
             HILOG_ERROR("CallLogAbility ====>no match uri action");
@@ -265,7 +285,7 @@ int CallLogAbility::Update(
  *
  * @return Delete database results code
  */
-int CallLogAbility::Delete(const Uri &uri, const NativeRdb::DataAbilityPredicates &predicates)
+int CallLogAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
     g_mutex.lock();
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
@@ -273,16 +293,16 @@ int CallLogAbility::Delete(const Uri &uri, const NativeRdb::DataAbilityPredicate
     int ret = Contacts::RDB_EXECUTE_FAIL;
     OHOS::Uri uriTemp = uri;
     int parseCode = UriParse(uriTemp);
-    OHOS::NativeRdb::DataAbilityPredicates dataAbilityPredicates = predicates;
+    DataShare::DataSharePredicates dataSharePredicates = predicates;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     switch (parseCode) {
         case Contacts::CALLLOG:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::CALLLOG, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::CALLLOG, dataSharePredicates);
             ret = callLogDataBase_->DeleteCallLog(rdbPredicates);
             break;
         default:
-            HILOG_ERROR("ContactsDataAbility ====>no match uri action");
+            HILOG_ERROR("CallLogAbility ====>no match uri action");
             break;
     }
     g_mutex.unlock();
@@ -299,31 +319,38 @@ int CallLogAbility::Delete(const Uri &uri, const NativeRdb::DataAbilityPredicate
  *
  * @return Query database results
  */
-std::shared_ptr<NativeRdb::AbsSharedResultSet> CallLogAbility::Query(
-    const Uri &uri, const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates)
+std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(
+    const Uri &uri, const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns)
 {
-    HILOG_INFO("ContactsDataAbility ====>Query start");
+    HILOG_INFO("CallLogAbility ====>Query start");
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
-    std::shared_ptr<NativeRdb::AbsSharedResultSet> result;
+    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result;
     OHOS::Uri uriTemp = uri;
     Contacts::UriUtils uriUtils;
     int parseCode = uriUtils.UriParse(uriTemp, uriValueMap_);
-    OHOS::NativeRdb::DataAbilityPredicates dataAbilityPredicates = predicates;
+    DataShare::DataSharePredicates dataSharePredicates = predicates;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     std::vector<std::string> columnsTemp = columns;
+    bool isUriMatch = true;
     switch (parseCode) {
         case Contacts::CALLLOG:
             rdbPredicates =
-                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::CALLLOG, dataAbilityPredicates);
+                predicatesConvert.ConvertPredicates(Contacts::CallsTableName::CALLLOG, dataSharePredicates);
             result = callLogDataBase_->Query(rdbPredicates, columnsTemp);
             break;
         default:
+            isUriMatch = false;
             HILOG_ERROR("CallLogAbility ====>no match uri action");
             break;
     }
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> sharedPtrResult = std::move(result);
-    HILOG_INFO("ContactsDataAbility ====>Query end");
+    if (!isUriMatch) {
+        return nullptr;
+    }
+    auto queryResultSet = RdbDataShareAdapter::RdbUtils::ToResultSetBridge(result);
+    std::shared_ptr<DataShare::DataShareResultSet> sharedPtrResult =
+        std::make_shared<DataShare::DataShareResultSet>(queryResultSet);
+    HILOG_INFO("CallLogAbility ====>Query end");
     return sharedPtrResult;
 }
 
@@ -331,5 +358,5 @@ void CallLogAbility::DataBaseNotifyChange(int code, Uri uri)
 {
     Contacts::ContactsCommonEvent::SendCallLogChange(code);
 }
-} // namespace AppExecFwk
+} // namespace AbilityRuntime
 } // namespace OHOS

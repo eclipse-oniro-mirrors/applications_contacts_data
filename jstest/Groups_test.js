@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-import featureAbility from '@ohos.ability.featureAbility';
-import ohos_data_ability from '@ohos.data.dataability';
+import dataShare from '@ohos.data.dataShare';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from 'deccjsunit/index'
 
-const URI_CONTACTS = "dataability:///com.ohos.contactsdataability";
-const groupUri = "dataability:///com.ohos.contactsdataability/contacts/groups";
+const URI_CONTACTS = "datashare:///com.ohos.contactsdataability";
+const groupUri = "datashare:///com.ohos.contactsdataability/contacts/groups";
 import common from './common.js';
 
 describe('GroupsTest', function() {
@@ -28,13 +27,13 @@ describe('GroupsTest', function() {
 
     async function groupsQuery(map, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': groupsQuery start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': groupsQuery start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(groupUri, resultColumns, condition);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
@@ -55,13 +54,13 @@ describe('GroupsTest', function() {
 
     async function queryIdForDelete(map, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info(tag + ': queryIdForDelete start ! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info(tag + ': queryIdForDelete start ! dataShareHelper = ' + dataShareHelper);
         let resultColumns = common.getCallLogResultColumns();
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("id", map.get("id"));
         try {
-            var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
+            var resultSet = await dataShareHelper.query(groupUri, resultColumns, condition);
             expect(resultSet.goToFirstRow() == false).assertTrue();
             console.info(tag + " :logMessage queryIdForDelete: goToFirstRow " + resultSet.goToFirstRow());
             resultSet.close();
@@ -72,10 +71,10 @@ describe('GroupsTest', function() {
 
     async function deleteAll(uri, tag)
     {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
-        var deleteCode = await DAHelper.delete(uri, condition);
+        var deleteCode = await dataShareHelper.delete(uri, condition);
         console.info(tag + ': deleteAll deleteCode = ' + deleteCode);
         expect(deleteCode == 0).assertTrue();
     }
@@ -87,10 +86,10 @@ describe('GroupsTest', function() {
      */
     it("group_insert_test_100", 0, async function(done) {
         console.info("---------logMessage group_insert_test_100 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
+            var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage group_insert_test_100: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
             var map = common.getProfileGroupMap();
@@ -111,10 +110,10 @@ describe('GroupsTest', function() {
      */
     it("group_update_test_500", 0, async function(done) {
         console.info("---------logMessage group_update_test_500 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
+            var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage group_update_test_500: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
             await GroupUpdate();
@@ -127,10 +126,10 @@ describe('GroupsTest', function() {
 
         async function GroupUpdate()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", groupId.toString());
             try {
-                var updateCode = await DAHelper.update(groupUri, common.getProfileUpdateGroup(), condition);
+                var updateCode = await dataShareHelper.update(groupUri, common.getProfileUpdateGroup(), condition);
                 console.info("logMessage group_update_test_500: updateCode = " + updateCode);
                 expect(updateCode == 0).assertTrue();
                 var map = common.getProfileUpdateGroupMap();
@@ -150,10 +149,10 @@ describe('GroupsTest', function() {
      */
     it("group_delete_test_200", 0, async function(done) {
         console.info("---------logMessage group_delete_test_200 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
+            var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage group_delete_test_200: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
             await GroupDelete();
@@ -164,10 +163,10 @@ describe('GroupsTest', function() {
         }
         async function GroupDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", groupId.toString());
             try {
-                var deleteCode = await DAHelper.delete(groupUri, condition);
+                var deleteCode = await dataShareHelper.delete(groupUri, condition);
                 console.info("logMessage group_delete_test_200 : deleteCode = " + deleteCode);
                 expect(deleteCode == 0).assertTrue();
                 var map = new Map();
@@ -187,10 +186,10 @@ describe('GroupsTest', function() {
      */
     it("group_query_test_300", 0, async function(done) {
         console.info("------------logMessage group_query_test_300 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
+            var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage group_query_test_300: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
             var map = common.getProfileGroupMap();
@@ -212,14 +211,14 @@ describe('GroupsTest', function() {
     it("group_query_test_400", 0, async function(done) {
         console.info("------------logMessage group_query_test_400 is starting!-----------");
         console.info("---------logMessage getDbHelper start!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         console.info('logMessage uri = ' + URI_CONTACTS);
-        var groupUri = "dataability:///com.ohos.contactsdataability/contacts/groups";
+        var groupUri = "datashare:///com.ohos.contactsdataability/contacts/groups";
 
         var insertValues = {"group_name" : "ManagerSecondGroup"};
         try {
-            var groupId = await DAHelper.insert(groupUri, insertValues);
+            var groupId = await dataShareHelper.insert(groupUri, insertValues);
             console.info("logMessage group_query_test_400: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
             await GroupQuery();
@@ -233,10 +232,10 @@ describe('GroupsTest', function() {
         async function GroupQuery()
         {
             var resultColumns = [ "id", "group_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.greaterThan("id", "0");
             try {
-                var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(groupUri, resultColumns, condition);
                 console.info("logMessage group_query_test_400: resultSet.rowCount = " + resultSet.rowCount);
                 expect(resultSet.rowCount == 1).assertTrue();
                 resultSet.close();
@@ -254,11 +253,11 @@ describe('GroupsTest', function() {
      */
     it("abnormal_group_insert_test_600", 0, async function(done) {
         console.info("---------logMessage abnormal_group_insert_test_600 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
-        const errorUri = "dataability:///com.ohos.contactsdataability/contacts/groupssss";
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        const errorUri = "datashare:///com.ohos.contactsdataability/contacts/groupssss";
         try {
-            var groupId = await DAHelper.insert(errorUri, common.getProfileGroup());
+            var groupId = await dataShareHelper.insert(errorUri, common.getProfileGroup());
             console.info("logMessage abnormal_group_insert_test_600: groupId = " + groupId);
             expect(groupId == -1).assertTrue();
             done();
@@ -275,10 +274,10 @@ describe('GroupsTest', function() {
      */
     it("abnormal_group_update_test_700", 0, async function(done) {
         console.info("---------logMessage abnormal_group_update_test_700 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
+            var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage abnormal_group_update_test_700: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
             await GroupUpdate();
@@ -291,11 +290,11 @@ describe('GroupsTest', function() {
 
         async function GroupUpdate()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", groupId.toString());
             var updateValue = { "group_notesss" : "6666" }
             try {
-                var updateCode = await DAHelper.update(groupUri, updateValue, condition);
+                var updateCode = await dataShareHelper.update(groupUri, updateValue, condition);
                 console.info("logMessage abnormal_group_update_test_700: updateCode = " + updateCode);
                 expect(updateCode == -1).assertTrue();
                 var map = common.getProfileUpdateGroupMap();
@@ -315,10 +314,10 @@ describe('GroupsTest', function() {
      */
     it("abnormal_group_delete_test_800", 0, async function(done) {
         console.info("---------logMessage abnormal_group_delete_test_800 is starting!----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
         try {
-            var groupId = await DAHelper.insert(groupUri, common.getProfileGroup());
+            var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage abnormal_group_delete_test_800: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
             await GroupDelete();
@@ -330,10 +329,10 @@ describe('GroupsTest', function() {
         }
         async function GroupDelete()
         {
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("idss", groupId.toString());
             try {
-                var deleteCode = await DAHelper.delete(groupUri, condition);
+                var deleteCode = await dataShareHelper.delete(groupUri, condition);
                 console.info("logMessage abnormal_group_delete_test_800 : deleteCode = " + deleteCode);
                 expect(deleteCode == -1).assertTrue();
                 var map = common.getProfileUpdateGroupMap();
@@ -353,15 +352,15 @@ describe('GroupsTest', function() {
      */
     it("abnormal_group_query_test_900", 0, async function(done) {
         console.info("------------logMessage abnormal_group_query_test_900 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertValues = {"group_name" : "PersonnelDepartment"};
         try {
-            var groupId = await DAHelper.insert(groupUri, insertValues);
+            var groupId = await dataShareHelper.insert(groupUri, insertValues);
             console.info("logMessage abnormal_group_query_test_900: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
-            await GroupQuery(DAHelper);
+            await GroupQuery(dataShareHelper);
             await deleteAll(groupUri, "abnormal_group_query_test_900");
             done();
         } catch (error) {
@@ -369,13 +368,13 @@ describe('GroupsTest', function() {
             done();
         }
 
-        async function GroupQuery(DAHelper)
+        async function GroupQuery(dataShareHelper)
         {
             var resultColumns = [ "id", "group_namesss" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", groupId.toString());
             try {
-                var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(groupUri, resultColumns, condition);
                 console.info('abnormal_group_query_test_900 resultSet.goToFirstRow() = ' + resultSet.goToFirstRow());
                 expect(resultSet.goToFirstRow() == false).assertTrue();
                 resultSet.close();
@@ -393,8 +392,8 @@ describe('GroupsTest', function() {
      */
     it("group_insert_test_1000", 0, async function(done) {
         console.info("------------logMessage group_insert_test_1000 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertValuesOne = {"group_name" : "test1000"};
         var insertValuesTwo = {"group_name" : "test1000"};
@@ -404,10 +403,10 @@ describe('GroupsTest', function() {
         array[1] = insertValuesTwo;
         array[array_two] = insertValuesThree;
         try {
-            var code = await DAHelper.batchInsert(groupUri, array);
+            var code = await dataShareHelper.batchInsert(groupUri, array);
             console.info("logMessage group_insert_test_1000: batchInsert code = " + code);
             expect(code == 0).assertTrue();
-            await GroupQuery(DAHelper);
+            await GroupQuery(dataShareHelper);
             await deleteAll(groupUri, "group_insert_test_1000");
             done();
         } catch (error) {
@@ -415,14 +414,14 @@ describe('GroupsTest', function() {
             done();
         }
 
-        async function GroupQuery(DAHelper)
+        async function GroupQuery(dataShareHelper)
         {
             var groupSize = 3;
             var resultColumns = [ "id", "group_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("group_name", "test1000");
             try {
-                var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(groupUri, resultColumns, condition);
                 console.info('group_insert_test_1000 resultSet.rowCount = ' + resultSet.rowCount);
                 expect(resultSet.rowCount == groupSize).assertTrue();
                 resultSet.close();
@@ -440,8 +439,8 @@ describe('GroupsTest', function() {
      */
     it("group_delete_test_1100", 0, async function(done) {
         console.info("------------logMessage group_delete_test_1100 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertValuesOne = {"group_name" : "test1100"};
         var insertValuesTwo = {"group_name" : "test1100"};
@@ -451,25 +450,25 @@ describe('GroupsTest', function() {
         array[1] = insertValuesTwo;
         array[array_two] = insertValuesThree;
         try {
-            var code = await DAHelper.batchInsert(groupUri, array);
+            var code = await dataShareHelper.batchInsert(groupUri, array);
             console.info("logMessage group_delete_test_1100: batchInsert code = " + code);
             expect(code == 0).assertTrue();
             await deleteAll(groupUri, "group_delete_test_1100");
-            await GroupQuery(DAHelper);
+            await GroupQuery(dataShareHelper);
             done();
         } catch (error) {
             console.info("logMessage group_delete_test_1100: group insert error = " + error);
             done();
         }
 
-        async function GroupQuery(DAHelper)
+        async function GroupQuery(dataShareHelper)
         {
             var groupSize = 0;
             var resultColumns = [ "id", "group_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("group_name", "test1100");
             try {
-                var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(groupUri, resultColumns, condition);
                 console.info('group_delete_test_1100  resultSet.rowCount = ' + resultSet.rowCount);
                 expect(resultSet.rowCount == groupSize).assertTrue();
                 resultSet.close();
@@ -487,8 +486,8 @@ describe('GroupsTest', function() {
      */
     it("group_update_test_1200", 0, async function(done) {
         console.info("------------logMessage group_update_test_1200 is starting!-----------");
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        console.info('logMessage get DAHelper success! DAHelper = ' + DAHelper);
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
         var insertValuesOne = {"group_name" : "test1200"};
         var insertValuesTwo = {"group_name" : "test1200"};
@@ -498,11 +497,11 @@ describe('GroupsTest', function() {
         array[1] = insertValuesTwo;
         array[array_two] = insertValuesThree;
         try {
-            var code = await DAHelper.batchInsert(groupUri, array);
+            var code = await dataShareHelper.batchInsert(groupUri, array);
             console.info("logMessage group_update_test_1200: batchInsert code = " + code);
             expect(code == 0).assertTrue();
-            await GroupUpdateThree(DAHelper);
-            await GroupQuery(DAHelper);
+            await GroupUpdateThree(dataShareHelper);
+            await GroupQuery(dataShareHelper);
             await deleteAll(groupUri, "group_update_test_1200");
             done();
         } catch (error) {
@@ -510,14 +509,14 @@ describe('GroupsTest', function() {
             done();
         }
 
-        async function GroupQuery(DAHelper)
+        async function GroupQuery(dataShareHelper)
         {
             var groupSize = 3;
             var resultColumns = [ "id", "group_name" ];
-            let condition = new ohos_data_ability.DataAbilityPredicates();
+            let condition = new dataShare.DataSharePredicates();
             condition.equalTo("group_name", "test120000");
             try {
-                var resultSet = await DAHelper.query(groupUri, resultColumns, condition);
+                var resultSet = await dataShareHelper.query(groupUri, resultColumns, condition);
                 console.info("logMessage group_update_test_1200: resultSet.rowCount = " + resultSet.rowCount);
                 expect(resultSet.rowCount == groupSize).assertTrue();
                 resultSet.close();
@@ -528,13 +527,13 @@ describe('GroupsTest', function() {
         }
     });
 
-    async function GroupUpdateThree(DAHelper)
+    async function GroupUpdateThree(dataShareHelper)
     {
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let condition = new dataShare.DataSharePredicates();
         condition.equalTo("group_name", "test1200");
         var updateValue = { "group_name" : "test120000" }
         try {
-            var updateCode = await DAHelper.update(groupUri, updateValue, condition);
+            var updateCode = await dataShareHelper.update(groupUri, updateValue, condition);
             console.info("logMessage group_update_test_1200: updateCode = " + updateCode);
             expect(updateCode == 0).assertTrue();
         } catch (error) {
@@ -543,11 +542,11 @@ describe('GroupsTest', function() {
     }
 
     afterAll(async function(done) {
-        let DAHelper = featureAbility.acquireDataAbilityHelper(URI_CONTACTS);
-        let condition = new ohos_data_ability.DataAbilityPredicates();
+        let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
+        let condition = new dataShare.DataSharePredicates();
         condition.notEqualTo("id", "0");
         try {
-            var deleteCode = await DAHelper.delete(groupUri, condition);
+            var deleteCode = await dataShareHelper.delete(groupUri, condition);
             console.info("logMessage group_deleted : deleteCode = " + deleteCode);
             done();
         } catch (error) {

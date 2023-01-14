@@ -16,7 +16,7 @@
 #ifndef VOICEMAIL_DATABASE_H
 #define VOICEMAIL_DATABASE_H
 
-#include "data_ability_predicates.h"
+#include "datashare_predicates.h"
 #include "rdb_errno.h"
 #include "rdb_helper.h"
 #include "rdb_open_callback.h"
