@@ -22,19 +22,9 @@ namespace OHOS {
 namespace ContactsApi {
 enum class Attribute {
     /**
-     * Indicates the contact event.
-     */
-    ATTR_CONTACT_EVENT,
-
-    /**
      * Indicates the email address.
      */
-    ATTR_EMAIL,
-
-    /**
-     * Indicates the contact group.
-     */
-    ATTR_GROUP_MEMBERSHIP,
+    ATTR_EMAIL = 1,
 
     /**
      * Indicates the instant messaging (IM) address.
@@ -42,19 +32,9 @@ enum class Attribute {
     ATTR_IM,
 
     /**
-     * Indicates the name.
-     */
-    ATTR_NAME,
-
-    /**
      * Indicates the nickname.
      */
     ATTR_NICKNAME,
-
-    /**
-     * Indicates the note.
-     */
-    ATTR_NOTE,
 
     /**
      * Indicates the organization.
@@ -67,14 +47,39 @@ enum class Attribute {
     ATTR_PHONE,
 
     /**
-     * Indicates the portrait.
+     * Indicates the name.
      */
-    ATTR_PORTRAIT,
+    ATTR_NAME,
 
     /**
      * Indicates the postal address.
      */
     ATTR_POSTAL_ADDRESS,
+
+    /**
+     * Indicates the portrait.
+     */
+    ATTR_PORTRAIT,
+
+    /**
+     * Indicates the contact group.
+     */
+    ATTR_GROUP_MEMBERSHIP,
+
+    /**
+     * Indicates the note.
+     */
+    ATTR_NOTE,
+
+    /**
+     * Indicates the contact event.
+     */
+    ATTR_CONTACT_EVENT,
+
+    /**
+     * Indicates the website.
+     */
+    ATTR_WEBSITE,
 
     /**
      * Indicates the relation.
@@ -84,12 +89,7 @@ enum class Attribute {
     /**
      * Indicates the Session Initiation Protocol (SIP) address.
      */
-    ATTR_SIP_ADDRESS,
-
-    /**
-     * Indicates the website.
-     */
-    ATTR_WEBSITE
+    ATTR_SIP_ADDRESS = 17
 };
 
 /**
