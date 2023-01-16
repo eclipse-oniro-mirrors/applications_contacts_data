@@ -80,7 +80,7 @@ DataShare::DataSharePredicates BuildUpdateContactPredicates(napi_env env, napi_v
 DataShare::DataSharePredicates BuildQueryContactData(napi_env env, napi_value &contactsObject,
     napi_value &attrObject, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
 std::vector<std::string> BuildUpdateContactColumns();
-void BuildUpdateContactConvertParams(
+DataShare::DataSharePredicates BuildUpdateContactConvertParams(
     napi_env env, napi_value &contacts, napi_value &attr, ExecuteHelper &executeHelper);
 DataShare::DataSharePredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr);
 DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(

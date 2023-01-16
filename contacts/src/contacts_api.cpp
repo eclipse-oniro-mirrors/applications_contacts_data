@@ -544,13 +544,15 @@ int GetRawIdByResultSet(const std::shared_ptr<DataShare::DataShareResultSet> &re
     return intValue;
 }
 
-void BuildUpdateContactConvertParams(napi_env env, napi_value &contact, napi_value &attr, ExecuteHelper *executeHelper)
+DataShare::DataSharePredicates BuildUpdateContactConvertParams(napi_env env, napi_value &contact,
+    napi_value &attr, ExecuteHelper *executeHelper)
 {
     executeHelper->valueContactData.clear();
     DataShare::DataSharePredicates predicates =
         BuildQueryContactData(env, contact, attr, executeHelper->valueContactData);
     executeHelper->columns = BuildUpdateContactColumns();
     executeHelper->deletePredicates = BuildDeleteContactDataPredicates(env, attr);
+    return predicates;
 }
 
 DataShare::DataSharePredicates BuildDeleteContactDataPredicates(napi_env env, napi_value attr)
@@ -981,7 +983,7 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
             executeHelper->predicates = BuildDeleteContactPredicates(env, executeHelper);
             break;
         case UPDATE_CONTACT:
-            BuildUpdateContactConvertParams(env, contact, attr, executeHelper);
+            executeHelper->predicates = BuildUpdateContactConvertParams(env, contact, attr, executeHelper);
             break;
         case IS_LOCAL_CONTACT:
             executeHelper->predicates = BuildIsLocalContactPredicates(env, id);
