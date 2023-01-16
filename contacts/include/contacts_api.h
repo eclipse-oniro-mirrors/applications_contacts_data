@@ -72,7 +72,7 @@ DataShare::DataSharePredicates ConvertParamsSwitchSplit(
 std::shared_ptr<DataShare::DataShareHelper> GetDataShareHelper(napi_env env, napi_callback_info info);
 void HolderPredicates(const Holder &holder, DataShare::DataSharePredicates &predicates);
 void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holder);
-void AttributesPredicates(ContactAttributes &attrs, DataShare::DataSharePredicates &predicates);
+void AttributesPredicates(bool isBegin, ContactAttributes &attrs, DataShare::DataSharePredicates &predicates);
 void CheckAttributes(ContactAttributes &attrs);
 DataShare::DataSharePredicates BuildQueryContactPredicates(
     napi_env env, std::string key, napi_value hold, napi_value attr);
@@ -80,7 +80,7 @@ DataShare::DataSharePredicates BuildUpdateContactPredicates(napi_env env, napi_v
 DataShare::DataSharePredicates BuildQueryContactData(napi_env env, napi_value &contactsObject,
     napi_value &attrObject, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
 std::vector<std::string> BuildUpdateContactColumns();
-void BuildUpdateContactConvertParams(
+DataShare::DataSharePredicates BuildUpdateContactConvertParams(
     napi_env env, napi_value &contacts, napi_value &attr, ExecuteHelper &executeHelper);
 DataShare::DataSharePredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr);
 DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(
