@@ -27,7 +27,7 @@ ContactsControl::~ContactsControl()
 {
 }
 
-int64_t ContactsControl::RawContactInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+int ContactsControl::RawContactInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
     DataShare::DataShareValuesBucket rawContactValues)
 {
     int code = 0;

@@ -714,7 +714,7 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
-    int64_t rawId = contactsControl.RawContactInsert(
+    int rawId = contactsControl.RawContactInsert(
         executeHelper->dataShareHelper, (executeHelper->valueContact)[0]);
     std::vector<DataShare::DataShareValuesBucket> value = executeHelper->valueContactData;
     unsigned int size = value.size();

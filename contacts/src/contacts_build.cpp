@@ -339,6 +339,9 @@ void ContactsBuild::GetValuesBucketPostalAddress(
         if (!contact.postalAddresses[i].city.empty()) {
             valuesBucketPostalAddress.Put("city", contact.postalAddresses[i].city);
         }
+        if (!contact.postalAddresses[i].country.empty()) {
+            valuesBucketPostalAddress.Put("country", contact.postalAddresses[i].country);
+        }
         valuesBucketPostalAddress.Put("content_type", "postal_address");
         valueContactData.push_back(valuesBucketPostalAddress);
     }
