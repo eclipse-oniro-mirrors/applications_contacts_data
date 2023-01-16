@@ -223,11 +223,13 @@ void HolderPredicates(Holder &holder, DataShare::DataSharePredicates &predicates
  * @param attrs Conditions for establish predicates operation
  * @param predicates Conditions for establish predicates operation
  */
-void AttributesPredicates(ContactAttributes &attrs, DataShare::DataSharePredicates &predicates)
+void AttributesPredicates(bool isBegin, ContactAttributes &attrs, DataShare::DataSharePredicates &predicates)
 {
     unsigned int size = attrs.attributes.size();
     if (size > 0) {
-        predicates.And();
+        if (!isBegin) {
+            predicates.And();
+        }
         predicates.BeginWrap();
     }
     for (unsigned int i = 0; i < size; ++i) {
@@ -303,7 +305,7 @@ DataShare::DataSharePredicates BuildQueryContactPredicates(
         predicates.And();
         predicates.EqualTo("quick_search_key", keyValue);
         HolderPredicates(holder, predicates);
-        AttributesPredicates(attrs, predicates);
+        AttributesPredicates(false, attrs, predicates);
     }
     return predicates;
 }
@@ -390,7 +392,7 @@ DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(
         predicates.And();
         predicates.EqualTo("content_type", "email");
         HolderPredicates(holder, predicates);
-        AttributesPredicates(attrs, predicates);
+        AttributesPredicates(false, attrs, predicates);
     }
     return predicates;
 }
@@ -418,7 +420,7 @@ DataShare::DataSharePredicates BuildQueryContactsByPhoneNumberPredicates(
         predicates.And();
         predicates.EqualTo("content_type", "phone");
         HolderPredicates(holder, predicates);
-        AttributesPredicates(attrs, predicates);
+        AttributesPredicates(false, attrs, predicates);
     }
     return predicates;
 }
@@ -561,7 +563,7 @@ DataShare::DataSharePredicates BuildDeleteContactDataPredicates(napi_env env, na
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
     CheckAttributes(attrs);
     DataShare::DataSharePredicates predicates;
-    AttributesPredicates(attrs, predicates);
+    AttributesPredicates(true, attrs, predicates);
     return predicates;
 }
 
@@ -800,11 +802,12 @@ void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper)
         (executeHelper->valueContactData)[i].Put("raw_contact_id", rawId);
     }
     if (rawId != 0) {
+        executeHelper->deletePredicates.And();
         executeHelper->deletePredicates.EqualTo("raw_contact_id", std::to_string(rawId));
     }
     int resultCode = contactsControl.ContactDataDelete(
         executeHelper->dataShareHelper, executeHelper->deletePredicates);
-    if (resultCode == 0) {
+    if (resultCode >= 0) {
         resultCode = contactsControl.ContactDataInsert(
             executeHelper->dataShareHelper, executeHelper->valueContactData);
     }
