@@ -54,7 +54,7 @@ int ContactsControl::ContactDataDelete(std::shared_ptr<DataShare::DataShareHelpe
     int code = 0;
     OHOS::Uri uriContactData("datashare:///com.ohos.contactsdataability/contacts/contact_data");
     code = dataShareHelper->Delete(uriContactData, predicates);
-    HILOG_INFO(" ContactsControl::ContactDataDelete insert code %{public}d", code);
+    HILOG_INFO(" ContactsControl::ContactDataDelete delete code %{public}d", code);
     return code;
 }
 
