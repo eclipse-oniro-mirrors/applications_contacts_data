@@ -48,11 +48,17 @@
             ]
         },
         "build": {
-            "sub_component": [
-                "//applications/standard/contactsdata:contactsdataability",
-                "//applications/standard/contactsdata/contacts:contact",
-                "//applications/standard/contactsdata:Contacts_DataAbility"
-            ]
+            "group_type": {
+                "base_group": [
+                ],
+                "fwk_group": [
+                    "//applications/standard/contactsdata/contacts:contact"
+                ],
+                "service_group": [
+                    "//applications/standard/contactsdata:contactsdataability",
+                    "//applications/standard/contactsdata:Contacts_DataAbility"
+                ]
+            }
         }
     }
 }
