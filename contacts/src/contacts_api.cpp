@@ -343,7 +343,7 @@ DataShare::DataSharePredicates BuildQueryContactsPredicates(napi_env env, napi_v
     std::map<std::string, std::string>::iterator it;
     for (it = holders.begin(); it != holders.end(); ++it) {
         predicates.EqualTo(it->first, it->second);
-        if (it != holders.end()--) {
+        if (it != --holders.end()) {
             predicates.And();
         }
     }
@@ -446,7 +446,7 @@ DataShare::DataSharePredicates BuildQueryGroupsPredicates(napi_env env, napi_val
     std::map<std::string, std::string>::iterator it;
     for (it = holders.begin(); it != holders.end(); ++it) {
         predicates.EqualTo(it->first, it->second);
-        if (it != holders.end()--) {
+        if (it != --holders.end()) {
             predicates.And();
         }
     }
