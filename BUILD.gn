@@ -24,7 +24,7 @@ ohos_hap("Contacts_DataAbility") {
   shared_libraries = [ ":contactsdataability" ]
   certificate_profile = "./signature/contactsdata.p7b"
   hap_name = "Contacts_DataAbility"
-  part_name = "contactsdata_hap"
+  part_name = "contacts_data_hap"
   subsystem_name = "applications"
   module_install_dir = "app/com.ohos.contactsdataability"
 }

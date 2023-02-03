@@ -1,5 +1,5 @@
 {
-    "name": "@ohos/contactsdata",
+    "name": "@ohos/contacts_data",
     "version": "3.1.0",
     "description": "contacts data ability",
     "publishAs": "code-segment",
@@ -14,7 +14,7 @@
     "author": {},
     "contributors": [],
     "segment": {
-        "destPath": "applications/standard/contactsdata"
+        "destPath": "applications/standard/contacts_data"
     },
     "component": {
         "name": "contactsdata_hap",
@@ -52,11 +52,11 @@
                 "base_group": [
                 ],
                 "fwk_group": [
-                    "//applications/standard/contactsdata/contacts:contact"
+                    "//applications/standard/contacts_data/contacts:contact"
                 ],
                 "service_group": [
-                    "//applications/standard/contactsdata:contactsdataability",
-                    "//applications/standard/contactsdata:Contacts_DataAbility"
+                    "//applications/standard/contacts_data:contactsdataability",
+                    "//applications/standard/contacts_data:Contacts_DataAbility"
                 ]
             }
         }
