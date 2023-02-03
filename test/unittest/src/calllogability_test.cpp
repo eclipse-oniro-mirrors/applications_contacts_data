@@ -81,6 +81,7 @@ int64_t CalllogAbilityTest::CalllogInsertValue(std::string displayName, OHOS::Da
 
 void CalllogAbilityTest::GetAllValuesColumn(std::vector<std::string> &column)
 {
+    column.push_back("slot_id");
     column.push_back("phone_number");
     column.push_back("display_name");
     column.push_back("call_direction");
@@ -124,6 +125,7 @@ OHOS::DataShare::DataShareValuesBucket CalllogAbilityTest::GetCallLogValues(
     RandomNumberUtils randomNumberUtils;
     std::string phoneNumber = randomNumberUtils.Generating(number);
     OHOS::DataShare::DataShareValuesBucket valuesBucket;
+    valuesBucket.Put("slot_id", ContactsRand());
     valuesBucket.Put("phone_number", phoneNumber + callLogTestStringValue);
     valuesBucket.Put("display_name", "name");
     valuesBucket.Put("call_direction", ContactsRand());
