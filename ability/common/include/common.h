@@ -122,6 +122,7 @@ constexpr const char *CALL_LOG_URI = "datashare:///com.ohos.calllogability";
 constexpr const char *CREATE_CALLLOG =
     "CREATE TABLE IF NOT EXISTS [calllog]("
     "[id] INTEGER PRIMARY KEY AUTOINCREMENT, "
+    "[slot_id] INTEGER NOT NULL DEFAULT 0, "
     "[phone_number] TEXT, "
     "[display_name] TEXT, "
     "[call_direction] INTEGER NOT NULL DEFAULT 0, "
