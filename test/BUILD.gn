@@ -39,7 +39,7 @@ ohos_unittest("contacts_test") {
     "unittest/src/voicemailability_test.cpp",
   ]
   deps = [
-    "//applications/standard/contactsdata:contactsdataability",
+    "applications/standard/contacts_data:contactsdataability",
     "//foundation/ability/ability_runtime/frameworks/native/ability/native:abilitykit_native",
     "//foundation/arkui/napi:ace_napi",
     "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
