@@ -144,7 +144,7 @@ ohos_shared_library("contactsdataability") {
   }
 
   public_deps = []
-  part_name = "contactsdata_hap"
+  part_name = "contacts_data_hap"
   subsystem_name = "applications"
 }
 ## Build contactsdataability.so }}}
