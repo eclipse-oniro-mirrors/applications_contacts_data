@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
 import("//build/lite/config/component/lite_component.gni")
 import("//build/ohos.gni")
 
@@ -19,6 +20,47 @@ config("contactsapi_public_config") {
   visibility = [ ":*" ]
   include_dirs = [ "include" ]
   cflags = []
+}
+
+jspath = "src/picker.js"
+
+# compile .js to .abc.
+action("gen_picker_abc") {
+  visibility = [ ":*" ]
+  script = "//arkcompiler/ets_frontend/ts2panda/scripts/generate_js_bytecode.py"
+
+  args = [
+    "--src-js",
+    rebase_path(jspath),
+    "--dst-file",
+    rebase_path(target_out_dir + "/picker.abc"),
+    "--node",
+    rebase_path("${node_path}"),
+    "--frontend-tool-path",
+    rebase_path("${ts2abc_build_path}"),
+    "--node-modules",
+    rebase_path("${node_modules}"),
+    "--module",
+  ]
+  deps = [ "//arkcompiler/ets_frontend/ts2panda:ark_ts2abc_build" ]
+  inputs = [ jspath ]
+  outputs = [ target_out_dir + "/picker.abc" ]
+}
+
+base_output_path = get_label_info(":picker_js", "target_out_dir")
+picker_obj_path = base_output_path + "/picker.o"
+gen_js_obj("picker_js") {
+  input = jspath
+  output = picker_obj_path
+  dep = ":gen_picker_abc"
+}
+
+abc_output_path = get_label_info(":picker_abc", "target_out_dir")
+picker_abc_obj_path = abc_output_path + "/picker_abc.o"
+gen_js_obj("picker_abc") {
+  input = "$target_out_dir/picker.abc"
+  output = picker_abc_obj_path
+  dep = ":gen_picker_abc"
 }
 
 ohos_shared_library("contact") {
@@ -38,9 +80,26 @@ ohos_shared_library("contact") {
     "//foundation/ability/ability_runtime/interfaces/inner_api/ability_manager/include",
     "//foundation/ability/ability_runtime/services/abilitymgr/include",
     "//foundation/ability/ability_runtime/interfaces/kits/native/ability/native",
+    "//foundation/distributeddatamgr/data_share/frameworks/native/common/include",
+    "//foundation/distributeddatamgr/data_share/frameworks/native/consumer/include",
+    "//foundation/distributeddatamgr/data_share/interfaces/inner_api/common/include",
+    "//foundation/distributeddatamgr/data_share/interfaces/inner_api/consumer/include",
+    "//foundation/distributeddatamgr/data_share/interfaces/inner_api/provider/include",
   ]
 
   public_configs = [ ":contactsapi_public_config" ]
+
+  deps = [
+    ":picker_abc",
+    ":picker_js",
+    "//foundation/ability/ability_runtime/frameworks/native/ability/native:abilitykit_native",
+  ]
+
+  sanitize = {
+    cfi = true
+    debug = false
+  }
+
   external_deps = [
     "ability_base:zuri",
     "ability_runtime:abilitykit_native",
