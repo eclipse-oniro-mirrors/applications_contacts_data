@@ -17,7 +17,7 @@
         "destPath": "applications/standard/contacts_data"
     },
     "component": {
-        "name": "contactsdata_hap",
+        "name": "contacts_data_hap",
         "subsystem": "applications",
         "syscap": [
             "SystemCapability.Applications.ContactsData"
