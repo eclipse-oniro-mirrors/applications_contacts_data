@@ -42,6 +42,7 @@ action("gen_picker_abc") {
     rebase_path("${node_modules}"),
     "--module",
   ]
+  deps = [ "../../../../arkcompiler/ets_frontend/ts2panda:ark_ts2abc_build" ]
   inputs = [ jspath ]
   outputs = [ target_out_dir + "/picker.abc" ]
 }
