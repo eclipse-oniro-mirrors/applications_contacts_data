@@ -17,12 +17,41 @@
 
 #include "contacts_api.h"
 
+extern const char _binary_picker_js_start[];
+extern const char _binary_picker_js_end[];
+extern const char _binary_picker_abc_start[];
+extern const char _binary_picker_abc_end[];
+
 namespace OHOS {
 namespace ContactsApi {
 static napi_value ModuleInit(napi_env env, napi_value exports)
 {
     OHOS::ContactsApi::Init(env, exports);
     return exports;
+}
+
+extern "C" __attribute__((visibility("default"))) void NAPI_contact_GetJSCode(const char** buf,
+    int* bufLen)
+{
+    if (buf != nullptr) {
+        *buf = _binary_picker_js_start;
+    }
+
+    if (bufLen != nullptr) {
+        *bufLen = _binary_picker_js_end - _binary_picker_js_start;
+    }
+}
+
+extern "C" __attribute__((visibility("default"))) void NAPI_contact_GetABCCode(const char** buf,
+    int* bufLen)
+{
+    if (buf != nullptr) {
+        *buf = _binary_picker_abc_start;
+    }
+
+    if (bufLen != nullptr) {
+        *bufLen = _binary_picker_abc_end - _binary_picker_abc_start;
+    }
 }
 
 extern "C" __attribute__((constructor)) void RegisterModule(void)
