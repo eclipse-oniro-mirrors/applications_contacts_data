@@ -117,7 +117,7 @@ int ContactsDataShareStubImpl::Delete(const Uri &uri, const DataSharePredicates 
 }
 
 std::shared_ptr<DataShareResultSet> ContactsDataShareStubImpl::Query(const Uri &uri,
-    const DataSharePredicates &predicates, std::vector<std::string> &columns)
+    const DataSharePredicates &predicates, std::vector<std::string> &columns, DatashareBusinessError &businessError)
 {
     HILOG_INFO("query begin.");
     std::shared_ptr<DataShareResultSet> resultSet = nullptr;
