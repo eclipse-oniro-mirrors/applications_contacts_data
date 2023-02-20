@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+const contact = requireInternal('contact');
+
 async function contactsPickerSelect() {
     if (arguments.length == 2 && typeof arguments[1] != "function") {
         console.log("[picker] contactsPickerSelect callback invalid");
@@ -81,5 +84,37 @@ async function contactsPickerSelect() {
 }
 
 export default {
-    selectContact : contactsPickerSelect
+    selectContact: contactsPickerSelect,
+    addContact: contact.addContact,
+    deleteContact: contact.deleteContact,
+    queryContact: contact.queryContact,
+    queryContacts: contact.queryContacts,
+    queryContactsByEmail: contact.queryContactsByEmail,
+    queryContactsByPhoneNumber: contact.queryContactsByPhoneNumber,
+    queryGroups: contact.queryGroups,
+    queryHolders: contact.queryHolders,
+    queryKey: contact.queryKey,
+    queryMyCard: contact.queryMyCard,
+    updateContact: contact.updateContact,
+    isLocalContact: contact.isLocalContact,
+    isMyCard: contact.isMyCard,
+
+    Contact: contact.Contact,
+    ContactAttributes: contact.ContactAttributes,
+    Attribute: contact.Attribute,
+    Email: contact.Email,
+    Event: contact.Event,
+    Group: contact.Group,
+    Holder: contact.Holder,
+    ImAddress: contact.ImAddress,
+    Name: contact.Name,
+    NickName: contact.NickName,
+    Note: contact.Note,
+    Organization: contact.Organization,
+    PhoneNumber: contact.PhoneNumber,
+    Portrait: contact.Portrait,
+    PostalAddress: contact.PostalAddress,
+    Relation: contact.Relation,
+    SipAddress: contact.SipAddress,
+    Website: contact.Website
 }
