@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
 import("//build/lite/config/component/lite_component.gni")
 import("//build/ohos.gni")
 
@@ -19,6 +20,47 @@ config("contactsapi_public_config") {
   visibility = [ ":*" ]
   include_dirs = [ "include" ]
   cflags = []
+}
+
+jspath = "src/contact.js"
+
+# compile .js to .abc.
+action("gen_contact_abc") {
+  visibility = [ ":*" ]
+  script = "../../../../arkcompiler/ets_frontend/ts2panda/scripts/generate_js_bytecode.py"
+
+  args = [
+    "--src-js",
+    rebase_path(jspath),
+    "--dst-file",
+    rebase_path(target_out_dir + "/contact.abc"),
+    "--node",
+    rebase_path("${node_path}"),
+    "--frontend-tool-path",
+    rebase_path("${ts2abc_build_path}"),
+    "--node-modules",
+    rebase_path("${node_modules}"),
+    "--module",
+  ]
+  deps = [ "../../../../arkcompiler/ets_frontend/ts2panda:ark_ts2abc_build" ]
+  inputs = [ jspath ]
+  outputs = [ target_out_dir + "/contact.abc" ]
+}
+
+base_output_path = get_label_info(":contact_js", "target_out_dir")
+contact_obj_path = base_output_path + "/contact.o"
+gen_js_obj("contact_js") {
+  input = jspath
+  output = contact_obj_path
+  dep = ":gen_contact_abc"
+}
+
+abc_output_path = get_label_info(":contact_abc", "target_out_dir")
+contact_abc_obj_path = abc_output_path + "/contact_abc.o"
+gen_js_obj("contact_abc") {
+  input = "$target_out_dir/contact.abc"
+  output = contact_abc_obj_path
+  dep = ":gen_contact_abc"
 }
 
 ohos_shared_library("contact") {
@@ -41,6 +83,17 @@ ohos_shared_library("contact") {
   ]
 
   public_configs = [ ":contactsapi_public_config" ]
+
+  deps = [
+    ":contact_abc",
+    ":contact_js",
+  ]
+
+  sanitize = {
+    cfi = true
+    debug = false
+  }
+
   external_deps = [
     "ability_base:zuri",
     "ability_runtime:abilitykit_native",

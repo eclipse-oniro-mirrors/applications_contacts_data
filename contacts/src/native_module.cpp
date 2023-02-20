@@ -17,6 +17,11 @@
 
 #include "contacts_api.h"
 
+extern const char _binary_contact_js_start[];
+extern const char _binary_contact_js_end[];
+extern const char _binary_contact_abc_start[];
+extern const char _binary_contact_abc_end[];
+
 namespace OHOS {
 namespace ContactsApi {
 static napi_value ModuleInit(napi_env env, napi_value exports)
@@ -29,7 +34,7 @@ extern "C" __attribute__((constructor)) void RegisterModule(void)
 {
     napi_module module = {
         .nm_version = 1, // NAPI v1
-        .nm_flags = 0,                     // normal
+        .nm_flags = 0, // normal
         .nm_filename = nullptr,
         .nm_register_func = ModuleInit,
         .nm_modname = "contact",
@@ -37,6 +42,30 @@ extern "C" __attribute__((constructor)) void RegisterModule(void)
         .reserved = {}
     };
     napi_module_register(&module);
+}
+
+extern "C" __attribute__((visibility("default"))) void NAPI_contact_GetJSCode(const char** buf,
+    int* bufLen)
+{
+    if (buf != nullptr) {
+        *buf = _binary_contact_js_start;
+    }
+
+    if (bufLen != nullptr) {
+        *bufLen = _binary_contact_js_end - _binary_contact_js_start;
+    }
+}
+
+extern "C" __attribute__((visibility("default"))) void NAPI_contact_GetABCCode(const char** buf,
+    int* bufLen)
+{
+    if (buf != nullptr) {
+        *buf = _binary_contact_abc_start;
+    }
+
+    if (bufLen != nullptr) {
+        *bufLen = _binary_contact_abc_end - _binary_contact_abc_start;
+    }
 }
 } // namespace ContactsApi
 } // namespace OHOS
