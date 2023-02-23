@@ -17,7 +17,6 @@
 
 #include <mutex>
 
-#include "ability_loader.h"
 #include "common.h"
 #include "contacts_columns.h"
 #include "contacts_common_event.h"
