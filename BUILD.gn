@@ -119,9 +119,9 @@ ohos_shared_library("contactsdataability") {
   external_deps = [
     "ability_base:want",
     "ability_base:zuri",
+    "ability_runtime:abilitykit_native",
     "ability_runtime:app_context",
     "ability_runtime:dataobs_manager",
-    "ability_runtime:extensionkit_native",
     "c_utils:utilsbase",
     "common_event_service:cesfwk_innerkits",
     "data_share:datashare_common",
