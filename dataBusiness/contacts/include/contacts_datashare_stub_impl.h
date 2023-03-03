@@ -31,8 +31,8 @@ public:
     int Update(const Uri &uri, const DataSharePredicates &predicates,
         const DataShareValuesBucket &value) override;
     int Delete(const Uri &uri, const DataSharePredicates &predicates) override;
-    std::shared_ptr<DataShareResultSet> Query(const Uri &uri,
-        const DataSharePredicates &predicates, std::vector<std::string> &columns) override;
+    std::shared_ptr<DataShareResultSet> Query(const Uri &uri, const DataSharePredicates &predicates,
+        std::vector<std::string> &columns, DatashareBusinessError &businessError) override;
     int BatchInsert(const Uri &uri, const std::vector<DataShareValuesBucket> &values) override;
 
     std::vector<std::string> GetFileTypes(const Uri &uri, const std::string &mimeTypeFilter) override;
