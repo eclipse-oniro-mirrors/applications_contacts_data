@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+const featureAbility = requireNapi('ability.featureAbility');
 const contact = requireInternal('contact');
 
 async function contactsPickerSelect() {
@@ -21,23 +21,43 @@ async function contactsPickerSelect() {
         throw Error("invalid callback");
     }
 
-    let config = {
-        parameters: {
-            'pageFlag': "page_flag_single_choose",
-        },
-        bundleName: "com.ohos.contacts",
-        abilityName: "com.ohos.contacts.MainAbility",
-    }
-    if (arguments.length > 0 && typeof arguments[0] == 'object') {
-        let option = arguments[0];
-        if (option.isMultiSelect != undefined) {
-            config.parameters.pageFlag = (option.isMultiSelect == true) ? "page_flag_multi_choose" : "page_flag_single_choose";
-        }
-    }
-    console.log("[picker] contactsPickerSelect config: " + JSON.stringify(config));
-    
     try {
-        let result = await globalThis.abilityContext.startAbilityForResult(config, {windowMode: 1});
+        let result;
+        if (globalThis.abilityContext) {
+            let config = {
+                parameters: {
+                    'pageFlag': "page_flag_single_choose"
+                },
+                bundleName: "com.ohos.contacts",
+                abilityName: "com.ohos.contacts.MainAbility",
+            }
+            if (arguments.length > 0 && typeof arguments[0] == 'object') {
+                let option = arguments[0];
+                if (option.isMultiSelect != undefined) {
+                    config.parameters.pageFlag = (option.isMultiSelect == true) ? "page_flag_multi_choose" : "page_flag_single_choose";
+                }
+            }
+            console.log("[picker] contactsPickerSelect config: " + JSON.stringify(config));
+            result = await globalThis.abilityContext.startAbilityForResult(config, {windowMode: 1});
+        } else {
+            let parameter = {
+                want: {
+                    parameters: {
+                        'pageFlag': "page_flag_single_choose"
+                    },
+                    bundleName: "com.ohos.contacts",
+                    abilityName: "com.ohos.contacts.MainAbility",
+                },
+            }
+            if (arguments.length > 0 && typeof arguments[0] == 'object') {
+                let option = arguments[0];
+                if (option.isMultiSelect != undefined) {
+                    parameter.want.parameters.pageFlag = (option.isMultiSelect == true) ? "page_flag_multi_choose" : "page_flag_single_choose";
+                }
+            }
+            console.log("[picker] contactsPickerSelect parameter: " + JSON.stringify(parameter));
+            result = await featureAbility.startAbilityForResult(parameter);
+        }
         let contactObject = result.want.parameters.contactObjects;
         let params = [];
         try {
@@ -74,7 +94,7 @@ async function contactsPickerSelect() {
             if (result.resultCode == 0) {
                 resolve(contacts);
             } else {
-                console.log("[picker] contactsPickerSelect err: " + result.resultCode);
+                console.log("[picker] contactsPickerSelect err, result.resultCode = : " + result.resultCode);
                 reject(result.resultCode);
             }
         })
