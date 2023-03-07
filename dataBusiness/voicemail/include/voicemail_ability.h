@@ -37,7 +37,8 @@ public:
         const DataShare::DataShareValuesBucket &value) override;
     virtual int Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates) override;
     virtual std::shared_ptr<DataShare::DataShareResultSet> Query(const Uri &uri,
-        const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns) override;
+        const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
+        DataShare::DatashareBusinessError &businessError) override;
 
 private:
     static std::shared_ptr<Contacts::VoiceMailDataBase> voiceMailDataBase_;

@@ -127,7 +127,7 @@ std::shared_ptr<DataShareResultSet> ContactsDataShareStubImpl::Query(const Uri &
         HILOG_ERROR("query failed, extension is null.");
         return nullptr;
     }
-    resultSet = extension->Query(uri, predicates, columns);
+    resultSet = extension->Query(uri, predicates, columns, businessError);
     HILOG_INFO("query end successfully.");
     return resultSet;
 }

@@ -333,8 +333,9 @@ int VoiceMailAbility::Delete(const Uri &uri, const DataShare::DataSharePredicate
  *
  * @return Query database results
  */
-std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(
-    const Uri &uri, const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns)
+std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(const Uri &uri,
+    const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
+    DataShare::DatashareBusinessError &businessError)
 {
     HILOG_ERROR("VoiceMailAbility ====>Query start");
     voiceMailDataBase_ = Contacts::VoiceMailDataBase::GetInstance();

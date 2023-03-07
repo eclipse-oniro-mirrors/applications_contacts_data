@@ -484,8 +484,9 @@ void ContactsDataAbility::DeleteExecute(
  *
  * @return Database query result
  */
-std::shared_ptr<DataShare::DataShareResultSet> ContactsDataAbility::Query(
-    const Uri &uri, const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns)
+std::shared_ptr<DataShare::DataShareResultSet> ContactsDataAbility::Query(const Uri &uri,
+    const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
+    DataShare::DatashareBusinessError &businessError)
 {
     HILOG_INFO("ContactsDataAbility ====>Query start");
     g_mutex.lock();
