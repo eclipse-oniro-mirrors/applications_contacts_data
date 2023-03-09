@@ -319,8 +319,9 @@ int CallLogAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates 
  *
  * @return Query database results
  */
-std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(
-    const Uri &uri, const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns)
+std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &uri,
+    const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
+    DataShare::DatashareBusinessError &businessError)
 {
     HILOG_INFO("CallLogAbility ====>Query start");
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
