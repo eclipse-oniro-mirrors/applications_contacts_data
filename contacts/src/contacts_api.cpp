@@ -796,15 +796,18 @@ void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper)
     std::shared_ptr<DataShare::DataShareResultSet> resultSet = contactsControl.ContactDataQuery(
         executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     int rawId = GetRawIdByResultSet(resultSet);
+    if (rawId == 0) {
+        HILOG_ERROR("LocalExecuteUpdateContact contact rawId equals 0");
+        executeHelper->resultData = ERROR;
+        return;
+    }
     std::vector<DataShare::DataShareValuesBucket> value = executeHelper->valueContactData;
     unsigned int size = value.size();
     for (unsigned int i = 0; i < size; ++i) {
         (executeHelper->valueContactData)[i].Put("raw_contact_id", rawId);
     }
-    if (rawId != 0) {
-        executeHelper->deletePredicates.And();
-        executeHelper->deletePredicates.EqualTo("raw_contact_id", std::to_string(rawId));
-    }
+    executeHelper->deletePredicates.And();
+    executeHelper->deletePredicates.EqualTo("raw_contact_id", std::to_string(rawId));
     int resultCode = contactsControl.ContactDataDelete(
         executeHelper->dataShareHelper, executeHelper->deletePredicates);
     if (resultCode >= 0) {
