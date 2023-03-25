@@ -23,11 +23,10 @@ namespace OHOS {
 namespace Contacts {
 std::shared_ptr<CallLogDataBase> CallLogDataBase::callLogDataBase_ = nullptr;
 std::shared_ptr<OHOS::NativeRdb::RdbStore> CallLogDataBase::store_ = nullptr;
-static std::string g_databaseName;
 
 CallLogDataBase::CallLogDataBase()
 {
-    g_databaseName = ContactsPath::RDB_PATH + "calls.db";
+    static std::string g_databaseName = ContactsPath::RDB_PATH + "calls.db";
     HILOG_INFO("CallLogDataBase g_databaseName :%{public}s", g_databaseName.c_str());
     int errCode = OHOS::NativeRdb::E_OK;
     OHOS::NativeRdb::RdbStoreConfig config(g_databaseName);
