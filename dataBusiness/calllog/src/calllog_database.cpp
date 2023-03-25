@@ -26,7 +26,7 @@ std::shared_ptr<OHOS::NativeRdb::RdbStore> CallLogDataBase::store_ = nullptr;
 
 CallLogDataBase::CallLogDataBase()
 {
-    static std::string g_databaseName = ContactsPath::RDB_PATH + "calls.db";
+    std::string g_databaseName = ContactsPath::RDB_PATH + "calls.db";
     HILOG_INFO("CallLogDataBase g_databaseName :%{public}s", g_databaseName.c_str());
     int errCode = OHOS::NativeRdb::E_OK;
     OHOS::NativeRdb::RdbStoreConfig config(g_databaseName);
