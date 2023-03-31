@@ -65,7 +65,7 @@ std::set<std::string> MergeUtils::QueryDataExecute(
 {
     std::set<std::string> result;
     unsigned int size = rawIds.size();
-    if (size <= 0) {
+    if (size < 1) {
         return result;
     }
     std::string query = "SELECT ";

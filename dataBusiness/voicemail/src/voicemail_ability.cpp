@@ -137,13 +137,12 @@ int VoiceMailAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBuc
     }
     g_mutex.lock();
     voiceMailDataBase_ = Contacts::VoiceMailDataBase::GetInstance();
-    int rowRet = Contacts::RDB_EXECUTE_FAIL;
     int ret = voiceMailDataBase_->BeginTransaction();
     if (!IsBeginTransactionOK(ret, g_mutex)) {
         g_mutex.unlock();
         return Contacts::RDB_EXECUTE_FAIL;
     }
-    rowRet = InsertExecute(uri, valuesBucket);
+    int rowRet = InsertExecute(uri, valuesBucket);
     if (rowRet == Contacts::OPERATION_ERROR) {
         voiceMailDataBase_->RollBack();
         g_mutex.unlock();
@@ -197,7 +196,7 @@ int VoiceMailAbility::InsertExecute(const OHOS::Uri &uri, const OHOS::NativeRdb:
 int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
     unsigned int size = values.size();
-    if (size <= 0) {
+    if (size < 1) {
         return Contacts::RDB_EXECUTE_FAIL;
     }
     g_mutex.lock();

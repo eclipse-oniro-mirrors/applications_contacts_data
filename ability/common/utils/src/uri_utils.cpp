@@ -38,8 +38,8 @@ std::map<std::string, std::string> UriUtils::getQueryParameter(OHOS::Uri &uri)
     unsigned int size = tempVector.size();
     for (unsigned int i = 0; i < size; i++) {
         std::vector<std::string> childTempVector = split(tempVector[i], "=");
-        size_t size = childTempVector.size();
-        if (size != REQUEST_PARAMS_NUM) {
+        size_t childSize = childTempVector.size();
+        if (childSize != REQUEST_PARAMS_NUM) {
             HILOG_ERROR("UriUtils uriParse getQueryParameter query parameter error");
             break;
         }

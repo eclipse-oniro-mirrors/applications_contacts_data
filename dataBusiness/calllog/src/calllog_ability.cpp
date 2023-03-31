@@ -192,7 +192,7 @@ int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::Dat
 {
     int rowRet = Contacts::RDB_EXECUTE_FAIL;
     unsigned int size = values.size();
-    if (size <= 0) {
+    if (size < 1) {
         HILOG_ERROR("BatchInsert value is error");
         return rowRet;
     }
