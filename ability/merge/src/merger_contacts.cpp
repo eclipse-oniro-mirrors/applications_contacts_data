@@ -200,7 +200,7 @@ void MergerContacts::UpdateRawContactsExecute(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int minContactId, std::set<int> Ids)
 {
     unsigned int size = Ids.size();
-    if (size < 0) {
+    if (size < 1) {
         return;
     }
     std::string updateRawContact = "UPDATE ";

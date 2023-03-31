@@ -53,7 +53,6 @@ DataBaseDisasterRecovery::~DataBaseDisasterRecovery()
 int DataBaseDisasterRecovery::SQLiteCheckDb()
 {
     g_mtx.lock();
-    int ret = OPERATION_ERROR;
     HILOG_INFO("DataBaseDisasterRecovery SQLliteCheck start.");
     redbStoreMap.clear();
     if (redbStoreMap.empty()) {
@@ -70,7 +69,7 @@ int DataBaseDisasterRecovery::SQLiteCheckDb()
     }
     for (auto &kv : redbStoreMap) {
         std::shared_ptr<OHOS::NativeRdb::RdbStore> store_ = kv.second;
-        ret = SQLiteCheckDb(store_, kv.first);
+        int ret = SQLiteCheckDb(store_, kv.first);
         if (ret != OHOS::NativeRdb::E_OK) {
             HILOG_ERROR("DataBaseDisasterRecovery SQLiteCheckDb ERROR.");
             g_mtx.unlock();

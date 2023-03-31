@@ -181,7 +181,6 @@ int ContactsDataAbility::Insert(const Uri &uri, const DataShare::DataShareValues
     g_mutex.lock();
     contactDataBase_ = Contacts::ContactsDataBase::GetInstance();
     profileDataBase_ = Contacts::ProfileDatabase::GetInstance();
-    int resultId = Contacts::RDB_EXECUTE_FAIL;
     OHOS::Uri uriTemp = uri;
     int code = UriParseAndSwitch(uriTemp);
     int ret = contactDataBase_->BeginTransaction();
@@ -189,7 +188,7 @@ int ContactsDataAbility::Insert(const Uri &uri, const DataShare::DataShareValues
         g_mutex.unlock();
         return Contacts::RDB_EXECUTE_FAIL;
     }
-    resultId = InsertExecute(code, valuesBucket);
+    int resultId = InsertExecute(code, valuesBucket);
     HILOG_INFO("Insert id = %{public}d", resultId);
     if (resultId == Contacts::OPERATION_ERROR) {
         contactDataBase_->RollBack();
@@ -251,7 +250,7 @@ int ContactsDataAbility::InsertExecute(int &code, const OHOS::NativeRdb::ValuesB
 int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
     unsigned int size = values.size();
-    if (size <= 0) {
+    if (size < 1) {
         return Contacts::RDB_EXECUTE_FAIL;
     }
     g_mutex.lock();
