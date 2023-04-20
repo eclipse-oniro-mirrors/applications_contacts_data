@@ -4,7 +4,7 @@
     "description": "contacts data ability",
     "publishAs": "code-segment",
     "homePage": "https://gitee.com/openharmony",
-    "repository": "https://gitee.com/openharmony/applications_contactsdata",
+    "repository": "https://gitee.com/openharmony/applications_contacts_data",
     "license": "Apache License 2.0",
     "language": "",
     "private": false,
