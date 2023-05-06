@@ -129,7 +129,7 @@ bool VoiceMailAbility::IsCommitOK(int code, std::mutex &mutex)
 int VoiceMailAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
@@ -200,7 +200,7 @@ int VoiceMailAbility::InsertExecute(const OHOS::Uri &uri, const OHOS::NativeRdb:
 int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     unsigned int size = values.size();
@@ -258,7 +258,7 @@ int VoiceMailAbility::Update(
     const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
@@ -307,7 +307,7 @@ int VoiceMailAbility::Update(
 int VoiceMailAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     g_mutex.lock();
@@ -352,7 +352,7 @@ std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(const Uri
     DataShare::DatashareBusinessError &businessError)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return nullptr;
     }
     HILOG_ERROR("VoiceMailAbility ====>Query start");

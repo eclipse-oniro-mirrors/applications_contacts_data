@@ -134,7 +134,7 @@ bool CallLogAbility::IsCommitOk(int code, std::mutex &mutex)
 int CallLogAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
@@ -195,7 +195,7 @@ int CallLogAbility::InsertExecute(const Uri &uri, const OHOS::NativeRdb::ValuesB
 int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     int rowRet = Contacts::RDB_EXECUTE_FAIL;
@@ -255,7 +255,7 @@ int CallLogAbility::Update(
     const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
@@ -299,7 +299,7 @@ int CallLogAbility::Update(
 int CallLogAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
     g_mutex.lock();
@@ -339,7 +339,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
     DataShare::DatashareBusinessError &businessError)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::READ_CALL_LOG)) {
-        DATA_STORAGE_LOGE("Permission denied!");
+        HILOG_ERROR("Permission denied!");
         return nullptr;
     }
     HILOG_INFO("CallLogAbility ====>Query start");
