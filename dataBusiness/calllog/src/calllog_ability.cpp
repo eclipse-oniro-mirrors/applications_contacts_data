@@ -133,7 +133,7 @@ bool CallLogAbility::IsCommitOk(int code, std::mutex &mutex)
  */
 int CallLogAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::WRITE_CALL_LOG)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -194,7 +194,7 @@ int CallLogAbility::InsertExecute(const Uri &uri, const OHOS::NativeRdb::ValuesB
  */
 int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::WRITE_CALL_LOG)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -254,7 +254,7 @@ int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::Dat
 int CallLogAbility::Update(
     const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::WRITE_CALL_LOG)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -298,7 +298,7 @@ int CallLogAbility::Update(
  */
 int CallLogAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::WRITE_CALL_LOG)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -338,7 +338,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
     const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
     DataShare::DatashareBusinessError &businessError)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::READ_CALL_LOG)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::READ_CALL_LOG)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return nullptr;
     }

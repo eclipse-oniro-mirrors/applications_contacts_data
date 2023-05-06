@@ -170,7 +170,7 @@ bool ContactsDataAbility::IsCommitOK(int code, std::mutex &mutex)
  */
 int ContactsDataAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::WRITE_CONTACTS)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -253,7 +253,7 @@ int ContactsDataAbility::InsertExecute(int &code, const OHOS::NativeRdb::ValuesB
  */
 int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::WRITE_CONTACTS)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -313,7 +313,7 @@ int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<DataShare
 int ContactsDataAbility::Update(
     const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::WRITE_CONTACTS)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -416,7 +416,7 @@ void ContactsDataAbility::SwitchUpdate(int &retCode, int &code, const OHOS::Nati
  */
 int ContactsDataAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::WRITE_CONTACTS)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -502,7 +502,7 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsDataAbility::Query(const 
     const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
     DataShare::DatashareBusinessError &businessError)
 {
-    if (!TelephonyPermission::CheckPermission(Permission::READ_CONTACTS)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::READ_CONTACTS)) {
         DATA_STORAGE_LOGE("Permission denied!");
         return nullptr;
     }
