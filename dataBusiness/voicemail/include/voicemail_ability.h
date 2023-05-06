@@ -48,6 +48,9 @@ private:
     bool IsBeginTransactionOK(int code, std::mutex &mutex);
     bool IsCommitOK(int code, std::mutex &mutex);
     int UriParse(Uri &uri);
+
+private:
+    static constexpr const char *OHOS_PERMISSION_MANAGE_VOICEMAIL = "ohos.permission.MANAGE_VOICEMAIL";
 };
 } // namespace AbilityRuntime
 } // namespace OHOS

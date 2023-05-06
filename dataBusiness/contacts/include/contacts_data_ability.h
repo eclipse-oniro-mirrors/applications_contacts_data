@@ -23,6 +23,7 @@
 #include "datashare_values_bucket.h"
 #include "predicates_convert.h"
 #include "rdb_predicates.h"
+#include "telephony_permission.h"
 #include "want.h"
 
 #include "contacts_database.h"

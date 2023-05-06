@@ -128,6 +128,10 @@ bool VoiceMailAbility::IsCommitOK(int code, std::mutex &mutex)
  */
 int VoiceMailAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
+    if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+        DATA_STORAGE_LOGE("Permission denied!");
+        return Contacts::nullptr;
+    }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
     bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
@@ -195,6 +199,10 @@ int VoiceMailAbility::InsertExecute(const OHOS::Uri &uri, const OHOS::NativeRdb:
  */
 int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
+    if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+        DATA_STORAGE_LOGE("Permission denied!");
+        return Contacts::nullptr;
+    }
     unsigned int size = values.size();
     if (size < 1) {
         return Contacts::RDB_EXECUTE_FAIL;
@@ -249,6 +257,10 @@ int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::D
 int VoiceMailAbility::Update(
     const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
+    if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+        DATA_STORAGE_LOGE("Permission denied!");
+        return Contacts::nullptr;
+    }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
     bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
@@ -294,6 +306,10 @@ int VoiceMailAbility::Update(
  */
 int VoiceMailAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
+    if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+        DATA_STORAGE_LOGE("Permission denied!");
+        return Contacts::nullptr;
+    }
     g_mutex.lock();
     voiceMailDataBase_ = Contacts::VoiceMailDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
@@ -335,6 +351,10 @@ std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(const Uri
     const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
     DataShare::DatashareBusinessError &businessError)
 {
+    if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+        DATA_STORAGE_LOGE("Permission denied!");
+        return Contacts::nullptr;
+    }
     HILOG_ERROR("VoiceMailAbility ====>Query start");
     voiceMailDataBase_ = Contacts::VoiceMailDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
