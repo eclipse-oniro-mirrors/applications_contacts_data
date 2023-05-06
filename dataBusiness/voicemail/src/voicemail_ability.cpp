@@ -130,7 +130,7 @@ int VoiceMailAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBuc
 {
     if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         DATA_STORAGE_LOGE("Permission denied!");
-        return Contacts::nullptr;
+        return Contacts::RDB_EXECUTE_FAIL;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
@@ -201,7 +201,7 @@ int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::D
 {
     if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         DATA_STORAGE_LOGE("Permission denied!");
-        return Contacts::nullptr;
+        return Contacts::RDB_EXECUTE_FAIL;
     }
     unsigned int size = values.size();
     if (size < 1) {
@@ -259,7 +259,7 @@ int VoiceMailAbility::Update(
 {
     if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         DATA_STORAGE_LOGE("Permission denied!");
-        return Contacts::nullptr;
+        return Contacts::RDB_EXECUTE_FAIL;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
@@ -308,7 +308,7 @@ int VoiceMailAbility::Delete(const Uri &uri, const DataShare::DataSharePredicate
 {
     if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         DATA_STORAGE_LOGE("Permission denied!");
-        return Contacts::nullptr;
+        return Contacts::RDB_EXECUTE_FAIL;
     }
     g_mutex.lock();
     voiceMailDataBase_ = Contacts::VoiceMailDataBase::GetInstance();
@@ -353,7 +353,7 @@ std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(const Uri
 {
     if (!TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         DATA_STORAGE_LOGE("Permission denied!");
-        return Contacts::nullptr;
+        return nullptr;
     }
     HILOG_ERROR("VoiceMailAbility ====>Query start");
     voiceMailDataBase_ = Contacts::VoiceMailDataBase::GetInstance();

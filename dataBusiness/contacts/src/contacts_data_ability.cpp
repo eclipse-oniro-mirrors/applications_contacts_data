@@ -504,7 +504,7 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsDataAbility::Query(const 
 {
     if (!TelephonyPermission::CheckPermission(Permission::READ_CONTACTS)) {
         DATA_STORAGE_LOGE("Permission denied!");
-        return Contacts::nullptr;
+        return nullptr;
     }
     HILOG_INFO("ContactsDataAbility ====>Query start");
     g_mutex.lock();
