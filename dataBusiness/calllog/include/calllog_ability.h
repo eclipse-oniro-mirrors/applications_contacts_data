@@ -19,6 +19,7 @@
 #include "abs_shared_result_set.h"
 #include "datashare_ext_ability.h"
 #include "datashare_values_bucket.h"
+#include "telephony_permission.h"
 #include "want.h"
 
 #include "calllog_database.h"
