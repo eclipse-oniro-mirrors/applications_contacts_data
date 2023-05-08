@@ -55,9 +55,9 @@ bool TelephonyPermission::CheckPermission(const std::string &permissionName)
         HILOG_ERROR("permission check failed");
     }
 
-    if (permissionName == Permission::ANSWER_CALL || permissionName == Permission::READ_CALL_LOG
+    if (permissionName == Permission::READ_CALL_LOG
         || permissionName == Permission::READ_CONTACTS || permissionName == Permission::WRITE_CONTACTS
-        || permissionName == Permission::SEND_MESSAGES) {
+        || permissionName == Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL) {
         if (tokenType == ATokenTypeEnum::TOKEN_HAP) {
             bool status = result == PermissionState::PERMISSION_GRANTED;
             int32_t successCount = status ? 1 : 0;
