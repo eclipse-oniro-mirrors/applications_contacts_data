@@ -170,6 +170,10 @@ bool ContactsDataAbility::IsCommitOK(int code, std::mutex &mutex)
  */
 int ContactsDataAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
+        HILOG_ERROR("Permission denied!");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
     HILOG_INFO("ContactsDataAbility Insert start");
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
@@ -249,6 +253,10 @@ int ContactsDataAbility::InsertExecute(int &code, const OHOS::NativeRdb::ValuesB
  */
 int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
+        HILOG_ERROR("Permission denied!");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
     unsigned int size = values.size();
     if (size < 1) {
         return Contacts::RDB_EXECUTE_FAIL;
@@ -305,6 +313,10 @@ int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<DataShare
 int ContactsDataAbility::Update(
     const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
+        HILOG_ERROR("Permission denied!");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
     bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
@@ -404,6 +416,10 @@ void ContactsDataAbility::SwitchUpdate(int &retCode, int &code, const OHOS::Nati
  */
 int ContactsDataAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
+        HILOG_ERROR("Permission denied!");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
     HILOG_INFO("ContactsDataAbility ====>Delete");
     g_mutex.lock();
     contactDataBase_ = Contacts::ContactsDataBase::GetInstance();
@@ -486,6 +502,10 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsDataAbility::Query(const 
     const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
     DataShare::DatashareBusinessError &businessError)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::READ_CONTACTS)) {
+        HILOG_ERROR("Permission denied!");
+        return nullptr;
+    }
     HILOG_INFO("ContactsDataAbility ====>Query start");
     g_mutex.lock();
     contactDataBase_ = Contacts::ContactsDataBase::GetInstance();
