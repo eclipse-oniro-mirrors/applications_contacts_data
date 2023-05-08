@@ -19,7 +19,6 @@
 #include "abs_shared_result_set.h"
 #include "datashare_ext_ability.h"
 #include "datashare_values_bucket.h"
-#include "telephony_permission.h"
 #include "voicemail_database.h"
 #include "want.h"
 
@@ -49,9 +48,6 @@ private:
     bool IsBeginTransactionOK(int code, std::mutex &mutex);
     bool IsCommitOK(int code, std::mutex &mutex);
     int UriParse(Uri &uri);
-
-private:
-    static constexpr const char *OHOS_PERMISSION_MANAGE_VOICEMAIL = "ohos.permission.MANAGE_VOICEMAIL";
 };
 } // namespace AbilityRuntime
 } // namespace OHOS
