@@ -133,6 +133,10 @@ bool CallLogAbility::IsCommitOk(int code, std::mutex &mutex)
  */
 int CallLogAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
+        HILOG_ERROR("Permission denied!");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
     bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
@@ -190,6 +194,10 @@ int CallLogAbility::InsertExecute(const Uri &uri, const OHOS::NativeRdb::ValuesB
  */
 int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
+        HILOG_ERROR("Permission denied!");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
     int rowRet = Contacts::RDB_EXECUTE_FAIL;
     unsigned int size = values.size();
     if (size < 1) {
@@ -246,6 +254,10 @@ int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::Dat
 int CallLogAbility::Update(
     const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
+        HILOG_ERROR("Permission denied!");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
     bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
@@ -286,6 +298,10 @@ int CallLogAbility::Update(
  */
 int CallLogAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
+        HILOG_ERROR("Permission denied!");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
     g_mutex.lock();
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
@@ -322,6 +338,10 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
     const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
     DataShare::DatashareBusinessError &businessError)
 {
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::READ_CALL_LOG)) {
+        HILOG_ERROR("Permission denied!");
+        return nullptr;
+    }
     HILOG_INFO("CallLogAbility ====>Query start");
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
