@@ -340,7 +340,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return nullptr;
     }
     HILOG_INFO("CallLogAbility ====>Query start");
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
