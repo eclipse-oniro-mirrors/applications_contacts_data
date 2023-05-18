@@ -72,6 +72,7 @@ void CallLogAbility::OnStart(const Want &want)
     Extension::OnStart(want);
     auto context = AbilityRuntime::Context::GetApplicationContext();
     if (context != nullptr) {
+        context->SwitchArea(0);
         std::string basePath = context->GetDatabaseDir();
         Contacts::ContactsPath::RDB_PATH = basePath + "/";
         Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
