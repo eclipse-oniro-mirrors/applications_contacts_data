@@ -666,6 +666,7 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
             executeHelper->dataShareHelper = nullptr;
         }
         delete executeHelper;
+        executeHelper = nullptr;
     }
     HILOG_INFO("contactApi ExecuteSyncDone done===>");
 }
