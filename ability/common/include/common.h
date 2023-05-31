@@ -218,7 +218,7 @@ constexpr const char *CREATE_RAW_CONTACT =
     "[contacted_count] INTEGER NOT NULL DEFAULT 0, "
     "[lastest_contacted_time] INTEGER NOT NULL DEFAULT 0, "
     "[favorite] INTEGER NOT NULL DEFAULT 0, "
-    "[favorite_order] TEXT, "
+    "[favorite_order] INTEGER, "
     "[phonetic_name] TEXT, "
     "[phonetic_name_type] INTEGER , "
     "[company] TEXT, "
