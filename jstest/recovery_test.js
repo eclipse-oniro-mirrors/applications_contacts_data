@@ -34,17 +34,17 @@ describe('RecoveryTest', function() {
         }
     }
 
-    async function ContactsQuery(tag, uri, size)
+    async function contactsQuery(tag, uri, size)
     {
         let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
-        console.info(tag + ': ContactsQuery start ! dataShareHelper = ' + dataShareHelper);
+        console.info(tag + ': contactsQuery start ! dataShareHelper = ' + dataShareHelper);
         var resultColumns = [];
         let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");
         try {
             var resultSet = await dataShareHelper.query(uri, resultColumns, condition);
-            console.info(tag + ' ContactsQuery resultSet.rowCount is = ' + resultSet.rowCount);
-            console.info(tag + ' ContactsQuery size is = ' + size);
+            console.info(tag + ' contactsQuery resultSet.rowCount is = ' + resultSet.rowCount);
+            console.info(tag + ' contactsQuery size is = ' + size);
             expect(resultSet.rowCount == size).assertEqual(true);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
@@ -58,7 +58,7 @@ describe('RecoveryTest', function() {
             }
             resultSet.close();
         } catch (error) {
-            console.info(tag + "logMessage ContactsQuery: error = " + error);
+            console.info(tag + "logMessage contactsQuery: error = " + error);
         }
     }
 
@@ -114,7 +114,7 @@ describe('RecoveryTest', function() {
             console.info('logMessage recovery_test_100: updateCode = ' + updateCode);
             expect(updateCode == 0).assertTrue();
             sleep(2000);
-            await ContactsQuery("recovery_test_100", rawContactUri, 0);
+            await contactsQuery("recovery_test_100", rawContactUri, 0);
             done();
         } catch (error) {
             console.info('logMessage recovery_test_100: raw_contact update error = ' + error);
@@ -145,7 +145,7 @@ describe('RecoveryTest', function() {
             sleep(3000);
             console.info('logMessage recovery_test_200: recover = ' + updateCode);
             expect(updateCode == 0).assertTrue();
-            await ContactsQuery("recovery_test_200", rawContactUri, 2);
+            await contactsQuery("recovery_test_200", rawContactUri, 2);
             await deleteRawContact("recovery_test_200");
             done();
         } catch (error) {

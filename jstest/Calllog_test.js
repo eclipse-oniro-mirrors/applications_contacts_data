@@ -32,18 +32,16 @@ describe('CalllogTest', function() {
         condition.equalTo("id", map.get("id"));
         try {
             let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
-            if (resultSet.rowCount > 0) {
-                if (resultSet.goToFirstRow()) {
-                    do {
-                        for (var [key, value] of map) {
-                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
-                            console.info(tag + ' : logMessage calllogQueryByInsert key = ' + key +
-                                         ' dbResult :' + dbresult + ' value : ' + value);
-                            console.info(tag + ' : logMessage calllogQueryByInsert value ' + (value == dbresult));
-                            expect(value == dbresult).assertEqual(true);
-                        }
-                    } while (resultSet.goToNextRow());
-                }
+            if (resultSet.rowCount > 0 && resultSet.goToFirstRow()) {
+                do {
+                    for (var [key, value] of map) {
+                        let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                        console.info(tag + ' : logMessage calllogQueryByInsert key = ' + key +
+                            ' dbResult :' + dbresult + ' value : ' + value);
+                        console.info(tag + ' : logMessage calllogQueryByInsert value ' + (value == dbresult));
+                        expect(value == dbresult).assertEqual(true);
+                    }
+                } while (resultSet.goToNextRow());
             }
             console.info(tag + " :logMessage calllogQueryByInsert: end");
             resultSet.close();
@@ -82,19 +80,17 @@ describe('CalllogTest', function() {
             console.info(tag + ' : logMessage calllogQueryForBatchInsert: size' + size);
             expect(resultSet.rowCount == size).assertEqual(true);
             var i = 0;
-            if (resultSet.rowCount > 0) {
-                if (resultSet.goToFirstRow()) {
-                    do {
-                        for (var [key, value] of array[i]) {
-                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
-                            console.info(tag + ' : logMessage calllogQueryForBatchInsert dbresult :' + dbresult +
-                                         ' value : ' + value);
-                            console.info(tag + ' : logMessage calllogQueryForBatchInsert value ' + (value == dbresult));
-                            expect(value == dbresult).assertTrue();
-                        }
-                        i++;
-                    } while (resultSet.goToNextRow());
-                }
+            if (resultSet.rowCount > 0 && resultSet.goToFirstRow()) {
+                do {
+                    for (var [key, value] of array[i]) {
+                        let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                        console.info(tag + ' : logMessage calllogQueryForBatchInsert dbresult :' + dbresult +
+                            ' value : ' + value);
+                        console.info(tag + ' : logMessage calllogQueryForBatchInsert value ' + (value == dbresult));
+                        expect(value == dbresult).assertTrue();
+                    }
+                    i++;
+                } while (resultSet.goToNextRow());
             }
             resultSet.close();
         } catch (error) {
@@ -150,14 +146,14 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, common.getCallLogInsert());
             console.info("logMessage calllog_update_test_400: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await UpdateOneCalllog();
+            await updateOneCalllog();
             done();
         } catch (error) {
             console.info("logMessage calllog_update_test_400: calllog insert error = " + error);
             done();
         }
 
-        async function UpdateOneCalllog()
+        async function updateOneCalllog()
         {
             try {
                 let condition = new dataShare.DataSharePredicates();
@@ -191,13 +187,13 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_update_test_500: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await UpdateAllCalllog();
+            await updateAllCalllog();
             done();
         } catch (error) {
             console.info("logMessage calllog_update_test_500: calllog insert error = " + error);
             done();
         }
-        async function UpdateAllCalllog()
+        async function updateAllCalllog()
         {
             var updateValues = {"answer_state" : "1"};
             let condition = new dataShare.DataSharePredicates();
@@ -233,14 +229,14 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_delete_test_1300: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await DeleteOneCalllog();
+            await deleteOneCalllog();
             done();
         } catch (error) {
             console.info("logMessage calllog_delete_test_1300: calllog insert error = " + error);
             done();
         }
 
-        async function DeleteOneCalllog()
+        async function deleteOneCalllog()
         {
             try {
                 let condition = new dataShare.DataSharePredicates();
@@ -332,7 +328,7 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_query_test_1100: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await QueryCalllog();
+            await queryCallLog();
             await calllogDelete("calllog_query_test_1100");
             done()
         } catch (error) {
@@ -340,7 +336,7 @@ describe('CalllogTest', function() {
             done();
         }
 
-        async function QueryCalllog()
+        async function queryCallLog()
         {
             var resultColumns = [ "id", "phone_number" ];
             let condition = new dataShare.DataSharePredicates();
@@ -382,7 +378,7 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_query_test_800: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await QueryOneCalllog();
+            await queryOneCallLog();
             await calllogDelete("calllog_query_test_800");
             done();
         } catch (error) {
@@ -390,7 +386,7 @@ describe('CalllogTest', function() {
             done();
         }
 
-        async function QueryOneCalllog()
+        async function queryOneCallLog()
         {
             var resultColumns = [ "id", "phone_number" ];
             let condition = new dataShare.DataSharePredicates();
@@ -431,7 +427,7 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_fuzzyquery_test_100: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await QueryByStartsWithPhoneNumber();
+            await queryByStartsWithPhoneNumber();
             await calllogDelete("calllog_fuzzyquery_test_100");
             done();
         } catch (error) {
@@ -439,7 +435,7 @@ describe('CalllogTest', function() {
             done();
         }
 
-        async function QueryByStartsWithPhoneNumber()
+        async function queryByStartsWithPhoneNumber()
         {
             var resultColumns = [ "id", "phone_number" ];
             let condition = new dataShare.DataSharePredicates();
@@ -481,7 +477,7 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_fuzzyquery_test_200: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await QueryByEndWithPhoneNumber();
+            await queryByEndWithPhoneNumber();
             await calllogDelete("calllog_fuzzyquery_test_200");
             done();
         } catch (error) {
@@ -489,7 +485,7 @@ describe('CalllogTest', function() {
             done();
         }
 
-        async function QueryByEndWithPhoneNumber()
+        async function queryByEndWithPhoneNumber()
         {
             var resultColumns = [ "id", "phone_number" ];
             let condition = new dataShare.DataSharePredicates();
@@ -530,7 +526,7 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_fuzzyquery_test_300: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await QueryByPhoneNumberContainsField();
+            await queryByPhoneNumberContainsField();
             await calllogDelete("calllog_fuzzyquery_test_300");
             done();
         } catch (error) {
@@ -538,7 +534,7 @@ describe('CalllogTest', function() {
             done();
         }
 
-        async function QueryByPhoneNumberContainsField()
+        async function queryByPhoneNumberContainsField()
         {
             var resultColumns = [ "id", "phone_number" ];
             let condition = new dataShare.DataSharePredicates();
@@ -969,14 +965,14 @@ describe('CalllogTest', function() {
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
             expect(calllogIdThree > 0).assertTrue();
-            await DeleteCalllog();
+            await deleteCalllog();
             done();
         } catch (error) {
             console.info("logMessage calllog_Delete_test_2000: calllog insert error = " + error);
             done();
         }
 
-        async function DeleteCalllog()
+        async function deleteCalllog()
         {
             try {
                 let condition = new dataShare.DataSharePredicates();
@@ -1084,13 +1080,13 @@ describe('CalllogTest', function() {
             var calllogIdTwo = await dataShareHelper.insert(calllogUri, insertValues);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
-            await UpdateOneCalllog();
+            await updateOneCalllog();
             done();
         } catch (error) {
             console.info("logMessage abnormal_calllog_update_test_2300: calllog insert error = " + error);
             done();
         }
-        async function UpdateOneCalllog()
+        async function updateOneCalllog()
         {
             try {
                 var insertValues = {phone_number : phoneNumber, display_names : "nameUpdateError2300"};
@@ -1231,13 +1227,13 @@ describe('CalllogTest', function() {
             var calllogIdTwo = await dataShareHelper.insert(calllogUri, insertValues);
             expect(calllogId > 0).assertTrue();
             expect(calllogIdTwo > 0).assertTrue();
-            await UpdateOneCalllog();
+            await updateOneCalllog();
             done();
         } catch (error) {
             console.info("logMessage abnormal_calllog_delete_test_2700: calllog insert error = " + error);
             done();
         }
-        async function UpdateOneCalllog()
+        async function updateOneCalllog()
         {
             try {
                 var insertValues = {phone_number : phoneNumber, display_names : "nameUpdateError2700"};
@@ -1278,7 +1274,7 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage abnormal_calllog_query_test_2800: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await QueryByStartsWithPhoneNumberError();
+            await queryByStartsWithPhoneNumberError();
             await calllogDelete("abnormal_calllog_query_test_2800");
             done();
         } catch (error) {
@@ -1286,7 +1282,7 @@ describe('CalllogTest', function() {
             done();
         }
 
-        async function QueryByStartsWithPhoneNumberError()
+        async function queryByStartsWithPhoneNumberError()
         {
             var resultColumns = [ "id", "phone_number" ];
             let condition = new dataShare.DataSharePredicates();
