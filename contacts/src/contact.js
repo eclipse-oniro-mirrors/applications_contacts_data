@@ -34,7 +34,8 @@ async function contactsPickerSelect() {
             if (arguments.length > 0 && typeof arguments[0] == 'object') {
                 let option = arguments[0];
                 if (option.isMultiSelect != undefined) {
-                    config.parameters.pageFlag = (option.isMultiSelect == true) ? "page_flag_multi_choose" : "page_flag_single_choose";
+                    config.parameters.pageFlag = (option.isMultiSelect == true) ?
+                        "page_flag_multi_choose" : "page_flag_single_choose";
                 }
             }
             console.log("[picker] contactsPickerSelect config: " + JSON.stringify(config));
@@ -52,7 +53,8 @@ async function contactsPickerSelect() {
             if (arguments.length > 0 && typeof arguments[0] == 'object') {
                 let option = arguments[0];
                 if (option.isMultiSelect != undefined) {
-                    parameter.want.parameters.pageFlag = (option.isMultiSelect == true) ? "page_flag_multi_choose" : "page_flag_single_choose";
+                    parameter.want.parameters.pageFlag = (option.isMultiSelect == true) ?
+                        "page_flag_multi_choose" : "page_flag_single_choose";
                 }
             }
             console.log("[picker] contactsPickerSelect parameter: " + JSON.stringify(parameter));
@@ -80,15 +82,14 @@ async function contactsPickerSelect() {
         if (arguments.length == 2 && typeof arguments[1] == "function") {
             if (result.resultCode == 0) {
                 return arguments[1](undefined, contacts);
-            } else {
-                return arguments[1](result.resultCode, undefined);
             }
-        } else if (arguments.length == 1 && typeof arguments[0] == "function") {
+            return arguments[1](result.resultCode, undefined);
+        }
+        if (arguments.length == 1 && typeof arguments[0] == "function") {
             if (result.resultCode == 0) {
                 return arguments[0](undefined, contacts);
-            } else {
-                return arguments[0](result.resultCode, undefined);
             }
+            return arguments[0](result.resultCode, undefined);
         }
         return new Promise((resolve, reject) => {
             if (result.resultCode == 0) {

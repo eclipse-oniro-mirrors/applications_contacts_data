@@ -32,18 +32,16 @@ describe('CalllogTest', function() {
         condition.equalTo("id", map.get("id"));
         try {
             let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
-            if (resultSet.rowCount > 0) {
-                if (resultSet.goToFirstRow()) {
-                    do {
-                        for (var [key, value] of map) {
-                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
-                            console.info(tag + ' : logMessage calllogQueryByInsert key = ' + key +
-                                         ' dbResult :' + dbresult + ' value : ' + value);
-                            console.info(tag + ' : logMessage calllogQueryByInsert value ' + (value == dbresult));
-                            expect(value == dbresult).assertEqual(true);
-                        }
-                    } while (resultSet.goToNextRow());
-                }
+            if (resultSet.rowCount > 0 && resultSet.goToFirstRow()) {
+                do {
+                    for (var [key, value] of map) {
+                        let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                        console.info(tag + ' : logMessage calllogQueryByInsert key = ' + key +
+                            ' dbResult :' + dbresult + ' value : ' + value);
+                        console.info(tag + ' : logMessage calllogQueryByInsert value ' + (value == dbresult));
+                        expect(value == dbresult).assertEqual(true);
+                    }
+                } while (resultSet.goToNextRow());
             }
             console.info(tag + " :logMessage calllogQueryByInsert: end");
             resultSet.close();
@@ -82,19 +80,17 @@ describe('CalllogTest', function() {
             console.info(tag + ' : logMessage calllogQueryForBatchInsert: size' + size);
             expect(resultSet.rowCount == size).assertEqual(true);
             var i = 0;
-            if (resultSet.rowCount > 0) {
-                if (resultSet.goToFirstRow()) {
-                    do {
-                        for (var [key, value] of array[i]) {
-                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
-                            console.info(tag + ' : logMessage calllogQueryForBatchInsert dbresult :' + dbresult +
-                                         ' value : ' + value);
-                            console.info(tag + ' : logMessage calllogQueryForBatchInsert value ' + (value == dbresult));
-                            expect(value == dbresult).assertTrue();
-                        }
-                        i++;
-                    } while (resultSet.goToNextRow());
-                }
+            if (resultSet.rowCount > 0 && resultSet.goToFirstRow()) {
+                do {
+                    for (var [key, value] of array[i]) {
+                        let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                        console.info(tag + ' : logMessage calllogQueryForBatchInsert dbresult :' + dbresult +
+                            ' value : ' + value);
+                        console.info(tag + ' : logMessage calllogQueryForBatchInsert value ' + (value == dbresult));
+                        expect(value == dbresult).assertTrue();
+                    }
+                    i++;
+                } while (resultSet.goToNextRow());
             }
             resultSet.close();
         } catch (error) {
