@@ -116,7 +116,7 @@ describe('GroupsTest', function() {
             var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage group_update_test_500: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
-            await GroupUpdate();
+            await groupUpdate();
             await deleteAll(groupUri, "group_update_test_500");
             done();
         } catch (error) {
@@ -124,7 +124,7 @@ describe('GroupsTest', function() {
             done();
         }
 
-        async function GroupUpdate()
+        async function groupUpdate()
         {
             let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", groupId.toString());
@@ -155,13 +155,13 @@ describe('GroupsTest', function() {
             var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage group_delete_test_200: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
-            await GroupDelete();
+            await groupDelete();
             done();
         } catch (error) {
             console.info("logMessage group_delete_test_200: group insert error = " + error);
             done();
         }
-        async function GroupDelete()
+        async function groupDelete()
         {
             let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", groupId.toString());
@@ -221,7 +221,7 @@ describe('GroupsTest', function() {
             var groupId = await dataShareHelper.insert(groupUri, insertValues);
             console.info("logMessage group_query_test_400: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
-            await GroupQuery();
+            await groupQuery();
             await deleteAll(groupUri, "group_query_test_400");
             done();
         } catch (error) {
@@ -229,7 +229,7 @@ describe('GroupsTest', function() {
             done();
         }
 
-        async function GroupQuery()
+        async function groupQuery()
         {
             var resultColumns = [ "id", "group_name" ];
             let condition = new dataShare.DataSharePredicates();
@@ -280,7 +280,7 @@ describe('GroupsTest', function() {
             var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage abnormal_group_update_test_700: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
-            await GroupUpdate();
+            await groupUpdate();
             await deleteAll(groupUri, "abnormal_group_update_test_700");
             done();
         } catch (error) {
@@ -288,7 +288,7 @@ describe('GroupsTest', function() {
             done();
         }
 
-        async function GroupUpdate()
+        async function groupUpdate()
         {
             let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", groupId.toString());
@@ -320,14 +320,14 @@ describe('GroupsTest', function() {
             var groupId = await dataShareHelper.insert(groupUri, common.getProfileGroup());
             console.info("logMessage abnormal_group_delete_test_800: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
-            await GroupDelete();
+            await groupDelete();
             await deleteAll(groupUri, "abnormal_group_delete_test_800");
             done();
         } catch (error) {
             console.info("logMessage abnormal_group_delete_test_800: group insert error = " + error);
             done();
         }
-        async function GroupDelete()
+        async function groupDelete()
         {
             let condition = new dataShare.DataSharePredicates();
             condition.equalTo("idss", groupId.toString());
@@ -360,7 +360,7 @@ describe('GroupsTest', function() {
             var groupId = await dataShareHelper.insert(groupUri, insertValues);
             console.info("logMessage abnormal_group_query_test_900: groupId = " + groupId);
             expect(groupId > 0).assertTrue();
-            await GroupQuery(dataShareHelper);
+            await groupQuery(dataShareHelper);
             await deleteAll(groupUri, "abnormal_group_query_test_900");
             done();
         } catch (error) {
@@ -368,7 +368,7 @@ describe('GroupsTest', function() {
             done();
         }
 
-        async function GroupQuery(dataShareHelper)
+        async function groupQuery(dataShareHelper)
         {
             var resultColumns = [ "id", "group_namesss" ];
             let condition = new dataShare.DataSharePredicates();
@@ -406,7 +406,7 @@ describe('GroupsTest', function() {
             var code = await dataShareHelper.batchInsert(groupUri, array);
             console.info("logMessage group_insert_test_1000: batchInsert code = " + code);
             expect(code == 0).assertTrue();
-            await GroupQuery(dataShareHelper);
+            await groupQuery(dataShareHelper);
             await deleteAll(groupUri, "group_insert_test_1000");
             done();
         } catch (error) {
@@ -414,7 +414,7 @@ describe('GroupsTest', function() {
             done();
         }
 
-        async function GroupQuery(dataShareHelper)
+        async function groupQuery(dataShareHelper)
         {
             var groupSize = 3;
             var resultColumns = [ "id", "group_name" ];
@@ -454,14 +454,14 @@ describe('GroupsTest', function() {
             console.info("logMessage group_delete_test_1100: batchInsert code = " + code);
             expect(code == 0).assertTrue();
             await deleteAll(groupUri, "group_delete_test_1100");
-            await GroupQuery(dataShareHelper);
+            await groupQuery(dataShareHelper);
             done();
         } catch (error) {
             console.info("logMessage group_delete_test_1100: group insert error = " + error);
             done();
         }
 
-        async function GroupQuery(dataShareHelper)
+        async function groupQuery(dataShareHelper)
         {
             var groupSize = 0;
             var resultColumns = [ "id", "group_name" ];
@@ -500,8 +500,8 @@ describe('GroupsTest', function() {
             var code = await dataShareHelper.batchInsert(groupUri, array);
             console.info("logMessage group_update_test_1200: batchInsert code = " + code);
             expect(code == 0).assertTrue();
-            await GroupUpdateThree(dataShareHelper);
-            await GroupQuery(dataShareHelper);
+            await groupUpdateThree(dataShareHelper);
+            await groupQuery(dataShareHelper);
             await deleteAll(groupUri, "group_update_test_1200");
             done();
         } catch (error) {
@@ -509,7 +509,7 @@ describe('GroupsTest', function() {
             done();
         }
 
-        async function GroupQuery(dataShareHelper)
+        async function groupQuery(dataShareHelper)
         {
             var groupSize = 3;
             var resultColumns = [ "id", "group_name" ];
@@ -527,7 +527,7 @@ describe('GroupsTest', function() {
         }
     });
 
-    async function GroupUpdateThree(dataShareHelper)
+    async function groupUpdateThree(dataShareHelper)
     {
         let condition = new dataShare.DataSharePredicates();
         condition.equalTo("group_name", "test1200");

@@ -225,7 +225,7 @@ describe('VoicemailTest', function() {
             var voicemailId = await dataShareHelper.insert(voicemailUri, common.getVoiceMail());
             console.info("logMessage voicemail_update_test_1000: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
-            await VoicemailUpdate();
+            await voicemailUpdate();
             await voiceMailDelete("voicemail_update_test_1000");
             done();
         } catch (error) {
@@ -233,7 +233,7 @@ describe('VoicemailTest', function() {
             done();
         }
 
-        async function VoicemailUpdate()
+        async function voicemailUpdate()
         {
             let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
@@ -266,7 +266,7 @@ describe('VoicemailTest', function() {
             var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_update_test_900: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
-            await VoicemailUpdate();
+            await voicemailUpdate();
             await voiceMailDelete("voicemail_update_test_900");
             done();
         } catch (error) {
@@ -274,7 +274,7 @@ describe('VoicemailTest', function() {
             done();
         }
 
-        async function VoicemailUpdate()
+        async function voicemailUpdate()
         {
             var updateValues = {"voice_status" : 1};
             let condition = new dataShare.DataSharePredicates();
@@ -309,7 +309,7 @@ describe('VoicemailTest', function() {
             var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_delete_test_500: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
-            await VoicemailDelete();
+            await voicemailDelete();
             await voiceMailDelete("voicemail_delete_test_500");
             done();
         } catch (error) {
@@ -317,7 +317,7 @@ describe('VoicemailTest', function() {
             done();
         }
 
-        async function VoicemailDelete()
+        async function voicemailDelete()
         {
             let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
@@ -350,7 +350,7 @@ describe('VoicemailTest', function() {
             var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues1);
             console.info("logMessage voicemail_update_test_600: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
-            await VoicemailUpdate();
+            await voicemailUpdate();
             await voiceMailDelete("voicemail_update_test_600");
             done();
         } catch (error) {
@@ -358,7 +358,7 @@ describe('VoicemailTest', function() {
             done();
         }
 
-        async function VoicemailUpdate()
+        async function voicemailUpdate()
         {
             var updateValues = {"voice_status" : 0};
             let condition = new dataShare.DataSharePredicates();
@@ -461,14 +461,14 @@ describe('VoicemailTest', function() {
             var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_query_test_1400: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
-            await VoicemailQuery();
+            await voicemailQuery();
             await voiceMailDelete("voicemail_query_test_1400");
             done();
         } catch (error) {
             console.info("logMessage voicemail_query_test_1400: voicemial insert error = " + error);
             done();
         }
-        async function VoicemailQuery()
+        async function voicemailQuery()
         {
             var resultColumns = [ "id", "display_name", "phone_number" ];
             let condition = new dataShare.DataSharePredicates();
@@ -508,14 +508,14 @@ describe('VoicemailTest', function() {
             var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage voicemail_query_test_1300: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
-            await VoicemailQuery();
+            await voicemailQuery();
             await voiceMailDelete("voicemail_query_test_1300");
             done();
         } catch (error) {
             console.info("logMessage voicemail_query_test_1300: voicemial insert error = " + error);
             done();
         }
-        async function VoicemailQuery()
+        async function voicemailQuery()
         {
             var resultColumns = [ "id", "display_name", "phone_number" ];
             let condition = new dataShare.DataSharePredicates();
@@ -692,7 +692,7 @@ describe('VoicemailTest', function() {
             var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_delete_test_700: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
-            await AbnormalDelete();
+            await abnormalDelete();
             await voiceMailDelete("abnormal_voicemail_delete_test_700");
             done();
         } catch (error) {
@@ -700,7 +700,7 @@ describe('VoicemailTest', function() {
             done();
         }
 
-        async function AbnormalDelete()
+        async function abnormalDelete()
         {
             let condition = new dataShare.DataSharePredicates();
             condition.equalTo("ids", voicemailId.toString());
@@ -731,7 +731,7 @@ describe('VoicemailTest', function() {
             var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_delete_test_800: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
-            await AbnormalDelete();
+            await abnormalDelete();
             await voiceMailDelete("abnormal_voicemail_delete_test_800");
             done();
         } catch (error) {
@@ -739,7 +739,7 @@ describe('VoicemailTest', function() {
             done();
         }
 
-        async function AbnormalDelete()
+        async function abnormalDelete()
         {
             let condition = new dataShare.DataSharePredicates();
             condition.equalTo("id", voicemailId.toString());
@@ -769,7 +769,7 @@ describe('VoicemailTest', function() {
             var voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
             console.info("logMessage abnormal_voicemail_query_test_1500: voicemailId = " + voicemailId);
             expect(voicemailId > 0).assertTrue();
-            await AbnormalQuery();
+            await abnormalQuery();
             await voiceMailDelete("abnormal_voicemail_query_test_1500");
             done();
         } catch (error) {
@@ -777,7 +777,7 @@ describe('VoicemailTest', function() {
             done();
         }
 
-        async function AbnormalQuery()
+        async function abnormalQuery()
         {
             var resultColumns = [ "id", "phone_number" ];
 
