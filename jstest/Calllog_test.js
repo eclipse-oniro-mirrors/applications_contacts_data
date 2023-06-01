@@ -332,7 +332,7 @@ describe('CalllogTest', function() {
             var calllogId = await dataShareHelper.insert(calllogUri, insertValues);
             console.info("logMessage calllog_query_test_1100: calllogId = " + calllogId);
             expect(calllogId > 0).assertTrue();
-            await QueryCallLog();
+            await queryCallLog();
             await calllogDelete("calllog_query_test_1100");
             done()
         } catch (error) {
