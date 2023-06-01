@@ -240,7 +240,8 @@ describe('PerformanceTest', function() {
      */
     it("contact_data_update_performance_test_1400", 0, async function(done) {
         let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
-        console.info('logMessage contact_data_update_performance_test_1400 dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+        console.info('logMessage contact_data_update_performance_test_1400 dataShareHelper success! dataShareHelper = ' +
+            dataShareHelper);
         var updateValues = {"syn_1" : "test"};
         let condition = new dataShare.DataSharePredicates();
         condition.greaterThan("id", "0");

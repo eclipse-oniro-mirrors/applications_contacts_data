@@ -34,17 +34,15 @@ describe('GroupsTest', function() {
         condition.equalTo("id", map.get("id"));
         try {
             var resultSet = await dataShareHelper.query(groupUri, resultColumns, condition);
-            if (resultSet.rowCount > 0) {
-                if (resultSet.goToFirstRow()) {
-                    do {
-                        for (var [key, value] of map) {
-                            let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
-                            console.info(tag + ': logMessage groupsQuery key =' + key + 'dbresult :' + dbresult +
-                                         ' value : ' + value);
-                            expect(value == dbresult).assertTrue();
-                        }
-                    } while (resultSet.goToNextRow());
-                }
+            if (resultSet.rowCount > 0 && resultSet.goToFirstRow()) {
+                do {
+                    for (var [key, value] of map) {
+                        let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+                        console.info(tag + ': logMessage groupsQuery key =' + key + 'dbresult :' + dbresult +
+                            ' value : ' + value);
+                        expect(value == dbresult).assertTrue();
+                    }
+                } while (resultSet.goToNextRow());
             }
             resultSet.close();
         } catch (error) {

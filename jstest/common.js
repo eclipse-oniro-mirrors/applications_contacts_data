@@ -84,10 +84,11 @@ export default {
     getCallLogResultColumns:
         function() {
             var resultColumns = [
-                "id", "slot_id", "phone_number", "display_name", "call_direction", "voicemail_uri", "sim_type", "is_hd", "is_read",
-                "ring_duration", "talk_duration", "format_number", "quicksearch_key", "number_type", "number_type_name",
-                "begin_time", "end_time", "answer_state", "create_time", "number_location", "photo_id", "photo_uri",
-                "country_iso_code", "extra1", "extra2", "extra3", "extra4", "extra5", "extra6"
+                "id", "slot_id", "phone_number", "display_name", "call_direction", "voicemail_uri", "sim_type",
+                "is_hd", "is_read", "ring_duration", "talk_duration", "format_number", "quicksearch_key",
+                "number_type", "number_type_name", "begin_time", "end_time", "answer_state", "create_time",
+                "number_location", "photo_id", "photo_uri", "country_iso_code", "extra1", "extra2", "extra3",
+                "extra4", "extra5", "extra6"
             ];
             return resultColumns;
         },
@@ -631,11 +632,16 @@ export default {
     getVoiceMailBatchInsert:
         function() {
             var phoneNumber = randomNum(3);
-            var map = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaoming" ], [ "voice_status", "0" ] ]);
-            var map2 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaohei" ], [ "voice_status", "1" ] ]);
-            var map3 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaohong" ], [ "voice_status", "0" ] ]);
-            var map4 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaohei" ], [ "voice_status", "0" ] ]);
-            var map5 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaofen" ], [ "voice_status", "0" ] ]);
+            var map = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaoming" ],
+                [ "voice_status", "0" ] ]);
+            var map2 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaohei" ],
+                [ "voice_status", "1" ] ]);
+            var map3 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaohong" ],
+                [ "voice_status", "0" ] ]);
+            var map4 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaohei" ],
+                [ "voice_status", "0" ] ]);
+            var map5 = new Map([ [ "phone_number", phoneNumber ], [ "display_name", "xiaofen" ],
+                [ "voice_status", "0" ] ]);
             var array = [ map, map2, map3, map4, map5 ];
             return array;
         },
