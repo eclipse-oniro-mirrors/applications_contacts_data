@@ -47,7 +47,7 @@ std::set<std::string> MergeUtils::QueryRawContactByType(
         .append(" AND is_deleted = 0 )");
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(std::to_string(rawId));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> rawIdsSet = store->QuerySql(sql, selectionArgs);
+    auto rawIdsSet = store->QuerySql(sql, selectionArgs);
     std::set<int> rawIds;
     int resultSetNum = rawIdsSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -86,7 +86,7 @@ std::set<std::string> MergeUtils::QueryDataExecute(
     }
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(std::to_string(typeId));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(query, selectionArgs);
+    auto resultSet = store->QuerySql(query, selectionArgs);
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         std::string value;
@@ -120,7 +120,7 @@ std::vector<int> MergeUtils::QueryByDataName(
             .append(" = ")
             .append(std::to_string(nameType))
             .append(" AND is_deleted = 0");
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(query);
+        auto resultSet = store->QuerySql(query);
         int resultSetNum = resultSet->GoToFirstRow();
         while (resultSetNum == OHOS::NativeRdb::E_OK) {
             int value = 0;
@@ -165,7 +165,7 @@ void MergeUtils::AddHasJudgeForRawId(
     for (unsigned int i = 0; i < size; i++) {
         std::string sql = "SELECT 1 FROM contact_data WHERE type_id = " + std::to_string(types[i]);
         sql.append(" AND raw_contact_id = " + std::to_string(rawId)).append(" LIMIT 1");
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sql);
+        auto resultSet = store->QuerySql(sql);
         int resultSetNum = resultSet->GoToFirstRow();
         if (resultSetNum == 0) {
             switch (i) {
@@ -212,7 +212,7 @@ void MergeUtils::GetRawIdsByRawId(std::shared_ptr<OHOS::NativeRdb::RdbStore> sto
         .append(" ) AND is_deleted = 0");
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(std::to_string(rawId));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> rawIdsSet = store->QuerySql(queryMergeId, selectionArgs);
+    auto rawIdsSet = store->QuerySql(queryMergeId, selectionArgs);
     int resultSetNum = rawIdsSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         int value = 0;

@@ -160,7 +160,7 @@ int64_t MatchCandidate::AddNewContact(std::shared_ptr<OHOS::NativeRdb::RdbStore>
         .append(ContactPublicColumns::ID)
         .append(" = ")
         .append(std::to_string(rawId));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sql);
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> resultSet = store->QuerySql(sql);
     std::vector<OHOS::NativeRdb::ValuesBucket> value = ResultSetToValuesBucket(resultSet);
     value[0].PutInt(ContactColumns::NAME_RAW_CONTACT_ID, rawId);
     mergeUtils.AddHasJudgeForRawId(store, rawId, value[0]);
@@ -241,7 +241,7 @@ int MatchCandidate::UpdateRawContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> 
 }
 
 std::vector<OHOS::NativeRdb::ValuesBucket> MatchCandidate::ResultSetToValuesBucket(
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet)
 {
     std::vector<std::string> columnNames;
     resultSet->GetAllColumnNames(columnNames);

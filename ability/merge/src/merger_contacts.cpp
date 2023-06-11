@@ -154,7 +154,7 @@ std::set<int> MergerContacts::HandleIds(std::shared_ptr<OHOS::NativeRdb::RdbStor
                 .append(" = ")
                 .append(std::to_string(*id))
                 .append(")");
-            std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sqlBuilder);
+            auto resultSet = store->QuerySql(sqlBuilder);
             int resultSetNum = resultSet->GoToFirstRow();
             while (resultSetNum == OHOS::NativeRdb::E_OK) {
                 int rawId = 0;
@@ -184,7 +184,7 @@ void MergerContacts::UpdateRawContacts(
         .append(" AND ")
         .append(RawContactColumns::IS_DELETED)
         .append(" = 0");
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sqlBuilder);
+    auto resultSet = store->QuerySql(sqlBuilder);
     int minContactId = 0;
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -257,7 +257,7 @@ std::string MergerContacts::QueryCandidateName(std::shared_ptr<OHOS::NativeRdb::
         .append(ContactDataColumns::TYPE_ID)
         .append(" = ")
         .append(std::to_string(nameType));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sqlBuilder);
+    auto resultSet = store->QuerySql(sqlBuilder);
     std::string candidateName;
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -288,7 +288,7 @@ std::set<int> MergerContacts::QueryTargetName(
             .append(" = ")
             .append(std::to_string(nameType))
             .append(" AND is_deleted = 0");
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(query);
+        auto resultSet = store->QuerySql(query);
         int resultSetNum = resultSet->GoToFirstRow();
         while (resultSetNum == OHOS::NativeRdb::E_OK) {
             int value = 0;
@@ -322,7 +322,7 @@ std::vector<std::set<int>> MergerContacts::QueryMergeContacts(
         .append(" = ")
         .append(std::to_string(mode));
     std::vector<int> currentIds;
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sqlBuilder);
+    auto resultSet = store->QuerySql(sqlBuilder);
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         int currentId = 0;
@@ -367,13 +367,12 @@ void MergerContacts::UpdateCandidate(std::shared_ptr<OHOS::NativeRdb::RdbStore> 
     HILOG_INFO("candidates' size = %{public}zu", candidates.size());
 }
 
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> MergerContacts::SelectCandidate(
+std::shared_ptr<OHOS::NativeRdb::ResultSet> MergerContacts::SelectCandidate(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> store)
 {
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
     if (store == nullptr) {
         HILOG_ERROR("MergerContacts SelectCandidate store is nullptr");
-        return resultSet;
+        return nullptr;
     }
     std::shared_ptr<ContactsDataBase> contactsDataBase = ContactsDataBase::GetInstance();
     int nameType = contactsDataBase->GetTypeId(ContentTypeData::NAME);
@@ -417,8 +416,7 @@ std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> MergerContacts::SelectCandi
         .append(std::to_string(nameType))
         .append(" ) GROUP BY ")
         .append(RawContactColumns::CONTACT_ID);
-    resultSet = store->QuerySql(sql);
-    return resultSet;
+    return store->QuerySql(sql);
 }
 
 /**
@@ -518,7 +516,7 @@ std::vector<std::set<int>> MergerContacts::SelectIdsByName(
             .append(ContactDataColumns::TYPE_ID)
             .append(" = ")
             .append(std::to_string(nameType));
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sql);
+        auto resultSet = store->QuerySql(sql);
         int resultSetNum = resultSet->GoToFirstRow();
         while (resultSetNum == OHOS::NativeRdb::E_OK) {
             std::string name;
@@ -555,7 +553,7 @@ void MergerContacts::UpdateIdsByName(std::shared_ptr<OHOS::NativeRdb::RdbStore> 
             }
         }
         std::set<int> currentIds;
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sqlBuilder);
+        auto resultSet = store->QuerySql(sqlBuilder);
         int resultSetNum = resultSet->GoToFirstRow();
         while (resultSetNum == OHOS::NativeRdb::E_OK) {
             int id = 0;

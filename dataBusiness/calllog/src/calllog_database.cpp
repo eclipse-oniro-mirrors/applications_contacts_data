@@ -212,15 +212,15 @@ int CallLogDataBase::DeleteCallLog(OHOS::NativeRdb::RdbPredicates &predicates)
  *
  * @return Query database results
  */
-std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> CallLogDataBase::Query(
+std::shared_ptr<OHOS::NativeRdb::ResultSet> CallLogDataBase::Query(
     OHOS::NativeRdb::RdbPredicates &predicates, std::vector<std::string> columns)
 {
     if (store_ == nullptr) {
         HILOG_ERROR("CallLogDataBase Delete store_ is  nullptr");
         return nullptr;
     }
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = store_->Query(predicates, columns);
-    return result;
+
+    return store_->Query(predicates, columns);
 }
 
 /**
@@ -255,9 +255,7 @@ void CallLogDataBase::QueryContactsByInsertCalls(OHOS::NativeRdb::ValuesBucket &
         .append(" AND is_deleted = 0");
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(phoneNumber);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet =
-        contactsDataBase->contactStore_->QuerySql(sql, selectionArgs);
-
+    auto resultSet = contactsDataBase->contactStore_->QuerySql(sql, selectionArgs);
     if (resultSet->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
         std::string quickSearchKey;
         std::string name;

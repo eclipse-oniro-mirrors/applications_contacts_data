@@ -111,7 +111,7 @@ bool CandidateStatus::IsNeedMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> sto
         .append(ContactPublicColumns::ID)
         .append(" = ")
         .append(std::to_string(rawId));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> isNeedMergeSet = store->QuerySql(isNeedMergeSql);
+    auto isNeedMergeSet = store->QuerySql(isNeedMergeSql);
     bool isNeedMerge = false;
     int resultSetNum = isNeedMergeSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -146,7 +146,7 @@ bool CandidateStatus::IsMergeStatus(std::shared_ptr<OHOS::NativeRdb::RdbStore> s
         .append(ContactPublicColumns::ID)
         .append(" = ")
         .append(std::to_string(rawId));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> MergeSwitchSet = store->QuerySql(isMergeSwitchSql);
+    auto MergeSwitchSet = store->QuerySql(isMergeSwitchSql);
     bool isMergeSwitch = false;
     int resultSetNum = MergeSwitchSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -181,7 +181,7 @@ bool CandidateStatus::IsMerged(std::shared_ptr<OHOS::NativeRdb::RdbStore> store,
         .append(ContactPublicColumns::ID)
         .append(" = ")
         .append(std::to_string(rawId));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> isNeedMergeSet = store->QuerySql(isNeedMergeSql);
+    auto isNeedMergeSet = store->QuerySql(isNeedMergeSql);
     bool mergeMode = false;
     int resultSetNum = isNeedMergeSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {

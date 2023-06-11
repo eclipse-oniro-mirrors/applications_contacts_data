@@ -87,15 +87,15 @@ int VoiceMailDataBase::DeleteVoiceMail(OHOS::NativeRdb::RdbPredicates &rdbPredic
     return ret;
 }
 
-std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> VoiceMailDataBase::Query(
+std::shared_ptr<OHOS::NativeRdb::ResultSet> VoiceMailDataBase::Query(
     OHOS::NativeRdb::RdbPredicates &rdbPredicates, const std::vector<std::string> columns)
 {
     if (store_ == nullptr) {
         HILOG_ERROR("CallLogDataBase Delete store_ is nullptr");
         return nullptr;
     }
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store_->Query(rdbPredicates, columns);
-    return resultSet;
+
+    return store_->Query(rdbPredicates, columns);
 }
 
 int VoiceMailDataBase::BeginTransaction()

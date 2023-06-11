@@ -40,10 +40,10 @@ public:
         std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore);
     void UpdateCallLogByPhoneNum(
         std::vector<int> &rawContactIdVector, std::shared_ptr<OHOS::NativeRdb::RdbStore> &rdbStore, bool isDelete);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> QueryDataForCallLog(
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> QueryDataForCallLog(
         std::shared_ptr<OHOS::NativeRdb::RdbStore> &rdbStore, int contactId);
     void DataToUpdateCallLog(
-        bool isDelete, int contactId, std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
+        bool isDelete, int contactId, std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
     int UpdateCallLog(
         std::string &phoneNumber, std::string &name, std::string &quickSearch, bool isDelete, bool isCallLog);
     int UpdateCallLogNameNull(std::string &name, std::string &quickSearch, bool isCallLog);

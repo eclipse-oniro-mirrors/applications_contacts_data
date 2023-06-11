@@ -175,8 +175,7 @@ void ContactsUpdateHelper::UpdateCallLogByPhoneNum(
             .append(ContactPublicColumns::ID)
             .append(" = ")
             .append(std::to_string(rawContactIdVector[i]));
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> rawContactResultSet =
-            rdbStore->QuerySql(queryContactIdSql);
+        auto rawContactResultSet = rdbStore->QuerySql(queryContactIdSql);
         int contactId = 0;
         if (rawContactResultSet->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
             std::string columnName = RawContactColumns::CONTACT_ID;
@@ -189,13 +188,13 @@ void ContactsUpdateHelper::UpdateCallLogByPhoneNum(
         if (contactId <= 0) {
             return;
         }
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = QueryDataForCallLog(rdbStore, contactId);
+        auto resultSet = QueryDataForCallLog(rdbStore, contactId);
         DataToUpdateCallLog(isDelete, contactId, resultSet);
     }
 }
 
 void ContactsUpdateHelper::DataToUpdateCallLog(
-    bool isDelete, int contactId, std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    bool isDelete, int contactId, std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet)
 {
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
@@ -224,7 +223,7 @@ void ContactsUpdateHelper::DataToUpdateCallLog(
     }
 }
 
-std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsUpdateHelper::QueryDataForCallLog(
+std::shared_ptr<OHOS::NativeRdb::ResultSet> ContactsUpdateHelper::QueryDataForCallLog(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &rdbStore, int contactId)
 {
     ContactsType contactsType;
@@ -256,7 +255,7 @@ std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsUpdateHelper::Query
         .append(ContactDataColumns::TYPE_ID)
         .append(" = ")
         .append(std::to_string(typeNameId));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = rdbStore->QuerySql(sql);
+    auto resultSet = rdbStore->QuerySql(sql);
     if (resultSet == nullptr) {
         HILOG_ERROR("ContactsUpdateHelper QueryDataForCallLog resultSet is nullptr ");
     }

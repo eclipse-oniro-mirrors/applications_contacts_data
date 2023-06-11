@@ -416,7 +416,7 @@ int ContactsDataBase::UpdateRawContact(
     }
     std::vector<std::string> columns;
     columns.push_back(ContactPublicColumns::ID);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> rawContactResultSet = store_->Query(rdbPredicates, columns);
+    auto rawContactResultSet = store_->Query(rdbPredicates, columns);
     int rawContactResultSetNum = rawContactResultSet->GoToFirstRow();
     std::vector<int> rawContactIdVector;
     while (rawContactResultSetNum == OHOS::NativeRdb::E_OK) {
@@ -754,7 +754,7 @@ std::vector<OHOS::NativeRdb::ValuesBucket> ContactsDataBase::DeleteContactQuery(
     std::vector<std::string> columns;
     columns.push_back(ContactPublicColumns::ID);
     columns.push_back(RawContactColumns::DISPLAY_NAME);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store_->Query(newRdbPredicates, columns);
+    auto resultSet = store_->Query(newRdbPredicates, columns);
     int resultSetNum = resultSet->GoToFirstRow();
     if (resultSetNum != OHOS::NativeRdb::E_OK) {
         // query size 0
@@ -795,7 +795,7 @@ std::vector<OHOS::NativeRdb::ValuesBucket> ContactsDataBase::DeleteRawContactQue
     columns.push_back(RawContactColumns::DISPLAY_NAME);
     columns.push_back(ContactColumns::ID);
     columns.push_back(RawContactColumns::CONTACT_ID);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store_->Query(rdbPredicates, columns);
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> resultSet = store_->Query(rdbPredicates, columns);
     return ResultSetToValuesBucket(resultSet);
 }
 
@@ -831,7 +831,7 @@ int ContactsDataBase::CompletelyDelete(OHOS::NativeRdb::RdbPredicates &rdbPredic
     }
     std::vector<std::string> columns;
     columns.push_back(DeleteRawContactColumns::CONTACT_ID);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store_->Query(rdbPredicates, columns);
+    auto resultSet = store_->Query(rdbPredicates, columns);
     std::vector<std::string> contactIds;
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -846,7 +846,7 @@ int ContactsDataBase::CompletelyDelete(OHOS::NativeRdb::RdbPredicates &rdbPredic
     for (unsigned int index = 0; index < size; index++) {
         std::string queryViewContact =
             "SELECT id FROM view_raw_contact WHERE is_deleted = 1 AND contact_id = " + contactIds[index];
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> contactIdSet = store_->QuerySql(queryViewContact);
+        auto contactIdSet = store_->QuerySql(queryViewContact);
         resultSetNum = contactIdSet->GoToFirstRow();
         while (resultSetNum == OHOS::NativeRdb::E_OK) {
             int value = -1;
@@ -940,7 +940,7 @@ std::vector<int> ContactsDataBase::QueryContactDataRawContactId(
     std::vector<std::string> columns;
     columns.push_back(ContactDataColumns::TYPE_ID);
     columns.push_back(ContactDataColumns::RAW_CONTACT_ID);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store_->Query(rdbPredicates, columns);
+    auto resultSet = store_->Query(rdbPredicates, columns);
     std::vector<int> rawContactIdVector;
     std::vector<int> typeIdVector;
     int resultSetNum = resultSet->GoToFirstRow();
@@ -978,16 +978,15 @@ std::vector<int> ContactsDataBase::QueryContactDataRawContactId(
  *
  * @return The result returned by the query operation
  */
-std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsDataBase::Query(
+std::shared_ptr<OHOS::NativeRdb::ResultSet> ContactsDataBase::Query(
     OHOS::NativeRdb::RdbPredicates &rdbPredicates, std::vector<std::string> &columns)
 {
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet;
     if (store_ == nullptr) {
         HILOG_ERROR("ContactsDataBase Query store_ is nullptr");
-        return resultSet;
+        return nullptr;
     }
     int errCode = OHOS::NativeRdb::E_OK;
-    resultSet = store_->Query(rdbPredicates, columns);
+    auto resultSet = store_->Query(rdbPredicates, columns);
     if (errCode != OHOS::NativeRdb::E_OK) {
         HILOG_INFO("Query error code is:%{public}d", errCode);
     }
@@ -995,7 +994,7 @@ std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsDataBase::Query(
 }
 
 std::vector<OHOS::NativeRdb::ValuesBucket> ContactsDataBase::ResultSetToValuesBucket(
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet)
 {
     std::vector<std::string> columnNames;
     resultSet->GetAllColumnNames(columnNames);
@@ -1066,7 +1065,7 @@ std::string ContactsDataBase::StructureDeleteContactJson(
         }
     }
     sql.append(" FROM ").append(queryTabName).append(" WHERE ").append(queryWhereClause);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> contactDataResultSet = store_->QuerySql(sql, selectionArgs);
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> contactDataResultSet = store_->QuerySql(sql, selectionArgs);
     std::string backupData = contactsJsonUtils.GetDeleteData(contactDataResultSet);
     contactDataResultSet->Close();
     return backupData;
@@ -1169,7 +1168,7 @@ bool ContactsDataBase::Restore(std::string restorePath)
  *
  * @return The result returned by the selectCandidate operation
  */
-std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> ContactsDataBase::SelectCandidate()
+std::shared_ptr<OHOS::NativeRdb::ResultSet> ContactsDataBase::SelectCandidate()
 {
     MarkMerge(store_);
     MergerContacts mergerContacts;
@@ -1272,7 +1271,7 @@ void ContactsDataBase::MarkMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> &sto
         .append(ContactTableName::MERGE_INFO)
         .append(" GROUP BY ")
         .append(MergeInfo::RAW_CONTACT_ID);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store->QuerySql(sql);
+    auto resultSet = store->QuerySql(sql);
     int mergeResultSetNum = resultSet->GoToFirstRow();
     MatchCandidate matchCandidate;
     while (mergeResultSetNum == OHOS::NativeRdb::E_OK) {

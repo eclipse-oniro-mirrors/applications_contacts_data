@@ -41,7 +41,7 @@ public:
     int64_t InsertCallLog(OHOS::NativeRdb::ValuesBucket insertValues);
     int UpdateCallLog(OHOS::NativeRdb::ValuesBucket values, OHOS::NativeRdb::RdbPredicates &rdbPredicates);
     int DeleteCallLog(OHOS::NativeRdb::RdbPredicates &rdbPredicates);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> Query(
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> Query(
         OHOS::NativeRdb::RdbPredicates &rdbPredicates, std::vector<std::string> columns);
     int BeginTransaction();
     int Commit();

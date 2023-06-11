@@ -360,7 +360,7 @@ std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(const Uri
     Contacts::PredicatesConvert predicatesConvert;
     OHOS::Uri uriTemp = uri;
     int parseCode = UriParse(uriTemp);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result;
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> result;
     DataShare::DataSharePredicates dataSharePredicates = predicates;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     std::vector<std::string> columnsTemp = columns;
