@@ -26,7 +26,7 @@ std::shared_ptr<OHOS::NativeRdb::RdbStore> CallLogDataBase::store_ = nullptr;
 
 CallLogDataBase::CallLogDataBase()
 {
-    std::string g_databaseName = ContactsPath::RDB_PATH + "calls.db";
+    std::string g_databaseName = ContactsPath::RDB_EL1_PATH + "calls.db";
     HILOG_INFO("CallLogDataBase g_databaseName :%{public}s", g_databaseName.c_str());
     int errCode = OHOS::NativeRdb::E_OK;
     OHOS::NativeRdb::RdbStoreConfig config(g_databaseName);
@@ -242,6 +242,10 @@ void CallLogDataBase::QueryContactsByInsertCalls(OHOS::NativeRdb::ValuesBucket &
     value.GetString(phoneNumber);
     ContactsType contactsType;
     static std::shared_ptr<ContactsDataBase> contactsDataBase = ContactsDataBase::GetInstance();
+    if (ContactsDataBase == nullptr || ContactsDataBase->contactStore_ == nullptr) {
+        HILOG_ERROR("ContactsDataBase is nullptr or ContactsDataBase->contactStore_ is nullptr");
+        return;
+    }
     int typeNameId = contactsType.LookupTypeId(contactsDataBase->contactStore_, ContentTypeData::PHONE);
     std::string sql = "SELECT display_name, contact_id FROM ";
     sql.append(ViewName::VIEW_CONTACT_DATA)

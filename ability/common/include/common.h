@@ -866,6 +866,8 @@ constexpr const char *UPDATE_RAW_CONTACT_VERSION =
 constexpr const char *UPDATE_CONTACT_DATA_VERSION =
     "CREATE TRIGGER IF NOT EXISTS [update_contact_data_version] AFTER UPDATE ON [contact_data] "
     "BEGIN "
+    "IF UPDATE "
+    "[version] RETURN; "
     "UPDATE "
     "[contact_data] "
     "SET "
