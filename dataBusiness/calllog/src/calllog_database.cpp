@@ -242,7 +242,7 @@ void CallLogDataBase::QueryContactsByInsertCalls(OHOS::NativeRdb::ValuesBucket &
     value.GetString(phoneNumber);
     ContactsType contactsType;
     static std::shared_ptr<ContactsDataBase> contactsDataBase = ContactsDataBase::GetInstance();
-    if (ContactsDataBase == nullptr || ContactsDataBase->contactStore_ == nullptr) {
+    if (contactsDataBase == nullptr || contactsDataBase->contactStore_ == nullptr) {
         HILOG_ERROR("ContactsDataBase is nullptr or ContactsDataBase->contactStore_ is nullptr");
         return;
     }
