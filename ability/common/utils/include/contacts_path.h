@@ -25,6 +25,7 @@ public:
     ContactsPath();
     ~ContactsPath();
     static std::string RDB_PATH;
+    static std::string RDB_EL1_PATH;
     static std::string RDB_BACKUP_PATH;
 };
 } // namespace Contacts
