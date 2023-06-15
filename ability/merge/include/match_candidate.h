@@ -35,7 +35,7 @@ private:
     int64_t AddNewContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId);
     int UpdateRawContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId, int64_t contactsId);
     std::vector<OHOS::NativeRdb::ValuesBucket> ResultSetToValuesBucket(
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
+        std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
 };
 } // namespace Contacts
 } // namespace OHOS

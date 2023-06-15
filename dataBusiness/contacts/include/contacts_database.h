@@ -37,7 +37,7 @@ public:
     static std::shared_ptr<OHOS::NativeRdb::RdbStore> contactStore_;
 
     std::vector<OHOS::NativeRdb::ValuesBucket> ResultSetToValuesBucket(
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
+        std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
     void GetContactByValue(int &rawContactId, OHOS::NativeRdb::ValueObject &value);
     int64_t InsertRawContact(std::string table, OHOS::NativeRdb::ValuesBucket value);
     int64_t InsertContactData(std::string table, OHOS::NativeRdb::ValuesBucket value);
@@ -52,14 +52,14 @@ public:
     int DeleteContact(OHOS::NativeRdb::RdbPredicates &rdbPredicates);
     int DeleteRawContact(OHOS::NativeRdb::RdbPredicates &rdbPredicates);
     int DeleteBlockList(OHOS::NativeRdb::RdbPredicates &rdbPredicates);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> Query(
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> Query(
         OHOS::NativeRdb::RdbPredicates &rdbPredicates, std::vector<std::string> &columns);
     int CompletelyDelete(OHOS::NativeRdb::RdbPredicates &rdbPredicates);
     int BeginTransaction();
     int Commit();
     int RollBack();
     static void DestroyInstanceAndRestore(std::string restorePath);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> SelectCandidate();
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> SelectCandidate();
     int Split(DataShare::DataSharePredicates predicates);
     int ContactMerge();
     int ReContactMerge(DataShare::DataSharePredicates predicates);

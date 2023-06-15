@@ -166,7 +166,7 @@ std::string DataBaseDisasterRecovery::GetBackUpDatabase(const std::shared_ptr<OH
 {
     std::string sql = "select backup_path from ";
     sql.append(ContactTableName::DATABASE_BACKUP_TASK).append(" order by backup_time desc limit 0,1");
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = store_->QuerySql(sql, std::vector<std::string>());
+    auto result = store_->QuerySql(sql, std::vector<std::string>());
     std::string currValue;
     if (result->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
         int currValueIndex;

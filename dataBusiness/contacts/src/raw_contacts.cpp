@@ -120,7 +120,7 @@ int RawContacts::GetDeleteContactIdByAccountId(std::shared_ptr<OHOS::NativeRdb::
         .append(" AND ")
         .append(RawContactColumns::CONTACT_ID)
         .append(" NOT NULL )");
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> rawResult = store_->QuerySql(sql, selectArgs);
+    auto rawResult = store_->QuerySql(sql, selectArgs);
     int resultSetNum = rawResult->GoToFirstRow();
     int currConcactIdValue = 0;
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -160,7 +160,7 @@ int RawContacts::GetDeleteRawContactIdByAccountId(std::shared_ptr<OHOS::NativeRd
         .append(" AND ")
         .append(RawContactColumns::ACCOUNT_ID)
         .append(" NOT NULL");
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> rawResult = store_->QuerySql(sql, selectArgs);
+    auto rawResult = store_->QuerySql(sql, selectArgs);
     int resultSetNum = rawResult->GoToFirstRow();
     int currConcactIdValue = 0;
     while (resultSetNum == OHOS::NativeRdb::E_OK) {

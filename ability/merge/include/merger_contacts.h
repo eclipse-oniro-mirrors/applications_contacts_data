@@ -29,7 +29,7 @@ public:
     int ForceContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore>, std::set<int>);
     int ContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore>);
     int ReContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore>, const DataShare::DataSharePredicates &);
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> SelectCandidate(std::shared_ptr<OHOS::NativeRdb::RdbStore>);
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> SelectCandidate(std::shared_ptr<OHOS::NativeRdb::RdbStore>);
 
 private:
     void UpdateIdsByName(

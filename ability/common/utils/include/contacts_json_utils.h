@@ -30,10 +30,10 @@ class ContactsJsonUtils {
 public:
     ContactsJsonUtils();
     ~ContactsJsonUtils();
-    std::string GetDeleteData(std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
-    void ConvertResultSet(Json::Value &arrayValue, std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
+    std::string GetDeleteData(std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
+    void ConvertResultSet(Json::Value &arrayValue, std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
     void GetValue(std::vector<std::string> &columnNames, unsigned int &index, Json::Value &data,
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet);
+                  std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
 };
 } // namespace Contacts
 } // namespace OHOS

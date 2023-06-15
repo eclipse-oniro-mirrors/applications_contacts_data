@@ -94,7 +94,7 @@ int ContactsAccount::LookupAccountTypeId(
         .append(accountType)
         .append("'");
     std::vector<std::string> selectionArgs;
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
+    auto resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
     int ret = resultSet->GoToFirstRow();
     if (ret != OHOS::NativeRdb::E_OK) {
         resultSet->Close();
@@ -127,7 +127,7 @@ std::vector<AccountDataCollection> ContactsAccount::GetAccountFromLocal(
         .append(" from ")
         .append(ContactTableName::ACCOUNT);
     std::vector<std::string> selectArgs;
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = store_->QuerySql(buildQuery, selectArgs);
+    auto result = store_->QuerySql(buildQuery, selectArgs);
     int resultSetNum = result->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         std::string accountName;
@@ -177,7 +177,7 @@ int ContactsAccount::GetNotExistAccount(
         selectArgs.push_back(collection.GetcAccountName());
         selectArgs.push_back(collection.GetcAccountType());
         selectArgs.push_back(collection.GetcDataCollection());
-        std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> result = store_->QuerySql(buildSql, selectArgs);
+        auto result = store_->QuerySql(buildSql, selectArgs);
         int resultSetNum = result->GoToFirstRow();
         int reValue = RDB_EXECUTE_FAIL;
         while (resultSetNum == OHOS::NativeRdb::E_OK) {

@@ -91,7 +91,7 @@ int ContactsType::LookupTypeId(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSto
         .append(" = ? ");
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(typeValue);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
+    auto resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
     int ret = resultSet->GoToFirstRow();
     if (ret != OHOS::NativeRdb::E_OK) {
         return RDB_EXECUTE_FAIL;
@@ -114,7 +114,7 @@ std::string ContactsType::GetTypeText(std::shared_ptr<OHOS::NativeRdb::RdbStore>
         .append(" = ?");
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(std::to_string(typeId));
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
+    auto resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
     int ret = resultSet->GoToFirstRow();
     if (ret != OHOS::NativeRdb::E_OK) {
         resultSet->Close();

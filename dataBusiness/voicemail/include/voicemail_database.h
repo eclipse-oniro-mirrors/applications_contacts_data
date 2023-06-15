@@ -38,7 +38,7 @@ public:
     int64_t InsertVoiceMail(std::string tableName, OHOS::NativeRdb::ValuesBucket insertValues);
     int UpdateVoiceMail(OHOS::NativeRdb::ValuesBucket values, OHOS::NativeRdb::RdbPredicates &rdbPredicates);
     int DeleteVoiceMail(OHOS::NativeRdb::RdbPredicates &rdbPredicates);
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> Query(
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> Query(
         OHOS::NativeRdb::RdbPredicates &rdbPredicates, const std::vector<std::string> columns);
     int BeginTransaction();
     int Commit();

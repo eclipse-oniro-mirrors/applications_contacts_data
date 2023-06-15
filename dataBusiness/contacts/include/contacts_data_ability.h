@@ -53,10 +53,10 @@ private:
     int InsertExecute(int &code, const OHOS::NativeRdb::ValuesBucket &value);
     int UriParseAndSwitch(Uri &uri);
     void SwitchProfile(Uri &uri);
-    bool QueryExecute(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &result,
+    bool QueryExecute(std::shared_ptr<OHOS::NativeRdb::ResultSet> &result,
         DataShare::DataSharePredicates &dataSharePredicates, std::vector<std::string> &columnsTemp,
         int &parseCode);
-    bool QueryExecuteSwitchSplit(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &result,
+    bool QueryExecuteSwitchSplit(std::shared_ptr<OHOS::NativeRdb::ResultSet> &result,
         DataShare::DataSharePredicates &dataSharePredicates, std::vector<std::string> &columnsTemp,
         int &parseCode);
     void UpdateExecute(int &retCode, int code, const OHOS::NativeRdb::ValuesBucket &value,

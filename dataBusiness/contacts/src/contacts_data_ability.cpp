@@ -510,7 +510,7 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsDataAbility::Query(const 
     g_mutex.lock();
     contactDataBase_ = Contacts::ContactsDataBase::GetInstance();
     profileDataBase_ = Contacts::ProfileDatabase::GetInstance();
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result;
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> result;
     OHOS::Uri uriTemp = uri;
     int parseCode = UriParseAndSwitch(uriTemp);
     std::vector<std::string> columnsTemp = columns;
@@ -528,7 +528,7 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsDataAbility::Query(const 
     return sharedPtrResult;
 }
 
-bool ContactsDataAbility::QueryExecute(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &result,
+bool ContactsDataAbility::QueryExecute(std::shared_ptr<OHOS::NativeRdb::ResultSet> &result,
     DataShare::DataSharePredicates &dataSharePredicates, std::vector<std::string> &columnsTemp,
     int &parseCode)
 {
@@ -566,7 +566,7 @@ bool ContactsDataAbility::QueryExecute(std::shared_ptr<OHOS::NativeRdb::AbsShare
     return isUriMatch;
 }
 
-bool ContactsDataAbility::QueryExecuteSwitchSplit(std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> &result,
+bool ContactsDataAbility::QueryExecuteSwitchSplit(std::shared_ptr<OHOS::NativeRdb::ResultSet> &result,
     DataShare::DataSharePredicates &dataSharePredicates, std::vector<std::string> &columnsTemp,
     int &parseCode)
 {

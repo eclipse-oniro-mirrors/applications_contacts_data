@@ -346,7 +346,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
     HILOG_INFO("CallLogAbility ====>Query start");
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
-    std::shared_ptr<OHOS::NativeRdb::AbsSharedResultSet> result;
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> result;
     OHOS::Uri uriTemp = uri;
     Contacts::UriUtils uriUtils;
     int parseCode = uriUtils.UriParse(uriTemp, uriValueMap_);

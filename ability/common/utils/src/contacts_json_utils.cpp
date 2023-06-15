@@ -27,7 +27,7 @@ ContactsJsonUtils::~ContactsJsonUtils()
 {
 }
 
-std::string ContactsJsonUtils::GetDeleteData(std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+std::string ContactsJsonUtils::GetDeleteData(std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet)
 {
     Json::Value dataResult;
     Json::Value arrayValue;
@@ -39,7 +39,7 @@ std::string ContactsJsonUtils::GetDeleteData(std::unique_ptr<OHOS::NativeRdb::Ab
 }
 
 void ContactsJsonUtils::ConvertResultSet(
-    Json::Value &arrayValue, std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    Json::Value &arrayValue, std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet)
 {
     int resultSetNum = resultSet->GoToFirstRow();
     std::vector<std::string> columnNames;
@@ -56,7 +56,7 @@ void ContactsJsonUtils::ConvertResultSet(
 }
 
 void ContactsJsonUtils::GetValue(std::vector<std::string> &columnNames, unsigned int &index, Json::Value &data,
-    std::unique_ptr<OHOS::NativeRdb::AbsSharedResultSet> &resultSet)
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet)
 {
     std::string typeValue = columnNames[index];
     int columnIndex;
