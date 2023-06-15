@@ -119,6 +119,7 @@ void ContactsDataAbility::OnStart(const Want &want)
         std::string basePath = context->GetDatabaseDir();
         Contacts::ContactsPath::RDB_PATH = basePath + "/";
         Contacts::ContactsPath::RDB_BACKUP_PATH = basePath + "/backup/";
+        Contacts::ContactsPath::RDB_EL1_PATH = "/data/storage/el1/database/";
     }
 }
 
@@ -517,6 +518,11 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsDataAbility::Query(const 
     DataShare::DataSharePredicates dataSharePredicates = predicates;
     bool isUriMatch = QueryExecute(result, dataSharePredicates, columnsTemp, parseCode);
     if (!isUriMatch) {
+        g_mutex.unlock();
+        return nullptr;
+    }
+    if (result == nullptr) {
+        HILOG_ERROR("AbsSharedResultSet result is nullptr in ContactsDataAbility::Query");
         g_mutex.unlock();
         return nullptr;
     }
