@@ -724,6 +724,7 @@ std::vector<PostalAddress> ContactsBuild::GetPostalAddress(napi_env env, napi_va
         targetObj.postcode = GetStringValueByKey(env, obj, "postcode");
         targetObj.region = GetStringValueByKey(env, obj, "region");
         targetObj.street = GetStringValueByKey(env, obj, "street");
+        targetObj.labelId = GetIntValueByKey(env, obj, "labelId");
         resultVec.push_back(targetObj);
     }
     return resultVec;
