@@ -617,6 +617,15 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
     HandleExecuteResult(env, executeHelper, result);
     napi_deferred deferred = executeHelper->deferred;
     executeHelper->deferred = nullptr;
+    if (executeHelper->valueUpdateContact.capacity() != 0) {
+        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
+    }
+    if (executeHelper->valueContact.capacity() != 0) {
+        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
+    }
+    if (executeHelper->valueContactData.capacity() != 0) {
+        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
+    }
     NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, executeHelper->work));
     if (executeHelper->dataShareHelper != nullptr) {
@@ -661,6 +670,15 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         }
         executeHelper->work = nullptr;
         executeHelper->deferred = nullptr;
+        if (executeHelper->valueUpdateContact.capacity() != 0) {
+            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
+        }
+        if (executeHelper->valueContact.capacity() != 0) {
+            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
+        }
+        if (executeHelper->valueContactData.capacity() != 0) {
+            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
+        }
         if (executeHelper->dataShareHelper != nullptr) {
             executeHelper->dataShareHelper->Release();
             executeHelper->dataShareHelper = nullptr;
