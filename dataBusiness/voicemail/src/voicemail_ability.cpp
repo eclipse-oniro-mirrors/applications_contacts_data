@@ -384,6 +384,10 @@ std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(const Uri
     if (!isUriMatch) {
         return nullptr;
     }
+    if (result == nullptr) {
+        HILOG_ERROR("AbsSharedResultSet is nullptr");
+        return nullptr;
+    }
     auto queryResultSet = RdbDataShareAdapter::RdbUtils::ToResultSetBridge(result);
     std::shared_ptr<DataShare::DataShareResultSet> sharedPtrResult =
         std::make_shared<DataShare::DataShareResultSet>(queryResultSet);
