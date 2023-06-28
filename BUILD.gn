@@ -13,6 +13,7 @@
 
 import("//build/lite/config/component/lite_component.gni")
 import("//build/ohos.gni")
+import("signature/pm.gni")
 
 ## Build Contacts_DataAbility.hap
 ohos_hap("Contacts_DataAbility") {
@@ -27,6 +28,12 @@ ohos_hap("Contacts_DataAbility") {
   part_name = "contacts_data_hap"
   subsystem_name = "applications"
   module_install_dir = "app/com.ohos.contactsdataability"
+  if (defined(sign_hap_py_path)) {
+    certificate_profile = "${certificate_profile_path}"
+    key_alias = "contacts_data"
+    private_key_path = "contacts_data"
+    compatible_version = "9"
+  }
 }
 
 ohos_app_scope("Contacts_DataAbility_app_profile") {
