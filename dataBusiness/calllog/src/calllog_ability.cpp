@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -136,7 +136,7 @@ int CallLogAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucke
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
@@ -197,7 +197,7 @@ int CallLogAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::Dat
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     int rowRet = Contacts::RDB_EXECUTE_FAIL;
     unsigned int size = values.size();
@@ -257,7 +257,7 @@ int CallLogAbility::Update(
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
@@ -301,7 +301,7 @@ int CallLogAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates 
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CALL_LOG)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     g_mutex.lock();
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();

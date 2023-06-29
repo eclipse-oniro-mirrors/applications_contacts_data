@@ -130,7 +130,7 @@ int VoiceMailAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBuc
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
@@ -201,7 +201,7 @@ int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::D
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     unsigned int size = values.size();
     if (size < 1) {
@@ -259,7 +259,7 @@ int VoiceMailAbility::Update(
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
@@ -308,7 +308,7 @@ int VoiceMailAbility::Delete(const Uri &uri, const DataShare::DataSharePredicate
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     g_mutex.lock();
     voiceMailDataBase_ = Contacts::VoiceMailDataBase::GetInstance();

@@ -33,5 +33,29 @@ napi_value ContactsNapiUtils::CreateClassConstructor(napi_env env, napi_callback
     napi_get_global(env, &global);
     return thisArg;
 }
+
+bool ContactsNapiUtils::MatchValueType(napi_env env, napi_value value, napi_valuetype targetType)
+{
+    napi_valuetype valueType = napi_undefined;
+    napi_typeof(env, value, &valueType);
+    return valueType == targetType;
+}
+
+bool ContactsNapiUtils::MatchParameters(
+    napi_env env, const napi_value parameters[], std::initializer_list<napi_valuetype> valueTypes)
+{
+    if (parameters == nullptr) {
+        return false;
+    }
+    int i = 0;
+    for (auto beg = valueTypes.begin(); beg != valueTypes.end(); ++beg) {
+        if (!MatchValueType(env, parameters[i], *beg)) {
+            return false;
+        }
+        ++i;
+    }
+    return true;
+}
+
 } // namespace ContactsApi
 } // namespace OHOS

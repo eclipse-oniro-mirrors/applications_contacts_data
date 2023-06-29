@@ -25,6 +25,7 @@ namespace Contacts {
 // error code
 constexpr int RDB_EXECUTE_OK = 0;
 constexpr int RDB_EXECUTE_FAIL = -1;
+constexpr int RDB_PERMISSION_ERROR = -2;
 constexpr int OPERATION_ERROR = -1;
 constexpr int OPERATION_OK = 0;
 constexpr int RDB_OBJECT_EMPTY = -1;
