@@ -1252,7 +1252,9 @@ napi_value QueryContact(napi_env env, napi_callback_info info)
             break;
         case ARGS_FOUR:
             if (!ContactsNapiUtils::MatchParameters(env, argv,
-                { napi_string, napi_object, napi_object, napi_function })) {
+                {
+                    napi_string, napi_object, napi_object, napi_function
+                })) {
                 napi_throw(env, errorCode);
             }
             break;
@@ -1354,7 +1356,9 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
             break;
         case ARGS_FOUR:
             if (!ContactsNapiUtils::MatchParameters(env, argv,
-                { napi_string, napi_object, napi_object, napi_function })) {
+                { 
+                    napi_string, napi_object, napi_object, napi_function
+                })) {
                 napi_throw(env, errorCode);
             }
             break;
@@ -1407,7 +1411,9 @@ napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
             break;
         case ARGS_FOUR:
             if (!ContactsNapiUtils::MatchParameters(env, argv,
-                { napi_string, napi_object, napi_object, napi_function })) {
+                {
+                    napi_string, napi_object, napi_object, napi_function
+                })) {
                 napi_throw(env, errorCode);
             }
             break;
