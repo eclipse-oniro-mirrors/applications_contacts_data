@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -173,7 +173,7 @@ int ContactsDataAbility::Insert(const Uri &uri, const DataShare::DataShareValues
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     HILOG_INFO("ContactsDataAbility Insert start");
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
@@ -256,7 +256,7 @@ int ContactsDataAbility::BatchInsert(const Uri &uri, const std::vector<DataShare
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     unsigned int size = values.size();
     if (size < 1) {
@@ -316,7 +316,7 @@ int ContactsDataAbility::Update(
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     OHOS::NativeRdb::ValuesBucket valuesBucket = RdbDataShareAdapter::RdbUtils::ToValuesBucket(value);
     Contacts::SqlAnalyzer sqlAnalyzer;
@@ -419,7 +419,7 @@ int ContactsDataAbility::Delete(const Uri &uri, const DataShare::DataSharePredic
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
         HILOG_ERROR("Permission denied!");
-        return Contacts::RDB_EXECUTE_FAIL;
+        return Contacts::RDB_PERMISSION_ERROR;
     }
     HILOG_INFO("ContactsDataAbility ====>Delete");
     g_mutex.lock();

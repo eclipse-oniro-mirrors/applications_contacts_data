@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,6 +32,9 @@ constexpr int MAX_PARAMS = 6;
 constexpr int ERROR = -1;
 constexpr int SUCCESS = 0;
 constexpr int RESULT_DATA_SIZE = 2;
+constexpr int RDB_PERMISSION_ERROR = -2;
+constexpr int PERMISSION_ERROR = 201;
+constexpr int PARAMETER_ERROR = 401;
 
 constexpr int NAPI_GET_STRING_SIZE = 256;
 constexpr int REQUEST_PARAMS_COUNT_ONE = 1;
@@ -86,7 +89,11 @@ constexpr int HICALL_DEVICE = 15;
 constexpr int CAMCARD = 16;
 constexpr int SIP_ADDRESS = 17;
 
+constexpr int ARGS_ZERO = 0;
 constexpr int ARGS_ONE = 1;
+constexpr int ARGS_TWO = 2;
+constexpr int ARGS_THREE = 3;
+constexpr int ARGS_FOUR = 4;
 const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
 
 struct ExecuteHelper {

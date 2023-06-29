@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -49,6 +49,7 @@ void Execute(napi_env env, void *data);
 void ExecuteAsync(napi_env env, void *data);
 void ExecuteDone(napi_env env, napi_status status, void *data);
 void ExecuteSyncDone(napi_env env, napi_status status, void *data);
+void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &errorCode);
 void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
 int GetRawIdByResultSet(const std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
 napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper);

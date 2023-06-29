@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Huawei Device Co., Ltd.
+ * Copyright (C) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,6 +27,9 @@ class ContactsNapiUtils {
 public:
     static napi_value ToInt32Value(napi_env env, int32_t value);
     static napi_value CreateClassConstructor(napi_env env, napi_callback_info info);
+    static bool MatchValueType(napi_env env, napi_value value, napi_valuetype targetType);
+    static bool MatchParameters(
+        napi_env env, const napi_value parameters[], std::initializer_list<napi_valuetype> valueTypes);
 };
 } // namespace ContactsApi
 } // namespace OHOS
