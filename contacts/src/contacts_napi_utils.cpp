@@ -56,6 +56,5 @@ bool ContactsNapiUtils::MatchParameters(
     }
     return true;
 }
-
 } // namespace ContactsApi
 } // namespace OHOS
