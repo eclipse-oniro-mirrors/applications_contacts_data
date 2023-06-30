@@ -345,6 +345,10 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
     }
     HILOG_INFO("CallLogAbility ====>Query start");
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
+    if (callLogDataBase_ == nullptr) {
+        HILOG_ERROR("AbsSharedResultSet is nullptr");
+        return nullptr;
+    }
     Contacts::PredicatesConvert predicatesConvert;
     std::shared_ptr<OHOS::NativeRdb::ResultSet> result;
     OHOS::Uri uriTemp = uri;
@@ -366,6 +370,10 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
             break;
     }
     if (!isUriMatch) {
+        return nullptr;
+    }
+    if (result == nullptr) {
+        HILOG_ERROR("AbsSharedResultSet is nullptr");
         return nullptr;
     }
     auto queryResultSet = RdbDataShareAdapter::RdbUtils::ToResultSetBridge(result);
