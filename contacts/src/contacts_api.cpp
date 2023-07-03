@@ -694,7 +694,6 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
 {
     HILOG_INFO("HandleExecuteErrorCode");
     ResultConvert resultConvert;
-    napi_get_undefined(env, &result);
     switch (executeHelper->actionCode) {
         case ADD_CONTACT:
         case DELETE_CONTACT:
