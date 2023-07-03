@@ -34,14 +34,14 @@
                 "ability_runtime",
                 "bundle_framework",
                 "common_event_service",
+                "c_utils",
                 "eventhandler",
-                "hiviewdfx_hilog_native",
+                "hilog",
                 "ipc",
                 "napi",
                 "preferences",
                 "relational_store",
-                "safwk",
-                "utils_base"
+                "safwk"
             ],
             "third_party": [
                 "jsoncpp"

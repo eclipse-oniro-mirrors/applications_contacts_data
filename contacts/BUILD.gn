@@ -97,6 +97,7 @@ ohos_shared_library("contact") {
     "ability_runtime:napi_base_context",
     "c_utils:utils",
     "data_share:datashare_consumer",
+    "hilog:libhilog",
     "napi:ace_napi",
     "relational_store:native_dataability",
     "relational_store:native_rdb",
@@ -107,11 +108,6 @@ ohos_shared_library("contact") {
     "LOG_DOMAIN = 0xD001F09",
   ]
 
-  if (is_standard_system) {
-    external_deps += [ "hiviewdfx_hilog_native:libhilog" ]
-  } else {
-    external_deps += [ "hilog:libhilog" ]
-  }
   public_deps = []
   relative_install_dir = "module"
   part_name = "contacts_data_hap"
