@@ -139,6 +139,7 @@ ohos_shared_library("contactsdataability") {
     "common_event_service:cesfwk_innerkits",
     "data_share:datashare_common",
     "data_share:datashare_provider",
+    "hilog:libhilog",
     "ipc:ipc_single",
     "napi:ace_napi",
     "relational_store:native_dataability",
@@ -151,12 +152,6 @@ ohos_shared_library("contactsdataability") {
     "CONTACTSDATA_LOG_TAG = \"ContactsData\"",
     "LOG_DOMAIN = 0xD001F09",
   ]
-
-  if (is_standard_system) {
-    external_deps += [ "hiviewdfx_hilog_native:libhilog" ]
-  } else {
-    external_deps += [ "hilog:libhilog" ]
-  }
 
   public_deps = []
   part_name = "contacts_data_hap"
