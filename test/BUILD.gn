@@ -69,7 +69,7 @@ ohos_unittest("contacts_test") {
     "data_share:datashare_common",
     "data_share:datashare_provider",
     "eventhandler:libeventhandler",
-    "hiviewdfx_hilog_native:libhilog",
+    "hilog:libhilog",
     "ipc:ipc_core",
     "preferences:native_preferences",
     "relational_store:native_appdatafwk",
