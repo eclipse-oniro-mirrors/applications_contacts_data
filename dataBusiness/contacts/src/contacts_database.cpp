@@ -1128,23 +1128,23 @@ void SqliteOpenHelperContactCallback::UpgradeToV2(OHOS::NativeRdb::RdbStore &sto
     if (oldVersion >= newVersion || newVersion != DATABASE_VERSION_2) {
         return;
     }
-    //raw_contact
+    // raw_contact
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN primary_contact INTEGER DEFAULT 0;");
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra1 TEXT;");
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra2 TEXT;");
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra3 TEXT;");
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra4 TEXT;");
-    //contact_data
+    // contact_data
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend8 TEXT;");
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend9 TEXT;");
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend10 TEXT;");
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend11 TEXT;");
-    //drop view
+    // drop view
     store.ExecuteSql("DROP VIEW view_contact;");
     store.ExecuteSql("DROP VIEW view_contact_data;");
     store.ExecuteSql("DROP VIEW search_contact_view;");
     store.ExecuteSql("DROP VIEW view_deleted;");
-    //create view
+    // create view
     store.ExecuteSql(CREATE_VIEW_CONTACT);
     store.ExecuteSql(CREATE_VIEW_CONTACT_DATA);
     store.ExecuteSql(CREATE_SEARCH_CONTACT_VIEW);
