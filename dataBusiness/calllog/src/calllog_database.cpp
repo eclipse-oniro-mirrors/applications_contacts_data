@@ -118,7 +118,7 @@ int SqliteOpenHelperCallLogCallback::OnUpgrade(OHOS::NativeRdb::RdbStore &store,
     return OHOS::NativeRdb::E_OK;
 }
 
-void SqliteOpenHelperCallogCallback::UpgradeToV2(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion)
+void SqliteOpenHelperCallLogCallback::UpgradeToV2(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion)
 {
     if (oldVersion >= newVersion || newVersion != DATABASE_VERSION_2) {
         return;
