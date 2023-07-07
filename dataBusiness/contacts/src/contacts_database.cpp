@@ -1116,8 +1116,39 @@ int SqliteOpenHelperContactCallback::OnUpgrade(OHOS::NativeRdb::RdbStore &store,
     if (oldVersion < newVersion && newVersion == DATABASE_NEW_VERSION) {
         store.ExecuteSql("ALTER TABLE database_backup_task ADD COLUMN sync TEXT");
     }
+    if (oldVersion < newVersion && newVersion == DATABASE_VERSION_2) {
+        UpgradeToV2(store, oldVersion, newVersion);
+    }
     store.SetVersion(newVersion);
     return OHOS::NativeRdb::E_OK;
+}
+
+void SqliteOpenHelperContactCallback::UpgradeToV2(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion)
+{
+    if (oldVersion >= newVersion || newVersion != DATABASE_VERSION_2) {
+        return;
+    }
+    // raw_contact
+    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN primary_contact INTEGER DEFAULT 0;");
+    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra1 TEXT;");
+    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra2 TEXT;");
+    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra3 TEXT;");
+    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra4 TEXT;");
+    // contact_data
+    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend8 TEXT;");
+    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend9 TEXT;");
+    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend10 TEXT;");
+    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend11 TEXT;");
+    // drop view
+    store.ExecuteSql("DROP VIEW view_contact;");
+    store.ExecuteSql("DROP VIEW view_contact_data;");
+    store.ExecuteSql("DROP VIEW search_contact_view;");
+    store.ExecuteSql("DROP VIEW view_deleted;");
+    // create view
+    store.ExecuteSql(CREATE_VIEW_CONTACT);
+    store.ExecuteSql(CREATE_VIEW_CONTACT_DATA);
+    store.ExecuteSql(CREATE_SEARCH_CONTACT_VIEW);
+    store.ExecuteSql(CREATE_VIEW_DELETED);
 }
 
 int SqliteOpenHelperContactCallback::OnDowngrade(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion)

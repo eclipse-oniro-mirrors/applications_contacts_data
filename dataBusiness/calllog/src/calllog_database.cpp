@@ -111,8 +111,19 @@ int SqliteOpenHelperCallLogCallback::OnUpgrade(OHOS::NativeRdb::RdbStore &store,
     if (oldVersion < newVersion && newVersion == DATABASE_NEW_VERSION) {
         store.ExecuteSql("ALTER TABLE database_backup_task ADD COLUMN sync TEXT");
     }
+    if (oldVersion < newVersion && newVersion == DATABASE_VERSION_2) {
+        UpgradeToV2(store, oldVersion, newVersion);
+    }
     store.SetVersion(newVersion);
     return OHOS::NativeRdb::E_OK;
+}
+
+void SqliteOpenHelperCallLogCallback::UpgradeToV2(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion)
+{
+    if (oldVersion >= newVersion || newVersion != DATABASE_VERSION_2) {
+        return;
+    }
+    store.ExecuteSql("ALTER TABLE callog ADD COLUMN features INTEGERT DEFAULT 0;");
 }
 
 int SqliteOpenHelperCallLogCallback::OnDowngrade(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion)

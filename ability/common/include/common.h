@@ -94,8 +94,11 @@ constexpr int PROFILE_DELETE = 30015;
 constexpr int PROFILE_BACKUP = 30016;
 constexpr int PROFILE_RECOVER = 30017;
 
+// DATABASE VERSION 2
+constexpr int DATABASE_VERSION_2 = 2;
+
 // DATABASE OPEN VERSION
-constexpr int DATABASE_OPEN_VERSION = 1;
+constexpr int DATABASE_OPEN_VERSION = 2;
 
 // DATABASE NEW VERSION
 constexpr int DATABASE_NEW_VERSION = 2;
@@ -150,7 +153,8 @@ constexpr const char *CREATE_CALLLOG =
     "[extra3] TEXT, "
     "[extra4] TEXT, "
     "[extra5] TEXT, "
-    "[extra6] TEXT)";
+    "[extra6] TEXT, "
+    "[features] INTEGER DEFAULT 0);";
 
 constexpr const char *CREATE_VOICEMAIL =
     "CREATE TABLE IF NOT EXISTS [voicemail]("
@@ -234,7 +238,12 @@ constexpr const char *CREATE_RAW_CONTACT =
     "[sync_id] INTEGER, "
     "[syn_1] TEXT, "
     "[syn_2] TEXT, "
-    "[syn_3] TEXT)";
+    "[syn_3] TEXT, "
+    "[primary_contact] INTEGER DEFAULT 0, "
+    "[extra1] TEXT, "
+    "[extra2] TEXT, "
+    "[extra3] TEXT, "
+    "[extra4] TEXT)";
 
 constexpr const char *CREATE_CONTACT_DATA =
     "CREATE TABLE IF NOT EXISTS [contact_data]( "
@@ -274,7 +283,12 @@ constexpr const char *CREATE_CONTACT_DATA =
     "[blob_data] BLOB, "
     "[syn_1] TEXT, "
     "[syn_2] TEXT, "
-    "[syn_3] TEXT)";
+    "[syn_3] TEXT, "
+    "[extend8] TEXT, "
+    "[extend9] TEXT, "
+    "[extend10] TEXT, "
+    "[extend11] TEXT)";
+
 constexpr const char *CREATE_CONTACT_TYPE =
     "CREATE TABLE IF NOT EXISTS [contact_type]( "
     "[id] INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -418,6 +432,11 @@ constexpr const char *CREATE_VIEW_CONTACT =
     "[name_raw_contact].[syn_1] AS [syn_1], "
     "[name_raw_contact].[syn_2] AS [syn_2], "
     "[name_raw_contact].[syn_3] AS [syn_3], "
+    "[name_raw_contact].[primary_contact] AS [primary_contact], "
+    "[name_raw_contact].[extra1] AS [extra1], "
+    "[name_raw_contact].[extra2] AS [extra2], "
+    "[name_raw_contact].[extra3] AS [extra3], "
+    "[name_raw_contact].[extra4] AS [extra4], "
     "[account].[account_name] AS [account_name], "
     "[account].[account_type] AS [account_type], "
     "[photo_files].[file_size] AS [file_size], "
@@ -465,6 +484,11 @@ constexpr const char *CREATE_VIEW_RAW_CONTACT =
     "[raw_contact].[syn_1] AS [syn_1], "
     "[raw_contact].[syn_2] AS [syn_2], "
     "[raw_contact].[syn_3] AS [syn_3], "
+    "[raw_contact].[primary_contact] AS [primary_contact], "
+    "[raw_contact].[extra1] AS [extra1], "
+    "[raw_contact].[extra2] AS [extra2], "
+    "[raw_contact].[extra3] AS [extra3], "
+    "[raw_contact].[extra4] AS [extra4], "
     "[photo_files].[file_size] AS [file_size], "
     "[photo_files].[file_height] AS [file_height], "
     "[photo_files].[file_width] AS [file_width], "
@@ -515,6 +539,10 @@ constexpr const char *CREATE_VIEW_CONTACT_DATA =
     "[contact_data].[postcode] AS [postcode], "
     "[contact_data].[region] AS [region], "
     "[contact_data].[street] AS [street], "
+    "[contact_data].[extend8] AS [extend8], "
+    "[contact_data].[extend9] AS [extend9], "
+    "[contact_data].[extend10] AS [extend10], "
+    "[contact_data].[extend11] AS [extend11], "
     "[contact_type].[content_type] AS [content_type], "
     "[account].[account_name] AS [account_name], "
     "[account].[account_type] AS [account_type], "
@@ -552,7 +580,11 @@ constexpr const char *CREATE_VIEW_CONTACT_DATA =
     "[raw_contact].[sort_first_letter] AS [sort_first_letter], "
     "[raw_contact].[is_deleted] AS [is_deleted], "
     "[raw_contact].[phonetic_name_type] AS [phonetic_name_type], "
-    "[raw_contact].[photo_first_name] AS [photo_first_name] "
+    "[raw_contact].[primary_contact] AS [primary_contact], "
+    "[raw_contact].[extra1] AS [extra1], "
+    "[raw_contact].[extra2] AS [extra2], "
+    "[raw_contact].[extra3] AS [extra3], "
+    "[raw_contact].[extra4] AS [extra4] "
     "FROM [contact_data] "
     "JOIN [raw_contact] ON "
     "([contact_data].[raw_contact_id] = [raw_contact].[id]) "
@@ -610,6 +642,11 @@ constexpr const char *CREATE_SEARCH_CONTACT_VIEW =
     "[raw_contact].[photo_first_name] AS [photo_first_name], "
     "[raw_contact].[personal_notification_ringtone] AS [personal_notification_ringtone], "
     "[raw_contact].[is_deleted] AS [is_deleted], "
+    "[raw_contact].[primary_contact] AS [primary_contact], "
+    "[raw_contact].[extra1] AS [extra1], "
+    "[raw_contact].[extra2] AS [extra2], "
+    "[raw_contact].[extra3] AS [extra3], "
+    "[raw_contact].[extra4] AS [extra4], "
     "[contact_data].[type_id] AS [type_id], "
     "[contact_data].[phonetic_name] AS [phonetic_name], "
     "[contact_data].[raw_contact_id] AS [raw_contact_id], "
@@ -645,7 +682,11 @@ constexpr const char *CREATE_SEARCH_CONTACT_VIEW =
     "[contact_data].[blob_data] AS [blob_data], "
     "[contact_data].[syn_1] AS [syn_1], "
     "[contact_data].[syn_2] AS [syn_2], "
-    "[contact_data].[syn_3] AS [syn_3] "
+    "[contact_data].[syn_3] AS [syn_3], "
+    "[contact_data].[extend8] AS [extend8], "
+    "[contact_data].[extend9] AS [extend9], "
+    "[contact_data].[extend10] AS [extend10], "
+    "[contact_data].[extend11] AS [extend11], "
     "FROM [search_contact] "
     "JOIN [raw_contact] ON "
     "([search_contact].[raw_contact_id] = [raw_contact].[id]) "
@@ -723,6 +764,11 @@ constexpr const char *CREATE_VIEW_DELETED =
     "[name_raw_contact].[syn_1] AS [syn_1], "
     "[name_raw_contact].[syn_2] AS [syn_2], "
     "[name_raw_contact].[syn_3] AS [syn_3], "
+    "[raw_contact].[primary_contact] AS [primary_contact], "
+    "[raw_contact].[extra1] AS [extra1], "
+    "[raw_contact].[extra2] AS [extra2], "
+    "[raw_contact].[extra3] AS [extra3], "
+    "[raw_contact].[extra4] AS [extra4], "
     "[deleted_raw_contact].[delete_source] AS [delete_source],"
     "[deleted_raw_contact].[delete_time] AS [delete_time], "
     "[deleted_raw_contact].[delete_account] AS [delete_account], "

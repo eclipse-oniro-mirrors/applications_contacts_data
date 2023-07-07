@@ -102,6 +102,9 @@ public:
     int OnCreate(OHOS::NativeRdb::RdbStore &rdbStore) override;
     int OnUpgrade(OHOS::NativeRdb::RdbStore &rdbStore, int oldVersion, int newVersion) override;
     int OnDowngrade(OHOS::NativeRdb::RdbStore &rdbStore, int currentVersion, int targetVersion) override;
+
+private:
+    void UpgradeToV2(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion);
 };
 } // namespace Contacts
 } // namespace OHOS
