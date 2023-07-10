@@ -87,6 +87,7 @@ ohos_shared_library("contact") {
 
   sanitize = {
     cfi = true
+    cfi_cross_dso = true
     debug = false
   }
 
