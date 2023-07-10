@@ -182,7 +182,7 @@ std::shared_ptr<DataShare::DataShareHelper> GetDataShareHelper(napi_env env, nap
             HILOG_ERROR("Failed to get native context instance");
             return nullptr;
         }
-        dataShareHelper = DataShare::DataShareHelper::Creator(context, CONTACTS_DATA_URI);
+        dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
     } else {
         HILOG_INFO("GetStageModeContext");
         auto context = OHOS::AbilityRuntime::GetStageModeContext(env, abilityContext);
