@@ -60,15 +60,15 @@ bool ContactsNapiUtils::MatchParameters(
     return true;
 }
 
-napi_value ContactsNapiUtils::CreateError(napi_env env, in32_t err)
+napi_value ContactsNapiUtils::CreateError(napi_env env, int32_t err)
 {
     napi_value businessError = nullptr;
     napi_value errorCode = nullptr;
     napi_value errorMessage = nullptr;
-    if (error == PERMISSION_ERROR) {
+    if (err == PERMISSION_ERROR) {
         napi_create_string_utf8(env, JS_ERROR_PERMISSION_DENIED_STRING, NAPI_AUTO_LENGTH, &errorMessage);
     }
-    if (error == PARAMETER_ERROR) {
+    if (err == PARAMETER_ERROR) {
         napi_create_string_utf8(env, JS_ERROR_INVALID_INPUT_PARAMETER_STRING, NAPI_AUTO_LENGTH, &errorMessage);
     }
     napi_create_in32_t(env, err, &errorCode);
