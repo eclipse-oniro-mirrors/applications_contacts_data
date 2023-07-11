@@ -71,7 +71,7 @@ napi_value ContactsNapiUtils::CreateError(napi_env env, int32_t err)
     if (err == PARAMETER_ERROR) {
         napi_create_string_utf8(env, JS_ERROR_INVALID_INPUT_PARAMETER_STRING, NAPI_AUTO_LENGTH, &errorMessage);
     }
-    napi_create_in32_t(env, err, &errorCode);
+    napi_create_int32(env, err, &errorCode);
     napi_create_error(env, nullptr, errorMessage, &businessError);
     napi_set_named_property(env, businessError, "code", errorCode);
     return businessError;
