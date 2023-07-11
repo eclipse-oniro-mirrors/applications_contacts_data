@@ -1,5 +1,5 @@
 {
-    "name": "@ohos/contacts_data",
+    "name": "@ohos/contacts_data_hap",
     "version": "3.1.0",
     "description": "contacts data ability",
     "publishAs": "code-segment",
