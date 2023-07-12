@@ -1099,7 +1099,7 @@ napi_value AddContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
@@ -1140,7 +1140,7 @@ napi_value DeleteContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
@@ -1181,7 +1181,7 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
@@ -1228,7 +1228,7 @@ napi_value QueryContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string })) {
@@ -1282,7 +1282,7 @@ napi_value QueryContacts(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ZERO:
             break;
@@ -1330,7 +1330,7 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string })) {
@@ -1384,7 +1384,7 @@ napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string })) {
@@ -1438,7 +1438,7 @@ napi_value QueryGroups(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ZERO:
             break;
@@ -1481,7 +1481,7 @@ napi_value QueryHolders(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ZERO:
             break;
@@ -1519,7 +1519,7 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
@@ -1565,7 +1565,7 @@ napi_value QueryMyCard(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ZERO:
             break;
@@ -1608,7 +1608,7 @@ napi_value IsMyCard(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
@@ -1649,7 +1649,7 @@ napi_value IsLocalContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = CreateError(env, PARAMETER_ERROR);
+    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
