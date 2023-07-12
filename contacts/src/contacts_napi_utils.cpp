@@ -17,6 +17,9 @@
 
 namespace OHOS {
 namespace ContactsApi {
+static constexpr const char *JS_ERROR_INVALID_INPUT_PARAMETER_STRING =
+    "parameter error. The type of parameter should match or the number of parameters should match.";
+static constexpr const char *JS_ERROR_PERMISSION_DENIED_STRING = "Permission denied";
 napi_value ContactsNapiUtils::ToInt32Value(napi_env env, int32_t value)
 {
     napi_value staticValue = nullptr;
@@ -55,6 +58,23 @@ bool ContactsNapiUtils::MatchParameters(
         ++i;
     }
     return true;
+}
+
+napi_value ContactsNapiUtils::CreateError(napi_env env, int32_t err)
+{
+    napi_value businessError = nullptr;
+    napi_value errorCode = nullptr;
+    napi_value errorMessage = nullptr;
+    if (err == PERMISSION_ERROR) {
+        napi_create_string_utf8(env, JS_ERROR_PERMISSION_DENIED_STRING, NAPI_AUTO_LENGTH, &errorMessage);
+    }
+    if (err == PARAMETER_ERROR) {
+        napi_create_string_utf8(env, JS_ERROR_INVALID_INPUT_PARAMETER_STRING, NAPI_AUTO_LENGTH, &errorMessage);
+    }
+    napi_create_int32(env, err, &errorCode);
+    napi_create_error(env, nullptr, errorMessage, &businessError);
+    napi_set_named_property(env, businessError, "code", errorCode);
+    return businessError;
 }
 } // namespace ContactsApi
 } // namespace OHOS
