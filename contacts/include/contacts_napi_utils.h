@@ -32,8 +32,8 @@ public:
     static bool MatchValueType(napi_env env, napi_value value, napi_valuetype targetType);
     static bool MatchParameters(
         napi_env env, const napi_value parameters[], std::initializer_list<napi_valuetype> valueTypes);
-};
     static napi_value CreateError(napi_env, int32_t errorCode);
+};
 } // namespace ContactsApi
 } // namespace OHOS
 
