@@ -686,7 +686,7 @@ constexpr const char *CREATE_SEARCH_CONTACT_VIEW =
     "[contact_data].[extend8] AS [extend8], "
     "[contact_data].[extend9] AS [extend9], "
     "[contact_data].[extend10] AS [extend10], "
-    "[contact_data].[extend11] AS [extend11], "
+    "[contact_data].[extend11] AS [extend11] "
     "FROM [search_contact] "
     "JOIN [raw_contact] ON "
     "([search_contact].[raw_contact_id] = [raw_contact].[id]) "
