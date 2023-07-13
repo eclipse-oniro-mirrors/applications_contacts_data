@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,23 +18,22 @@
  */
 export class LogUtils {
   d(TAG, msg): void {
-    console.debug("[ContactsData:]" + TAG + ":" + msg);
+    console.debug('[ContactsData:]' + TAG + ':' + msg);
   }
 
   i(TAG, msg): void {
-    console.info("[ContactsData:]" + TAG + ":" + msg);
+    console.info('[ContactsData:]' + TAG + ':' + msg);
   }
 
   w(TAG, msg): void {
-    console.warn("[ContactsData:]" + TAG + ":" + msg);
+    console.warn('[ContactsData:]' + TAG + ':' + msg);
   }
 
   e(TAG, msg): void {
-    console.error("[ContactsData:]" + TAG + ":" + msg);
+    console.error('[ContactsData:]' + TAG + ':' + msg);
   }
 }
 
 let mLogUtil = new LogUtils();
 
 export default mLogUtil as LogUtils;
-
