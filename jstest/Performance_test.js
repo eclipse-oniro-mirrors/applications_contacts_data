@@ -64,7 +64,11 @@ describe('PerformanceTest', function () {
     }
     try {
       let old = new Date();
+<<<<<<< HEAD
       let batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+=======
+      batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
+>>>>>>> 7918bf44c8011c1bbe3ff66a9af079d9bcadd980
       batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
@@ -216,7 +220,11 @@ describe('PerformanceTest', function () {
     }
     try {
       let old = new Date();
+<<<<<<< HEAD
       let batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+=======
+      batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
+>>>>>>> 7918bf44c8011c1bbe3ff66a9af079d9bcadd980
       batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
@@ -348,7 +356,11 @@ describe('PerformanceTest', function () {
     }
     try {
       let old = new Date();
+<<<<<<< HEAD
       let batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+=======
+      batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
+>>>>>>> 7918bf44c8011c1bbe3ff66a9af079d9bcadd980
       batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
@@ -475,7 +487,11 @@ describe('PerformanceTest', function () {
     }
     try {
       let old = new Date();
+<<<<<<< HEAD
       let batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+=======
+      batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
+>>>>>>> 7918bf44c8011c1bbe3ff66a9af079d9bcadd980
       batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);

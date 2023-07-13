@@ -44,6 +44,7 @@ describe('VoicemailTest', function () {
     condition.equalTo('id', map.get('id'));
     try {
       let resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
+<<<<<<< HEAD
       if (resultSet.rowCount > 0 && resultSet.goToFirstRow()) {
         do {
           for (let [key, value] of map) {
@@ -54,6 +55,20 @@ describe('VoicemailTest', function () {
             expect(value === dbresult).assertTrue();
           }
         } while (resultSet.goToNextRow());
+=======
+      if (resultSet.rowCount > 0) {
+        if (resultSet.goToFirstRow()) {
+          do {
+            for (let [key, value] of map) {
+              let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+              console.info(
+                tag + ' :logMessage voicemailQuery key = ' + key + ' dbresult :' + dbresult + ' value : ' + value
+              );
+              expect(value === dbresult).assertTrue();
+            }
+          } while (resultSet.goToNextRow());
+        }
+>>>>>>> 7918bf44c8011c1bbe3ff66a9af079d9bcadd980
       }
       resultSet.close();
     } catch (error) {
@@ -105,6 +120,7 @@ describe('VoicemailTest', function () {
       console.info(tag + ' : logMessage voicemailQueryForBatchInsert: size' + size);
       expect(resultSet.rowCount === size).assertEqual(true);
       let i = 0;
+<<<<<<< HEAD
       if (resultSet.rowCount > 0 && resultSet.goToFirstRow()) {
         do {
           for (let [key, value] of array[i]) {
@@ -117,6 +133,22 @@ describe('VoicemailTest', function () {
           }
           i++;
         } while (resultSet.goToNextRow());
+=======
+      if (resultSet.rowCount > 0) {
+        if (resultSet.goToFirstRow()) {
+          do {
+            for (let [key, value] of array[i]) {
+              let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+              console.info(
+                tag + ' : logMessage voicemailQueryForBatchInsert dbresult :' + dbresult + ' value : ' + value
+              );
+              console.info(tag + ' : logMessage voicemailQueryForBatchInsert value ' + (value === dbresult));
+              expect(value === dbresult).assertTrue();
+            }
+            i++;
+          } while (resultSet.goToNextRow());
+        }
+>>>>>>> 7918bf44c8011c1bbe3ff66a9af079d9bcadd980
       }
       resultSet.close();
     } catch (error) {

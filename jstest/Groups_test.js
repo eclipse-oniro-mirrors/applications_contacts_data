@@ -33,6 +33,7 @@ describe('GroupsTest', function () {
     condition.equalTo('id', map.get('id'));
     try {
       let resultSet = await dataShareHelper.query(groupUri, resultColumns, condition);
+<<<<<<< HEAD
       if (resultSet.rowCount > 0 && resultSet.goToFirstRow()) {
         do {
           for (let [key, value] of map) {
@@ -43,6 +44,20 @@ describe('GroupsTest', function () {
             expect(value === dbresult).assertTrue();
           }
         } while (resultSet.goToNextRow());
+=======
+      if (resultSet.rowCount > 0) {
+        if (resultSet.goToFirstRow()) {
+          do {
+            for (let [key, value] of map) {
+              let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
+              console.info(
+                tag + ': logMessage groupsQuery key =' + key + 'dbresult :' + dbresult + ' value : ' + value
+              );
+              expect(value === dbresult).assertTrue();
+            }
+          } while (resultSet.goToNextRow());
+        }
+>>>>>>> 7918bf44c8011c1bbe3ff66a9af079d9bcadd980
       }
       resultSet.close();
     } catch (error) {
