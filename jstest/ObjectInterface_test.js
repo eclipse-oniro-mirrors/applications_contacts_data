@@ -20,10 +20,10 @@ const URI_CONTACTS = 'datashare:///com.ohos.contactsdataability';
 const groupUri = 'datashare:///com.ohos.contactsdataability/contacts/groups';
 const rawContactUri = 'datashare:///com.ohos.contactsdataability/contacts/raw_contact';
 const profileRawContactUri = 'datashare:///com.ohos.contactsdataability/profile/raw_contact';
-const FIVE = 5;
-const SIX = 6;
+const ATTRIBUTE_FIVE = 5;
+const ATTRIBUTE_SIX = 6;
 const ONE_HUNDERD = 100;
-const TWO_THOUSAND = 2000;
+const SLEEP_TIME = 2000;
 
 describe('ObjectInterfaceTest', function () {
   function sleep(numberMillis) {
@@ -98,7 +98,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_insert_test_100 : raw_contact insert error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -118,7 +118,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_delete_test_200 : delete error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -133,7 +133,7 @@ describe('ObjectInterfaceTest', function () {
     expect(rawContactId > 0).assertTrue();
 
     let updateValues = { id: gRawContactId, name: { fullName: '小红' } };
-    let condition = { attributes: [SIX] };
+    let condition = { attributes: [ATTRIBUTE_SIX] };
     try {
       let updateCode = await contactsapi.updateContact(updateValues, condition);
       console.info('contactsApi_update_test_300 : updateCode = ' + updateCode);
@@ -143,7 +143,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_update_test_300 : update error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -162,7 +162,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_contact_test_400 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -182,7 +182,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_contact_test_500 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -193,7 +193,7 @@ describe('ObjectInterfaceTest', function () {
   it('contactsApi_query_contact_test_600', 0, async function (done) {
     let queryId = gRawContactId.toString();
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContact(queryId, holder, ContactAttributes);
       console.info('contactsApi_query_contact_test_600 : query resultSet = ' + JSON.stringify(resultSet));
@@ -203,7 +203,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_contact_test_600 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -221,7 +221,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_contacts_test_700 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -240,7 +240,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_contacts_test_800 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -249,7 +249,7 @@ describe('ObjectInterfaceTest', function () {
    * @tc.desc    Function test
    */
   it('contactsApi_query_contacts_test_900', 0, async function (done) {
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContacts(ContactAttributes);
       console.info('contactsApi_query_contacts_test_900 : query resultSet = ' + JSON.stringify(resultSet));
@@ -259,7 +259,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_contacts_test_900 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -269,7 +269,7 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_contacts_test_1000', 0, async function (done) {
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContacts(holder, ContactAttributes);
       console.info('contactsApi_query_contacts_test_1000 : query resultSet = ' + JSON.stringify(resultSet));
@@ -279,7 +279,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_contacts_test_1000 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -299,7 +299,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_email_test_1100 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -318,7 +318,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_email_test_1200 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -329,7 +329,7 @@ describe('ObjectInterfaceTest', function () {
   it('contactsApi_query_email_test_1300', 0, async function (done) {
     let email = 'email';
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContactsByEmail(email, holder, ContactAttributes);
       console.info('contactsApi_query_email_test_1300 : query resultSet = ' + JSON.stringify(resultSet));
@@ -339,7 +339,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_email_test_1300 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -349,7 +349,7 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_email_test_1400', 0, async function (done) {
     let email = 'email';
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContactsByEmail(email, ContactAttributes);
       console.info('contactsApi_query_email_test_1400 : query resultSet = ' + JSON.stringify(resultSet));
@@ -359,7 +359,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_email_test_1400 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -379,7 +379,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_phoneNumber_test_1500 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -390,7 +390,7 @@ describe('ObjectInterfaceTest', function () {
   it('contactsApi_query_phoneNumber_test_1600', 0, async function (done) {
     let phoneNumber = '183';
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContactsByPhoneNumber(phoneNumber, holder, ContactAttributes);
       console.info('contactsApi_query_phoneNumber_test_1600 : query resultSet = ' + JSON.stringify(resultSet));
@@ -400,7 +400,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_phoneNumber_test_1600 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -419,7 +419,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_phoneNumber_test_1700 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -429,7 +429,7 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_phoneNumber_test_1800', 0, async function (done) {
     let phoneNumber = '183';
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContactsByPhoneNumber(phoneNumber, ContactAttributes);
       console.info('contactsApi_query_phoneNumber_test_1800 : query resultSet = ' + JSON.stringify(resultSet));
@@ -439,7 +439,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_phoneNumber_test_1800 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -457,7 +457,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_group_test_1900 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -476,7 +476,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_group_test_2000 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -494,7 +494,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_holders_test_2200 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -514,7 +514,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_key_test_2300 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -534,7 +534,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_key_test_2400 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -553,7 +553,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_query_mycard_test_2500 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -572,7 +572,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_isMyCard_test_2600 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -591,7 +591,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('contactsApi_isLocalContact_test_2700 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -610,7 +610,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_insert_test_2800 : raw_contact insert error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -621,7 +621,7 @@ describe('ObjectInterfaceTest', function () {
   it('abnormal_contactsApi_update_test_3000', 0, async function (done) {
     let rawContactId = -1;
     let updateValues = { id: rawContactId, name: { fullName: '小红' } };
-    let condition = { attributes: [SIX] };
+    let condition = { attributes: [ATTRIBUTE_SIX] };
     try {
       let updateCode = await contactsapi.updateContact(updateValues, condition);
       console.info('abnormal_contactsApi_update_test_3000 : updateCode = ' + updateCode);
@@ -631,7 +631,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_update_test_3000 : update error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -656,7 +656,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_query_contact_test_3100 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -681,7 +681,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_query_contacts_test_3200 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -700,7 +700,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_query_email_test_3300 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -719,7 +719,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_query_phoneNumber_test_3400 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -738,7 +738,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_query_group_test_3500 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -757,7 +757,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_query_key_test_3600 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -776,7 +776,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_query_mycard_test_3700 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -795,7 +795,7 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_isMyCard_test_3800 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 
   /**
@@ -814,6 +814,6 @@ describe('ObjectInterfaceTest', function () {
       console.info('abnormal_contactsApi_isLocalContact_test_3900 query error = ' + error);
       done();
     }
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TIME);
   });
 });

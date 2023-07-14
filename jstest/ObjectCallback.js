@@ -21,9 +21,9 @@ const rawContactUri = 'datashare:///com.ohos.contactsdataability/contacts/raw_co
 const contactDataUri = 'datashare:///com.ohos.contactsdataability/contacts/contact_data';
 const groupUri = 'datashare:///com.ohos.contactsdataability/contacts/groups';
 const deletedUri = 'datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact';
-const FIVE = 5;
-const SIX = 6;
-const ONE_HUNDERD = 100;
+const ATTRIBUTE_FIVE = 5;
+const ATTRIBUTE_SIX = 6;
+const ATTRIBUTE_ONE_HUNDERD = 100;
 
 describe('ObjectInterfaceTest', function () {
   function sleep(numberMillis) {
@@ -124,7 +124,7 @@ describe('ObjectInterfaceTest', function () {
     expect(rawContactId > 0).assertTrue();
 
     let updateValues = { id: gRawContactId, name: { fullName: '小红' } };
-    let condition = { attributes: [SIX] };
+    let condition = { attributes: [ATTRIBUTE_SIX] };
     contactsapi.updateContact(updateValues, condition, (data) => {
       console.info('contactsApi_update_test_300 : updateCode = ' + data);
       expect(data === 0).assertTrue();
@@ -188,7 +188,7 @@ describe('ObjectInterfaceTest', function () {
   it('contactsApi_query_contact_test_600', 0, async function (done) {
     let queryId = gRawContactId.toString();
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
 
     contactsapi.queryContact(queryId, holder, ContactAttributes, (data) => {
       console.info('contactsApi_query_contact_test_600 : query resultSet = ' + JSON.stringify(data));
@@ -204,7 +204,7 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_contact_test_4200', 0, async function (done) {
     let queryId = gRawContactId.toString();
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
 
     contactsapi.queryContact(queryId, ContactAttributes, (data) => {
       console.info('contactsApi_query_contact_test_4200 : query resultSet = ' + JSON.stringify(data));
@@ -246,7 +246,7 @@ describe('ObjectInterfaceTest', function () {
    * @tc.desc    Function test
    */
   it('contactsApi_query_contacts_test_900', 0, async function (done) {
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
 
     contactsapi.queryContacts(ContactAttributes, (data) => {
       console.info('contactsApi_query_contacts_test_900 : query resultSet = ' + JSON.stringify(data));
@@ -262,7 +262,7 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_contacts_test_1000', 0, async function (done) {
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
 
     contactsapi.queryContacts(holder, ContactAttributes, (data) => {
       console.info('contactsApi_query_contacts_test_1000 : query resultSet = ' + JSON.stringify(data));
@@ -309,7 +309,7 @@ describe('ObjectInterfaceTest', function () {
   it('contactsApi_query_email_test_1300', 0, async function (done) {
     let email = 'email';
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
 
     contactsapi.queryContactsByEmail(email, holder, ContactAttributes, (data) => {
       console.info('contactsApi_query_email_test_1300 : query resultSet = ' + JSON.stringify(data));
@@ -325,7 +325,7 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_email_test_1400', 0, async function (done) {
     let email = 'email';
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
 
     contactsapi.queryContactsByEmail(email, ContactAttributes, (data) => {
       console.info('contactsApi_query_email_test_1400 : query resultSet = ' + JSON.stringify(data));
@@ -358,7 +358,7 @@ describe('ObjectInterfaceTest', function () {
   it('contactsApi_query_phoneNumber_test_1600', 0, async function (done) {
     let phoneNumber = '183';
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
 
     contactsapi.queryContactsByPhoneNumber(phoneNumber, holder, ContactAttributes, (data) => {
       console.info('contactsApi_query_phoneNumber_test_1600 : query resultSet = ' + JSON.stringify(data));
@@ -389,7 +389,7 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_phoneNumber_test_1800', 0, async function (done) {
     let phoneNumber = '183';
-    let ContactAttributes = { attributes: [1, FIVE, SIX] };
+    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
 
     contactsapi.queryContactsByPhoneNumber(phoneNumber, ContactAttributes, (data) => {
       console.info('contactsApi_query_phoneNumber_test_1800 : query resultSet = ' + JSON.stringify(data));
@@ -552,7 +552,7 @@ describe('ObjectInterfaceTest', function () {
   it('abnormal_contactsApi_update_test_3000', 0, async function (done) {
     let rawContactId = -1;
     let updateValues = { id: rawContactId, name: { fullName: '小红' } };
-    let condition = { attributes: [SIX] };
+    let condition = { attributes: [ATTRIBUTE_SIX] };
 
     contactsapi.updateContact(updateValues, condition, (data) => {
       console.info('abnormal_contactsApi_update_test_3000 : updateCode = ' + data);
@@ -588,7 +588,7 @@ describe('ObjectInterfaceTest', function () {
    * @tc.desc    Function test
    */
   it('abnormal_contactsApi_query_contacts_test_3200', 0, async function (done) {
-    let ContactAttributes = { attributes: [ONE_HUNDERD] };
+    let ContactAttributes = { attributes: [ATTRIBUTE_ONE_HUNDERD] };
 
     contactsapi.queryContacts(ContactAttributes, (data) => {
       if (data === null) {
@@ -667,7 +667,7 @@ describe('ObjectInterfaceTest', function () {
    * @tc.desc    Function test
    */
   it('abnormal_contactsApi_query_mycard_test_3700', 0, async function (done) {
-    let ContactAttributes = { attributes: [ONE_HUNDERD] };
+    let ContactAttributes = { attributes: [ATTRIBUTE_ONE_HUNDERD] };
 
     contactsapi.queryMyCard(ContactAttributes, (data) => {
       console.info('abnormal_contactsApi_query_mycard_test_3700 : query resultSet = ' + JSON.stringify(data));

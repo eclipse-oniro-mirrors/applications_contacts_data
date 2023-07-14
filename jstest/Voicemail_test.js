@@ -19,18 +19,18 @@ import common from './common.js';
 
 const URI_VOICEMAIL = 'datashare:///com.ohos.voicemailability';
 const voicemailUri = 'datashare:///com.ohos.voicemailability/calls/voicemail';
-const TWO = 2;
-const THREE = 3;
-const FOUR = 4;
-const SIX = 6;
-const SEVEN = 7;
-const EIGHT = 8;
-const NINE = 9;
-const TEN = 10;
-const ELEVEN = 11;
-const TWELVE = 12;
-const THIRTEEN = 13;
-const FIFTEEN = 15;
+const INDEX_TWO = 2;
+const INDEX_THREE = 3;
+const INDEX_FOUR = 4;
+const PHONE_NUM_LEN_SIX = 6;
+const PHONE_NUM_LEN_SEVEN = 7;
+const PHONE_NUM_LEN_EIGHT = 8;
+const PHONE_NUM_LEN_NINE = 9;
+const PHONE_NUM_LEN_TEN = 10;
+const PHONE_NUM_LEN_ELEVEN = 11;
+const PHONE_NUM_LEN_TWELVE = 12;
+const PHONE_NUM_LEN_THIRTEEN = 13;
+const PHONE_NUM_LEN_FIFTEEN = 15;
 
 describe('VoicemailTest', function () {
   console.log('----------VoicemailTest is starting!----------');
@@ -168,7 +168,7 @@ describe('VoicemailTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     console.info('logMessage uri = ' + URI_VOICEMAIL);
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let stringValue = { 'phone_number': phoneNumber, 'voice_status': 1 };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, stringValue);
@@ -197,7 +197,7 @@ describe('VoicemailTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     console.info('logMessage uri = ' + URI_VOICEMAIL);
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let stringValue = { 'phone_number': phoneNumber, 'voice_status': 0 };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, stringValue);
@@ -264,7 +264,7 @@ describe('VoicemailTest', function () {
     console.info('------------logMessage voicemail_update_test_900 is starting!----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(SEVEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SEVEN);
     let insertValues = { 'phone_number': phoneNumber, 'voice_status': 0 };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
@@ -306,7 +306,7 @@ describe('VoicemailTest', function () {
     console.info('-------------logMessage voicemail_delete_test_500 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let insertValues = { 'phone_number': phoneNumber, 'display_name': 'zhangming' };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
@@ -346,7 +346,7 @@ describe('VoicemailTest', function () {
     console.info('-------------logMessage voicemail_update_test_600 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let insertValues1 = { 'phone_number': phoneNumber, 'voice_status': 1 };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues1);
@@ -388,7 +388,8 @@ describe('VoicemailTest', function () {
     console.info('-------------logMessage voicemail_batchInsert_test_1800 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(FOUR);
+    let phoneNumberLenFour = 4;
+    let phoneNumber = randomNum(phoneNumberLenFour);
     let insertValuesOne = {
       'phone_number': phoneNumber,
       'display_name': 'xiaoming'
@@ -412,9 +413,9 @@ describe('VoicemailTest', function () {
     let listAddBluk = [];
     listAddBluk[0] = insertValuesOne;
     listAddBluk[1] = insertValuesTwo;
-    listAddBluk[TWO] = insertValuesThree;
-    listAddBluk[THREE] = insertValuesFour;
-    listAddBluk[FOUR] = insertValuesFive;
+    listAddBluk[INDEX_TWO] = insertValuesThree;
+    listAddBluk[INDEX_THREE] = insertValuesFour;
+    listAddBluk[INDEX_FOUR] = insertValuesFive;
     try {
       let batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
       console.info('logMessage voicemail_batchInsert_test_1800: batchInsertCode = ' + batchInsertCode);
@@ -436,7 +437,8 @@ describe('VoicemailTest', function () {
     console.info('-------------logMessage voicemail_batchInsert_test_1700 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(THREE);
+    let phoneNumberLenThree = 3;
+    let phoneNumber = randomNum(phoneNumberLenThree);
     let insertValuesOne = {
       'phone_number': phoneNumber,
       'display_name': 'xiaoming',
@@ -465,9 +467,9 @@ describe('VoicemailTest', function () {
     let listAddBluk = [];
     listAddBluk[0] = insertValuesOne;
     listAddBluk[1] = insertValuesTwo;
-    listAddBluk[TWO] = insertValuesThree;
-    listAddBluk[THREE] = insertValuesFour;
-    listAddBluk[FOUR] = insertValuesFive;
+    listAddBluk[INDEX_TWO] = insertValuesThree;
+    listAddBluk[INDEX_THREE] = insertValuesFour;
+    listAddBluk[INDEX_FOUR] = insertValuesFive;
     try {
       let batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
       console.info('logMessage voicemail_batchInsert_test_1700: batchInsertCode = ' + batchInsertCode);
@@ -491,7 +493,7 @@ describe('VoicemailTest', function () {
     console.info('------------voicemail_query_test_1400 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(NINE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_NINE);
     let insertValues = { 'phone_number': phoneNumber, 'display_name': 'daming' };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
@@ -517,8 +519,8 @@ describe('VoicemailTest', function () {
             expect(resultSet.getString(0) === voicemailId.toString()).assertTrue();
             console.info('voicemail_query_test_1400 display_name = ' + resultSet.getString(1));
             expect(resultSet.getString(1) === 'daming').assertTrue();
-            console.info('voicemail_query_test_1400 phone_number = ' + resultSet.getString(TWO));
-            expect(resultSet.getString(TWO) === phoneNumber).assertTrue();
+            console.info('voicemail_query_test_1400 phone_number = ' + resultSet.getString(INDEX_TWO));
+            expect(resultSet.getString(INDEX_TWO) === phoneNumber).assertTrue();
           } while (resultSet.goToNextRow());
         }
         resultSet.close();
@@ -538,7 +540,7 @@ describe('VoicemailTest', function () {
     console.info('------------voicemail_query_test_1300  is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(NINE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_NINE);
     let insertValues = {
       'phone_number': phoneNumber,
       'display_name': 'xiaoming',
@@ -570,8 +572,8 @@ describe('VoicemailTest', function () {
             expect(resultSet.getString(0) === voicemailId.toString()).assertTrue();
             console.info('voicemail_query_test_1300 display_name = ' + resultSet.getString(1));
             expect(resultSet.getString(1) === 'xiaoming').assertTrue();
-            console.info('voicemail_query_test_1300 phone_number = ' + resultSet.getString(TWO));
-            expect(resultSet.getString(TWO) === phoneNumber).assertTrue();
+            console.info('voicemail_query_test_1300 phone_number = ' + resultSet.getString(INDEX_TWO));
+            expect(resultSet.getString(INDEX_TWO) === phoneNumber).assertTrue();
           } while (resultSet.goToNextRow());
         }
         resultSet.close();
@@ -591,7 +593,7 @@ describe('VoicemailTest', function () {
     console.info('------------abnormal_voicemail_insert_test_300 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(TEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TEN);
     let insertValues = { 'phone_numbers': phoneNumber, 'display_name': 'xiaoming' };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
@@ -615,7 +617,7 @@ describe('VoicemailTest', function () {
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let errorUri = 'datashare:///com.ohos.calllogability/calls/voicemails';
 
-    let phoneNumber = randomNum(NINE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_NINE);
     let insertValues = { 'phone_number': phoneNumber, 'display_name': 'xiaoming' };
     try {
       let voicemialId = await dataShareHelper.insert(errorUri, insertValues);
@@ -640,7 +642,7 @@ describe('VoicemailTest', function () {
     console.info('------------abnormal_voicemail_update_test_1100 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(TEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TEN);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
@@ -655,7 +657,7 @@ describe('VoicemailTest', function () {
     }
 
     async function abnormalUpdate() {
-      let phoneNumberTest = randomNum(FIFTEEN);
+      let phoneNumberTest = randomNum(PHONE_NUM_LEN_FIFTEEN);
       let updateValues = { 'phone_numbers': phoneNumberTest };
       let condition = new dataShare.DataSharePredicates();
       condition.equalTo('ids', voicemailId.toString());
@@ -683,7 +685,7 @@ describe('VoicemailTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let errorUri = 'datashare:///com.ohos.calllogability/calls/voicemails';
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
@@ -698,7 +700,7 @@ describe('VoicemailTest', function () {
     }
 
     async function abnormalUpdate() {
-      let phoneNumberTest = randomNum(SIX);
+      let phoneNumberTest = randomNum(PHONE_NUM_LEN_SIX);
       let updateValues = { 'phone_number': phoneNumberTest };
       let condition = new dataShare.DataSharePredicates();
       condition.equalTo('id', voicemailId.toString());
@@ -725,7 +727,7 @@ describe('VoicemailTest', function () {
     console.info('------------abnormal_voicemail_delete_test_700 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
@@ -763,7 +765,7 @@ describe('VoicemailTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let errorUri = 'datashare:///com.ohos.calllogability/calls/voicemails';
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
@@ -800,7 +802,7 @@ describe('VoicemailTest', function () {
     console.info('------------abnormal_voicemail_query_test_1500 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, insertValues);
@@ -840,8 +842,8 @@ describe('VoicemailTest', function () {
     console.info('--------logMessage abnormal_voicemail_batchinsert_test_1900 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(NINE);
-    let phoneNumberTest = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_NINE);
+    let phoneNumberTest = randomNum(PHONE_NUM_LEN_SIX);
     let addBulkValue1 = { 'phone_number': phoneNumber, 'ring_duration': '500' };
     let addBulkValue2 = { 'phone_number': phoneNumberTest, 'ring_duration': '100' };
     let addBulkValue3 = { 'phone_numbers': phoneNumberTest, 'ring_duration': '100' };
@@ -850,9 +852,9 @@ describe('VoicemailTest', function () {
     let listAddBluk = [];
     listAddBluk[0] = addBulkValue1;
     listAddBluk[1] = addBulkValue2;
-    listAddBluk[TWO] = addBulkValue3;
-    listAddBluk[THREE] = addBulkValue4;
-    listAddBluk[FOUR] = addBulkValue5;
+    listAddBluk[INDEX_TWO] = addBulkValue3;
+    listAddBluk[INDEX_THREE] = addBulkValue4;
+    listAddBluk[INDEX_FOUR] = addBulkValue5;
     try {
       let batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
       console.info('logMessage abnormal_voicemail_batchinsert_test_1900: batchInsertCode = ' + batchInsertCode);
@@ -936,7 +938,7 @@ describe('VoicemailTest', function () {
     }
 
     async function executeBatch() {
-      let phoneNumber = randomNum(EIGHT);
+      let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
       let updateValues = { 'phone_number': phoneNumber };
       console.info('logMessage voiceMail_update_test_2100:  executeBatch start ');
       let condition = new dataShare.DataSharePredicates();
@@ -975,7 +977,7 @@ describe('VoicemailTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     console.info('logMessage uri = ' + URI_VOICEMAIL);
-    let phoneNumber = randomNum(FIFTEEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_FIFTEEN);
     let stringValue = { 'phone_number': phoneNumber, 'voice_status': 0 };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, stringValue);
@@ -1005,7 +1007,7 @@ describe('VoicemailTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     console.info('logMessage uri = ' + URI_VOICEMAIL);
-    let phoneNumber = randomNum(ELEVEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_ELEVEN);
     let stringValue = { 'phone_number': phoneNumber, 'voice_status': 0 };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, stringValue);
@@ -1040,7 +1042,7 @@ describe('VoicemailTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     console.info('logMessage uri = ' + URI_VOICEMAIL);
-    let phoneNumberTest = randomNum(EIGHT);
+    let phoneNumberTest = randomNum(PHONE_NUM_LEN_EIGHT);
     let stringValue = { 'phone_number': phoneNumberTest, 'voice_status': 0 };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, stringValue);
@@ -1050,7 +1052,7 @@ describe('VoicemailTest', function () {
       condition.equalTo('id', voicemailId.toString());
       condition.or();
       condition.equalTo('id', voicemailIdOne.toString());
-      let phoneNumber = randomNum(THIRTEEN);
+      let phoneNumber = randomNum(PHONE_NUM_LEN_THIRTEEN);
       let updateValue = { 'phone_number': phoneNumber, 'voice_status': 1 };
       let updateCode = await dataShareHelper.update(voicemailUri, updateValue, condition);
       console.info('logMessage voicemail_insert_test_2400: deleteCode = ' + updateCode);
@@ -1084,7 +1086,7 @@ describe('VoicemailTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     console.info('logMessage uri = ' + URI_VOICEMAIL);
-    let phoneNumber = randomNum(TEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TEN);
     let stringValue = { 'phone_number': phoneNumber, 'voice_status': 0 };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, stringValue);
@@ -1098,8 +1100,9 @@ describe('VoicemailTest', function () {
       condition.and();
       condition.equalTo('voice_status', '0');
       let resultColumns = [];
+      let rowCount = 2;
       let resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
-      expect(resultSet.rowCount === TWO).assertTrue();
+      expect(resultSet.rowCount === rowCount).assertTrue();
       resultSet.close();
       await voiceMailDelete('voicemail_query_test_2500');
       done();
@@ -1119,7 +1122,7 @@ describe('VoicemailTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     console.info('logMessage uri = ' + URI_VOICEMAIL);
-    let phoneNumber = randomNum(TWELVE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TWELVE);
     let stringValue = { 'phone_number': phoneNumber, 'voice_status': 0 };
     try {
       let voicemailId = await dataShareHelper.insert(voicemailUri, stringValue);
@@ -1128,8 +1131,9 @@ describe('VoicemailTest', function () {
       console.info('voicemail_query_test_2600  voicemailIdOne = ' + voicemailIdOne);
       let condition = new dataShare.DataSharePredicates();
       let resultColumns = [];
+      let rowCount = 2;
       let resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
-      expect(resultSet.rowCount === TWO).assertTrue();
+      expect(resultSet.rowCount === rowCount).assertTrue();
       resultSet.close();
       await voiceMailDelete('voicemail_query_test_2600');
       done();
@@ -1271,9 +1275,9 @@ describe('VoicemailTest', function () {
     let listAddBluk = [];
     listAddBluk[0] = insertValuesOne;
     listAddBluk[1] = insertValuesTwo;
-    listAddBluk[TWO] = insertValuesThree;
-    listAddBluk[THREE] = insertValuesFour;
-    listAddBluk[FOUR] = insertValuesFive;
+    listAddBluk[INDEX_TWO] = insertValuesThree;
+    listAddBluk[INDEX_THREE] = insertValuesFour;
+    listAddBluk[INDEX_FOUR] = insertValuesFive;
     try {
       let batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
       console.info('logMessage abnormal_voicemail_batchInsert_test_3100: batchInsertCode = ' + batchInsertCode);
@@ -1301,6 +1305,9 @@ describe('VoicemailTest', function () {
 });
 
 function randomNum(num) {
-  let number = toString(Math.floor(Math.random() * (NINE * Math.pow(TEN, num))) + 1 * Math.pow(TEN, num));
+  let baseNumNine = 9;
+  let baseNumTen = 10;
+  let number = toString(Math.floor(Math.random() * (baseNumNine * Math.pow(baseNumTen, num))) + 1 *
+    Math.pow(baseNumTen, num));
   return number;
 }

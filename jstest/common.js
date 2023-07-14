@@ -31,20 +31,16 @@ const profileDeletedContactsUri = 'datashare:///com.ohos.contactsdataability/pro
 
 const URI_CALLLOG = 'datashare:///com.ohos.calllogability';
 const calllogUri = 'datashare:///com.ohos.calllogability/calls/calllog';
-const TWO = 2;
-const THREE = 3;
-const FOUR = 4;
-const SIX = 6;
-const EIGHT = 8;
-const NINE = 9;
-const TEN = 10;
-const THIRTEEN = 13;
-
+const INDEX_TWO = 2;
+const INDEX_THREE = 3;
+const INDEX_FOUR = 4;
+const PHONE_NUM_LEN_SIX = 6;
+const PHONE_NUM_LEN_EIGHT = 8;
 
 export default {
   data: {},
   getCallLogInsertMap: function () {
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let calllogInsert100Map = new Map([
       ['phone_number', phoneNumber],
       ['display_name', 'xxw'],
@@ -76,7 +72,7 @@ export default {
     return calllogInsert100Map;
   },
   getCallLogInsert: function () {
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let calllogInsert100 = {
       'phone_number': phoneNumber,
       'display_name': 'xxw',
@@ -142,7 +138,7 @@ export default {
     return resultColumns;
   },
   getCallLogUpdate: function () {
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let updateValues = {
       'phone_number': phoneNumber,
       'display_name': '6666',
@@ -174,7 +170,7 @@ export default {
     return updateValues;
   },
   getCallLogUpdateMap: function () {
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let calllogInsert100Map = new Map([
       ['phone_number', phoneNumber],
       ['display_name', '6666'],
@@ -206,7 +202,8 @@ export default {
     return calllogInsert100Map;
   },
   getCallLogBatchInsert: function () {
-    let phoneNumber = randomNum(THREE);
+    let phoneNumberLenThree = 3;
+    let phoneNumber = randomNum(phoneNumberLenThree);
     let map = new Map([
       ['phone_number', phoneNumber],
       ['ring_duration', '333']
@@ -530,12 +527,12 @@ export default {
     return groupMap;
   },
   getProfileBlockList: function () {
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let blockList = { 'phone_number': phoneNumber, 'content': 'heimingdan' };
     return blockList;
   },
   getProfileBlockListMap: function () {
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let blockListMap = new Map([
       ['types', '0'],
       ['phone_number', phoneNumber],
@@ -705,7 +702,7 @@ export default {
     return groupMap;
   },
   getProfileUpdateBlockList: function () {
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let blockList = {
       'phone_number': phoneNumber,
       'content': 'danminghei'
@@ -713,7 +710,7 @@ export default {
     return blockList;
   },
   getProfileUpdateBlockListMap: function () {
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let blockListMap = new Map([
       ['types', '0'],
       ['phone_number', phoneNumber],
@@ -723,7 +720,8 @@ export default {
     return blockListMap;
   },
   getVoiceMail: function () {
-    let phoneNumber = randomNum(FOUR);
+    let phoneNumberLenFour = 4;
+    let phoneNumber = randomNum(phoneNumberLenFour);
     let voicemail = {
       'phone_number': phoneNumber,
       'quicksearch_key': '777',
@@ -735,7 +733,8 @@ export default {
     return voicemail;
   },
   getVoiceMailMap: function () {
-    let phoneNumber = randomNum(FOUR);
+    let phoneNumberLenFour = 4;
+    let phoneNumber = randomNum(phoneNumberLenFour);
     let map = new Map([
       ['phone_number', phoneNumber],
       ['quicksearch_key', '777'],
@@ -751,7 +750,7 @@ export default {
     return map;
   },
   getVoiceMailUpdate: function () {
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let voicemail = {
       'phone_number': phoneNumber,
       'quicksearch_key': '999',
@@ -763,7 +762,7 @@ export default {
     return voicemail;
   },
   getVoiceMailUpdateMap: function () {
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let map = new Map([
       ['phone_number', phoneNumber],
       ['quicksearch_key', '999'],
@@ -779,7 +778,8 @@ export default {
     return map;
   },
   getVoiceMailBatchInsert: function () {
-    let phoneNumber = randomNum(THREE);
+    let phoneNumberLenThree = 3;
+    let phoneNumber = randomNum(phoneNumberLenThree);
     let map = new Map([
       ['phone_number', phoneNumber],
       ['display_name', 'xiaoming'],
@@ -817,9 +817,9 @@ export default {
     let listAddBluk = [];
     listAddBluk[0] = rawContactValuesOne;
     listAddBluk[1] = rawContactValuesTwo;
-    listAddBluk[TWO] = rawContactValuesThree;
-    listAddBluk[THREE] = rawContactValuesFour;
-    listAddBluk[FOUR] = rawContactValuesFive;
+    listAddBluk[INDEX_TWO] = rawContactValuesThree;
+    listAddBluk[INDEX_THREE] = rawContactValuesFour;
+    listAddBluk[INDEX_FOUR] = rawContactValuesFive;
     return listAddBluk;
   },
   getContactBatchCompanyTwo: function () {
@@ -852,13 +852,14 @@ export default {
     let listAddBluk = [];
     listAddBluk[0] = contactDataValuesOne;
     listAddBluk[1] = contactDataValuesTwo;
-    listAddBluk[TWO] = contactDataValuesThree;
-    listAddBluk[THREE] = contactDataValuesFour;
-    listAddBluk[FOUR] = contactDataValuesFive;
+    listAddBluk[INDEX_TWO] = contactDataValuesThree;
+    listAddBluk[INDEX_THREE] = contactDataValuesFour;
+    listAddBluk[INDEX_FOUR] = contactDataValuesFive;
     return listAddBluk;
   },
   getPhoneNumberBatch: function () {
-    let phoneNumber = randomNum(THIRTEEN);
+    let phoneNumberLenThirteen = 13;
+    let phoneNumber = randomNum(phoneNumberLenThirteen);
     let contactBlocklistValuesOne = { 'phone_number': phoneNumber };
     let contactBlocklistValuesTwo = { 'phone_number': phoneNumber };
     let contactBlocklistValuesThree = { 'phone_number': phoneNumber };
@@ -867,9 +868,9 @@ export default {
     let listAddBluk = [];
     listAddBluk[0] = contactBlocklistValuesOne;
     listAddBluk[1] = contactBlocklistValuesTwo;
-    listAddBluk[TWO] = contactBlocklistValuesThree;
-    listAddBluk[THREE] = contactBlocklistValuesFour;
-    listAddBluk[FOUR] = contactBlocklistValuesFive;
+    listAddBluk[INDEX_TWO] = contactBlocklistValuesThree;
+    listAddBluk[INDEX_THREE] = contactBlocklistValuesFour;
+    listAddBluk[INDEX_FOUR] = contactBlocklistValuesFive;
     return listAddBluk;
   },
   getSearchMap: function () {
@@ -886,6 +887,9 @@ export default {
 };
 
 function randomNum(num) {
-  let number = toString(Math.floor(Math.random() * (NINE * Math.pow(TEN, num))) + 1 * Math.pow(TEN, num));
+  let baseNumNine = 9;
+  let baseNumTen = 10;
+  let number = toString(Math.floor(Math.random() * (baseNumNine * Math.pow(baseNumTen, num))) + 1 *
+    Math.pow(baseNumTen, num));
   return number;
 }

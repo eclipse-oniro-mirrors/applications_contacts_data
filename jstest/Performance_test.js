@@ -26,14 +26,12 @@ const URI_CONTACTS = 'datashare:///com.ohos.contactsdataability';
 const rawContactUri = 'datashare:///com.ohos.contactsdataability/contacts/raw_contact';
 const contactDataUri = 'datashare:///com.ohos.contactsdataability/contacts/contact_data';
 const deletedUri = 'datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact';
-const FOUR = 4;
-const SIX = 6;
-const NINE = 9;
-const TEN = 10;
-const ONE_THOUSAND = 1000;
-const TWO_THOUSAND = 2000;
-const FIVE_THOUSAND = 5000;
-const TEN_THOUSAND = 10000;
+const PHONE_NUM_LEN_NINE = 9;
+const PHONE_NUM_LEN_TEN = 10;
+const CYCLE_INDEX = 1000;
+const USED_TIME = 2000;
+const SLEEP_TIME = 5000;
+const ROW_COUNT = 10000;
 
 describe('PerformanceTest', function () {
   console.log(' PerformanceTest is start');
@@ -58,7 +56,7 @@ describe('PerformanceTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let listAddBluk = [];
-    for (let i = 0; i < ONE_THOUSAND; i++) {
+    for (let i = 0; i < CYCLE_INDEX; i++) {
       let add = { 'display_name': 'xiaoli' + i, 'company': 'testCompany' + i, 'position': 'testPosition' + i };
       listAddBluk[i] = add;
     }
@@ -78,7 +76,7 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('raw_contact_insert_performance_test_900  usedTime = ' + usedTime);
       expect(usedTime < 70000).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info('logMessage raw_contact_insert_performance_test_900: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
       done();
@@ -108,8 +106,8 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('raw_contact_update_performance_test_1000  usedTime = ' + usedTime);
-      expect(usedTime < TWO_THOUSAND).assertTrue();
-      sleep(FIVE_THOUSAND);
+      expect(usedTime < USED_TIME).assertTrue();
+      sleep(SLEEP_TIME);
       console.info('logMessage raw_contact_update_performance_test_1000: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
       done();
@@ -141,9 +139,9 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('raw_contact_query_performance_test_1100  usedTime = ' + usedTime);
       expect(usedTime < 200).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info(tag + ' : logMessage : rowCount' + resultSet.rowCount);
-      expect(resultSet.rowCount === TEN_THOUSAND).assertTrue();
+      expect(resultSet.rowCount === ROW_COUNT).assertTrue();
       resultSet.close();
       done();
     } catch (error) {
@@ -172,7 +170,7 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('raw_contact_delete_performance_test_1200  usedTime = ' + usedTime);
       expect(usedTime < 7000).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info('logMessage raw_contact_delete_performance_test_1200: deleteCode = ' + deleteCode);
       expect(deleteCode === 0).assertTrue();
       done();
@@ -197,7 +195,8 @@ describe('PerformanceTest', function () {
     };
     try {
       let rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
-      sleep(ONE_THOUSAND);
+      let sleepTime = 1000;
+      sleep(sleepTime);
       console.info('logMessage contact_data_insert_performance_test_1300: rawContactId = ' + rawContactId);
     } catch (error) {
       console.info('logMessage contact_data_insert_performance_test_1300: raw_contact insert error = ' + error);
@@ -206,11 +205,12 @@ describe('PerformanceTest', function () {
     let condition = new dataShare.DataSharePredicates();
     condition.equalTo('id', rawContactId.toString());
     let deleteCode = await dataShareHelper.delete(rawContactUri, condition);
-    sleep(ONE_THOUSAND);
+    let sleepTime = 1000;
+    sleep(sleepTime);
     console.info('logMessage contact_data_insert_performance_test_1300: deleteCode = ' + deleteCode);
 
     let listAddBluk = [];
-    for (let i = 0; i < ONE_THOUSAND; i++) {
+    for (let i = 0; i < CYCLE_INDEX; i++) {
       let add = { 'raw_contact_id': rawContactId, 'detail_info': 'xxx' + i, 'content_type': 'name' };
       listAddBluk[i] = add;
     }
@@ -230,7 +230,7 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('contact_data_insert_performance_test_1300  usedTime = ' + usedTime);
       expect(usedTime < 70000).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info('logMessage contact_data_insert_performance_test_1300: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
       done();
@@ -291,9 +291,9 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('contact_data_query_performance_test_1500  usedTime = ' + usedTime);
       expect(usedTime < 220).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info('logMessage contact_data_query_performance_test_1500: goToFirstRow' + resultSet.rowCount);
-      expect(resultSet.rowCount === TEN_THOUSAND).assertEqual(true);
+      expect(resultSet.rowCount === ROW_COUNT).assertEqual(true);
       resultSet.close();
       done();
     } catch (error) {
@@ -320,7 +320,7 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('contact_data_delete_performance_test_1600  usedTime = ' + usedTime);
       expect(usedTime < 32000).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info('logMessage contact_data_delete_performance_test_1600: deleteCode = ' + deleteCode);
       expect(deleteCode === 0).assertTrue();
       done();
@@ -340,9 +340,10 @@ describe('PerformanceTest', function () {
     console.info('---------logMessage calllog_insert_performance_test_100 is starting!----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+    let phoneNumberLenSix = 6;
     let listAddBluk = [];
-    let phoneNumber = randomNum(SIX);
-    for (let i = 0; i < ONE_THOUSAND; i++) {
+    let phoneNumber = randomNum(phoneNumberLenSix);
+    for (let i = 0; i < CYCLE_INDEX; i++) {
       let add = { 'phone_number': phoneNumber + i };
       listAddBluk[i] = add;
     }
@@ -362,7 +363,7 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('calllog_insert_performance_test_100  usedTime = ' + usedTime);
       expect(usedTime < 90000).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info('logMessage calllog_insert_performance_test_100: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
       done();
@@ -391,7 +392,7 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('calllog_update_performance_test_200  usedTime = ' + usedTime);
       expect(usedTime < 300).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info('logMessage calllog_update_performance_test_200: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
       done();
@@ -421,9 +422,9 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('calllog_query_performance_test_300  usedTime = ' + usedTime);
       expect(usedTime < 30).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info(tag + ' : logMessage : rowCount' + resultSet.rowCount);
-      expect(resultSet.rowCount === TEN_THOUSAND).assertTrue();
+      expect(resultSet.rowCount === ROW_COUNT).assertTrue();
       resultSet.close();
       done();
     } catch (error) {
@@ -450,7 +451,7 @@ describe('PerformanceTest', function () {
     let usedTime = now - old;
     console.info('calllog_delete_performance_test_400  usedTime = ' + usedTime);
     expect(usedTime < 200).assertTrue();
-    sleep(FIVE_THOUSAND);
+    sleep(SLEEP_TIME);
     console.info(tag + ' : logMessage : deleteCode = ' + deleteCode);
     expect(deleteCode === 0).assertTrue();
     done();
@@ -466,10 +467,10 @@ describe('PerformanceTest', function () {
     console.info('---------logMessage voicemail_insert_performance_test_500 is starting!----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-
+    let phoneNumberLenFour = 4;
     let listAddBluk = [];
-    let phoneNumber = randomNum(FOUR);
-    for (let i = 0; i < ONE_THOUSAND; i++) {
+    let phoneNumber = randomNum(phoneNumberLenFour);
+    for (let i = 0; i < CYCLE_INDEX; i++) {
       let add = { 'phone_number': phoneNumber + i };
       listAddBluk[i] = add;
     }
@@ -489,7 +490,7 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('voicemail_insert_performance_test_500  usedTime = ' + usedTime);
       expect(usedTime < 90000).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info('logMessage voicemail_insert_performance_test_500: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
       done();
@@ -518,7 +519,7 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('voicemail_update_performance_test_600  usedTime = ' + usedTime);
       expect(usedTime < 250).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info('logMessage voicemail_update_performance_test_600: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
       done();
@@ -548,9 +549,9 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('voicemail_query_performance_test_700  usedTime = ' + usedTime);
       expect(usedTime < 20).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info(tag + ' : logMessage : rowCount' + resultSet.rowCount);
-      expect(resultSet.rowCount === TEN_THOUSAND).assertTrue();
+      expect(resultSet.rowCount === ROW_COUNT).assertTrue();
       resultSet.close();
       done();
     } catch (error) {
@@ -578,7 +579,7 @@ describe('PerformanceTest', function () {
       let usedTime = now - old;
       console.info('voicemail_delete_performance_test_800  usedTime = ' + usedTime);
       expect(usedTime < 100).assertTrue();
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_TIME);
       console.info(tag + ' : logMessage : deleteCode = ' + deleteCode);
       expect(deleteCode === 0).assertTrue();
       done();
@@ -604,7 +605,7 @@ describe('PerformanceTest', function () {
         console.info('performance : result.rowCount = ' + result.rowCount);
         count = result.rowCount;
         result.close();
-        sleep(FIVE_THOUSAND);
+        sleep(SLEEP_TIME);
       }
       let deleteCode = await dataShareHelper.delete(deletedUri, condition);
       console.info('afterAll logMessage DeleteContact: deleteCode = ' + deleteCode);
@@ -615,6 +616,7 @@ describe('PerformanceTest', function () {
 });
 
 function randomNum(num) {
-  let number = toString(Math.floor(Math.random() * (NINE * Math.pow(TEN, num))) + 1 * Math.pow(TEN, num));
+  let number = toString(Math.floor(Math.random() * (PHONE_NUM_LEN_NINE * Math.pow(PHONE_NUM_LEN_TEN, num))) + 1 *
+    Math.pow(PHONE_NUM_LEN_TEN, num));
   return number;
 }

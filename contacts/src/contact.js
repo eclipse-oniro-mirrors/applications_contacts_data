@@ -14,10 +14,10 @@
  */
 const featureAbility = requireNapi('ability.featureAbility');
 const contact = requireInternal('contact');
-const TWO = 2;
+const ARGUMENTS_LEN_TWO = 2;
 
 async function contactsPickerSelect() {
-  if (arguments.length === TWO && typeof arguments[1] !== 'function') {
+  if (arguments.length === ARGUMENTS_LEN_TWO && typeof arguments[1] !== 'function') {
     console.log('[picker] contactsPickerSelect callback invalid');
     throw Error('invalid callback');
   }
@@ -82,7 +82,7 @@ async function contactsPickerSelect() {
       };
       contacts.push(contact);
     }
-    if (arguments.length === TWO && typeof arguments[1] === 'function') {
+    if (arguments.length === ARGUMENTS_LEN_TWO && typeof arguments[1] === 'function') {
       if (result.resultCode === 0) {
         return arguments[1](undefined, contacts);
       } else {

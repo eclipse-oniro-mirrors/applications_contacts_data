@@ -21,11 +21,10 @@ const rawContactUri = 'datashare:///com.ohos.contactsdataability/contacts/raw_co
 const backup = 'datashare:///com.ohos.contactsdataability/contacts/backup';
 const recover = 'datashare:///com.ohos.contactsdataability/contacts/recover';
 const deletedUri = 'datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact';
-const TWO = 2;
-const ONE_THOUSAND = 1000;
-const TWO_THOUSAND = 2000;
-const THREE_THOUSAND = 3000;
-const FIVE_THOUSAND = 5000;
+const SLEEP_ONE_SECOND = 1000;
+const SLEEP_TWO_SECOND = 2000;
+const SLEEP_THREE_SECOND = 3000;
+const SLEEP_FIVE_SECOND = 5000;
 
 describe('RecoveryTest', function () {
   function sleep(numberMillis) {
@@ -91,7 +90,7 @@ describe('RecoveryTest', function () {
       condition.and();
       condition.equalTo('is_deleted', '0');
       await dataShareHelper.delete(rawContactUri, condition);
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_FIVE_SECOND);
       let conditionAll = new dataShare.DataSharePredicates();
       conditionAll.greaterThan('id', '0');
       await dataShareHelper.delete(deletedUri, conditionAll);
@@ -112,10 +111,10 @@ describe('RecoveryTest', function () {
     let condition = new dataShare.DataSharePredicates();
     try {
       let updateCode = await dataShareHelper.update(backup, updateValues, condition);
-      sleep(TWO_THOUSAND);
+      sleep(SLEEP_TWO_SECOND);
       console.info('logMessage recovery_test_100: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
-      sleep(TWO_THOUSAND);
+      sleep(SLEEP_TWO_SECOND);
       await contactsQuery('recovery_test_100', rawContactUri, 0);
       done();
     } catch (error) {
@@ -136,18 +135,19 @@ describe('RecoveryTest', function () {
     let condition = new dataShare.DataSharePredicates();
     rawContactInsert('liming');
     rawContactInsert('xiaolilili');
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TWO_SECOND);
     let updateCode = await dataShareHelper.update(backup, updateValues, condition);
-    sleep(TWO_THOUSAND);
+    sleep(SLEEP_TWO_SECOND);
     console.info(' recovery_test_200: backup = ' + updateCode);
     expect(updateCode === 0).assertTrue();
-    sleep(ONE_THOUSAND);
+    sleep(SLEEP_ONE_SECOND);
     try {
       let updateCode = await dataShareHelper.update(recover, updateValues, condition);
-      sleep(THREE_THOUSAND);
+      let size = 2;
+      sleep(SLEEP_THREE_SECOND);
       console.info('logMessage recovery_test_200: recover = ' + updateCode);
       expect(updateCode === 0).assertTrue();
-      await contactsQuery('recovery_test_200', rawContactUri, TWO);
+      await contactsQuery('recovery_test_200', rawContactUri, size);
       await deleteRawContact('recovery_test_200');
       done();
     } catch (error) {

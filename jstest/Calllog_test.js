@@ -13,29 +13,26 @@
  * limitations under the License.
  */
 
+import common from './common.js';
 import dataShare from '@ohos.data.dataShare';
 import { afterAll, describe, expect, it } from 'deccjsunit/index';
 
 const URI_CALLLOG = 'datashare:///com.ohos.calllogability';
 const calllogUri = 'datashare:///com.ohos.calllogability/calls/calllog';
-import common from './common.js';
-const TWO = 2;
-const THREE = 3;
-const FOUR = 4;
-const FIVE = 5;
-const SIX = 6;
-const SEVEN = 7;
-const EIGHT = 8;
-const NINE = 9;
-const TEN = 10;
-const TWELVE = 12;
-const THIRTEEN = 13;
-const FOURTEEN = 14;
-const FIFTEEN = 15;
-const SEVENTEEN = 17;
-const EIGHTEEN = 18;
-
-
+const INDEX_TWO = 2;
+const INDEX_THREE = 3;
+const INDEX_FOUR = 4;
+const PHONE_NUM_LEN_FIVE = 5;
+const PHONE_NUM_LEN_SIX = 6;
+const PHONE_NUM_LEN_SEVEN = 7;
+const PHONE_NUM_LEN_EIGHT = 8;
+const PHONE_NUM_LEN_NINE = 9;
+const PHONE_NUM_LEN_TEN = 10;
+const PHONE_NUM_LEN_TWELVE = 12;
+const PHONE_NUM_LEN_THIRTEEN = 13;
+const PHONE_NUM_LEN_FOURTEEN = 14;
+const PHONE_NUM_LEN_FIFTEEN = 15;
+const PHONE_NUM_LEN_SEVENTEEN = 17;
 
 describe('CalllogTest', function () {
   console.log('----------CalllogTest is starting!----------');
@@ -195,7 +192,7 @@ describe('CalllogTest', function () {
     console.info('--------logMessage calllog_update_test_500 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(TWELVE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TWELVE);
     let insertValues = { 'phone_number': phoneNumber, 'ring_duration': '500' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -239,7 +236,7 @@ describe('CalllogTest', function () {
     console.info('--------logMessage calllog_delete_test_1300 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(FIVE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_FIVE);
     let insertValues = { 'phone_number': phoneNumber, 'ring_duration': '200' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -278,7 +275,7 @@ describe('CalllogTest', function () {
     console.info('--------logMessage calllog_batchInset_test_1600 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(THIRTEEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_THIRTEEN);
     let addBulkValue1 = { 'phone_number': phoneNumber, 'ring_duration': '333' };
     let addBulkValue2 = { 'phone_number': phoneNumber, 'ring_duration': '600' };
     let addBulkValue3 = { 'phone_number': phoneNumber, 'ring_duration': '600' };
@@ -287,9 +284,9 @@ describe('CalllogTest', function () {
     let listAddBluk = [];
     listAddBluk[0] = addBulkValue1;
     listAddBluk[1] = addBulkValue2;
-    listAddBluk[TWO] = addBulkValue3;
-    listAddBluk[THREE] = addBulkValue4;
-    listAddBluk[FOUR] = addBulkValue5;
+    listAddBluk[INDEX_TWO] = addBulkValue3;
+    listAddBluk[INDEX_THREE] = addBulkValue4;
+    listAddBluk[INDEX_FOUR] = addBulkValue5;
     try {
       let batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
       console.info('logMessage calllog_batchInset_test_1600: batchInsertCode = ' + batchInsertCode);
@@ -312,7 +309,7 @@ describe('CalllogTest', function () {
     console.info('------------calllog_query_test_1200  is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(FIVE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_FIVE);
     let insertValues = { 'phone_number': phoneNumber, 'ring_duration': '200' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -340,7 +337,7 @@ describe('CalllogTest', function () {
     console.info('------------calllog_query_test_1100 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(SEVEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SEVEN);
     let insertValues = { 'phone_number': phoneNumber, 'ring_duration': '100' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -389,7 +386,7 @@ describe('CalllogTest', function () {
     console.info('------------calllog_query_test_800 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(TEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TEN);
     let insertValues = { 'phone_number': phoneNumber, 'ring_duration': '100' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -436,8 +433,8 @@ describe('CalllogTest', function () {
     console.info('------------calllog_fuzzyquery_test_100 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(EIGHT);
-    let phoneNumberTest = phoneNumber.substring(0, THREE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
+    let phoneNumberTest = phoneNumber.substring(0, INDEX_THREE);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -484,8 +481,10 @@ describe('CalllogTest', function () {
     console.info('------------calllog_fuzzyquery_test_200 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(EIGHT);
-    let phoneNumberTest = phoneNumber.substring(SIX, NINE);
+    let phoneNumberIndexSix = 6;
+    let phoneNumberIndexNine = 9;
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
+    let phoneNumberTest = phoneNumber.substring(phoneNumberIndexSix, phoneNumberIndexNine);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -532,7 +531,7 @@ describe('CalllogTest', function () {
     console.info('------------calllog_fuzzyquery_test_300 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(FIFTEEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_FIFTEEN);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -547,9 +546,11 @@ describe('CalllogTest', function () {
     }
 
     async function queryByPhoneNumberContainsField() {
+      let phoneNumberIndexSeven = 7;
+      let phoneNumberIndexTen = 10;
       let resultColumns = ['id', 'phone_number'];
       let condition = new dataShare.DataSharePredicates();
-      let phoneNumberTest = phoneNumber.substring(SEVEN, TEN);
+      let phoneNumberTest = phoneNumber.substring(phoneNumberIndexSeven, phoneNumberIndexTen);
       condition.like('phone_number', '%' + phoneNumberTest + '%');
       try {
         let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
@@ -580,7 +581,7 @@ describe('CalllogTest', function () {
     console.info('------------abnormal_calllog_insert_test_200 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(NINE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_NINE);
     let insertValues = { 'phone_numbers': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -603,7 +604,7 @@ describe('CalllogTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let errorUri = 'datashare:///com.ohos.calllogability/calls/calllogs';
-    let phoneNumber = randomNum(EIGHT);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(errorUri, insertValues);
@@ -625,7 +626,7 @@ describe('CalllogTest', function () {
     console.info('------------abnormal_calllog_update_test_600 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(NINE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_NINE);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -640,7 +641,7 @@ describe('CalllogTest', function () {
     }
 
     async function abnormalUpdate() {
-      let phoneNumberTest = randomNum(SEVEN);
+      let phoneNumberTest = randomNum(PHONE_NUM_LEN_SEVEN);
       let updateValues = { 'phone_numbers': phoneNumberTest };
       let condition = new dataShare.DataSharePredicates();
       condition.equalTo('ids', calllogId.toString());
@@ -669,7 +670,7 @@ describe('CalllogTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let errorUri = 'datashare:///com.ohos.calllogability/calls/calllogs';
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -684,7 +685,7 @@ describe('CalllogTest', function () {
     }
 
     async function abnormalUpdate() {
-      let phoneNumberTest = randomNum(SEVEN);
+      let phoneNumberTest = randomNum(PHONE_NUM_LEN_SEVEN);
       let updateValues = { 'phone_numbers': phoneNumberTest };
       let condition = new dataShare.DataSharePredicates();
       condition.equalTo('id', calllogId.toString());
@@ -713,7 +714,7 @@ describe('CalllogTest', function () {
     console.info('------------abnormal_calllog_delete_test_1400 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(FIVE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_FIVE);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -755,7 +756,7 @@ describe('CalllogTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let errorUri = 'datashare:///com.ohos.calllogability/calls/calllogs';
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -797,7 +798,7 @@ describe('CalllogTest', function () {
     console.info('------------abnormal_calllog_query_test_900 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SIX);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -836,8 +837,8 @@ describe('CalllogTest', function () {
     console.info('--------logMessage abnormal_calllog_batchinsert_test_1700 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(NINE);
-    let phoneNumberTest = randomNum(SIX);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_NINE);
+    let phoneNumberTest = randomNum(PHONE_NUM_LEN_SIX);
     let addBulkValue1 = { 'phone_number': phoneNumber, 'ring_duration': '500' };
     let addBulkValue2 = { 'phone_number': phoneNumberTest, 'ring_duration': '100' };
     let addBulkValue3 = { 'phone_numbers': phoneNumberTest, 'ring_duration': '100' };
@@ -846,9 +847,9 @@ describe('CalllogTest', function () {
     let listAddBluk = [];
     listAddBluk[0] = addBulkValue1;
     listAddBluk[1] = addBulkValue2;
-    listAddBluk[TWO] = addBulkValue3;
-    listAddBluk[THREE] = addBulkValue4;
-    listAddBluk[FOUR] = addBulkValue5;
+    listAddBluk[INDEX_TWO] = addBulkValue3;
+    listAddBluk[INDEX_THREE] = addBulkValue4;
+    listAddBluk[INDEX_FOUR] = addBulkValue5;
     try {
       let batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
       console.info('logMessage abnormal_calllog_batchinsert_test_1700: batchInsertCode = ' + batchInsertCode);
@@ -932,7 +933,7 @@ describe('CalllogTest', function () {
     }
 
     async function executeBatch() {
-      let phoneNumber = randomNum(EIGHT);
+      let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
       let updateValues = { 'phone_number': phoneNumber };
       let condition = new dataShare.DataSharePredicates();
       condition.equalTo('id', calllogId.toString());
@@ -969,7 +970,7 @@ describe('CalllogTest', function () {
     console.info('--------logMessage calllog_Delete_test_2000 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(FIVE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_FIVE);
     let insertValues = { 'phone_number': phoneNumber, 'ring_duration': '200' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -1046,8 +1047,10 @@ describe('CalllogTest', function () {
     console.info('--------logMessage calllog_queryContains_test_2200 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(SEVENTEEN);
-    let phoneNumberTest = phoneNumber.substring(THIRTEEN, EIGHTEEN);
+    let phoneNumberIndexThirteen = 13;
+    let phoneNumberIndexEighteen = 18;
+    let phoneNumber = randomNum(PHONE_NUM_LEN_SEVENTEEN);
+    let phoneNumberTest = phoneNumber.substring(phoneNumberIndexThirteen, phoneNumberIndexEighteen);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -1085,7 +1088,7 @@ describe('CalllogTest', function () {
     console.info('--------logMessage abnormal_calllog_update_test_2300 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(TEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TEN);
     let insertValues = { 'phone_number': phoneNumber, 'display_name': 'name2300' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -1129,7 +1132,7 @@ describe('CalllogTest', function () {
     console.info('--------logMessage abnormal_calllog_query_test_2400 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(TEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TEN);
     let insertValues = { 'phone_number': phoneNumber, 'display_name': 'name2300' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -1161,7 +1164,7 @@ describe('CalllogTest', function () {
     console.info('--------logMessage abnormal_calllog_query_test_2500 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(TEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TEN);
     let insertValues = { 'phone_number': phoneNumber, 'display_name': 'name2300' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -1194,7 +1197,7 @@ describe('CalllogTest', function () {
     console.info('--------logMessage abnormal_calllog_delete_test_2600 is starting!------------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(TEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_TEN);
     let insertValues = { 'phone_number': phoneNumber, 'display_name': 'name2300' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -1215,7 +1218,7 @@ describe('CalllogTest', function () {
     condition.clear();
     let resultColumns = [];
     let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
-    let count = TWO;
+    let count = 2;
     expect(resultSet.rowCount === count).assertTrue();
     resultSet.close();
     await calllogDelete('abnormal_calllog_delete_test_2600');
@@ -1230,7 +1233,7 @@ describe('CalllogTest', function () {
   it('abnormal_calllog_delete_test_2700', 0, async function (done) {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(FOURTEEN);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_FOURTEEN);
     let insertValues = { 'phone_number': phoneNumber, 'display_name': 'name2700' };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -1276,8 +1279,8 @@ describe('CalllogTest', function () {
     console.info('------------abnormal_calllog_query_test_2800 is starting!-----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-    let phoneNumber = randomNum(EIGHT);
-    let phoneNumberTest = phoneNumber.substring(0, THREE);
+    let phoneNumber = randomNum(PHONE_NUM_LEN_EIGHT);
+    let phoneNumberTest = phoneNumber.substring(0, INDEX_THREE);
     let insertValues = { 'phone_number': phoneNumber };
     try {
       let calllogId = await dataShareHelper.insert(calllogUri, insertValues);
@@ -1317,7 +1320,8 @@ describe('CalllogTest', function () {
   });
 
   function randomNum(num) {
-    let number = toString(Math.floor(Math.random() * (NINE * Math.pow(TEN, num))) + 1 * Math.pow(TEN, num));
+    let number = toString(Math.floor(Math.random() * (PHONE_NUM_LEN_NINE * Math.pow(PHONE_NUM_LEN_TEN, num))) + 1 *
+      Math.pow(PHONE_NUM_LEN_TEN, num));
     return number;
   }
 });

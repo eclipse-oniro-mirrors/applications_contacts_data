@@ -26,13 +26,9 @@ const URI_CONTACTS = 'datashare:///com.ohos.contactsdataability';
 const rawContactUri = 'datashare:///com.ohos.contactsdataability/contacts/raw_contact';
 const contactDataUri = 'datashare:///com.ohos.contactsdataability/contacts/contact_data';
 const deletedUri = 'datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact';
-const FOUR = 4;
-const SIX = 6;
-const NINE = 9;
-const TEN = 10;
-const ONE_THOUSAND = 1000;
-const FIVE_THOUSAND = 5000;
-const TEN_THOUSAND = 10000;
+const SLEEP_ONE_SECOND = 1000;
+const SLEEP_FIVE_SECOND = 5000;
+const ROW_COUNT = 10000;
 
 describe('PerformanceTest', function () {
   console.log(' PerformanceTest is start');
@@ -55,8 +51,9 @@ describe('PerformanceTest', function () {
   it('raw_contact_insert_stability_test_900', 0, async function (done) {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+    let cycleIndex = 1000;
     let listAddBluk = [];
-    for (let i = 0; i < ONE_THOUSAND; i++) {
+    for (let i = 0; i < cycleIndex; i++) {
       let add = { 'display_name': 'xiaoli' + i, 'company': 'testCompany' + i, 'position': 'testPosition' + i };
       listAddBluk[i] = add;
     }
@@ -71,7 +68,7 @@ describe('PerformanceTest', function () {
       batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(rawContactUri, listAddBluk);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info('logMessage raw_contact_insert_stability_test_900: contactDataId1 = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
       done();
@@ -97,7 +94,7 @@ describe('PerformanceTest', function () {
     condition.equalTo('is_deleted', '0');
     try {
       let updateCode = await dataShareHelper.update(rawContactUri, updateValues, condition);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info('logMessage raw_contact_update_stability_test_1000: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
       done();
@@ -123,9 +120,9 @@ describe('PerformanceTest', function () {
     condition.equalTo('is_deleted', '0');
     try {
       let resultSet = await dataShareHelper.query(rawContactUri, resultColumns, condition);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info(tag + ' : logMessage : rowCount' + resultSet.rowCount);
-      expect(resultSet.rowCount === TEN_THOUSAND).assertTrue();
+      expect(resultSet.rowCount === ROW_COUNT).assertTrue();
       resultSet.close();
       done();
     } catch (error) {
@@ -148,7 +145,7 @@ describe('PerformanceTest', function () {
     condition.equalTo('is_deleted', '0');
     try {
       let deleteCode = await dataShareHelper.delete(rawContactUri, condition);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info('logMessage raw_contact_delete_stability_test_1200: deleteCode = ' + deleteCode);
       expect(deleteCode === 0).assertTrue();
       done();
@@ -172,7 +169,7 @@ describe('PerformanceTest', function () {
     };
     try {
       let rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info('logMessage contact_data_insert_stability_test_1300: rawContactId = ' + rawContactId);
     } catch (error) {
       console.info('logMessage contact_data_insert_stability_test_1300: raw_contact insert error = ' + error);
@@ -181,11 +178,11 @@ describe('PerformanceTest', function () {
     let condition = new dataShare.DataSharePredicates();
     condition.equalTo('id', rawContactId.toString());
     let deleteCode = await dataShareHelper.delete(rawContactUri, condition);
-    sleep(ONE_THOUSAND);
+    sleep(SLEEP_ONE_SECOND);
     console.info('logMessage contact_data_insert_stability_test_1300: deleteCode = ' + deleteCode);
-
+    let cycleIndex = 1000;
     let listAddBluk = [];
-    for (let i = 0; i < ONE_THOUSAND; i++) {
+    for (let i = 0; i < cycleIndex; i++) {
       let add = { 'raw_contact_id': rawContactId, 'detail_info': 'xxx' + i, 'content_type': 'name' };
       listAddBluk[i] = add;
     }
@@ -251,7 +248,7 @@ describe('PerformanceTest', function () {
       let resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
       sleep(2000);
       console.info(' contact_data_query_stability_test_1500 :  resultSet.rowCount = ' + resultSet.rowCount);
-      expect(resultSet.rowCount === TEN_THOUSAND).assertEqual(true);
+      expect(resultSet.rowCount === ROW_COUNT).assertEqual(true);
       resultSet.close();
       done();
     } catch (error) {
@@ -291,9 +288,11 @@ describe('PerformanceTest', function () {
     console.info('---------logMessage calllog_insert_stability_test_100 is starting!----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
+    let phoneNumberLenSix = 6;
+    let cycleIndex = 1000;
     let listAddBluk = [];
-    let phoneNumber = randomNum(SIX);
-    for (let i = 0; i < ONE_THOUSAND; i++) {
+    let phoneNumber = randomNum(phoneNumberLenSix);
+    for (let i = 0; i < cycleIndex; i++) {
       let add = { 'phone_number': phoneNumber + i };
       listAddBluk[i] = add;
     }
@@ -308,7 +307,7 @@ describe('PerformanceTest', function () {
       batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(calllogUri, listAddBluk);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info('logMessage calllog_insert_stability_test_100: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
       done();
@@ -332,7 +331,7 @@ describe('PerformanceTest', function () {
       let condition = new dataShare.DataSharePredicates();
       condition.greaterThan('id', '0');
       let updateCode = await dataShareHelper.update(calllogUri, updateValues, condition);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info('logMessage calllog_update_stability_test_200: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
       done();
@@ -357,9 +356,9 @@ describe('PerformanceTest', function () {
 
     try {
       let resultSet = await dataShareHelper.query(calllogUri, resultColumns, condition);
-      sleep(FIVE_THOUSAND);
+      sleep(SLEEP_FIVE_SECOND);
       console.info(tag + ' : logMessage : rowCount' + resultSet.rowCount);
-      expect(resultSet.rowCount === TEN_THOUSAND).assertTrue();
+      expect(resultSet.rowCount === ROW_COUNT).assertTrue();
       resultSet.close();
       done();
     } catch (error) {
@@ -380,7 +379,7 @@ describe('PerformanceTest', function () {
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
     let deleteCode = await dataShareHelper.delete(calllogUri, condition);
-    sleep(FIVE_THOUSAND);
+    sleep(SLEEP_FIVE_SECOND);
     console.info(tag + ' : logMessage : deleteCode = ' + deleteCode);
     expect(deleteCode === 0).assertTrue();
     done();
@@ -395,10 +394,11 @@ describe('PerformanceTest', function () {
     console.info('---------logMessage voicemail_insert_stability_test_500 is starting!----------');
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
-
+    let cycleIndex = 1000;
+    let phoneNumberLenFour = 4;
     let listAddBluk = [];
-    let phoneNumber = randomNum(FOUR);
-    for (let i = 0; i < ONE_THOUSAND; i++) {
+    let phoneNumber = randomNum(phoneNumberLenFour);
+    for (let i = 0; i < cycleIndex; i++) {
       let add = { 'phone_number': phoneNumber + i };
       listAddBluk[i] = add;
     }
@@ -413,7 +413,7 @@ describe('PerformanceTest', function () {
       batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(voicemailUri, listAddBluk);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info('logMessage voicemail_insert_stability_test_500: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
       done();
@@ -437,7 +437,7 @@ describe('PerformanceTest', function () {
       let condition = new dataShare.DataSharePredicates();
       condition.notEqualTo('id', 0);
       let updateCode = await dataShareHelper.update(voicemailUri, updateValues, condition);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info('logMessage voicemail_update_stability_test_600: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
       done();
@@ -461,9 +461,9 @@ describe('PerformanceTest', function () {
     condition.greaterThan('id', '0');
     try {
       let resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
-      sleep(ONE_THOUSAND);
+      sleep(SLEEP_ONE_SECOND);
       console.info(tag + ' : resultSet.rowCount = ' + resultSet.rowCount);
-      expect(resultSet.rowCount === TEN_THOUSAND).assertEqual(true);
+      expect(resultSet.rowCount === ROW_COUNT).assertEqual(true);
       resultSet.close();
       done();
     } catch (error) {
@@ -511,7 +511,7 @@ describe('PerformanceTest', function () {
         console.info('Stability : result.rowCount = ' + result.rowCount);
         count = result.rowCount;
         result.close();
-        sleep(FIVE_THOUSAND);
+        sleep(SLEEP_FIVE_SECOND);
       }
       let deleteCode = await dataShareHelper.delete(deletedUri, condition);
       console.info('Stability afterAll logMessage DeleteContact: deleteCode = ' + deleteCode);
@@ -522,6 +522,9 @@ describe('PerformanceTest', function () {
 });
 
 function randomNum(num) {
-  let number = toString(Math.floor(Math.random() * (NINE * Math.pow(TEN, num))) + 1 * Math.pow(TEN, num));
+  let baseNumNine = 9;
+  let baseNumTen = 10;
+  let number = toString(Math.floor(Math.random() * (baseNumNine * Math.pow(baseNumTen, num))) + 1 *
+    Math.pow(baseNumTen, num));
   return number;
 }
