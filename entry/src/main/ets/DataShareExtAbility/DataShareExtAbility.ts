@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,48 +13,48 @@
  * limitations under the License.
  */
 
-import Extension from '@ohos.application.DataShareExtensionAbility'
+import Extension from '@ohos.application.DataShareExtensionAbility';
 
 export default class DataShareExtAbility extends Extension {
-    private rdbStore_;
+  private rdbStore_;
 
-    onCreate(want) {
-        console.log('[ttt] [ContactsDataShare] <<Provider>> DataShareExtAbility onCreate, want:' + want.abilityName);
-    }
+  onCreate(want) {
+    console.log('[ttt] [ContactsDataShare] <<Provider>> DataShareExtAbility onCreate, want:' + want.abilityName);
+  }
 
-    getFileTypes(uri: string, mimeTypeFilter: string) {
-        console.info('[ttt] [ContactsDataShare] <<Provider>> [getFileTypes] enter');
-    }
+  getFileTypes(uri: string, mimeTypeFilter: string) {
+    console.info('[ttt] [ContactsDataShare] <<Provider>> [getFileTypes] enter');
+  }
 
-    insert(uri, value, callback) {
-        console.info('[ttt] [ContactsDataShare] <<Provider>> [insert] enter');
-    }
+  insert(uri, value, callback) {
+    console.info('[ttt] [ContactsDataShare] <<Provider>> [insert] enter');
+  }
 
-    update(uri, value, predicates, callback) {
-        console.info('[ttt] [ContactsDataShare] <<Provider>> [update] enter');
-    }
+  update(uri, value, predicates, callback) {
+    console.info('[ttt] [ContactsDataShare] <<Provider>> [update] enter');
+  }
 
-    delete(uri, predicates, callback) {
-        console.info('[ttt] [ContactsDataShare] <<Provider>> [delete] enter');
-    }
+  delete(uri, predicates, callback) {
+    console.info('[ttt] [ContactsDataShare] <<Provider>> [delete] enter');
+  }
 
-    query(uri, columns, predicates, callback) {
-        console.info('[ttt] [ContactsDataShare] <<Provider>> [query] enter');
-    }
+  query(uri, columns, predicates, callback) {
+    console.info('[ttt] [ContactsDataShare] <<Provider>> [query] enter');
+  }
 
-    getType(uri: string) {
-        console.info('[ttt] [ContactsDataShare] <<Provider>> [getType] enter');
-    }
+  getType(uri: string) {
+    console.info('[ttt] [ContactsDataShare] <<Provider>> [getType] enter');
+  }
 
-    batchInsert(uri: string, valueBuckets, callback) {
-        console.info('[ttt] [ContactsDataShare] <<Provider>> [batchInsert] enter');
-    }
+  batchInsert(uri: string, valueBuckets, callback) {
+    console.info('[ttt] [ContactsDataShare] <<Provider>> [batchInsert] enter');
+  }
 
-    normalizeUri(uri: string) {
-        console.info('[ttt] [ContactsDataShare] <<Provider>> [normalizeUri] enter');
-    }
+  normalizeUri(uri: string) {
+    console.info('[ttt] [ContactsDataShare] <<Provider>> [normalizeUri] enter');
+  }
 
-    denormalizeUri(uri: string) {
-        console.info('[ttt] [ContactsDataShare] <<Provider>> [denormalizeUri] enter');
-    }
-};
+  denormalizeUri(uri: string) {
+    console.info('[ttt] [ContactsDataShare] <<Provider>> [denormalizeUri] enter');
+  }
+}

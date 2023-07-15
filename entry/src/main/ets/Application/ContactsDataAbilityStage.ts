@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,18 +13,17 @@
  * limitations under the License.
  */
 
-import AbilityStage from "@ohos.app.ability.AbilityStage"
-import LogUtils from '../common/utils/LogUtils'
+import AbilityStage from '@ohos.app.ability.AbilityStage';
+import LogUtils from '../common/utils/LogUtils';
 
-const TAG = "ContactsDataAbilityStage";
+const TAG = 'ContactsDataAbilityStage';
 
 export default class ContactsDataAbilityStage extends AbilityStage {
   onCreate() {
-    LogUtils.i(TAG, "onCreate")
+    LogUtils.i(TAG, 'onCreate');
   }
 
   onDestroy() {
-    LogUtils.i(TAG, "onDestroy")
+    LogUtils.i(TAG, 'onDestroy');
   }
 }
-
