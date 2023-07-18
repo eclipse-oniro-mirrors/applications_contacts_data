@@ -24,7 +24,7 @@ async function contactsPickerSelect() {
 
   try {
     let result;
-    let context = getContext();
+    let context = getContext(this);
     if (context) {
       let config = {
         parameters: {
