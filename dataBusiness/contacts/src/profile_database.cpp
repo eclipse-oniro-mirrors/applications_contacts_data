@@ -156,10 +156,10 @@ void SqliteOpenHelperProfileCallback::UpgradeToV2(OHOS::NativeRdb::RdbStore &sto
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra3 TEXT;");
     store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extra4 TEXT;");
     // contact_data
-    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend8 TEXT;");
-    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend9 TEXT;");
-    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend10 TEXT;");
-    store.ExecuteSql("ALTER TABLE raw_contact ADD COLUMN extend11 TEXT;");
+    store.ExecuteSql("ALTER TABLE contact_data ADD COLUMN extend8 TEXT;");
+    store.ExecuteSql("ALTER TABLE contact_data ADD COLUMN extend9 TEXT;");
+    store.ExecuteSql("ALTER TABLE contact_data ADD COLUMN extend10 TEXT;");
+    store.ExecuteSql("ALTER TABLE contact_data ADD COLUMN extend11 TEXT;");
     // drop view
     store.ExecuteSql("DROP VIEW view_contact;");
     store.ExecuteSql("DROP VIEW view_contact_data;");
