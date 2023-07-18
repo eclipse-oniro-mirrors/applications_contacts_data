@@ -24,7 +24,8 @@ async function contactsPickerSelect() {
 
   try {
     let result;
-    if (globalThis.abilityContext) {
+    let context = getContext(this);
+    if (context) {
       let config = {
         parameters: {
           'pageFlag': 'page_flag_single_choose'
@@ -40,7 +41,7 @@ async function contactsPickerSelect() {
         }
       }
       console.log('[picker] contactsPickerSelect config: ' + JSON.stringify(config));
-      result = await globalThis.abilityContext.startAbilityForResult(config, { windowMode: 1 });
+      result = await context.startAbilityForResult(config, { windowMode: 1 });
     } else {
       let parameter = {
         want: {
