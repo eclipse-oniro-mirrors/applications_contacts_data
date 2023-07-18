@@ -580,6 +580,7 @@ constexpr const char *CREATE_VIEW_CONTACT_DATA =
     "[raw_contact].[sort_first_letter] AS [sort_first_letter], "
     "[raw_contact].[is_deleted] AS [is_deleted], "
     "[raw_contact].[phonetic_name_type] AS [phonetic_name_type], "
+    "[raw_contact].[photo_first_name] AS [photo_first_name], "
     "[raw_contact].[primary_contact] AS [primary_contact], "
     "[raw_contact].[extra1] AS [extra1], "
     "[raw_contact].[extra2] AS [extra2], "
