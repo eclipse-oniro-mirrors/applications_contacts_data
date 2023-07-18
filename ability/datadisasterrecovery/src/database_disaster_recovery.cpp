@@ -102,6 +102,7 @@ int DataBaseDisasterRecovery::SQLiteCheckDb(
 int DataBaseDisasterRecovery::BackDatabase()
 {
     // Recovery
+    g_mtx.lock();
     HILOG_INFO("entry DataBaseDisasterRecovery");
     FileUtils fileUtils;
     fileUtils.Mkdir(ContactsPath::RDB_BACKUP_PATH);
@@ -115,6 +116,7 @@ int DataBaseDisasterRecovery::BackDatabase()
     }
     if (redbStoreMap.empty()) {
         HILOG_ERROR("DataBaseDisasterRecovery SQLliteCheck redbStoreMap is empty");
+        g_mtx.unlock();
         return RDB_OBJECT_EMPTY;
     }
     for (auto &kv : redbStoreMap) {
@@ -125,6 +127,7 @@ int DataBaseDisasterRecovery::BackDatabase()
         int ret = BackDatabase(kv.first);
         HILOG_INFO("BackDatabase %{public}s status is %{public}d", kv.first.c_str(), ret);
     }
+    g_mtx.unlock();
     return RDB_EXECUTE_OK;
 }
 
