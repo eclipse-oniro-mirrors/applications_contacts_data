@@ -47,6 +47,7 @@ private:
     std::set<int> QueryTargetName(std::shared_ptr<OHOS::NativeRdb::RdbStore>, int, std::set<std::string>);
     bool isNameMatch(std::shared_ptr<OHOS::NativeRdb::RdbStore>, std::set<int>);
     int ManualMergeOperation(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int minId, std::set<int> handledIds);
+    std::string getUpdateSql(int minId);
 };
 } // namespace Contacts
 } // namespace OHOS

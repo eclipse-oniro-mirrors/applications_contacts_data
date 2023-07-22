@@ -56,14 +56,14 @@ int DataBaseDisasterRecovery::SQLiteCheckDb()
     HILOG_INFO("DataBaseDisasterRecovery SQLliteCheck start.");
     redbStoreMap.clear();
     if (redbStoreMap.empty()) {
-        HILOG_ERROR("DataBaseDisasterRecovery redbStoreMap init. nullptr");
+        HILOG_ERROR("DataBaseDisasterRecovery redbStoreMap init. nullptr!");
         std::shared_ptr<ProfileDatabase> profile = ProfileDatabase::GetInstance();
         std::shared_ptr<ContactsDataBase> contacts = ContactsDataBase::GetInstance();
         redbStoreMap.insert(std::make_pair(PROFILE_DATABASE_NAME, profile->store_));
         redbStoreMap.insert(std::make_pair(CONTACT_DATABASE_NAME, contacts->contactStore_));
     }
     if (redbStoreMap.empty()) {
-        HILOG_ERROR("DataBaseDisasterRecovery SQLliteCheck redbStoreMap is empty");
+        HILOG_ERROR("DataBaseDisasterRecovery SQLliteCheck redbStoreMap is empty!");
         g_mtx.unlock();
         return RDB_OBJECT_EMPTY;
     }

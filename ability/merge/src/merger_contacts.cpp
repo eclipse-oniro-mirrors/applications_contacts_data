@@ -72,20 +72,7 @@ int MergerContacts::MergeCircle(std::shared_ptr<OHOS::NativeRdb::RdbStore> store
         auto minIdPosition = ids.begin();
         int minId = *minIdPosition;
         UpdateRawContacts(store, minId, ids);
-        std::string sql = "UPDATE ";
-        sql.append(ContactTableName::RAW_CONTACT)
-            .append(" SET ")
-            .append(RawContactColumns::IS_NEED_MERGE)
-            .append(" = ")
-            .append(std::to_string(g_isNeedMergeNum[1]))
-            .append(", ")
-            .append(RawContactColumns::IS_MERGE_TARGET)
-            .append(" = ")
-            .append(std::to_string(g_isNeedMergeTargetNum[0]))
-            .append(" WHERE ")
-            .append(ContactPublicColumns::ID)
-            .append(" = ")
-            .append(std::to_string(minId));
+        std::string sql = getUpdateSql(minId);
         int error = store->ExecuteSql(sql);
         if (error != OHOS::NativeRdb::E_OK) {
             HILOG_ERROR("MergeCircle ExecuteSql error : %{public}d ", error);
@@ -473,20 +460,7 @@ int MergerContacts::ManualMergeOperation(
 {
     UpdateRawContacts(store, minId, handledIds);
     DeleteContacts(store, minId, handledIds);
-    std::string sql = "UPDATE ";
-    sql.append(ContactTableName::RAW_CONTACT)
-        .append(" SET ")
-        .append(RawContactColumns::IS_NEED_MERGE)
-        .append(" = ")
-        .append(std::to_string(g_isNeedMergeNum[1]))
-        .append(", ")
-        .append(RawContactColumns::IS_MERGE_TARGET)
-        .append(" = ")
-        .append(std::to_string(g_isNeedMergeTargetNum[0]))
-        .append(" WHERE ")
-        .append(ContactPublicColumns::ID)
-        .append(" = ")
-        .append(std::to_string(minId));
+    std::string sql = getUpdateSql(minId);
     int error = store->ExecuteSql(sql);
     if (error != RDB_EXECUTE_OK) {
         HILOG_ERROR("MergerContacts::ReContactMerge errorcode :%{public}d", error);
@@ -622,6 +596,25 @@ int MergerContacts::ForceContactMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore>
         return error;
     }
     return RDB_EXECUTE_OK;
+}
+
+std::string MergerContacts::getUpdateSql(int minId)
+{
+    std::string sql = "UPDATE ";
+    sql.append(ContactTableName::RAW_CONTACT)
+        .append(" SET ")
+        .append(RawContactColumns::IS_NEED_MERGE)
+        .append(" = ")
+        .append(std::to_string(g_isNeedMergeNum[1]))
+        .append(", ")
+        .append(RawContactColumns::IS_MERGE_TARGET)
+        .append(" = ")
+        .append(std::to_string(g_isNeedMergeTargetNum[0]))
+        .append(" WHERE ")
+        .append(ContactPublicColumns::ID)
+        .append(" = ")
+        .append(std::to_string(minId));
+    return sql;
 }
 } // namespace Contacts
 } // namespace OHOS
