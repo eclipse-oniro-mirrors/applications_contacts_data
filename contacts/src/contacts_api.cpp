@@ -1444,7 +1444,7 @@ napi_value QueryGroups(napi_env env, napi_callback_info info)
             break;
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
-                napi_throw(env, errqueryGroupsErrorCoderCode);
+                napi_throw(env, queryGroupsErrorCode);
             }
             break;
         case ARGS_TWO:
@@ -1519,25 +1519,25 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value queryKeyErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+    napi_value queryKeyErrCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     switch (argc) {
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
-                napi_throw(env, queryKeyErrorCode);
+                napi_throw(env, queryKeyErrCode);
             }
             break;
         case ARGS_TWO:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
-                napi_throw(env, queryKeyErrorCode);
+                napi_throw(env, queryKeyErrCode);
             }
             break;
         case ARGS_THREE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
-                napi_throw(env, queryKeyErrorCode);
+                napi_throw(env, queryKeyErrCode);
             }
             break;
         default:
-            napi_throw(env, queryKeyErrorCode);
+            napi_throw(env, queryKeyErrCode);
             break;
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
