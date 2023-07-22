@@ -1444,7 +1444,7 @@ napi_value QueryGroups(napi_env env, napi_callback_info info)
             break;
         case ARGS_ONE:
             if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
-                napi_throw(env, errqueryGroupsErrorCoderCode);
+                napi_throw(env, queryGroupsErrorCode);
             }
             break;
         case ARGS_TWO:
