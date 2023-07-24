@@ -2972,7 +2972,7 @@ describe('ContactsTest', function() {
         let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
         console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
-        var rawContactValues = {"display_name" : "~{e0i;~}"};
+        var rawContactValues = {"display_name" : "小黄"};
         try {
             var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             console.info('logMessage contact_pinyin_query_test_200 rawContactId = ' + rawContactId);
@@ -3040,7 +3040,7 @@ describe('ContactsTest', function() {
         let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
         console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
-        var rawContactValues = {"display_name" : "?~{5g?~}};
+        var rawContactValues = {"display_name" : "键盘"};
         try {
             var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
@@ -3057,7 +3057,7 @@ describe('ContactsTest', function() {
 
         async function ContactDataInsert()
         {
-            var contactDataValues = {"raw_contact_id" : rawContactId, "content_type" : "name", "detail_info" : "?~{5g?~}};
+            var contactDataValues = {"raw_contact_id" : rawContactId, "content_type" : "name", "detail_info" : "键盘"};
             try {
                 var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
                 sleep(sleep_one);
@@ -3083,7 +3083,7 @@ describe('ContactsTest', function() {
                     console.info('logMessage contact_pinyin_query_test_100: id = ' + resultSet.getString(0));
                     expect(resultSet.getString(0) === rawContactId.toString()).assertEqual(true);
                     console.info('logMessage contact_pinyin_query_test_100: search_name = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) === "?~{5g?~}|jianpan||jp").assertEqual(true);
+                    expect(resultSet.getString(1) === "键盘|jianpan||jp").assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -6031,13 +6031,13 @@ describe('ContactsTest', function() {
         let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
         console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
-        var rawContactValues = {"display_name" : "?~{b~}p?~{	??~}?};
+        var rawContactValues = {"display_name" : "李bp玉成욱"};
         try {
             var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage abnormal_contact_pinyinquery_test_9800 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            var dataId = await insertData(rawContactId, "name", "?~{b~}p?~{	??~}?, "");
+            var dataId = await insertData(rawContactId, "name", "李bp玉成욱");
             console.info('logMessage abnormal_contact_pinyinquery_test_9800 dataId = ' + dataId);
             expect(dataId > 0).assertTrue();
             await query();
@@ -6062,7 +6062,7 @@ describe('ContactsTest', function() {
                             var name = resultSet.getString(resultSet.getColumnIndex("search_name"));
                             console.info(
                                 ' abnormal_contact_pinyinquery_test_9800 :logMessage contactsQuery name = ' + name);
-                            expect(name === "?~{b~}p?~{	??~}?|libpyucheng??|lbpyc??).assertEqual(true);
+                            expect(name === "李bp玉成욱"|libpyucheng욱|lbpyc욱).assertEqual(true);
                         } while (resultSet.goToNextRow());
                     }
                 }
@@ -6084,13 +6084,13 @@ describe('ContactsTest', function() {
         let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
         console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
 
-        var rawContactValues = {"display_name" : "? ?~{"~}};
+        var rawContactValues = {"display_name" : "键盘"};
         try {
             var rawContactId = await dataShareHelper.insert(rawContactUri, rawContactValues);
             sleep(sleep_one);
             console.info('logMessage abnormal_contact_query_test_9900 rawContactId = ' + rawContactId);
             expect(rawContactId > 0).assertTrue();
-            var dataId = await insertData(rawContactId, "name", "? ?~{"~}, "");
+            var dataId = await insertData(rawContactId, "name", "键盘");
             console.info('logMessage abnormal_contact_query_test_9900 dataId = ' + dataId);
             expect(dataId > 0).assertTrue();
             await query();
