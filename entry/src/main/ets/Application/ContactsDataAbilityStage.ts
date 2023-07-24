@@ -19,11 +19,11 @@ import LogUtils from '../common/utils/LogUtils';
 const TAG = 'ContactsDataAbilityStage';
 
 export default class ContactsDataAbilityStage extends AbilityStage {
-  onCreate() {
+  onCreate(): void {
     LogUtils.i(TAG, 'onCreate');
   }
 
-  onDestroy() {
+  onDestroy(): void {
     LogUtils.i(TAG, 'onDestroy');
   }
 }

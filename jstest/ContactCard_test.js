@@ -67,7 +67,7 @@ describe('ContactCardTest', function() {
                             let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
                             console.info(tag + ':logMessage contactsQuery key = ' + key + ' dbresult :' + dbresult +
                                          ' value : ' + value);
-                            expect(value == dbresult).assertEqual(true);
+                            expect(value === dbresult).assertEqual(true);
                         }
                     } while (resultSet.goToNextRow());
                 }
@@ -89,7 +89,7 @@ describe('ContactCardTest', function() {
             var resultSet = await dataShareHelper.query(profileRawContactUri, resultColumns, condition);
             sleep(sleep_one);
             console.info(tag + ': queryBatch start ! resultSet.rowCount = ' + resultSet.rowCount);
-            expect(resultSet.rowCount == size).assertEqual(true);
+            expect(resultSet.rowCount === size).assertEqual(true);
             resultSet.close();
         } catch (error) {
             console.info(tag + "logMessage resultSet.rowCount: error = " + error);
@@ -106,7 +106,7 @@ describe('ContactCardTest', function() {
         try {
             var resultSet = await dataShareHelper.query(uri, resultColumns, condition);
             sleep(sleep_one);
-            expect(resultSet.goToFirstRow() == false).assertTrue();
+            expect(resultSet.goToFirstRow() === false).assertTrue();
             console.info(tag + " :logMessage queryIdForDelete: goToFirstRow " + resultSet.goToFirstRow());
             resultSet.close();
         } catch (error) {
@@ -122,7 +122,7 @@ describe('ContactCardTest', function() {
             condition.greaterThan("id", "0");
             var deleteCode = await dataShareHelper.delete(uri, condition);
             console.info(tag + ': deleteAll deleteCode = ' + deleteCode);
-            expect(deleteCode == 0).assertTrue();
+            expect(deleteCode === 0).assertTrue();
         } catch (error) {
             console.info(tag + ': deleteAll error = ' + error);
         }
@@ -138,13 +138,13 @@ describe('ContactCardTest', function() {
             condition.equalTo("is_deleted", "0");
             var deleteCode = await dataShareHelper.delete(profileRawContactUri, condition);
             console.info(tag + ': deleteRawContact deleteCode = ' + deleteCode);
-            expect(deleteCode == 0).assertTrue();
+            expect(deleteCode === 0).assertTrue();
             sleep(sleep_one);
             var conditionAll = new dataShare.DataSharePredicates();
             conditionAll.greaterThan("id", "0");
             var code = await dataShareHelper.delete(profileDeletedContactsUri, conditionAll);
             console.info(tag + ': Completely delete code = ' + code);
-            expect(code == 0).assertTrue();
+            expect(code === 0).assertTrue();
         } catch (error) {
             console.info(tag + ': deleteRawContact error = ' + error);
         }
@@ -651,7 +651,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileRawContactUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_900: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId.toString());
             map.set("display_name", "dacheng");
@@ -712,7 +712,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_1200: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId.toString());
             map.set("display_name", "dayuan");
@@ -774,7 +774,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_1300: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId.toString());
             map.set("company", "OOOO");
@@ -832,7 +832,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_1400: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "99663355");
@@ -894,7 +894,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_1500: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "fengyuan");
@@ -956,7 +956,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition)
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_1600: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "199@163.com");
@@ -1018,7 +1018,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_1700: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "BeiJing");
@@ -1076,7 +1076,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_1800: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "God");
@@ -1134,7 +1134,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_1900: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "bbbbb");
@@ -1196,7 +1196,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_2000: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "19971021");
@@ -1258,7 +1258,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_2100: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "www.123.com");
@@ -1319,7 +1319,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_2200: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "spouse");
@@ -1381,7 +1381,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_2300: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "3");
@@ -1444,7 +1444,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileContactDataUri, updateValues, condition);
             sleep(sleep_one);
             console.info('logMessage contactCard_update_test_2400: updateCode = ' + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             map.set("detail_info", "999");
@@ -1487,7 +1487,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileRawContactUri, updateValues, condition);
             sleep(sleep_one);
             console.info("logMessage contactCard_favorite_test_2500: updateCode = " + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId.toString());
             map.set("display_name", "xiaocai");
@@ -1532,7 +1532,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileRawContactUri, updateValues, condition);
             sleep(sleep_one);
             console.info("logMessage contactCard_unfavorite_test_2600: updateCode = " + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId.toString());
             map.set("display_name", "xiaohong");
@@ -1599,7 +1599,7 @@ describe('ContactCardTest', function() {
                 var deleteCode = await dataShareHelper.delete(profileBlocklistUri, condition);
                 sleep(sleep_one);
                 console.info("logMessage contactCard_delete_test_2800: deleteCode = " + deleteCode);
-                expect(deleteCode == 0).assertTrue();
+                expect(deleteCode === 0).assertTrue();
                 var map = new Map();
                 map.set("id", blocklistId.toString());
                 await queryIdForDelete(map, "contactCard_delete_test_2800", profileBlocklistUri);
@@ -1739,7 +1739,7 @@ describe('ContactCardTest', function() {
             var deleteCode = await dataShareHelper.delete(profileContactDataUri, condition);
             sleep(sleep_one);
             console.info("logMessage contactCard_delete_test_3000: deleteCode =" + deleteCode);
-            expect(deleteCode == 0).assertTrue();
+            expect(deleteCode === 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
             await queryIdForDelete(map, "contactCard_delete_test_3000", profileContactDataUri);
@@ -1784,9 +1784,9 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_query_test_3100: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == rawContactId).assertEqual(true);
+                    expect(resultSet.getString(0) === rawContactId).assertEqual(true);
                     console.info('logMessage contactCard_query_test_3100: display_name = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == "xiaoyu").assertEqual(true);
+                    expect(resultSet.getString(1) === "xiaoyu").assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -1886,9 +1886,9 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_query_test_3300: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == rawContactId.toString()).assertEqual(true);
+                    expect(resultSet.getString(0) === rawContactId.toString()).assertEqual(true);
                     console.info('logMessage contactCard_query_test_3300: display_name = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == "xiaoyu").assertEqual(true);
+                    expect(resultSet.getString(1) === "xiaoyu").assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -1943,19 +1943,19 @@ describe('ContactCardTest', function() {
                 do {
                     var id = resultSet.getString(resultSet.getColumnIndex("id"));
                     console.info('logMessage contactCard_query_test_3400: id = ' + id);
-                    expect(id == rawContactId).assertEqual(true);
+                    expect(id === rawContactId).assertEqual(true);
                     var favorite = resultSet.getString(resultSet.getColumnIndex("favorite"));
                     console.info('logMessage contactCard_query_test_3400: favorite = ' + favorite);
-                    expect(favorite == "1").assertEqual(true);
+                    expect(favorite === "1").assertEqual(true);
                     var phonetic_name = resultSet.getString(resultSet.getColumnIndex("phonetic_name"));
                     console.info('logMessage contactCard_query_test_3400: phonetic_name = ' + phonetic_name);
-                    expect(phonetic_name == "xiaoyu||xy").assertEqual(true);
+                    expect(phonetic_name === "xiaoyu||xy").assertEqual(true);
                     var company = resultSet.getString(resultSet.getColumnIndex("company"));
                     console.info('logMessage contactCard_query_test_3400: company = ' + company);
-                    expect(company == "TT").assertEqual(true);
+                    expect(company === "TT").assertEqual(true);
                     var display_name = resultSet.getString(resultSet.getColumnIndex("display_name"));
                     console.info('logMessage contactCard_query_test_3400: display_name = ' + display_name);
-                    expect(display_name == "xiaoyuzhou").assertEqual(true);
+                    expect(display_name === "xiaoyuzhou").assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -2032,9 +2032,9 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_query_test_3500: raw_contact_id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == rawContactId).assertEqual(true);
+                    expect(resultSet.getString(0) === rawContactId).assertEqual(true);
                     console.info('logMessage contactCard_query_test_3500: detail_info = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == groupId.toString()).assertEqual(true);
+                    expect(resultSet.getString(1) === groupId.toString()).assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -2079,10 +2079,10 @@ describe('ContactCardTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info('logMessage contactCard_query_test_3600: id = ' + resultSet.getString(0));
-                        expect(resultSet.getString(0) == rawContactId.toString()).assertTrue();
+                        expect(resultSet.getString(0) === rawContactId.toString()).assertTrue();
                         console.info(
                             'logMessage contactCard_query_test_3600: display_name = ' + resultSet.getString(1));
-                        expect(resultSet.getString(1) == "xiaoyuzhou").assertTrue();
+                        expect(resultSet.getString(1) === "xiaoyuzhou").assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -2129,10 +2129,10 @@ describe('ContactCardTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info('logMessage contactCard_query_test_3700: id = ' + resultSet.getString(0));
-                        expect(resultSet.getString(0) == rawContactId.toString()).assertTrue();
+                        expect(resultSet.getString(0) === rawContactId.toString()).assertTrue();
                         console.info(
                             'logMessage contactCard_query_test_3700: display_name = ' + resultSet.getString(1));
-                        expect(resultSet.getString(1) == "xiaoyuzhou").assertTrue();
+                        expect(resultSet.getString(1) === "xiaoyuzhou").assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -2176,7 +2176,7 @@ describe('ContactCardTest', function() {
             var deleteCode = await dataShareHelper.delete(profileRawContactUri, condition1);
             sleep(sleep_one);
             console.info('logMessage contactCard_query_test_3800: deleteCode = ' + deleteCode);
-            expect(deleteCode == 0).assertTrue();
+            expect(deleteCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contactCard_query_test_3800: raw_contact delete error = " + error);
             done();
@@ -2194,11 +2194,11 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 console.info('logMessage contactCard_query_test_3800: id = ' + resultSet.getString(0));
                 console.info('logMessage contactCard_query_test_3800: raw_contact_id = ' + resultSet.getString(1));
-                expect(resultSet.getString(1) == rawContactId.toString()).assertTrue();
+                expect(resultSet.getString(1) === rawContactId.toString()).assertTrue();
                 console.info('logMessage contactCard_query_test_3800: display_name = ' + resultSet.getString(array_two));
-                expect(resultSet.getString(array_two) == "xiaocai").assertTrue();
+                expect(resultSet.getString(array_two) === "xiaocai").assertTrue();
                 console.info('logMessage contactCard_query_test_3800: is_deleted = ' + resultSet.getString(array_three));
-                expect(resultSet.getString(array_three) == "1").assertTrue();
+                expect(resultSet.getString(array_three) === "1").assertTrue();
             }
             resultSet.close();
         } catch (error) {
@@ -2262,9 +2262,9 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_query_test_3900: raw_contact_id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == rawContactId.toString()).assertTrue();
+                    expect(resultSet.getString(0) === rawContactId.toString()).assertTrue();
                     console.info('logMessage contactCard_query_test_3900: detail_info = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == "1853696321").assertTrue();
+                    expect(resultSet.getString(1) === "1853696321").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -2330,11 +2330,11 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_query_test_4000: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == contactDataId.toString()).assertTrue();
+                    expect(resultSet.getString(0) === contactDataId.toString()).assertTrue();
                     console.info('logMessage contactCard_query_test_4000: raw_contact_id = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == rawContactId.toString()).assertTrue();
+                    expect(resultSet.getString(1) === rawContactId.toString()).assertTrue();
                     console.info('logMessage contactCard_query_test_4000: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "16658@163.com").assertTrue();
+                    expect(resultSet.getString(array_two) === "16658@163.com").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -2418,11 +2418,11 @@ describe('ContactCardTest', function() {
                     console.info("logMessage contactCard_query_test_4100: columnCount:" + resultSet.columnCount);
                     console.info('logMessage contactCard_query_test_4100: id = ' + resultSet.getString(0));
                     console.info('logMessage contactCard_query_test_4100: raw_contact_id = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == rawContactId.toString()).assertEqual(true);
+                    expect(resultSet.getString(1) === rawContactId.toString()).assertEqual(true);
                     console.info('logMessage contactCard_query_test_4100: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == array[i].detail_info).assertEqual(true);
+                    expect(resultSet.getString(array_two) === array[i].detail_info).assertEqual(true);
                     console.info('logMessage contactCard_query_test_4100: position = ' + resultSet.getString(array_three));
-                    expect(resultSet.getString(array_three) == array[i].position).assertEqual(true);
+                    expect(resultSet.getString(array_three) === array[i].position).assertEqual(true);
                     i++;
                 } while (resultSet.goToNextRow());
             }
@@ -2465,7 +2465,7 @@ describe('ContactCardTest', function() {
             var deleteCode = await dataShareHelper.delete(profileRawContactUri, condition1);
             sleep(sleep_one);
             console.info("logMessage contactCard_delete_test_4400: deleteCode = " + deleteCode);
-            expect(deleteCode == 0).assertTrue();
+            expect(deleteCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contactCard_delete_test_4400: delete error = " + error);
         }
@@ -2485,7 +2485,7 @@ describe('ContactCardTest', function() {
                 console.info('logMessage contactCard_delete_test_4400: id = ' + resultSet.getString(0));
                 console.info('logMessage contactCard_delete_test_4400: delete_time = ' + resultSet.getString(1));
                 console.info('logMessage contactCard_delete_test_4400: display_name = ' + resultSet.getString(array_two));
-                expect(resultSet.getString(array_two) == "xiaoming").assertTrue();
+                expect(resultSet.getString(array_two) === "xiaoming").assertTrue();
             }
             resultSet.close();
         } catch (error) {
@@ -2546,7 +2546,7 @@ describe('ContactCardTest', function() {
             var deleteCode = await dataShareHelper.delete(profileRawContactUri, condition1);
             sleep(sleep_one);
             console.info("logMessage contactCard_delete_test_4700: deleteCode = " + deleteCode);
-            expect(deleteCode == 0).assertTrue();
+            expect(deleteCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contactCard_delete_test_4700: delete error = " + error);
             done();
@@ -2566,7 +2566,7 @@ describe('ContactCardTest', function() {
                 console.info("logMessage contactCard_delete_test_4700: columnCount:" + resultSet.columnCount);
                 console.info('logMessage contactCard_delete_test_4700: id = ' + resultSet.getString(0));
                 console.info('logMessage contactCard_delete_test_4700: display_name = ' + resultSet.getString(1));
-                expect(resultSet.getString(1) == "xiaozhang").assertEqual(true);
+                expect(resultSet.getString(1) === "xiaozhang").assertEqual(true);
                 console.info('logMessage contactCard_delete_test_4700: backup_data = ' + resultSet.getString(array_two));
             }
             resultSet.close();
@@ -2609,7 +2609,7 @@ describe('ContactCardTest', function() {
             var deleteCode = await dataShareHelper.delete(profilecontactUri, condition1);
             sleep(sleep_one);
             console.info("logMessage contactCard_delete_test_4800: deleteCode = " + deleteCode);
-            expect(deleteCode == 0).assertTrue();
+            expect(deleteCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contactCard_delete_test_4800: delete error = " + error);
         }
@@ -2630,7 +2630,7 @@ describe('ContactCardTest', function() {
                 console.info('logMessage contactCard_delete_test_4800: id = ' + resultSet.getString(0));
                 console.info('logMessage contactCard_delete_test_4800: delete_time = ' + resultSet.getString(1));
                 console.info('logMessage contactCard_delete_test_4800: display_name = ' + resultSet.getString(array_two));
-                expect(resultSet.getString(array_two) == "xiaopeng").assertTrue();
+                expect(resultSet.getString(array_two) === "xiaopeng").assertTrue();
             }
             resultSet.close();
         } catch (error) {
@@ -2651,14 +2651,14 @@ describe('ContactCardTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(profileRawContactUri, common.getContactBatchCompany());
             sleep(sleep_one);
             console.info("logMessage contactCard_batchinsert_test_4900: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
             var resultColumns = [];
             let condition = new dataShare.DataSharePredicates();
             condition.equalTo("company", "TT4900");
             var resultSet = await dataShareHelper.query(profileRawContactUri, resultColumns, condition);
             console.info(
                 'contactCard_batchinsert_test_4900 : queryBatch start ! resultSet.rowCount = ' + resultSet.rowCount);
-            expect(resultSet.rowCount == result_size_five).assertEqual(true);
+            expect(resultSet.rowCount === result_size_five).assertEqual(true);
             resultSet.close();
             await deleteRawContact("contactCard_batchinsert_test_4900");
             done();
@@ -2696,7 +2696,7 @@ describe('ContactCardTest', function() {
                     await dataShareHelper.batchInsert(profileContactDataUri, common.getContactBatchCompanyTwo());
                 sleep(sleep_one);
                 console.info("logMessage contactCard_batchinsert_test_5000: batchInsertCode = " + batchInsertCode);
-                expect(batchInsertCode == 0).assertTrue();
+                expect(batchInsertCode === 0).assertTrue();
                 var map = new Map();
                 map.set("raw_contact_id", raw_contact_id.toString());
                 await queryBatch(map, "contactCard_batchinsert_test_5000", result_size_five);
@@ -2723,7 +2723,7 @@ describe('ContactCardTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(profileBlocklistUri, common.getPhoneNumberBatch());
             sleep(sleep_one);
             console.info("logMessage contactCard_batchinsert_test_5400: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
             await query(result_size_five);
             await BlocklistDelete();
             done();
@@ -2739,7 +2739,7 @@ describe('ContactCardTest', function() {
             try {
                 var deleteCode = await dataShareHelper.delete(profileBlocklistUri, condition);
                 console.info("logMessage contactCard_batchinsert_test_5400: deleteCode = " + deleteCode);
-                expect(deleteCode == 0).assertTrue();
+                expect(deleteCode === 0).assertTrue();
                 await query(0);
                 done();
             } catch (error) {
@@ -2758,7 +2758,7 @@ describe('ContactCardTest', function() {
                 sleep(sleep_one);
                 console.info('contactCard_batchinsert_test_5400 : queryBatch start ! resultSet.rowCount = ' +
                              resultSet.rowCount);
-                expect(resultSet.rowCount == size).assertEqual(true);
+                expect(resultSet.rowCount === size).assertEqual(true);
                 resultSet.close();
             } catch (error) {
                 console.info(" contactCard_batchinsert_test_5400 logMessage resultSet.rowCount: error = " + error);
@@ -2787,7 +2787,7 @@ describe('ContactCardTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(profileRawContactUri, listAddBluk);
             sleep(sleep_one);
             console.info("logMessage contactCard_update_test_5300: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
             await RawContactUpdateUnFavorites(dataShareHelper);
             await queryUnFavorites(dataShareHelper);
             await deleteRawContact("contactCard_update_test_5300");
@@ -2809,7 +2809,7 @@ describe('ContactCardTest', function() {
             var updateCode = await dataShareHelper.update(profileRawContactUri, updateValues, condition);
             sleep(sleep_one);
             console.info("logMessage contactCard_update_test_5300: updateCode = " + updateCode);
-            expect(updateCode == 0).assertTrue();
+            expect(updateCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contactCard_update_test_5300: update error = " + error);
         }
@@ -2827,14 +2827,14 @@ describe('ContactCardTest', function() {
             sleep(sleep_one);
             console.info(
                 'contactCard_update_test_5300 : queryBatch start ! resultSet.rowCount = ' + resultSet.rowCount);
-            expect(resultSet.rowCount == array_two).assertEqual(true);
+            expect(resultSet.rowCount === array_two).assertEqual(true);
             if (resultSet.rowCount > 0) {
                 if (resultSet.goToFirstRow()) {
                     do {
                         var dbresult = resultSet.getString(resultSet.getColumnIndex("favorite"));
                         console.info(' contactCard_update_test_5300 :logMessage contactsQuery dbresult :' + dbresult +
                                      ' value : ' + value);
-                        expect(dbresult == "0").assertEqual(true);
+                        expect(dbresult === "0").assertEqual(true);
                     } while (resultSet.goToNextRow());
                 }
             }
@@ -2924,7 +2924,7 @@ describe('ContactCardTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(profileContactDataUri, listAddBluk);
             sleep(sleep_one);
             console.info("logMessage contactCard_batchinsert_test_5500: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
             await ContactDataDelete(dataShareHelper, rawContactId1, rawContactId3);
         } catch (error) {
             console.info("logMessage contactCard_batchinsert_test_5500: batchInsert error = " + error);
@@ -2941,7 +2941,7 @@ describe('ContactCardTest', function() {
             var deleteCode = await dataShareHelper.delete(profileContactDataUri, condition);
             sleep(sleep_one);
             console.info("logMessage contactCard_batchinsert_test_5500: deleteCode = " + deleteCode);
-            expect(deleteCode == 0).assertTrue();
+            expect(deleteCode === 0).assertTrue();
             await queryTwoData(dataShareHelper, rawContactId1, rawContactId3);
         } catch (error) {
             console.info("logMessage contactCard_batchinsert_test_5500: delete error = " + error);
@@ -2960,7 +2960,7 @@ describe('ContactCardTest', function() {
             sleep(sleep_one);
             console.info(
                 'contactCard_batchinsert_test_5500 : queryBatch start ! resultSet.rowCount = ' + resultSet.rowCount);
-            expect(resultSet.rowCount == 0).assertEqual(true);
+            expect(resultSet.rowCount === 0).assertEqual(true);
             resultSet.close();
         } catch (error) {
             console.info(" contactCard_batchinsert_test_5500 logMessage resultSet.rowCount: error = " + error);
@@ -3025,7 +3025,7 @@ describe('ContactCardTest', function() {
                         let dbresult = resultSet.getString(resultSet.getColumnIndex(key));
                         console.info(tag + ':contactCard_pinyin_query_test_200 key = ' + key +
                                      ' dbresult :' + dbresult + ' value : ' + value);
-                        expect(value == dbresult).assertEqual(true);
+                        expect(value === dbresult).assertEqual(true);
                     }
                 } while (resultSet.goToNextRow());
             }
@@ -3086,10 +3086,10 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_pinyin_query_test_100: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == rawContactId.toString()).assertEqual(true);
+                    expect(resultSet.getString(0) === rawContactId.toString()).assertEqual(true);
                     console.info(
                         'logMessage contactCard_pinyin_query_test_100: search_name = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == "鍵盤||jianpan||jp").assertEqual(true);
+                    expect(resultSet.getString(1) === "鍵盤||jianpan||jp").assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3147,10 +3147,10 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_pinyin_query_test_300: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == rawContactId.toString()).assertTrue();
+                    expect(resultSet.getString(0) === rawContactId.toString()).assertTrue();
                     console.info(
                         'logMessage contactCard_pinyin_query_test_300: search_name = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == "Tom||Tom||Tom").assertTrue();
+                    expect(resultSet.getString(1) === "Tom||Tom||Tom").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3195,10 +3195,10 @@ describe('ContactCardTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info('logMessage contactCard_fuzzyquery_test_400: id = ' + resultSet.getString(0));
-                        expect(resultSet.getString(0) == rawContactId.toString()).assertEqual(true);
+                        expect(resultSet.getString(0) === rawContactId.toString()).assertEqual(true);
                         console.info(
                             'logMessage contactCard_fuzzyquery_test_400: display_name = ' + resultSet.getString(1));
-                        expect(resultSet.getString(1) == "400xiaoming400").assertEqual(true);
+                        expect(resultSet.getString(1) === "400xiaoming400").assertEqual(true);
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -3247,13 +3247,13 @@ describe('ContactCardTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         console.info('logMessage contactCard_fuzzyquery_test_500: id = ' + resultSet.getString(0));
-                        expect(resultSet.getString(0) == rawContactId.toString()).assertTrue();
+                        expect(resultSet.getString(0) === rawContactId.toString()).assertTrue();
                         console.info(
                             'logMessage contactCard_fuzzyquery_test_500: display_name = ' + resultSet.getString(1));
-                        expect(resultSet.getString(1) == "500xiaoming500").assertTrue();
+                        expect(resultSet.getString(1) === "500xiaoming500").assertTrue();
                         console.info(
                             'logMessage contactCard_fuzzyquery_test_500: phonetic_name = ' + resultSet.getString(array_two));
-                        expect(resultSet.getString(array_two) == "500xiaoming500||xm").assertTrue();
+                        expect(resultSet.getString(array_two) === "500xiaoming500||xm").assertTrue();
                     } while (resultSet.goToNextRow());
                 }
                 resultSet.close();
@@ -3305,14 +3305,14 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_fuzzyquery_test_600: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == rawContactId.toString()).assertEqual(true);
+                    expect(resultSet.getString(0) === rawContactId.toString()).assertEqual(true);
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_600: display_name = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == "xiaoming").assertEqual(true);
+                    expect(resultSet.getString(1) === "xiaoming").assertEqual(true);
                     console.info('logMessage contactCard_fuzzyquery_test_600: company = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "TT600").assertEqual(true);
+                    expect(resultSet.getString(array_two) === "TT600").assertEqual(true);
                     console.info('logMessage contactCard_fuzzyquery_test_600: position = ' + resultSet.getString(array_three));
-                    expect(resultSet.getString(array_three) == "Testers600").assertEqual(true);
+                    expect(resultSet.getString(array_three) === "Testers600").assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3380,12 +3380,12 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_fuzzyquery_test_700: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == contactDataId.toString()).assertEqual(true);
+                    expect(resultSet.getString(0) === contactDataId.toString()).assertEqual(true);
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_700: raw_contact_id = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == rawContactId.toString()).assertEqual(true);
+                    expect(resultSet.getString(1) === rawContactId.toString()).assertEqual(true);
                     console.info('logMessage contactCard_fuzzyquery_test_700: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "14528963").assertEqual(true);
+                    expect(resultSet.getString(array_two) === "14528963").assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3452,12 +3452,12 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_fuzzyquery_test_800: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == contactDataId.toString()).assertTrue();
+                    expect(resultSet.getString(0) === contactDataId.toString()).assertTrue();
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_800: raw_contact_id = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == rawContactId.toString()).assertTrue();
+                    expect(resultSet.getString(1) === rawContactId.toString()).assertTrue();
                     console.info('logMessage contactCard_fuzzyquery_test_800: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "daming").assertTrue();
+                    expect(resultSet.getString(array_two) === "daming").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3523,12 +3523,12 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_fuzzyquery_test_900: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == contactDataId.toString()).assertTrue();
+                    expect(resultSet.getString(0) === contactDataId.toString()).assertTrue();
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_900: raw_contact_id = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == rawContactId.toString()).assertTrue();
+                    expect(resultSet.getString(1) === rawContactId.toString()).assertTrue();
                     console.info('logMessage contactCard_fuzzyquery_test_900: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "1564@163.com").assertTrue();
+                    expect(resultSet.getString(array_two) === "1564@163.com").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3596,13 +3596,13 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_fuzzyquery_test_1000: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == contactDataId.toString()).assertTrue();
+                    expect(resultSet.getString(0) === contactDataId.toString()).assertTrue();
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_1000: raw_contact_id = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == rawContactId.toString()).assertTrue();
+                    expect(resultSet.getString(1) === rawContactId.toString()).assertTrue();
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_1000: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "nanjing1000").assertTrue();
+                    expect(resultSet.getString(array_two) === "nanjing1000").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3669,13 +3669,13 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_fuzzyquery_test_1100: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == contactDataId.toString()).assertEqual(true);
+                    expect(resultSet.getString(0) === contactDataId.toString()).assertEqual(true);
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_1100: raw_contact_id = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == rawContactId.toString()).assertEqual(true);
+                    expect(resultSet.getString(1) === rawContactId.toString()).assertEqual(true);
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_1100: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "java1100").assertEqual(true);
+                    expect(resultSet.getString(array_two) === "java1100").assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3740,13 +3740,13 @@ describe('ContactCardTest', function() {
             if (resultSet.goToFirstRow()) {
                 do {
                     console.info('logMessage contactCard_fuzzyquery_test_1200: id = ' + resultSet.getString(0));
-                    expect(resultSet.getString(0) == contactDataId.toString()).assertEqual(true);
+                    expect(resultSet.getString(0) === contactDataId.toString()).assertEqual(true);
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_1200: raw_contact_id = ' + resultSet.getString(1));
-                    expect(resultSet.getString(1) == rawContactId.toString()).assertEqual(true);
+                    expect(resultSet.getString(1) === rawContactId.toString()).assertEqual(true);
                     console.info(
                         'logMessage contactCard_fuzzyquery_test_1200: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "aaaa1200").assertEqual(true);
+                    expect(resultSet.getString(array_two) === "aaaa1200").assertEqual(true);
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3792,7 +3792,7 @@ describe('ContactCardTest', function() {
         try {
             var rawContactId = await dataShareHelper.insert(errorUri, rawContactValues);
             console.info("logMessage abnormal_contactCard_insert_test_300: rawContactId = " + rawContactId);
-            expect(rawContactId == -1).assertTrue();
+            expect(rawContactId === -1).assertTrue();
             done();
         } catch (error) {
             console.info('logMessage abnormal_contactCard_insert_test_300: raw_contact insert error' + error);
@@ -3831,7 +3831,7 @@ describe('ContactCardTest', function() {
             try {
                 var updataCode = await dataShareHelper.update(profileRawContactUri, updateValues, condition)
                 console.info("logMessage abnormal_contactCard_update_test_1100: updataCode = " + updataCode);
-                expect(updataCode == -1).assertTrue();
+                expect(updataCode === -1).assertTrue();
                 var map = new Map();
                 map.set("id", rawContactId.toString());
                 map.set("display_name", "xiaoshan");
@@ -3875,7 +3875,7 @@ describe('ContactCardTest', function() {
             try {
                 var updataCode = await dataShareHelper.update(errorUri, updateValues, condition);
                 console.info("logMessage abnormal_contactCard_update_test_1000: updataCode = " + updataCode);
-                expect(updataCode == -1).assertTrue();
+                expect(updataCode === -1).assertTrue();
                 var map = new Map();
                 map.set("id", rawContactId.toString());
                 map.set("display_name", "xiaoshan");
@@ -3917,7 +3917,7 @@ describe('ContactCardTest', function() {
             try {
                 var deleteCode = await dataShareHelper.delete(profileRawContactUri, condition);
                 console.info("logMessage abnormal_contactCard_delete_test_4500: deleteCode = " + deleteCode);
-                expect(deleteCode == -1).assertTrue();
+                expect(deleteCode === -1).assertTrue();
                 var map = new Map();
                 map.set("id", rawContactId.toString());
                 map.set("display_name", "xiaozhi");
@@ -3961,7 +3961,7 @@ describe('ContactCardTest', function() {
             try {
                 var deleteCode = await dataShareHelper.delete(errorUri, condition);
                 console.info("logMessage abnormal_contactCard_delete_test_4600: deleteCode = " + deleteCode);
-                expect(deleteCode == -1).assertTrue();
+                expect(deleteCode === -1).assertTrue();
                 var map = new Map();
                 map.set("id", rawContactId.toString());
                 map.set("display_name", "xiaoshan");
@@ -4039,7 +4039,7 @@ describe('ContactCardTest', function() {
         try {
             var batchInsertCode = await dataShareHelper.batchInsert(profileRawContactUri, listAddBluk);
             console.info("logMessage abnormal_contactCard_batchinsert_test_5100: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == -1).assertTrue();
+            expect(batchInsertCode === -1).assertTrue();
             done();
         } catch (error) {
             console.info("logMessage abnormal_contactCard_batchinsert_test_5100: batch insert error = " + error);
@@ -4077,7 +4077,7 @@ describe('ContactCardTest', function() {
             try {
                 var contactDataId = await dataShareHelper.insert(profileContactDataUri, contactDataValues);
                 console.info('logMessage abnormal_contactCard_insert_data_5300 ; = ' + contactDataId);
-                expect(contactDataId == -1).assertTrue();
+                expect(contactDataId === -1).assertTrue();
             } catch (error) {
                 console.info('logMessage abnormal_contactCard_insert_data_5300 contact_data insert error = ' + error);
                 done();
@@ -4114,7 +4114,7 @@ describe('ContactCardTest', function() {
             try {
                 var contactDataId = await dataShareHelper.insert(profileContactDataUri, contactDataValues);
                 console.info('logMessage abnormal_contactCard_insert_data_5400 ; = ' + contactDataId);
-                expect(contactDataId == -1).assertTrue();
+                expect(contactDataId === -1).assertTrue();
             } catch (error) {
                 console.info('logMessage abnormal_contactCard_insert_data_5400 contact_data insert error = ' + error);
                 done();
@@ -4160,7 +4160,7 @@ describe('ContactCardTest', function() {
                         "logMessage contactCard_delete_test_5500: executeBatch data = " + JSON.stringify(data));
                     console.info("logMessage contactCard_delete_test_5500: data_3 = " + data);
                     console.info("logMessage contactCard_delete_test_5500:  data_1= " + data[0].count);
-                    expect(data[0].count == 0).assertTrue();
+                    expect(data[0].count === 0).assertTrue();
                     done();
                 });
         }
@@ -4207,7 +4207,7 @@ describe('ContactCardTest', function() {
                         "logMessage contactCard_update_test_5600: executeBatch data = " + JSON.stringify(data));
                     console.info("logMessage contactCard_update_test_5600: data_3 = " + data);
                     console.info("logMessage contactCard_update_test_5600:  data_1= " + data[0].count);
-                    expect(data[0].count == 0).assertTrue();
+                    expect(data[0].count === 0).assertTrue();
                     done();
                 });
         }
@@ -4453,7 +4453,7 @@ describe('ContactCardTest', function() {
             condition.equalTo("id", rawContactIdTwo.toString());
             var updataCode = await dataShareHelper.update(profileRawContactUri, updateValues, condition);
             console.info("logMessage contactCard_update_test_6200: updataCode = " + updataCode);
-            expect(updataCode == 0).assertTrue();
+            expect(updataCode === 0).assertTrue();
             sleep(sleep_one);
             await queryUpdateThree(
                 "contactCard_update_test_6200", dataShareHelper, rawContactId, rawContactIdOne, rawContactIdTwo);
@@ -4483,7 +4483,7 @@ describe('ContactCardTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         var name = resultSet.getString(resultSet.getColumnIndex("display_name"));
-                        expect(name == "xiaosan").assertEqual(true);
+                        expect(name === "xiaosan").assertEqual(true);
                     } while (resultSet.goToNextRow());
                 }
             }
@@ -4631,7 +4631,7 @@ describe('ContactCardTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         var detail_info = resultSet.getString(resultSet.getColumnIndex("detail_info"));
-                        expect(detail_info == "xiaocai").assertEqual(true);
+                        expect(detail_info === "xiaocai").assertEqual(true);
                     } while (resultSet.goToNextRow());
                 }
             }
@@ -4693,7 +4693,7 @@ describe('ContactCardTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         var favorite = resultSet.getInt(resultSet.getColumnIndex("favorite"));
-                        expect(favorite == favoritevalue).assertEqual(true);
+                        expect(favorite === favoritevalue).assertEqual(true);
                     } while (resultSet.goToNextRow());
                 }
             }
@@ -4784,8 +4784,8 @@ describe('ContactCardTest', function() {
                 console.info('contactCard_insertContactBlocklist_test_6800 :resultSet.goToFirstRow()  = ' +
                              resultSet.goToFirstRow());
                 console.info(
-                    'contactCard_insertContactBlocklist_test_6800 : query result is  = ' + resultSet.rowCount == size);
-                expect(resultSet.rowCount == size).assertEqual(true);
+                    'contactCard_insertContactBlocklist_test_6800 : query result is  = ' + resultSet.rowCount === size);
+                expect(resultSet.rowCount === size).assertEqual(true);
                 resultSet.close();
             } catch (error) {
                 console.info(" contactCard_insertContactBlocklist_test_6800  error = " + error);
@@ -4828,7 +4828,7 @@ describe('ContactCardTest', function() {
             try {
                 var resultSet = await dataShareHelper.query(profileBlocklistUri, resultColumns, condition);
                 console.info('contactCard_removeContactBlocklist_test_6900 : resultSet  = ' + resultSet);
-                expect(resultSet.rowCount == size).assertEqual(true);
+                expect(resultSet.rowCount === size).assertEqual(true);
                 resultSet.close();
             } catch (error) {
                 console.info(" contactCard_removeContactBlocklist_test_6900  error = " + error);
@@ -4894,7 +4894,7 @@ describe('ContactCardTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         var group = resultSet.getInt(resultSet.getColumnIndex("detail_info"));
-                        expect(group == groupId).assertEqual(true);
+                        expect(group === groupId).assertEqual(true);
                     } while (resultSet.goToNextRow());
                 }
             }
@@ -4986,7 +4986,7 @@ describe('ContactCardTest', function() {
         try {
             var resultSet = await dataShareHelper.query(profileContactDataUri, resultColumns, condition);
             console.info(tag + ': queryZeroGroup! resultSet.rowCount  = ' + resultSet.rowCount);
-            expect(resultSet.rowCount == 0).assertEqual(true);
+            expect(resultSet.rowCount === 0).assertEqual(true);
             resultSet.close();
         } catch (error) {
             console.info(tag + "logMessage queryZeroGroup: error = " + error);
@@ -5042,7 +5042,7 @@ describe('ContactCardTest', function() {
             conditionAll.greaterThan("id", "0");
             var code = await dataShareHelper.delete(profileDeletedContactsUri, conditionAll);
             console.info('contactCard_delete_test_7400 : Completely delete code = ' + code);
-            expect(code == 0).assertTrue();
+            expect(code === 0).assertTrue();
             done();
         } catch (error) {
             console.info('logMessage contactCard_delete_test_7400: insert error = ' + error);
@@ -5142,10 +5142,10 @@ describe('ContactCardTest', function() {
                     do {
                         var id = resultSet.getString(resultSet.getColumnIndex("raw_contact_id"));
                         console.info(tag + " result raw_contact_id = " + id);
-                        expect(id == rawContactId).assertEqual(true);
+                        expect(id === rawContactId).assertEqual(true);
                         var info = resultSet.getString(resultSet.getColumnIndex("detail_info"));
                         console.info(tag + "result info = " + info + " value = " + values);
-                        expect(info == values).assertEqual(true);
+                        expect(info === values).assertEqual(true);
                     } while (resultSet.goToNextRow());
                 }
             }
@@ -5266,7 +5266,7 @@ describe('ContactCardTest', function() {
                     do {
                         var info = resultSet.getString(resultSet.getColumnIndex("detail_info"));
                         console.info(tag + "result info = " + info);
-                        expect(info == "xiaocai7800").assertEqual(true);
+                        expect(info === "xiaocai7800").assertEqual(true);
                     } while (resultSet.goToNextRow());
                 }
             }
@@ -5295,7 +5295,7 @@ describe('ContactCardTest', function() {
             condition1.equalTo("id", rawContactId.toString());
             var deleteCode = await dataShareHelper.delete(profileRawContactUri, condition1);
             console.info("contactCard_deleterestore_test_7900 : deleteCode = " + deleteCode);
-            expect(deleteCode == 0).assertTrue();
+            expect(deleteCode === 0).assertTrue();
             sleep(sleep_one);
 
             var condition2 = new dataShare.DataSharePredicates();

@@ -79,7 +79,7 @@ describe('ContactMergeTest', function() {
         try {
             var autoMergeCode = await dataShareHelper.update(autoMergeUri, updateValues, condition);
             console.info("logMessage contact_auto_merge_and_spilt_test_100: autoMergeCode = " + autoMergeCode);
-            expect(autoMergeCode == 0).assertTrue();
+            expect(autoMergeCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, "contact_auto_merge_and_spilt_test_100", result_two);
@@ -102,7 +102,7 @@ describe('ContactMergeTest', function() {
             var splitCode = await dataShareHelper.update(splitUri, updateValues2, condition2);
             sleep(sleep_three);
             console.info('logMessage contact_auto_merge_and_spilt_test_100 splitCode = ' + splitCode);
-            expect(splitCode == 0).assertTrue();
+            expect(splitCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, "contact_auto_merge_and_spilt_test_100", 1);
@@ -118,7 +118,7 @@ describe('ContactMergeTest', function() {
         condition.greaterThan("id", "0");
         var deleteCode = await dataShareHelper.delete(uri, condition);
         console.info(tag + ': deleteAll deleteCode = ' + deleteCode);
-        expect(deleteCode == 0).assertTrue();
+        expect(deleteCode === 0).assertTrue();
     }
 
     async function ContactMergeQuery(map, tag, size)
@@ -146,7 +146,7 @@ describe('ContactMergeTest', function() {
             var resultSet = await dataShareHelper.query(rawContactUri, newResultColumns, pre);
             sleep(sleep_one);
             console.info(tag + ' : ContactMergeQuery start ! rowCount = ' + resultSet.rowCount);
-            expect(resultSet.rowCount == size).assertEqual(true);
+            expect(resultSet.rowCount === size).assertEqual(true);
             resultSet.close();
         } catch (error) {
             console.info(tag + " : logMessage ContactMergeQuery: error = " + error);
@@ -207,7 +207,7 @@ describe('ContactMergeTest', function() {
             var ManualMergeCode = await dataShareHelper.update(manualMergeUri, updateValues2, condition2);
             sleep(sleep_one);
             console.info("logMessage " + testName + " ManualMergeCode = " + ManualMergeCode);
-            expect(ManualMergeCode == 0).assertTrue();
+            expect(ManualMergeCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactList[0].toString());
             await ContactMergeQuery(map, testName, rawContactList.length);
@@ -313,7 +313,7 @@ describe('ContactMergeTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
             sleep(sleep_one);
             console.info("logMessage contact_manualMerge_test_200: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contact_manualMerge_test_200: batch insert error = " + error)
         }
@@ -390,7 +390,7 @@ describe('ContactMergeTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
             sleep(sleep_one);
             console.info("logMessage contact_autoMerge_test_300: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contact_autoMerge_test_300: batch insert1 error = " + error)
         }
@@ -415,7 +415,7 @@ describe('ContactMergeTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk2);
             sleep(sleep_one);
             console.info("logMessage contact_autoMerge_test_300: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contact_autoMerge_test_300: batch insert2 error = " + error)
         }
@@ -429,7 +429,7 @@ describe('ContactMergeTest', function() {
             var autoMergeCode = await dataShareHelper.update(autoMergeUri, updateValues, condition);
             sleep(sleep_one);
             console.info("logMessage  " + testName + "autoMergeCode = " + autoMergeCode);
-            expect(autoMergeCode == 0).assertTrue();
+            expect(autoMergeCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, testName, result_two);
@@ -448,7 +448,7 @@ describe('ContactMergeTest', function() {
             sleep(sleep_two);
             var autoMergeCode = await dataShareHelper.update(autoMergeUri, updateValues, condition);
             console.info("logMessage  " + testName + "autoMergeCode = " + autoMergeCode);
-            expect(autoMergeCode == -1).assertTrue();
+            expect(autoMergeCode === -1).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, testName, 1);
@@ -517,7 +517,7 @@ describe('ContactMergeTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
             sleep(sleep_one);
             console.info("logMessage contact_manualMerge_test_400: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contact_manualMerge_test_400: batch insert1 error = " + error)
         }
@@ -542,7 +542,7 @@ describe('ContactMergeTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk2);
             sleep(sleep_one);
             console.info("logMessage contact_manualMerge_test_400: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contact_manualMerge_test_400: batch insert2 error = " + error)
         }
@@ -558,7 +558,7 @@ describe('ContactMergeTest', function() {
             var ManualMergeCode = await dataShareHelper.update(manualMergeUri, updateValues2, condition2);
             sleep(sleep_one);
             console.info("logMessage contact_manualMerge_test_400 ManualMergeCode = " + ManualMergeCode);
-            expect(ManualMergeCode == 0).assertTrue();
+            expect(ManualMergeCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, "contact_manualMerge_test_400", result_two);
@@ -632,7 +632,7 @@ describe('ContactMergeTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
             sleep(sleep_one);
             console.info("logMessage contact_manualMerge_test_500: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
         } catch (error) {
             console.info("logMessage contact_manualMerge_test_500: batch insert1 error = " + error)
         }
@@ -665,7 +665,7 @@ describe('ContactMergeTest', function() {
             var ManualMergeCode = await dataShareHelper.update(manualMergeUri, updateValues2, condition2);
             sleep(sleep_one);
             console.info("logMessage contact_manualMerge_test_500 ManualMergeCode = " + ManualMergeCode);
-            expect(ManualMergeCode == 0).assertTrue();
+            expect(ManualMergeCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, "contact_manualMerge_test_500", result_two);
@@ -735,7 +735,7 @@ describe('ContactMergeTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
             sleep(sleep_two);
             console.info("logMessage contact_autoMerge_test_600: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
             await threeAutoMerger();
             await deleteAll(rawContactUri, "contact_autoMerge_test_600");
             await deleteAll(contactDataUri, "contact_autoMerge_test_600");
@@ -752,7 +752,7 @@ describe('ContactMergeTest', function() {
             var autoMergeCode = await dataShareHelper.update(autoMergeUri, updateValues, condition);
             sleep(sleep_one);
             console.info("logMessage contact_autoMerge_test_600 autoMergeCode = " + autoMergeCode);
-            expect(autoMergeCode == 0).assertTrue();
+            expect(autoMergeCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, "contact_autoMerge_test_600", result_three);
@@ -829,7 +829,7 @@ describe('ContactMergeTest', function() {
             var batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
             sleep(sleep_one);
             console.info("logMessage contact_query_merge_list_test_700: batchInsertCode = " + batchInsertCode);
-            expect(batchInsertCode == 0).assertTrue();
+            expect(batchInsertCode === 0).assertTrue();
         } catch (error) {
             console.info('logMessage contact_query_merge_list_test_700: contact_data_2 insert error = ' + error);
         }
@@ -850,8 +850,8 @@ describe('ContactMergeTest', function() {
                 if (resultSet.goToFirstRow()) {
                     do {
                         var rawContactId = resultSet.getInt(resultSet.getColumnIndex("raw_contact_id"));
-                        console.info(testName + (array[i] == rawContactId));
-                        expect(array[i] == rawContactId).assertTrue();
+                        console.info(testName + (array[i] === rawContactId));
+                        expect(array[i] === rawContactId).assertTrue();
                         console.info(testName + rawContactId);
                         i++;
                     } while (resultSet.goToNextRow())
@@ -956,7 +956,7 @@ describe('ContactMergeTest', function() {
             var ManualMergeCode = await dataShareHelper.update(manualMergeUri, updateValues2, condition2);
             sleep(sleep_one);
             console.info(tag + "logMessage ManualMergeCode = " + ManualMergeCode);
-            expect(ManualMergeCode == -1).assertTrue();
+            expect(ManualMergeCode === -1).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, tag, 1);
@@ -1010,7 +1010,7 @@ describe('ContactMergeTest', function() {
             sleep(sleep_three);
             var autoMergeCode = await dataShareHelper.update(autoMergeUri, updateValues, condition);
             console.info("logMessage contact_query_merge_list_test_1000: autoMergeCode = " + autoMergeCode);
-            expect(autoMergeCode == 0).assertTrue();
+            expect(autoMergeCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, "contact_query_merge_list_test_1000", result_two);
@@ -1375,7 +1375,7 @@ describe('ContactMergeTest', function() {
             var autoMergeCode = await dataShareHelper.update(autoMergeUri, updateValues, condition);
             sleep(sleep_one);
             console.info("logMessage contact_query_merge_list_test_1800 autoMergeCode = " + autoMergeCode);
-            expect(autoMergeCode == 0).assertTrue();
+            expect(autoMergeCode === 0).assertTrue();
             var map = new Map();
             map.set("id", rawContactId1.toString());
             await ContactMergeQuery(map, "contact_query_merge_list_test_1800", result_three);
@@ -1507,7 +1507,7 @@ describe('ContactMergeTest', function() {
         var updateValues = {};
         var autoMergeCode = await dataShareHelper.update(autoMergeUri, updateValues, condition);
         console.info("logMessage abnormal_merge_Update_test_2100 autoMergeCode = " + autoMergeCode);
-        expect(autoMergeCode == -1).assertTrue();
+        expect(autoMergeCode === -1).assertTrue();
         await ManualNotMerge(dataShareHelper, rawContactId1, rawContactId2, "abnormal_merge_Update_test_2100");
         done();
     });
@@ -1561,7 +1561,7 @@ describe('ContactMergeTest', function() {
             sleep(sleep_three);
             var resultSet = await dataShareHelper.query(uriQueryMergeList, columns, predicates);
             console.info(testName + 'resultSet.rowCount  = ' + resultSet.rowCount);
-            expect(resultSet.rowCount == 0).assertTrue();
+            expect(resultSet.rowCount === 0).assertTrue();
             resultSet.close();
             await deleteAll(rawContactUri, testName);
             await deleteAll(contactDataUri, testName);
@@ -1690,7 +1690,7 @@ describe('ContactMergeTest', function() {
         var autoMergeCode = await dataShareHelper.update(autoMergeUri, updateValues, condition);
         sleep(sleep_one);
         console.info("logMessage abnormal_merge_Update_test_2500 autoMergeCode = " + autoMergeCode);
-        expect(autoMergeCode == 0).assertTrue();
+        expect(autoMergeCode === 0).assertTrue();
         var map = new Map();
         map.set("id", rawContactId1.toString());
         await ContactNotSplit(dataShareHelper, 0, "abnormal_merge_Update_test_2500");
@@ -1740,7 +1740,7 @@ describe('ContactMergeTest', function() {
         var autoMergeCode = await dataShareHelper.update(autoMergeUri, updateValues, condition);
         sleep(sleep_one);
         console.info("logMessage abnormal_merge_Update_test_2600 autoMergeCode = " + autoMergeCode);
-        expect(autoMergeCode == 0).assertTrue();
+        expect(autoMergeCode === 0).assertTrue();
         var map = new Map();
         map.set("id", rawContactId1.toString());
         await ContactNotSplit(dataShareHelper, -1, "abnormal_merge_Update_test_2600");
@@ -1760,7 +1760,7 @@ describe('ContactMergeTest', function() {
             var splitCode = await dataShareHelper.update(splitUri, updateValues2, condition2);
             sleep(4000);
             console.info(testName + 'logMessage  splitCode = ' + splitCode);
-            expect(splitCode == -1).assertTrue();
+            expect(splitCode === -1).assertTrue();
         } catch (error) {
             console.info(testName + 'logMessage  split error = ' + error);
         }

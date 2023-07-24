@@ -29,7 +29,8 @@ const deletedUri = 'datashare:///com.ohos.contactsdataability/contacts/deleted_r
 const PHONE_NUM_LEN_NINE = 9;
 const PHONE_NUM_LEN_TEN = 10;
 const CYCLE_INDEX = 1000;
-const USED_TIME = 2000;
+const USED_TIME_70000 = 70000;
+const USED_TIME_90000 = 90000;
 const SLEEP_TIME = 5000;
 const ROW_COUNT = 10000;
 
@@ -75,7 +76,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('raw_contact_insert_performance_test_900  usedTime = ' + usedTime);
-      expect(usedTime < 70000).assertTrue();
+      expect(usedTime < USED_TIME_70000).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage raw_contact_insert_performance_test_900: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
@@ -96,6 +97,7 @@ describe('PerformanceTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let updateValues = { 'favorite': 1 };
+    let usedTime2000 = 2000;
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
     condition.and();
@@ -106,7 +108,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('raw_contact_update_performance_test_1000  usedTime = ' + usedTime);
-      expect(usedTime < USED_TIME).assertTrue();
+      expect(usedTime < usedTime2000).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage raw_contact_update_performance_test_1000: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
@@ -127,6 +129,7 @@ describe('PerformanceTest', function () {
     let tag = 'raw_contact_query_performance_test_1100';
     let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
     console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
+    let usedTime200 = 200;
     let resultColumns = [];
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
@@ -138,7 +141,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('raw_contact_query_performance_test_1100  usedTime = ' + usedTime);
-      expect(usedTime < 200).assertTrue();
+      expect(usedTime < usedTime200).assertTrue();
       sleep(SLEEP_TIME);
       console.info(tag + ' : logMessage : rowCount' + resultSet.rowCount);
       expect(resultSet.rowCount === ROW_COUNT).assertTrue();
@@ -159,6 +162,7 @@ describe('PerformanceTest', function () {
   it('raw_contact_delete_performance_test_1200', 0, async function (done) {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
     console.info('raw_contact_delete_performance_test_1200 : start ! dataShareHelper = ' + dataShareHelper);
+    let usedTime7000 = 7000;
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
     condition.and();
@@ -169,7 +173,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('raw_contact_delete_performance_test_1200  usedTime = ' + usedTime);
-      expect(usedTime < 7000).assertTrue();
+      expect(usedTime < usedTime7000).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage raw_contact_delete_performance_test_1200: deleteCode = ' + deleteCode);
       expect(deleteCode === 0).assertTrue();
@@ -229,7 +233,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('contact_data_insert_performance_test_1300  usedTime = ' + usedTime);
-      expect(usedTime < 70000).assertTrue();
+      expect(usedTime < USED_TIME_70000).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage contact_data_insert_performance_test_1300: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
@@ -252,6 +256,8 @@ describe('PerformanceTest', function () {
       'logMessage contact_data_update_performance_test_1400 dataShareHelper success! dataShareHelper = ' +
         dataShareHelper
     );
+    let sleepTime8000 = 8000;
+    let usedTime35000 = 35000;
     let updateValues = { 'syn_1': 'test' };
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
@@ -261,8 +267,8 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('contact_data_update_performance_test_1400  usedTime = ' + usedTime);
-      expect(usedTime < 35000).assertTrue();
-      sleep(8000);
+      expect(usedTime < usedTime35000).assertTrue();
+      sleep(sleepTime8000);
       console.info('logMessage contact_data_update_performance_test_1400: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
       done();
@@ -281,6 +287,7 @@ describe('PerformanceTest', function () {
   it('contact_data_query_performance_test_1500', 0, async function (done) {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
     console.info('contact_data_query_performance_test_1500 start ! dataShareHelper = ' + dataShareHelper);
+    let usedTime220 = 220;
     let resultColumns = [];
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
@@ -290,7 +297,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('contact_data_query_performance_test_1500  usedTime = ' + usedTime);
-      expect(usedTime < 220).assertTrue();
+      expect(usedTime < usedTime220).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage contact_data_query_performance_test_1500: goToFirstRow' + resultSet.rowCount);
       expect(resultSet.rowCount === ROW_COUNT).assertEqual(true);
@@ -311,6 +318,7 @@ describe('PerformanceTest', function () {
   it('contact_data_delete_performance_test_1600', 0, async function (done) {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CONTACTS);
     console.info('contact_data_delete_performance_test_1600 : start ! dataShareHelper = ' + dataShareHelper);
+    let usedTime32000 = 32000;
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
     try {
@@ -319,7 +327,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('contact_data_delete_performance_test_1600  usedTime = ' + usedTime);
-      expect(usedTime < 32000).assertTrue();
+      expect(usedTime < usedTime32000).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage contact_data_delete_performance_test_1600: deleteCode = ' + deleteCode);
       expect(deleteCode === 0).assertTrue();
@@ -362,7 +370,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('calllog_insert_performance_test_100  usedTime = ' + usedTime);
-      expect(usedTime < 90000).assertTrue();
+      expect(usedTime < USED_TIME_90000).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage calllog_insert_performance_test_100: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
@@ -383,6 +391,7 @@ describe('PerformanceTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let updateValues = { 'answer_state': '1' };
+    let usedTime30 = 30;
     try {
       let condition = new dataShare.DataSharePredicates();
       condition.notEqualTo('id', 0);
@@ -391,7 +400,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('calllog_update_performance_test_200  usedTime = ' + usedTime);
-      expect(usedTime < 300).assertTrue();
+      expect(usedTime < usedTime30).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage calllog_update_performance_test_200: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
@@ -411,6 +420,7 @@ describe('PerformanceTest', function () {
     let tag = 'calllog_query_performance_test_300';
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
+    let usedTime30 = 30;
     let resultColumns = [];
     let condition = new dataShare.DataSharePredicates();
     condition.notEqualTo('id', 0);
@@ -421,7 +431,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('calllog_query_performance_test_300  usedTime = ' + usedTime);
-      expect(usedTime < 30).assertTrue();
+      expect(usedTime < usedTime30).assertTrue();
       sleep(SLEEP_TIME);
       console.info(tag + ' : logMessage : rowCount' + resultSet.rowCount);
       expect(resultSet.rowCount === ROW_COUNT).assertTrue();
@@ -443,6 +453,7 @@ describe('PerformanceTest', function () {
     let tag = 'calllog_delete_performance_test_400';
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
+    let usedTime200 = 200;
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
     let old = new Date();
@@ -450,7 +461,7 @@ describe('PerformanceTest', function () {
     let now = new Date();
     let usedTime = now - old;
     console.info('calllog_delete_performance_test_400  usedTime = ' + usedTime);
-    expect(usedTime < 200).assertTrue();
+    expect(usedTime < usedTime200).assertTrue();
     sleep(SLEEP_TIME);
     console.info(tag + ' : logMessage : deleteCode = ' + deleteCode);
     expect(deleteCode === 0).assertTrue();
@@ -489,7 +500,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('voicemail_insert_performance_test_500  usedTime = ' + usedTime);
-      expect(usedTime < 90000).assertTrue();
+      expect(usedTime < USED_TIME_90000).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage voicemail_insert_performance_test_500: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
@@ -510,6 +521,7 @@ describe('PerformanceTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let updateValues = { 'origin_type': 'test' };
+    let usedTime250 = 250;
     try {
       let condition = new dataShare.DataSharePredicates();
       condition.notEqualTo('id', 0);
@@ -518,7 +530,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('voicemail_update_performance_test_600  usedTime = ' + usedTime);
-      expect(usedTime < 250).assertTrue();
+      expect(usedTime < usedTime250).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage voicemail_update_performance_test_600: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
@@ -542,13 +554,14 @@ describe('PerformanceTest', function () {
     let resultColumns = [];
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
+    let usedTime20 = 20;
     try {
       let old = new Date();
       let resultSet = await dataShareHelper.query(voicemailUri, resultColumns, condition);
       let now = new Date();
       let usedTime = now - old;
       console.info('voicemail_query_performance_test_700  usedTime = ' + usedTime);
-      expect(usedTime < 20).assertTrue();
+      expect(usedTime < usedTime20).assertTrue();
       sleep(SLEEP_TIME);
       console.info(tag + ' : logMessage : rowCount' + resultSet.rowCount);
       expect(resultSet.rowCount === ROW_COUNT).assertTrue();
@@ -572,13 +585,14 @@ describe('PerformanceTest', function () {
     console.info(tag + ': start ! dataShareHelper = ' + dataShareHelper);
     let condition = new dataShare.DataSharePredicates();
     condition.greaterThan('id', '0');
+    let usedTime100 = 100;
     try {
       let old = new Date();
       let deleteCode = await dataShareHelper.delete(voicemailUri, condition);
       let now = new Date();
       let usedTime = now - old;
       console.info('voicemail_delete_performance_test_800  usedTime = ' + usedTime);
-      expect(usedTime < 100).assertTrue();
+      expect(usedTime < usedTime100).assertTrue();
       sleep(SLEEP_TIME);
       console.info(tag + ' : logMessage : deleteCode = ' + deleteCode);
       expect(deleteCode === 0).assertTrue();

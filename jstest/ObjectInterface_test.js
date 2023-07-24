@@ -20,8 +20,20 @@ const URI_CONTACTS = 'datashare:///com.ohos.contactsdataability';
 const groupUri = 'datashare:///com.ohos.contactsdataability/contacts/groups';
 const rawContactUri = 'datashare:///com.ohos.contactsdataability/contacts/raw_contact';
 const profileRawContactUri = 'datashare:///com.ohos.contactsdataability/profile/raw_contact';
+const ATTRIBUTE_ONE = 1;
+const ATTRIBUTE_TWO = 2;
+const ATTRIBUTE_THREE = 3;
+const ATTRIBUTE_FOUR = 4;
 const ATTRIBUTE_FIVE = 5;
 const ATTRIBUTE_SIX = 6;
+const ATTRIBUTE_SEVEN = 7;
+const ATTRIBUTE_EIGHT = 8;
+const ATTRIBUTE_NINE = 9;
+const ATTRIBUTE_TEN = 10;
+const ATTRIBUTE_ELEVEN = 11;
+const ATTRIBUTE_TWELVE = 12;
+const ATTRIBUTE_THIRTEEN = 13;
+const ATTRIBUTE_FOURTEEN = 14;
 const ONE_HUNDERD = 100;
 const SLEEP_TIME = 2000;
 
@@ -40,7 +52,9 @@ describe('ObjectInterfaceTest', function () {
   let contactData = {
     id: 0,
     key: '0',
-    contactAttributes: { attributes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] },
+    contactAttributes: { attributes: [ATTRIBUTE_ONE, ATTRIBUTE_TWO, ATTRIBUTE_THREE, ATTRIBUTE_FOUR, ATTRIBUTE_FIVE,
+      ATTRIBUTE_SIX, ATTRIBUTE_SEVEN, ATTRIBUTE_EIGHT, ATTRIBUTE_NINE, ATTRIBUTE_TEN, ATTRIBUTE_ELEVEN,
+      ATTRIBUTE_TWELVE, ATTRIBUTE_THIRTEEN, ATTRIBUTE_FOURTEEN] },
     emails: [{ email: 'email', labelName: '自定义邮箱', labelId: 1, displayName: 'emailDisplayName' }],
     events: [{ eventDate: 'event', labelName: '自定义event', labelId: 2 }],
     groups: [{ groupId: 1, title: '群组' }],
@@ -156,7 +170,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryContact(queryId);
       console.info('contactsApi_query_contact_test_400 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_contact_test_400 query error = ' + error);
@@ -176,7 +190,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryContact(queryId, holder);
       console.info('contactsApi_query_contact_test_500 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_contact_test_500 query error = ' + error);
@@ -193,11 +207,11 @@ describe('ObjectInterfaceTest', function () {
   it('contactsApi_query_contact_test_600', 0, async function (done) {
     let queryId = gRawContactId.toString();
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
+    let ContactAttributes = { attributes: [ATTRIBUTE_ONE, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContact(queryId, holder, ContactAttributes);
       console.info('contactsApi_query_contact_test_600 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_contact_test_600 query error = ' + error);
@@ -234,7 +248,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryContacts(holder);
       console.info('contactsApi_query_contacts_test_800 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_contacts_test_800 query error = ' + error);
@@ -249,11 +263,11 @@ describe('ObjectInterfaceTest', function () {
    * @tc.desc    Function test
    */
   it('contactsApi_query_contacts_test_900', 0, async function (done) {
-    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
+    let ContactAttributes = { attributes: [ATTRIBUTE_ONE, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContacts(ContactAttributes);
       console.info('contactsApi_query_contacts_test_900 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_contacts_test_900 query error = ' + error);
@@ -269,11 +283,11 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_contacts_test_1000', 0, async function (done) {
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
+    let ContactAttributes = { attributes: [ATTRIBUTE_ONE, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContacts(holder, ContactAttributes);
       console.info('contactsApi_query_contacts_test_1000 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_contacts_test_1000 query error = ' + error);
@@ -293,7 +307,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryContactsByEmail(email, holder);
       console.info('contactsApi_query_email_test_1100 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_email_test_1100 query error = ' + error);
@@ -312,7 +326,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryContactsByEmail(email);
       console.info('contactsApi_query_email_test_1200 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_email_test_1200 query error = ' + error);
@@ -329,11 +343,11 @@ describe('ObjectInterfaceTest', function () {
   it('contactsApi_query_email_test_1300', 0, async function (done) {
     let email = 'email';
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
+    let ContactAttributes = { attributes: [ATTRIBUTE_ONE, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContactsByEmail(email, holder, ContactAttributes);
       console.info('contactsApi_query_email_test_1300 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_email_test_1300 query error = ' + error);
@@ -349,11 +363,11 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_email_test_1400', 0, async function (done) {
     let email = 'email';
-    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
+    let ContactAttributes = { attributes: [ATTRIBUTE_ONE, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContactsByEmail(email, ContactAttributes);
       console.info('contactsApi_query_email_test_1400 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_email_test_1400 query error = ' + error);
@@ -373,7 +387,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryContactsByPhoneNumber(phoneNumber, holder);
       console.info('contactsApi_query_phoneNumber_test_1500 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_phoneNumber_test_1500 query error = ' + error);
@@ -390,11 +404,11 @@ describe('ObjectInterfaceTest', function () {
   it('contactsApi_query_phoneNumber_test_1600', 0, async function (done) {
     let phoneNumber = '183';
     let holder = { bundleName: 'com.ohos.contacts', displayName: 'phone', holderId: 1 };
-    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
+    let ContactAttributes = { attributes: [ATTRIBUTE_ONE, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContactsByPhoneNumber(phoneNumber, holder, ContactAttributes);
       console.info('contactsApi_query_phoneNumber_test_1600 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_phoneNumber_test_1600 query error = ' + error);
@@ -413,7 +427,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryContactsByPhoneNumber(phoneNumber);
       console.info('contactsApi_query_phoneNumber_test_1700 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_phoneNumber_test_1700 query error = ' + error);
@@ -429,11 +443,11 @@ describe('ObjectInterfaceTest', function () {
    */
   it('contactsApi_query_phoneNumber_test_1800', 0, async function (done) {
     let phoneNumber = '183';
-    let ContactAttributes = { attributes: [1, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
+    let ContactAttributes = { attributes: [ATTRIBUTE_ONE, ATTRIBUTE_FIVE, ATTRIBUTE_SIX] };
     try {
       let resultSet = await contactsapi.queryContactsByPhoneNumber(phoneNumber, ContactAttributes);
       console.info('contactsApi_query_phoneNumber_test_1800 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_phoneNumber_test_1800 query error = ' + error);
@@ -488,7 +502,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryHolders();
       console.info('contactsApi_query_holders_test_2200 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet != null).assertTrue();
+      expect(resultSet !== null).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_holders_test_2200 query error = ' + error);
@@ -508,7 +522,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryKey(idtest, holder);
       console.info('contactsApi_query_key_test_2300 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet.length != 0).assertTrue();
+      expect(resultSet.length !== 0).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_key_test_2300 query error = ' + error);
@@ -528,7 +542,7 @@ describe('ObjectInterfaceTest', function () {
     try {
       let resultSet = await contactsapi.queryKey(idtest);
       console.info('contactsApi_query_key_test_2400 : query resultSet = ' + JSON.stringify(resultSet));
-      expect(resultSet.length != 0).assertTrue();
+      expect(resultSet.length !== 0).assertTrue();
       done();
     } catch (error) {
       console.info('contactsApi_query_key_test_2400 query error = ' + error);

@@ -27,6 +27,7 @@ const rawContactUri = 'datashare:///com.ohos.contactsdataability/contacts/raw_co
 const contactDataUri = 'datashare:///com.ohos.contactsdataability/contacts/contact_data';
 const deletedUri = 'datashare:///com.ohos.contactsdataability/contacts/deleted_raw_contact';
 const SLEEP_ONE_SECOND = 1000;
+const SLEEP_TWO_SECOND = 2000;
 const SLEEP_FIVE_SECOND = 5000;
 const ROW_COUNT = 10000;
 
@@ -197,7 +198,7 @@ describe('PerformanceTest', function () {
       batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
       batchInsertCode = await dataShareHelper.batchInsert(contactDataUri, listAddBluk);
-      sleep(2000);
+      sleep(SLEEP_TWO_SECOND);
       console.info('logMessage contact_data_insert_stability_test_1300: batchInsertCode = ' + batchInsertCode);
       expect(batchInsertCode === 0).assertTrue();
       done();
@@ -223,7 +224,7 @@ describe('PerformanceTest', function () {
     condition.greaterThan('id', '0');
     try {
       let updateCode = await dataShareHelper.update(contactDataUri, updateValues, condition);
-      sleep(2000);
+      sleep(SLEEP_TWO_SECOND);
       console.info('logMessage contact_data_update_stability_test_1400: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
       done();
@@ -246,7 +247,7 @@ describe('PerformanceTest', function () {
     condition.greaterThan('id', '0');
     try {
       let resultSet = await dataShareHelper.query(contactDataUri, resultColumns, condition);
-      sleep(2000);
+      sleep(SLEEP_TWO_SECOND);
       console.info(' contact_data_query_stability_test_1500 :  resultSet.rowCount = ' + resultSet.rowCount);
       expect(resultSet.rowCount === ROW_COUNT).assertEqual(true);
       resultSet.close();
@@ -269,7 +270,7 @@ describe('PerformanceTest', function () {
     condition.greaterThan('id', '0');
     try {
       let deleteCode = await dataShareHelper.delete(contactDataUri, condition);
-      sleep(2000);
+      sleep(SLEEP_TWO_SECOND);
       console.info('logMessage contact_data_delete_stability_test_1600: deleteCode = ' + deleteCode);
       expect(deleteCode === 0).assertTrue();
       done();
@@ -485,7 +486,7 @@ describe('PerformanceTest', function () {
     condition.greaterThan('id', '0');
     try {
       let deleteCode = await dataShareHelper.delete(voicemailUri, condition);
-      sleep(2000);
+      sleep(SLEEP_TWO_SECOND);
       console.info(tag + ' : logMessage : deleteCode = ' + deleteCode);
       expect(deleteCode === 0).assertTrue();
       done();
