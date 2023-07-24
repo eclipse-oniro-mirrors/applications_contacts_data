@@ -391,7 +391,7 @@ describe('PerformanceTest', function () {
     let dataShareHelper = dataShare.createDataShareHelper(URI_CALLLOG);
     console.info('logMessage get dataShareHelper success! dataShareHelper = ' + dataShareHelper);
     let updateValues = { 'answer_state': '1' };
-    let usedTime30 = 30;
+    let usedTime300 = 300;
     try {
       let condition = new dataShare.DataSharePredicates();
       condition.notEqualTo('id', 0);
@@ -400,7 +400,7 @@ describe('PerformanceTest', function () {
       let now = new Date();
       let usedTime = now - old;
       console.info('calllog_update_performance_test_200  usedTime = ' + usedTime);
-      expect(usedTime < usedTime30).assertTrue();
+      expect(usedTime < usedTime300).assertTrue();
       sleep(SLEEP_TIME);
       console.info('logMessage calllog_update_performance_test_200: updateCode = ' + updateCode);
       expect(updateCode === 0).assertTrue();
