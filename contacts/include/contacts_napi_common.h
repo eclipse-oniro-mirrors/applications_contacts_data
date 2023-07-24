@@ -28,7 +28,7 @@
 
 namespace OHOS {
 namespace ContactsApi {
-constexpr int MAX_PARAMS = 6;
+constexpr int MAX_PARAMS = 10;
 constexpr int ERROR = -1;
 constexpr int SUCCESS = 0;
 constexpr int RESULT_DATA_SIZE = 2;
@@ -94,17 +94,19 @@ constexpr int ARGS_ONE = 1;
 constexpr int ARGS_TWO = 2;
 constexpr int ARGS_THREE = 3;
 constexpr int ARGS_FOUR = 4;
+constexpr int ARGS_FIVE = 5;
 const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
 
 struct ExecuteHelper {
     ExecuteHelper()
-        : work(nullptr), deferred(nullptr), sync(NAPI_CALL_TYPE_PROMISE), argc(0), actionCode(-1), callBack(nullptr),
+        : work(nullptr), deferred(nullptr), sync(NAPI_CALL_TYPE_PROMISE), argc(0), abilityContext(nullptr), actionCode(-1), callBack(nullptr),
           childActionCode(0), promise(nullptr), resultData(-1), resultSet(nullptr) {}
     napi_async_work work;
     napi_deferred deferred;
     int sync;
     unsigned int argc;
     napi_value argv[MAX_PARAMS] = {0};
+    napi_value abilityContext;
     int actionCode;
     napi_ref callBack;
     int childActionCode;
