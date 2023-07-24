@@ -502,9 +502,9 @@ void ResultConvert::ConvertImAddress(
 {
     if (typeId == IM) {
         const std::string imAddresses = "imAddresses";
-        napi_value emailArray = GetNapiElementArray(env, napiObject, imAddresses);
+        napi_value imAddressArray = GetNapiElementArray(env, napiObject, imAddresses);
         uint32_t count = 0;
-        napi_get_array_length(env, emailArray, &count);
+        napi_get_array_length(env, imAddressArray, &count);
         napi_value objectElement;
         napi_create_object(env, &objectElement);
         std::string detailInfoKey = "detail_info";
@@ -519,10 +519,10 @@ void ResultConvert::ConvertImAddress(
         napi_set_property(env, objectElement, napiLabelNameKey, customValue);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
         napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
-        napi_set_element(env, emailArray, count, objectElement);
+        napi_set_element(env, imAddressArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, imAddresses.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
-        napi_set_property(env, napiObject, napiElementKey, emailArray);
+        napi_set_property(env, napiObject, napiElementKey, imAddressArray);
     }
 }
 
@@ -531,9 +531,9 @@ void ResultConvert::ConvertPhoneNumber(
 {
     if (typeId == PHONE) {
         const std::string phoneNumbers = "phoneNumbers";
-        napi_value emailArray = GetNapiElementArray(env, napiObject, phoneNumbers);
+        napi_value phoneNumbersArray = GetNapiElementArray(env, napiObject, phoneNumbers);
         uint32_t count = 0;
-        napi_get_array_length(env, emailArray, &count);
+        napi_get_array_length(env, phoneNumbersArray, &count);
         napi_value objectElement;
         napi_create_object(env, &objectElement);
         std::string detailInfoKey = "detail_info";
@@ -548,10 +548,10 @@ void ResultConvert::ConvertPhoneNumber(
         napi_set_property(env, objectElement, napiLabelNameKey, customValue);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
         napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
-        napi_set_element(env, emailArray, count, objectElement);
+        napi_set_element(env, phoneNumbersArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, phoneNumbers.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
-        napi_set_property(env, napiObject, napiElementKey, emailArray);
+        napi_set_property(env, napiObject, napiElementKey, phoneNumbersArray);
     }
 }
 
@@ -560,9 +560,9 @@ void ResultConvert::ConvertPostalAddress(
 {
     if (typeId == POSTAL_ADDRESS) {
         const std::string postalAddresses = "postalAddresses";
-        napi_value emailArray = GetNapiElementArray(env, napiObject, postalAddresses);
+        napi_value postalAddressArray = GetNapiElementArray(env, napiObject, postalAddresses);
         uint32_t count = 0;
-        napi_get_array_length(env, emailArray, &count);
+        napi_get_array_length(env, postalAddressArray, &count);
         napi_value objectElement;
         napi_create_object(env, &objectElement);
         std::string detailInfoKey = "detail_info";
@@ -596,9 +596,9 @@ void ResultConvert::ConvertPostalAddress(
         napi_set_property(env, objectElement, CreateNapiStringValue(env, postcodeKey.c_str()), postcodeKeyValue);
         napi_set_property(env, objectElement, CreateNapiStringValue(env, regionKey.c_str()), regionKeyValue);
         napi_set_property(env, objectElement, CreateNapiStringValue(env, streetKey.c_str()), streetKeyValue);
-        napi_set_element(env, emailArray, count, objectElement);
+        napi_set_element(env, postalAddressArray, count, objectElement);
         napi_value napiElementKey = CreateNapiStringValue(env, postalAddresses);
-        napi_set_property(env, napiObject, napiElementKey, emailArray);
+        napi_set_property(env, napiObject, napiElementKey, postalAddressArray);
     }
 }
 
@@ -607,9 +607,9 @@ void ResultConvert::ConvertRelation(
 {
     if (typeId == RELATION) {
         const std::string relations = "relations";
-        napi_value emailArray = GetNapiElementArray(env, napiObject, relations);
+        napi_value relationsArray = GetNapiElementArray(env, napiObject, relations);
         uint32_t count = 0;
-        napi_get_array_length(env, emailArray, &count);
+        napi_get_array_length(env, relationsArray, &count);
         napi_value objectElement;
         napi_create_object(env, &objectElement);
         std::string detailInfoKey = "detail_info";
@@ -624,10 +624,10 @@ void ResultConvert::ConvertRelation(
         napi_set_property(env, objectElement, napiLabelNameKey, customValue);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
         napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
-        napi_set_element(env, emailArray, count, objectElement);
+        napi_set_element(env, relationsArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, relations.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
-        napi_set_property(env, napiObject, napiElementKey, emailArray);
+        napi_set_property(env, napiObject, napiElementKey, relationsArray);
     }
 }
 
@@ -636,9 +636,9 @@ void ResultConvert::ConvertSipAddress(
 {
     if (typeId == SIP_ADDRESS) {
         const std::string sipAddresses = "sipAddresses";
-        napi_value emailArray = GetNapiElementArray(env, napiObject, sipAddresses);
+        napi_value sipAddressArray = GetNapiElementArray(env, napiObject, sipAddresses);
         uint32_t count = 0;
-        napi_get_array_length(env, emailArray, &count);
+        napi_get_array_length(env, sipAddressArray, &count);
         napi_value objectElement;
         napi_create_object(env, &objectElement);
         std::string detailInfoKey = "detail_info";
@@ -653,10 +653,10 @@ void ResultConvert::ConvertSipAddress(
         napi_set_property(env, objectElement, napiLabelNameKey, customValue);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
         napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
-        napi_set_element(env, emailArray, count, objectElement);
+        napi_set_element(env, sipAddressArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, sipAddresses.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
-        napi_set_property(env, napiObject, napiElementKey, emailArray);
+        napi_set_property(env, napiObject, napiElementKey, sipAddressArray);
     }
 }
 
@@ -665,9 +665,9 @@ void ResultConvert::ConvertWebsite(
 {
     if (typeId == WEBSITE) {
         const std::string websites = "websites";
-        napi_value emailArray = GetNapiElementArray(env, napiObject, websites);
+        napi_value websitesArray = GetNapiElementArray(env, napiObject, websites);
         uint32_t count = 0;
-        napi_get_array_length(env, emailArray, &count);
+        napi_get_array_length(env, websitesArray, &count);
         napi_value objectElement;
         napi_create_object(env, &objectElement);
         std::string detailInfoKey = "detail_info";
@@ -682,10 +682,10 @@ void ResultConvert::ConvertWebsite(
         napi_set_property(env, objectElement, napiLabelNameKey, customValue);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
         napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
-        napi_set_element(env, emailArray, count, objectElement);
+        napi_set_element(env, websitesArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, websites.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
-        napi_set_property(env, napiObject, napiElementKey, emailArray);
+        napi_set_property(env, napiObject, napiElementKey, websitesArray);
     }
 }
 
