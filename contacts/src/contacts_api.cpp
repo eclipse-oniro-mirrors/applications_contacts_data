@@ -146,53 +146,62 @@ int GetType(napi_env env, napi_value value)
  * @brief Get dataShareHelper
  *
  * @param env Conditions for get dataShareHelper operation
+ * @param info napi call back info
+ * @param executeHelper contains information necessary through out the NAPI process
  *
- * @return The result returned by get dataShareHelper
  */
-std::shared_ptr<DataShare::DataShareHelper> GetDataShareHelper(napi_env env, napi_callback_info info)
+void GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper)
 {
+    bool isStageMode = false;
     napi_value global;
     napi_status status = napi_get_global(env, &global);
-    if (status != napi_ok) {
-        HILOG_ERROR("GetDataShareHelper napi_get_global != napi_ok");
-    }
-    napi_value globalThis;
-    status = napi_get_named_property(env, global, "globalThis", &globalThis);
-    if (status != napi_ok) {
-        HILOG_ERROR("GetDataShareHelper napi_get_globalThis != napi_ok");
-    }
     napi_value abilityContext = nullptr;
-    status = napi_get_named_property(env, globalThis, "abilityContext", &abilityContext);
-    if (status != napi_ok) {
-        HILOG_ERROR("GetDataShareHelper napi_get_abilityContext != napi_ok");
+
+    if (executeHelper->abilityContext != nullptr) {
+        isStageMode = true;
+        status = napi_ok;
+        abilityContext = executeHelper->abilityContext;
+    } else {
+        if (status != napi_ok) {
+            HILOG_ERROR("GetDataShareHelper napi_get_global != napi_ok");
+        }
+        napi_value globalThis;
+        status = napi_get_named_property(env, global, "globalThis", &globalThis);
+        if (status != napi_ok) {
+            HILOG_ERROR("GetDataShareHelper napi_get_globalThis != napi_ok");
+        }
+        
+        status = napi_get_named_property(env, globalThis, "abilityContext", &abilityContext);
+        if (status != napi_ok) {
+            HILOG_ERROR("GetDataShareHelper napi_get_abilityContext != napi_ok");
+        }
+        status = OHOS::AbilityRuntime::IsStageContext(env, abilityContext, isStageMode);
     }
 
     std::shared_ptr<DataShare::DataShareHelper> dataShareHelper = nullptr;
-    bool isStageMode = false;
-    status = OHOS::AbilityRuntime::IsStageContext(env, abilityContext, isStageMode);
+    
     if (status != napi_ok || !isStageMode) {
         HILOG_INFO("GetFAModeContext");
         auto ability = OHOS::AbilityRuntime::GetCurrentAbility(env);
         if (ability == nullptr) {
             HILOG_ERROR("Failed to get native ability instance");
-            return nullptr;
+            return;
         }
         auto context = ability->GetContext();
         if (context == nullptr) {
             HILOG_ERROR("Failed to get native context instance");
-            return nullptr;
+            return;
         }
-        dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
+        executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
     } else {
         HILOG_INFO("GetStageModeContext");
         auto context = OHOS::AbilityRuntime::GetStageModeContext(env, abilityContext);
         if (context == nullptr) {
             HILOG_ERROR("Failed to get native stage context instance");
-            return nullptr;
+            return;
         }
-        dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
+        executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
     }
-    return dataShareHelper;
 }
 
 /**
@@ -614,25 +623,21 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
     ExecuteHelper *executeHelper = reinterpret_cast<ExecuteHelper *>(data);
     HILOG_INFO("ExecuteDone workName: %{public}d", executeHelper->actionCode);
     napi_value result = nullptr;
-    napi_value errorCode = nullptr;
-    HandleExecuteResult(env, executeHelper, result);
-    HandleExecuteErrorCode(env, executeHelper, errorCode);
     napi_deferred deferred = executeHelper->deferred;
-    executeHelper->deferred = nullptr;
-    if (executeHelper->valueUpdateContact.capacity() != 0) {
-        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-    }
-    if (executeHelper->valueContact.capacity() != 0) {
-        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-    }
-    if (executeHelper->valueContactData.capacity() != 0) {
-        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-    }
-    if (errorCode != nullptr) {
-        napi_reject_deferred(env, deferred, errorCode);
+    HandleExecuteResult(env, executeHelper, result);
+    if (executeHelper->abilityContext != nullptr) {
+        napi_value errorCode = nullptr;
+        HandleExecuteErrorCode(env, executeHelper, errorCode);
+        if (errorCode != nullptr) {
+            napi_reject_deferred(env, deferred, errorCode);
+        } else {
+            NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
+        }
     } else {
         NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
     }
+    
+    executeHelper->deferred = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, executeHelper->work));
     if (executeHelper->dataShareHelper != nullptr) {
         executeHelper->dataShareHelper->Release();
@@ -654,8 +659,18 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         napi_value global;
         napi_get_global(env, &global);
         napi_value resultData[RESULT_DATA_SIZE];
-        HandleExecuteErrorCode(env, executeHelper, resultData[0]);
-        HandleExecuteResult(env, executeHelper, resultData[1]);
+        if (executeHelper->abilityContext != nullptr) {
+            HandleExecuteErrorCode(env, executeHelper, resultData[0]);
+            HandleExecuteResult(env, executeHelper, resultData[1]);
+        } else {
+            if (executeHelper->resultData < 0) {
+                HandleExecuteResult(env, executeHelper, resultData[0]);
+                napi_get_undefined(env, &resultData[1]);
+            } else {
+                napi_get_undefined(env, &resultData[0]);
+                HandleExecuteResult(env, executeHelper, resultData[1]);
+            }
+        }
         napi_value result;
         napi_value callBack;
         napi_get_reference_value(env, executeHelper->callBack, &callBack);
@@ -671,15 +686,6 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         }
         executeHelper->work = nullptr;
         executeHelper->deferred = nullptr;
-        if (executeHelper->valueUpdateContact.capacity() != 0) {
-            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-        }
-        if (executeHelper->valueContact.capacity() != 0) {
-            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-        }
-        if (executeHelper->valueContactData.capacity() != 0) {
-            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-        }
         if (executeHelper->dataShareHelper != nullptr) {
             executeHelper->dataShareHelper->Release();
             executeHelper->dataShareHelper = nullptr;
@@ -733,6 +739,9 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
         case DELETE_CONTACT:
         case UPDATE_CONTACT:
         case SELECT_CONTACT:
+            if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
+                executeHelper->resultData = -1;
+            }
             napi_create_int64(env, executeHelper->resultData, &result);
             break;
         case IS_LOCAL_CONTACT:
@@ -1063,13 +1072,14 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
 napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper, int actionCode)
 {
     size_t argc = MAX_PARAMS;
-    napi_get_cb_info(env, info, &argc, executeHelper->argv, nullptr, nullptr);
+    napi_value argv[MAX_PARAMS] = {0};
+    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     executeHelper->argc = argc;
     executeHelper->actionCode = actionCode;
 
     if (argc > 0) {
         napi_valuetype valuetype = napi_undefined;
-        napi_typeof(env, executeHelper->argv[argc - 1], &valuetype);
+        napi_typeof(env, argv[argc - 1], &valuetype);
         // last params is function as callback
         if (valuetype == napi_function) {
             executeHelper->sync = NAPI_CALL_TYPE_CALLBACK;
@@ -1077,8 +1087,21 @@ napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *exec
             executeHelper->sync = NAPI_CALL_TYPE_PROMISE;
         }
     }
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        for (int i = 1; i < MAX_PARAMS; i++) {
+            executeHelper->argv[i - 1] = argv[i];
+        }
+        executeHelper->abilityContext = argv[0];
+    } else {
+        for (int i = 0; i < MAX_PARAMS; i++) {
+            executeHelper->argv[i] = argv[i];
+        }
+    }
+
     SetChildActionCodeAndConvertParams(env, executeHelper);
-    executeHelper->dataShareHelper = GetDataShareHelper(env, info);
+    GetDataShareHelper(env, info, executeHelper);
 
     napi_value result = CreateAsyncWork(env, executeHelper);
     return result;
@@ -1099,21 +1122,25 @@ napi_value AddContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value addContactErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value addContactErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object })) {
+                    napi_throw(env, addContactErrorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
+                    napi_throw(env, addContactErrorCode);
+                }
+                break;
+            default:
                 napi_throw(env, addContactErrorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
-                napi_throw(env, addContactErrorCode);
-            }
-            break;
-        default:
-            napi_throw(env, addContactErrorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1140,21 +1167,25 @@ napi_value DeleteContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value deleteContactErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value deleteContactErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+                    napi_throw(env, deleteContactErrorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
+                    napi_throw(env, deleteContactErrorCode);
+                }
+                break;
+            default:
                 napi_throw(env, deleteContactErrorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
-                napi_throw(env, deleteContactErrorCode);
-            }
-            break;
-        default:
-            napi_throw(env, deleteContactErrorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1181,27 +1212,31 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value updateContactErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value updateContactErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+                    napi_throw(env, updateContactErrorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })
+                    && !ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object })) {
+                    napi_throw(env, updateContactErrorCode);
+                }
+                break;
+            case ARGS_FOUR:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
+                    napi_throw(env, updateContactErrorCode);
+                }
+                break;
+            default:
                 napi_throw(env, updateContactErrorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })
-                && !ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object })) {
-                napi_throw(env, updateContactErrorCode);
-            }
-            break;
-        case ARGS_THREE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
-                napi_throw(env, updateContactErrorCode);
-            }
-            break;
-        default:
-            napi_throw(env, updateContactErrorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1228,34 +1263,38 @@ napi_value QueryContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_FOUR:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_object, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_FIVE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv,
+                    {
+                        napi_string, napi_object, napi_object, napi_function
+                    })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
                 napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_function })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_THREE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_object, napi_function })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_FOUR:
-            if (!ContactsNapiUtils::MatchParameters(env, argv,
-                {
-                    napi_string, napi_object, napi_object, napi_function
-                })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        default:
-            napi_throw(env, errorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1282,28 +1321,32 @@ napi_value QueryContacts(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ZERO:
-            break;
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_ONE:
+                break;
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_FOUR:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
                 napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_THREE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        default:
-            napi_throw(env, errorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1330,34 +1373,38 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_FOUR:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_object, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_FIVE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv,
+                    {
+                        napi_string, napi_object, napi_object, napi_function
+                    })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
                 napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_function })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_THREE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_object, napi_function })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_FOUR:
-            if (!ContactsNapiUtils::MatchParameters(env, argv,
-                {
-                    napi_string, napi_object, napi_object, napi_function
-                })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        default:
-            napi_throw(env, errorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1384,34 +1431,38 @@ napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_FOUR:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_object, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_FIVE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv,
+                    {
+                        napi_string, napi_object, napi_object, napi_function
+                    })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
                 napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_function })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_THREE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_string, napi_object, napi_function })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        case ARGS_FOUR:
-            if (!ContactsNapiUtils::MatchParameters(env, argv,
-                {
-                    napi_string, napi_object, napi_object, napi_function
-                })) {
-                napi_throw(env, errorCode);
-            }
-            break;
-        default:
-            napi_throw(env, errorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1438,23 +1489,27 @@ napi_value QueryGroups(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value queryGroupsErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ZERO:
-            break;
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value queryGroupsErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_ONE:
+                break;
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
+                    napi_throw(env, queryGroupsErrorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
+                    napi_throw(env, queryGroupsErrorCode);
+                }
+                break;
+            default:
                 napi_throw(env, queryGroupsErrorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
-                napi_throw(env, queryGroupsErrorCode);
-            }
-            break;
-        default:
-            napi_throw(env, queryGroupsErrorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1481,18 +1536,22 @@ napi_value QueryHolders(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ZERO:
-            break;
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_ONE:
+                break;
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
                 napi_throw(env, errorCode);
-            }
-            break;
-        default:
-            napi_throw(env, errorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1519,26 +1578,30 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value queryKeyErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value queryKeyErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+                    napi_throw(env, queryKeyErrorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
+                    napi_throw(env, queryKeyErrorCode);
+                }
+                break;
+            case ARGS_FOUR:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
+                    napi_throw(env, queryKeyErrorCode);
+                }
+                break;
+            default:
                 napi_throw(env, queryKeyErrorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
-                napi_throw(env, queryKeyErrorCode);
-            }
-            break;
-        case ARGS_THREE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
-                napi_throw(env, queryKeyErrorCode);
-            }
-            break;
-        default:
-            napi_throw(env, queryKeyErrorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1565,23 +1628,27 @@ napi_value QueryMyCard(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value queryMyCardErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ZERO:
-            break;
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value queryMyCardErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_ONE:
+                break;
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_function })) {
+                    napi_throw(env, queryMyCardErrorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
+                    napi_throw(env, queryMyCardErrorCode);
+                }
+                break;
+            default:
                 napi_throw(env, queryMyCardErrorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
-                napi_throw(env, queryMyCardErrorCode);
-            }
-            break;
-        default:
-            napi_throw(env, queryMyCardErrorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1608,21 +1675,25 @@ napi_value IsMyCard(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value isMyCardErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value isMyCardErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+                    napi_throw(env, isMyCardErrorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
+                    napi_throw(env, isMyCardErrorCode);
+                }
+                break;
+            default:
                 napi_throw(env, isMyCardErrorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
-                napi_throw(env, isMyCardErrorCode);
-            }
-            break;
-        default:
-            napi_throw(env, isMyCardErrorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
@@ -1649,21 +1720,25 @@ napi_value IsLocalContact(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value isLocalContactErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-    switch (argc) {
-        case ARGS_ONE:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value isLocalContactErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+                    napi_throw(env, isLocalContactErrorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
+                    napi_throw(env, isLocalContactErrorCode);
+                }
+                break;
+            default:
                 napi_throw(env, isLocalContactErrorCode);
-            }
-            break;
-        case ARGS_TWO:
-            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
-                napi_throw(env, isLocalContactErrorCode);
-            }
-            break;
-        default:
-            napi_throw(env, isLocalContactErrorCode);
-            break;
+                break;
+        }
     }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     napi_value result = nullptr;
