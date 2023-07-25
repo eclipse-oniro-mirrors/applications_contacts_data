@@ -625,7 +625,7 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
     napi_value result = nullptr;
     napi_deferred deferred = executeHelper->deferred;
     HandleExecuteResult(env, executeHelper, result);
-    if (ExecuteHelper->abilityContext != nullptr) {
+    if (executeHelper->abilityContext != nullptr) {
         napi_value errorCode = nullptr;
         HandleExecuteErrorCode(env, executeHelper, errorCode);
         if (errorCode != nullptr) {
