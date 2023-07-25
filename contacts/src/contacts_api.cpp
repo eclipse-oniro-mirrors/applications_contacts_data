@@ -638,16 +638,6 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
     }
     
     executeHelper->deferred = nullptr;
-    if (executeHelper->valueUpdateContact.capacity() != 0) {
-        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-    }
-    if (executeHelper->valueContact.capacity() != 0) {
-        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-    }
-    if (executeHelper->valueContactData.capacity() != 0) {
-        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-    }
-    
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, executeHelper->work));
     if (executeHelper->dataShareHelper != nullptr) {
         executeHelper->dataShareHelper->Release();
@@ -674,7 +664,6 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
             HandleExecuteResult(env, executeHelper, resultData[1]);
         } else {
             if (executeHelper->resultData < 0) {
-                
                 HandleExecuteResult(env, executeHelper, resultData[0]);
                 napi_get_undefined(env, &resultData[1]);
             } else {
@@ -697,15 +686,6 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         }
         executeHelper->work = nullptr;
         executeHelper->deferred = nullptr;
-        if (executeHelper->valueUpdateContact.capacity() != 0) {
-            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-        }
-        if (executeHelper->valueContact.capacity() != 0) {
-            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-        }
-        if (executeHelper->valueContactData.capacity() != 0) {
-            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-        }
         if (executeHelper->dataShareHelper != nullptr) {
             executeHelper->dataShareHelper->Release();
             executeHelper->dataShareHelper = nullptr;
@@ -1121,7 +1101,7 @@ napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *exec
     }
 
     SetChildActionCodeAndConvertParams(env, executeHelper);
-    GetDataShareHelper(env, info,executeHelper);
+    GetDataShareHelper(env, info, executeHelper);
 
     napi_value result = CreateAsyncWork(env, executeHelper);
     return result;
@@ -1148,12 +1128,12 @@ napi_value AddContact(napi_env env, napi_callback_info info)
         napi_value addContactErrorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_TWO:
-                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object })) {
                     napi_throw(env, addContactErrorCode);
                 }
                 break;
             case ARGS_THREE:
-                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
                     napi_throw(env, addContactErrorCode);
                 }
                 break;

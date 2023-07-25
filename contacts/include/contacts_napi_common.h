@@ -99,8 +99,8 @@ const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability
 
 struct ExecuteHelper {
     ExecuteHelper()
-        : work(nullptr), deferred(nullptr), sync(NAPI_CALL_TYPE_PROMISE), argc(0), abilityContext(nullptr), actionCode(-1), callBack(nullptr),
-          childActionCode(0), promise(nullptr), resultData(-1), resultSet(nullptr) {}
+        : work(nullptr), deferred(nullptr), sync(NAPI_CALL_TYPE_PROMISE), argc(0), abilityContext(nullptr), actionCode(-1),
+          callBack(nullptr), childActionCode(0), promise(nullptr), resultData(-1), resultSet(nullptr) {}
     napi_async_work work;
     napi_deferred deferred;
     int sync;
