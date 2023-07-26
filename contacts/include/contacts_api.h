@@ -69,7 +69,7 @@ napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *exec
 void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelper);
 DataShare::DataSharePredicates ConvertParamsSwitchSplit(
     int code, napi_env env, const napi_value &key, const napi_value &hold, const napi_value &attr);
-std::shared_ptr<DataShare::DataShareHelper> GetDataShareHelper(napi_env env, napi_callback_info info);
+void GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper);
 void HolderPredicates(const Holder &holder, DataShare::DataSharePredicates &predicates);
 void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holder);
 void AttributesPredicates(bool isBegin, ContactAttributes &attrs, DataShare::DataSharePredicates &predicates);
