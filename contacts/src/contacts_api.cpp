@@ -185,12 +185,12 @@ void GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
         auto ability = OHOS::AbilityRuntime::GetCurrentAbility(env);
         if (ability == nullptr) {
             HILOG_ERROR("Failed to get native ability instance");
-            return nullptr;
+            return;
         }
         auto context = ability->GetContext();
         if (context == nullptr) {
             HILOG_ERROR("Failed to get native context instance");
-            return nullptr;
+            return;
         }
         executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
     } else {
@@ -198,11 +198,11 @@ void GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
         auto context = OHOS::AbilityRuntime::GetStageModeContext(env, abilityContext);
         if (context == nullptr) {
             HILOG_ERROR("Failed to get native stage context instance");
-            return nullptr;
+            return;
         }
         executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
     }
-    return dataShareHelper;
+    return;
 }
 
 /**
