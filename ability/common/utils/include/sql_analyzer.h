@@ -64,7 +64,7 @@ private:
     }
     std::string ParseSpecial(std::string originString)
     {
-        std::vector<char> needsTransform = {'\'', '\"', ';', '_', '-', '\\', '%', '[', ']', '/', '*'};
+        std::vector<char> needsTransform = {'\'', '\"', ';', '_', '-', '\\', '%', '[', ']', '/', '*', '`'};
         std::string parsedString;
         for (unsigned int i = 0; i < originString.size(); i++) {
             char curChar = originString.at(i);
