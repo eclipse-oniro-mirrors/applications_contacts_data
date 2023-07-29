@@ -673,13 +673,11 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         napi_value global;
         napi_get_global(env, &global);
         napi_value resultData[RESULT_DATA_SIZE];
-
         if (executeHelper->abilityContext != nullptr) {
             HandleExecuteErrorCode(env, executeHelper, resultData[0]);
             HandleExecuteResult(env, executeHelper, resultData[1]);
         } else {
             if (executeHelper->resultData < 0) {
-                
                 HandleExecuteResult(env, executeHelper, resultData[0]);
                 napi_get_undefined(env, &resultData[1]);
             } else {
@@ -948,8 +946,8 @@ void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
     if (executeHelper->dataShareHelper == nullptr) {
         HILOG_ERROR("create dataShareHelper is null, please check your permission");
-		napi_value addContactErrorCode = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
-		napi_throw(env, addContactErrorCode);
+        napi_value addContactErrorCode = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
+        napi_throw(env, addContactErrorCode);
         executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
     }
@@ -1649,37 +1647,28 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_ONE:
-            HILOG_INFO("ARGS_ONE");
                 if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
-                    HILOG_INFO("ARGS_ONE THROW");
                     napi_throw(env, errorCode);
                 }
                 break;
             case ARGS_TWO:
-            HILOG_INFO("ARGS_TWO");
                 if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })
                 && !ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_number })) {
-                    HILOG_INFO("ARGS_TWO THROW");
                     napi_throw(env, errorCode);
                 }
                 break;
             case ARGS_THREE:
-            HILOG_INFO("ARGS_THREE");
                 if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_number, napi_function })) {
-                    HILOG_INFO("ARGS_THREE THROW");
                     napi_throw(env, errorCode);
                 }
                 break;
             case ARGS_FOUR:
-            HILOG_INFO("ARGS_THREE");
                 if (!ContactsNapiUtils::MatchParameters(env, argv,
                     { napi_object, napi_number, napi_object, napi_function })) {
-                    HILOG_INFO("ARGS_THREE THROW");
                     napi_throw(env, errorCode);
                 }
                 break;
             default:
-            HILOG_INFO("DEFAULT");
                 napi_throw(env, errorCode);
                 break;
         }
