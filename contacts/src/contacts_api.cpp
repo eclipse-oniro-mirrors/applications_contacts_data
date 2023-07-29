@@ -149,7 +149,7 @@ int GetType(napi_env env, napi_value value)
  *
  * @return The result returned by get dataShareHelper
  */
-void GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper)
+bool GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper)
 {
     HILOG_ERROR("enter GetDataShareHelper(");
     napi_value global;
@@ -177,19 +177,18 @@ void GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
         status = OHOS::AbilityRuntime::IsStageContext(env, abilityContext, isStageMode);
     }
 
-    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper = nullptr;
-    
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper = nullptr;    
     if (status != napi_ok || !isStageMode) {
         HILOG_INFO("GetFAModeContext");
         auto ability = OHOS::AbilityRuntime::GetCurrentAbility(env);
         if (ability == nullptr) {
             HILOG_ERROR("Failed to get native ability instance");
-            return;
+            return false;
         }
         auto context = ability->GetContext();
         if (context == nullptr) {
             HILOG_ERROR("Failed to get native context instance");
-            return;
+            return false;
         }
         executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
     } else {
@@ -197,11 +196,11 @@ void GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
         auto context = OHOS::AbilityRuntime::GetStageModeContext(env, abilityContext);
         if (context == nullptr) {
             HILOG_ERROR("Failed to get native stage context instance");
-            return;
+            return false;
         }
         executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
     }
-    return;
+    return false;
 }
 
 /**
@@ -639,7 +638,6 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
         HILOG_INFO("executeHelper->abilityContext = nullptr");
         NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
     }
-    
     executeHelper->deferred = nullptr;
     if (executeHelper->valueUpdateContact.capacity() != 0) {
         std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
