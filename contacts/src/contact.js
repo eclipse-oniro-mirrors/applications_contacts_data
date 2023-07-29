@@ -111,6 +111,7 @@ async function contactsPickerSelect() {
 
 export default {
   selectContact: contactsPickerSelect,
+  selectContacts: contactsPickerSelect,
   addContact: contact.addContact,
   deleteContact: contact.deleteContact,
   queryContact: contact.queryContact,
