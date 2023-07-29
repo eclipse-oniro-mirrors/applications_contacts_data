@@ -157,7 +157,6 @@ void GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
     napi_value abilityContext = nullptr;
     napi_status status = napi_get_global(env, &global);
     if (executeHelper->abilityContext != nullptr) {
-        HILOG_ERROR("have context");
         isStageMode = true;
         status = napi_ok;
         abilityContext = executeHelper->abilityContext;
@@ -1263,7 +1262,8 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
                 }
                 break;
             case ARGS_FOUR:
-                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_object, napi_function })) {
+                if (!ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_object, napi_object, napi_function })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -1314,8 +1314,10 @@ napi_value QueryContact(napi_env env, napi_callback_info info)
                 }
                 break;
             case ARGS_FOUR:
-                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_string, napi_object, napi_function })
-                    && !ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_string, napi_object, napi_object })) {
+                if (!ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_string, napi_object, napi_function }) &&
+                    !ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_string, napi_object, napi_object })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -1369,13 +1371,11 @@ napi_value QueryContacts(napi_env env, napi_callback_info info)
                 }
                 break;
             case ARGS_TWO:
-            HILOG_INFO("ARGS_2");
                 if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_function })) {
                     napi_throw(env, errorCode);
                 }
                 break;
             case ARGS_THREE:
-            HILOG_INFO("ARGS_3");
                 if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })
                 && !ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_object })
                 ) {
@@ -1383,13 +1383,12 @@ napi_value QueryContacts(napi_env env, napi_callback_info info)
                 }
                 break;
             case ARGS_FOUR:
-            HILOG_INFO("ARGS_4");
-                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_object, napi_function })) {
+                if (!ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_object, napi_object, napi_function })) {
                     napi_throw(env, errorCode);
                 }
                 break;
             default:
-            HILOG_INFO("default");
                 napi_throw(env, errorCode);
                 break;
         }
@@ -1436,9 +1435,12 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
                 }
                 break;
             case ARGS_FOUR:
-                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_string, napi_object, napi_function })
-                    && !ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_string, napi_object, napi_function })
-                    && !ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_string, napi_object, napi_object })) {
+                if (!ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_string, napi_object, napi_function }) &&
+                    !ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_string, napi_object, napi_function }) &&
+                    !ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_string, napi_object, napi_object })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -1497,8 +1499,10 @@ napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
                 }
                 break;
             case ARGS_FOUR:
-                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_string, napi_object, napi_function })
-                    && !ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_string, napi_object, napi_object })) {
+                if (!ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_string, napi_object, napi_function }) &&
+                    !ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_string, napi_object, napi_object })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -1668,7 +1672,8 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
                 break;
             case ARGS_FOUR:
             HILOG_INFO("ARGS_THREE");
-                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_number, napi_object, napi_function })) {
+                if (!ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_number, napi_object, napi_function })) {
                     HILOG_INFO("ARGS_THREE THROW");
                     napi_throw(env, errorCode);
                 }
