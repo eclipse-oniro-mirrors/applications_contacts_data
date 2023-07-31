@@ -2,8 +2,8 @@
   "app": {
     "bundleName": "com.ohos.contactsdataability",
     "vendor": "ohos",
-    "versionCode": 1000008,
-    "versionName": "1.0.8",
+    "versionCode": 1000009,
+    "versionName": "1.0.9",
     "icon": "",
     "label": "$string:app_name",
     "generateBuildHash": true,
