@@ -16,6 +16,7 @@
 #ifndef CHARACTER_TRANSLITERATE_H
 #define CHARACTER_TRANSLITERATE_H
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -49,6 +50,9 @@ public:
     std::vector<std::vector<std::wstring>> GetCombinedVector(std::vector<std::vector<std::wstring>> sourceVector);
     std::wstring StringToWstring(std::string str);
     std::string WstringToString(std::wstring str);
+private:
+    static std::map<std::string, std::string> multiPronunciationMap;
+    std::string getMultiPronunciation(std::string chineseCharacter);
 };
 } // namespace Contacts
 } // namespace OHOS
