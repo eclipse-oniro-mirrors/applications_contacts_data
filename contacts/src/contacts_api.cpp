@@ -1119,6 +1119,7 @@ napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *exec
             executeHelper->argv[i - 1] = argv[i];
         }
         executeHelper->abilityContext = argv[0];
+        executeHelper->argc -= 1;
     } else {
         for (int i = 0; i < MAX_PARAMS; i++) {
             executeHelper->argv[i] = argv[i];
