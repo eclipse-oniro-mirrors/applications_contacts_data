@@ -1955,6 +1955,19 @@ ChineseTable CharacterTransliterate::chineseTable_[411] = {
         "咗"}
 };
 
+std::map<std::string, std::string> CharacterTransliterate::multiPronunciationMap = {
+    {"覃", "qin"}, {"沈", "shen"}, {"曾", "zeng"}, {"贾", "jia"}, {"俞", "yu"},
+    {"儿", "er"}, {"呵", "he"}, {"长", "chang"}, {"略", "lue"}, {"掠", "lue"},
+    {"乾", "qian"}, {"秘", "bi"}, {"薄", "bo"}, {"种", "chong"}, {"褚", "chu"},
+    {"啜", "chuai"}, {"句", "gou"}, {"莞", "guan"}, {"炔", "gui"}, {"籍", "ji"},
+    {"圈", "juan"}, {"角", "jue"}, {"阚", "kan"}, {"陆", "lu"}, {"缪", "miao"},
+    {"佴", "nai"}, {"兒", "ni"}, {"乜", "nie"}, {"区", "ou"}, {"朴", "piao"},
+    {"繁", "po"}, {"仇", "qiu"}, {"单", "shan"}, {"盛", "sheng"}, {"折", "she"},
+    {"宿", "su"}, {"洗", "xian"}, {"解", "xie"}, {"员", "yun"}, {"笮", "ze"},
+    {"翟", "zhai"}, {"祭", "zhai"}, {"阿", "a"}, {"宓", "fu"}, {"那", "na"},
+    {"尉", "yu"}, {"蛾", "yi"}, {"查", "zha"}, {"刀", "dao"}, {"万", "wan"}
+};
+
 CharacterTransliterate::CharacterTransliterate(void)
 {
 }
@@ -1968,17 +1981,40 @@ bool CharacterTransliterate::IsChineseCharacter(wchar_t chineseCharacter)
     return (uint16_t)chineseCharacter >= 0x4E00 && (uint16_t)chineseCharacter <= 0x9FCF;
 }
 
+std::string CharacterTransliterate::getMultiPronunciation(std::string chineseCharacter)
+{
+    auto it = multiPronunciationMap.find(chineseCharacter);
+    if (it != multiPronunciationMap.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
+
 Container CharacterTransliterate::GetContainer(std::wstring wChinese)
 {
     Container container;
     size_t count = wChinese.size();
     std::vector<std::vector<std::wstring>> initialsVectors;
     std::vector<std::vector<std::wstring>> nameFullFightsVectors;
+    bool isMultiPronunciation = true;
     for (size_t index = 0; index < count; index++) {
         std::vector<std::wstring> initials;
         std::vector<std::wstring> nameFullFights;
         std::wstring childwChineseCharacter = wChinese.substr(index, 1);
-        GetCommonPronunciation(childwChineseCharacter, initials, nameFullFights);
+        if (index == 0 && isMultiPronunciation) {
+            std::string pronunciation = getMultiPronunciation(WstringToString(childwChineseCharacter));
+            if (!pronunciation.empty()) {
+                HILOG_INFO("This is a multi-pronunciation Chinese character.");
+                std::wstring wPronunciation = StringToWstring(pronunciation);
+                initials.push_back(wPronunciation.substr(0, 1));
+                nameFullFights.push_back(wPronunciation);
+            } else {
+                isMultiPronunciation = false;
+                index--;
+            }
+        } else {
+            GetCommonPronunciation(childwChineseCharacter, initials, nameFullFights);
+        }
         if (!initials.empty() && !nameFullFights.empty()) {
             initialsVectors.push_back(initials);
             nameFullFightsVectors.push_back(nameFullFights);
