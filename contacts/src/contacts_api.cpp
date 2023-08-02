@@ -151,7 +151,6 @@ int GetType(napi_env env, napi_value value)
  */
 bool GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper)
 {
-    HILOG_ERROR("enter GetDataShareHelper(");
     napi_value global;
     bool isStageMode = false;
     napi_value abilityContext = nullptr;
@@ -161,7 +160,6 @@ bool GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
         status = napi_ok;
         abilityContext = executeHelper->abilityContext;
     } else {
-        HILOG_ERROR("does not have context");
         if (status != napi_ok) {
             HILOG_ERROR("GetDataShareHelper napi_get_global != napi_ok");
         }
@@ -1114,19 +1112,20 @@ napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *exec
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("put in context");
+        HILOG_INFO("use API 10 interface");
         for (int i = 1; i < MAX_PARAMS; i++) {
             executeHelper->argv[i - 1] = argv[i];
         }
         executeHelper->abilityContext = argv[0];
+        executeHelper->argc -= 1;
     } else {
+        HILOG_INFO("use API 7 interface");
         for (int i = 0; i < MAX_PARAMS; i++) {
             executeHelper->argv[i] = argv[i];
         }
     }
 
     SetChildActionCodeAndConvertParams(env, executeHelper);
-    HILOG_INFO("GetDataShareHelper(env, info, executeHelper)");
     GetDataShareHelper(env, info, executeHelper);
 
     napi_value result = CreateAsyncWork(env, executeHelper);
@@ -1151,7 +1150,6 @@ napi_value AddContact(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("AddContact use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_TWO:
@@ -1197,7 +1195,6 @@ napi_value DeleteContact(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("DeleteContact use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_TWO:
@@ -1243,7 +1240,6 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("UpdateContact use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_TWO:
@@ -1296,7 +1292,6 @@ napi_value QueryContact(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("QueryContact use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_TWO:
@@ -1358,7 +1353,6 @@ napi_value QueryContacts(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("QueryContacts use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_ONE:
@@ -1417,7 +1411,6 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("QueryContactsByEmail use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_TWO:
@@ -1481,7 +1474,6 @@ napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("QueryContactsByPhoneNumber use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_TWO:
@@ -1543,7 +1535,6 @@ napi_value QueryGroups(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("QueryGroups use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_ONE:
@@ -1595,7 +1586,6 @@ napi_value QueryHolders(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("QueryHolders use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_ONE:
@@ -1641,7 +1631,6 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("QueryKey use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_ONE:
@@ -1699,7 +1688,6 @@ napi_value QueryMyCard(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("QueryMyCard use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_ONE:
@@ -1751,7 +1739,6 @@ napi_value IsMyCard(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("IsMyCard use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_TWO:
@@ -1797,7 +1784,6 @@ napi_value IsLocalContact(napi_env env, napi_callback_info info)
     bool isStageMode = false;
     OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        HILOG_INFO("IsLocalContact use new api");
         napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
         switch (argc) {
             case ARGS_TWO:
