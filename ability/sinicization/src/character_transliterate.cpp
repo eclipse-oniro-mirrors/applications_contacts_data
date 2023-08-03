@@ -1957,14 +1957,14 @@ ChineseTable CharacterTransliterate::chineseTable_[411] = {
 
 std::map<std::string, std::string> CharacterTransliterate::multiPronunciationMap = {
     {"覃", "qin"}, {"沈", "shen"}, {"曾", "zeng"}, {"贾", "jia"}, {"俞", "yu"},
-    {"儿", "er"}, {"呵", "he"}, {"长", "chang"}, {"略", "lue"}, {"掠", "lue"},
+    {"乐", "yue"}, {"呵", "he"}, {"长", "chang"}, {"略", "lue"}, {"掠", "lue"},
     {"乾", "qian"}, {"秘", "bi"}, {"薄", "bo"}, {"种", "chong"}, {"褚", "chu"},
-    {"啜", "chuai"}, {"句", "gou"}, {"莞", "guan"}, {"炔", "gui"}, {"籍", "ji"},
+    {"啜", "chuai"}, {"晟", "sheng"}, {"莞", "guan"}, {"炔", "gui"}, {"籍", "ji"},
     {"圈", "juan"}, {"角", "jue"}, {"阚", "kan"}, {"陆", "lu"}, {"缪", "miao"},
     {"佴", "nai"}, {"兒", "ni"}, {"乜", "nie"}, {"区", "ou"}, {"朴", "piao"},
     {"繁", "po"}, {"仇", "qiu"}, {"单", "shan"}, {"盛", "sheng"}, {"折", "she"},
     {"宿", "su"}, {"洗", "xian"}, {"解", "xie"}, {"员", "yun"}, {"笮", "ze"},
-    {"翟", "zhai"}, {"祭", "zhai"}, {"阿", "a"}, {"宓", "fu"}, {"那", "na"},
+    {"翟", "zhai"}, {"祭", "zhai"}, {"石", "shi"}, {"宓", "fu"}, {"那", "na"},
     {"尉", "yu"}, {"蛾", "yi"}, {"查", "zha"}, {"刀", "dao"}, {"万", "wan"}
 };
 
