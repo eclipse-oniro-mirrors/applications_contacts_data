@@ -24,19 +24,19 @@ namespace OHOS {
 namespace DataShare {
 using DataObsMgrClient = OHOS::AAFwk::DataObsMgrClient;
 
-void SetContactsDataAbility(std::shared_ptr<DataShareExtAbility> extension)
+void ContactsDataShareStubImpl::SetContactsDataAbility(std::shared_ptr<DataShareExtAbility> extension)
 {
     std::lock_guard<std::mutex> lock(contactsMutex_);
     contactsDataAbility_ = extension;
 }
 
-void SetCallLogAbility(std::shared_ptr<DataShareExtAbility> extension)
+void ContactsDataShareStubImpl::SetCallLogAbility(std::shared_ptr<DataShareExtAbility> extension)
 {
     std::lock_guard<std::mutex> lock(callogMutex_);
     callLogAbility_ = extension;
 }
 
-void SetVoiceMailAbility(std::shared_ptr<DataShareExtAbility> extension)
+void ContactsDataShareStubImpl::SetVoiceMailAbility(std::shared_ptr<DataShareExtAbility> extension)
 {
     std::lock_guard<std::mutex> lock(voiceMailMutex_);
     voiceMailAbility_ = extension;

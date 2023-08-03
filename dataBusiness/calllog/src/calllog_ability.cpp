@@ -62,7 +62,7 @@ sptr<IRemoteObject> CallLogAbility::OnConnect(const AAFwk::Want &want)
         HILOG_ERROR("%{public}s No memory allocated for DataShareStubImpl", __func__);
         return nullptr;
     }
-    remoteObject->SetCalllogAbility(std::static_pointer_cast<CallLogAbility>(shared_from_this()));
+    remoteObject->SetCallLogAbility(std::static_pointer_cast<CallLogAbility>(shared_from_this()));
     HILOG_INFO("CallLogAbility %{public}s end.", __func__);
     return remoteObject->AsObject();
 }
