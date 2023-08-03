@@ -56,12 +56,13 @@ sptr<IRemoteObject> CallLogAbility::OnConnect(const AAFwk::Want &want)
 {
     HILOG_INFO("CallLogAbility %{public}s begin.", __func__);
     Extension::OnConnect(want);
-    sptr<DataShare::ContactsDataShareStubImpl> remoteObject = new (std::nothrow) DataShare::ContactsDataShareStubImpl(
-        std::static_pointer_cast<CallLogAbility>(shared_from_this()));
+    sptr<DataShare::ContactsDataShareStubImpl> remoteObject =
+        new (std::nothrow) DataShare::ContactsDataShareStubImpl();
     if (remoteObject == nullptr) {
         HILOG_ERROR("%{public}s No memory allocated for DataShareStubImpl", __func__);
         return nullptr;
     }
+    remoteObject->SetCallLogAbility(std::static_pointer_cast<CallLogAbility>(shared_from_this()));
     HILOG_INFO("CallLogAbility %{public}s end.", __func__);
     return remoteObject->AsObject();
 }

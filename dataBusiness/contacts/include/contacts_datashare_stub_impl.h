@@ -23,8 +23,7 @@ namespace OHOS {
 namespace DataShare {
 class ContactsDataShareStubImpl : public DataShareStub {
 public:
-    explicit ContactsDataShareStubImpl(const std::shared_ptr<DataShareExtAbility>& extension)
-        : contactsDataAbility_(extension) {};
+    ContactsDataShareStubImpl() {}
     virtual ~ContactsDataShareStubImpl() {};
 
     int Insert(const Uri &uri, const DataShareValuesBucket &value) override;
@@ -45,6 +44,10 @@ public:
     Uri NormalizeUri(const Uri &uri) override;
     Uri DenormalizeUri(const Uri &uri) override;
 
+    void SetContactsDataAbility(std::shared_ptr<DataShareExtAbility> extension);
+    void SetCallLogAbility(std::shared_ptr<DataShareExtAbility> extension);
+    void SetVoiceMailAbility(std::shared_ptr<DataShareExtAbility> extension);
+
 private:
     std::shared_ptr<DataShareExtAbility> GetOwner(const Uri &uri);
     std::shared_ptr<DataShareExtAbility> GetContactsDataAbility();
@@ -52,9 +55,12 @@ private:
     std::shared_ptr<DataShareExtAbility> GetVoiceMailAbility();
 
 private:
-    std::shared_ptr<DataShareExtAbility> contactsDataAbility_;
-    std::shared_ptr<DataShareExtAbility> callLogAbility_;
-    std::shared_ptr<DataShareExtAbility> voiceMailAbility_;
+    std::shared_ptr<DataShareExtAbility> contactsDataAbility_ = nullptr;
+    std::shared_ptr<DataShareExtAbility> callLogAbility_ = nullptr;
+    std::shared_ptr<DataShareExtAbility> voiceMailAbility_ = nullptr;
+    std::mutex contactsMutex_;
+    std::mutex callogMutex_;
+    std::mutex voiceMailMutex_;
 };
 } // namespace DataShare
 } // namespace OHOS
