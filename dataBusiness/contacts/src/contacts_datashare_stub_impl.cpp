@@ -24,13 +24,33 @@ namespace OHOS {
 namespace DataShare {
 using DataObsMgrClient = OHOS::AAFwk::DataObsMgrClient;
 
+void SetContactsDataAbility(std::shared_ptr<DataShareExtAbility> extension)
+{
+    std::lock_guard<std::mutex> lock(contactsMutex_);
+    contactsDataAbility_ = extension;
+}
+
+void SetCallLogAbility(std::shared_ptr<DataShareExtAbility> extension)
+{
+    std::lock_guard<std::mutex> lock(callogMutex_);
+    callLogAbility_ = extension;
+}
+
+void SetVoiceMailAbility(std::shared_ptr<DataShareExtAbility> extension)
+{
+    std::lock_guard<std::mutex> lock(voiceMailMutex_);
+    voiceMailAbility_ = extension;
+}
+
 std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetContactsDataAbility()
 {
+    std::lock_guard<std::mutex> lock(contactsMutex_);
     return contactsDataAbility_;
 }
 
 std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetCallLogAbility()
 {
+    std::lock_guard<std::mutex> lock(callogMutex_);
     if (callLogAbility_ == nullptr) {
         callLogAbility_.reset(CallLogAbility::Create());
     }
@@ -39,6 +59,7 @@ std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetCallLogAbilit
 
 std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetVoiceMailAbility()
 {
+    std::lock_guard<std::mutex> lock(voiceMailMutex_);
     if (voiceMailAbility_ == nullptr) {
         voiceMailAbility_.reset(VoiceMailAbility::Create());
     }
@@ -65,8 +86,7 @@ int ContactsDataShareStubImpl::Insert(const Uri &uri, const DataShareValuesBucke
 {
     HILOG_INFO("insert begin.");
     int ret = 0;
-    auto client = sptr<ContactsDataShareStubImpl>(this);
-    auto extension = client->GetOwner(uri);
+    auto extension = GetOwner(uri);
     if (extension == nullptr) {
         HILOG_ERROR("insert failed, extension is null.");
         return ret;
@@ -84,8 +104,7 @@ int ContactsDataShareStubImpl::Update(const Uri &uri, const DataSharePredicates 
 {
     HILOG_INFO("update begin.");
     int ret = 0;
-    auto client = sptr<ContactsDataShareStubImpl>(this);
-    auto extension = client->GetOwner(uri);
+    auto extension = GetOwner(uri);
     if (extension == nullptr) {
         HILOG_ERROR("update failed, extension is null.");
         return ret;
@@ -102,8 +121,7 @@ int ContactsDataShareStubImpl::Delete(const Uri &uri, const DataSharePredicates 
 {
     HILOG_INFO("delete begin.");
     int ret = 0;
-    auto client = sptr<ContactsDataShareStubImpl>(this);
-    auto extension = client->GetOwner(uri);
+    auto extension = GetOwner(uri);
     if (extension == nullptr) {
         HILOG_ERROR("delete failed, extension is null.");
         return ret;
@@ -120,14 +138,12 @@ std::shared_ptr<DataShareResultSet> ContactsDataShareStubImpl::Query(const Uri &
     const DataSharePredicates &predicates, std::vector<std::string> &columns, DatashareBusinessError &businessError)
 {
     HILOG_INFO("query begin.");
-    std::shared_ptr<DataShareResultSet> resultSet = nullptr;
-    auto client = sptr<ContactsDataShareStubImpl>(this);
-    auto extension = client->GetOwner(uri);
+    auto extension = GetOwner(uri);
     if (extension == nullptr) {
         HILOG_ERROR("query failed, extension is null.");
         return nullptr;
     }
-    resultSet = extension->Query(uri, predicates, columns, businessError);
+    auto resultSet = extension->Query(uri, predicates, columns, businessError);
     HILOG_INFO("query end successfully.");
     return resultSet;
 }
@@ -136,8 +152,7 @@ int ContactsDataShareStubImpl::BatchInsert(const Uri &uri, const std::vector<Dat
 {
     HILOG_INFO("batch insert begin.");
     int ret = 0;
-    auto client = sptr<ContactsDataShareStubImpl>(this);
-    auto extension = client->GetOwner(uri);
+    auto extension = GetOwner(uri);
     if (extension == nullptr) {
         HILOG_ERROR("batch insert failed, extension is null.");
         return ret;
