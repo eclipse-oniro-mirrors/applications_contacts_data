@@ -942,8 +942,6 @@ void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
     if (executeHelper->dataShareHelper == nullptr) {
         HILOG_ERROR("create dataShareHelper is null, please check your permission");
-        napi_value addContactErrorCode = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
-        napi_throw(env, addContactErrorCode);
         executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
     }
