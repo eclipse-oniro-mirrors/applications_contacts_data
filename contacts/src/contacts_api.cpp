@@ -628,7 +628,7 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
         napi_value errorCode = nullptr;
         HandleExecuteErrorCode(env, executeHelper, errorCode);
         if (errorCode != nullptr) {
-            napi_reject_deferred(env, deferred, errorCode);
+            NAPI_CALL_RETURN_VOID(env, napi_reject_deferred(env, deferred, errorCode));
         } else {
             NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
         }
@@ -760,9 +760,10 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
         case UPDATE_CONTACT:
         case SELECT_CONTACT:
             if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
-                executeHelper->resultData = -1;
+                napi_create_int64(env, ERROR, &result);
+            } else {
+                napi_create_int64(env, executeHelper->resultData, &result);
             }
-            napi_create_int64(env, executeHelper->resultData, &result);
             break;
         case IS_LOCAL_CONTACT:
         case IS_MY_CARD:
@@ -1643,7 +1644,8 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
                 }
                 break;
             case ARGS_THREE:
-                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_number, napi_function })) {
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_number, napi_function })
+                && !ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_number, napi_object })) {
                     napi_throw(env, errorCode);
                 }
                 break;
