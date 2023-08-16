@@ -50,7 +50,6 @@ private:
     const VoiceMailDataBase &operator=(const VoiceMailDataBase &);
     static std::shared_ptr<VoiceMailDataBase> voiceMailDataBase_;
     static std::mutex mutex_;
-    
 };
 } // namespace Contacts
 } // namespace OHOS
