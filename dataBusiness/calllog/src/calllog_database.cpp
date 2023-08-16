@@ -41,7 +41,7 @@ CallLogDataBase::CallLogDataBase()
 
 std::shared_ptr<CallLogDataBase> CallLogDataBase::GetInstance()
 {
-    std::lock_guard<std::mutex> lock(callogMutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
     if (callLogDataBase_ == nullptr) {
         callLogDataBase_.reset(new CallLogDataBase());
         return callLogDataBase_;

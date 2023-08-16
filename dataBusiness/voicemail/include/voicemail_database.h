@@ -49,7 +49,7 @@ private:
     VoiceMailDataBase(const VoiceMailDataBase &);
     const VoiceMailDataBase &operator=(const VoiceMailDataBase &);
     static std::shared_ptr<VoiceMailDataBase> voiceMailDataBase_;
-    std::mutex mutex_;
+    static std::mutex mutex_;
     
 };
 } // namespace Contacts

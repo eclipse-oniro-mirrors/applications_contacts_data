@@ -53,7 +53,7 @@ private:
     CallLogDataBase(const CallLogDataBase &);
     const CallLogDataBase &operator=(const CallLogDataBase &);
     static std::shared_ptr<CallLogDataBase> callLogDataBase_;
-    static std::mutex callogMutex_;
+    static std::mutex mutex_;
     int UpdateTopContact(OHOS::NativeRdb::ValuesBucket &insertValues);
 };
 
