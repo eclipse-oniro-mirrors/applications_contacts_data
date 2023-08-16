@@ -95,6 +95,7 @@ private:
     int GetTypeText(
         OHOS::NativeRdb::ValuesBucket &contactDataValues, int &typeId, int &rawContactId, std::string &typeText);
     int CompletelyDeleteCommit(int retCode);
+    std::mutex contactsMutex_;
 };
 
 class SqliteOpenHelperContactCallback : public OHOS::NativeRdb::RdbOpenCallback {
