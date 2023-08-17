@@ -22,7 +22,7 @@ namespace OHOS {
 namespace Contacts {
 std::shared_ptr<VoiceMailDataBase> VoiceMailDataBase::voiceMailDataBase_ = nullptr;
 std::shared_ptr<OHOS::NativeRdb::RdbStore> VoiceMailDataBase::store_ = nullptr;
-std::mutex mutex_;
+std::mutex voiceMailMutex_;
 
 VoiceMailDataBase::VoiceMailDataBase()
 {
@@ -31,7 +31,7 @@ VoiceMailDataBase::VoiceMailDataBase()
 
 std::shared_ptr<VoiceMailDataBase> VoiceMailDataBase::GetInstance()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(voiceMailMutex_);
     if (voiceMailDataBase_ == nullptr) {
         voiceMailDataBase_.reset(new VoiceMailDataBase());
         return voiceMailDataBase_;

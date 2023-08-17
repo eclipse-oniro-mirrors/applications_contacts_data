@@ -23,7 +23,7 @@ namespace OHOS {
 namespace Contacts {
 std::shared_ptr<CallLogDataBase> CallLogDataBase::callLogDataBase_ = nullptr;
 std::shared_ptr<OHOS::NativeRdb::RdbStore> CallLogDataBase::store_ = nullptr;
-std::mutex mutex_;
+std::mutex callLogMutex_;
 
 CallLogDataBase::CallLogDataBase()
 {
@@ -42,7 +42,7 @@ CallLogDataBase::CallLogDataBase()
 
 std::shared_ptr<CallLogDataBase> CallLogDataBase::GetInstance()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(callLogMutex_);
     if (callLogDataBase_ == nullptr) {
         callLogDataBase_.reset(new CallLogDataBase());
         return callLogDataBase_;
