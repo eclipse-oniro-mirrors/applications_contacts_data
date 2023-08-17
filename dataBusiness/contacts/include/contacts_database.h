@@ -81,7 +81,6 @@ private:
     ContactsDataBase(const ContactsDataBase &);
     static std::shared_ptr<ContactsDataBase> contactDataBase_;
     static std::shared_ptr<CallLogDataBase> callLogDataBase_;
-    static std::mutex mutex_;
 
     std::vector<int> QueryContactDataRawContactId(
         OHOS::NativeRdb::RdbPredicates &rdbPredicates, std::vector<std::string> &types);

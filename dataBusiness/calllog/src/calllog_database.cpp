@@ -23,6 +23,7 @@ namespace OHOS {
 namespace Contacts {
 std::shared_ptr<CallLogDataBase> CallLogDataBase::callLogDataBase_ = nullptr;
 std::shared_ptr<OHOS::NativeRdb::RdbStore> CallLogDataBase::store_ = nullptr;
+std::mutex mutex_;
 
 CallLogDataBase::CallLogDataBase()
 {
