@@ -87,7 +87,6 @@ ContactsDataBase::ContactsDataBase(const ContactsDataBase &)
 
 std::shared_ptr<ContactsDataBase> ContactsDataBase::GetInstance()
 {
-    std::lock_guard<std::mutex> lock(g_mtx);
     if (contactDataBase_ == nullptr) {
         contactDataBase_.reset(new ContactsDataBase());
     }
