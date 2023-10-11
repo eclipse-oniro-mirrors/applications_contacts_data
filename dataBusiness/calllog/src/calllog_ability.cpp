@@ -345,6 +345,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
         return nullptr;
     }
     HILOG_INFO("CallLogAbility ====>Query start");
+    g_mutex.lock();
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
     if (callLogDataBase_ == nullptr) {
         HILOG_ERROR("AbsSharedResultSet is nullptr");
@@ -371,15 +372,18 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
             break;
     }
     if (!isUriMatch) {
+        g_mutex.unlock();
         return nullptr;
     }
     if (result == nullptr) {
         HILOG_ERROR("AbsSharedResultSet is nullptr");
+        g_mutex.unlock();
         return nullptr;
     }
     auto queryResultSet = RdbDataShareAdapter::RdbUtils::ToResultSetBridge(result);
     std::shared_ptr<DataShare::DataShareResultSet> sharedPtrResult =
         std::make_shared<DataShare::DataShareResultSet>(queryResultSet);
+    g_mutex.unlock();
     HILOG_INFO("CallLogAbility ====>Query end");
     return sharedPtrResult;
 }
