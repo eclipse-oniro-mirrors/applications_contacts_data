@@ -50,8 +50,6 @@ ohos_unittest("contacts_test") {
     "//utils/system/safwk/native/include",
     "//commonlibrary/c_utils/base/include",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
-    "//third_party/jsoncpp",
-    "//third_party/jsoncpp/include/json",
     "//base/account/os_account/interfaces/innerkits/include",
     "//foundation/ability/ability_runtime/interfaces/inner_api/ability_manager/include",
     "//foundation/ability/ability_runtime/services/abilitymgr/include",
