@@ -41,6 +41,7 @@
                 "hilog",
                 "ipc",
                 "napi",
+                "os_account",
                 "preferences",
                 "relational_store",
                 "safwk"
