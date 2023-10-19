@@ -26,6 +26,8 @@
 #include "database_disaster_recovery.h"
 #include "file_utils.h"
 #include "hilog_wrapper.h"
+#include "os_account_manager.h"
+#include "os_account_constants.h"
 #include "profile_database.h"
 #include "rdb_predicates.h"
 #include "rdb_utils.h"
@@ -73,6 +75,23 @@ std::map<std::string, int> ContactsDataAbility::uriValueMap_ = {
 
 ContactsDataAbility* ContactsDataAbility::Create()
 {
+    int id = -1;
+    int32_t error_code = OHOS::NativeRdb::E_OK;
+    error_code = AccountSA::OsAccountManager::GetOsAccountLocalIdFromProcess(id);
+    if (error_code != OHOS::NativeRdb::E_OK) {
+        HILOG_ERROR("ContactsDataBase GetOsAccountLocalIdFromProcess error_code :%{public}d", error_code);
+        return nullptr;
+    }
+    HILOG_INFO("ContactsDataBase GetOsAccountLocalIdFromProcess id :%{public}d", id);
+    int32_t result = OHOS::NativeRdb::E_OK;
+    bool isAccountVerified;
+    result = AccountSA::OsAccountManager::IsOsAccountVerified(id, isAccountVerified);
+    HILOG_INFO("ContactsDataBase IsOsAccountVerified result :%{public}d", result);
+    HILOG_INFO("ContactsDataBase IsOsAccountVerified isAccountVerified :%{public}s",
+        std::to_string(isAccountVerified).c_str());
+    if (result != OHOS::NativeRdb::E_OK || !isAccountVerified) {
+        return nullptr;
+    }
     return new ContactsDataAbility();
 }
 
