@@ -356,6 +356,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
     OHOS::Uri uriTemp = uri;
     Contacts::UriUtils uriUtils;
     int parseCode = uriUtils.UriParse(uriTemp, uriValueMap_);
+    HILOG_INFO("CallLogAbility ====>Query parseCode");
     DataShare::DataSharePredicates dataSharePredicates = predicates;
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     std::vector<std::string> columnsTemp = columns;
