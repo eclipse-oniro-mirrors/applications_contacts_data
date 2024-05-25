@@ -949,9 +949,9 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
 
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
-	if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
+    if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
         return;
-	} else if (executeHelper->dataShareHelper == nullptr) {
+    } else if (executeHelper->dataShareHelper == nullptr) {
         executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
     }
