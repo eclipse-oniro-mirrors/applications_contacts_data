@@ -950,7 +950,7 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
 	if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
-		return;
+        return;
 	} else if (executeHelper->dataShareHelper == nullptr) {
         executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
@@ -1085,11 +1085,11 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
             executeHelper->predicates = BuildUpdateContactConvertParams(env, contact, attr, executeHelper);
             break;
         case IS_LOCAL_CONTACT:
-			VerificationParameterId(env, id, executeHelper);
+            VerificationParameterId(env, id, executeHelper);
             executeHelper->predicates = BuildIsLocalContactPredicates(env, id);
             break;
         case IS_MY_CARD:
-			VerificationParameterId(env, id, executeHelper);
+            VerificationParameterId(env, id, executeHelper);
             executeHelper->predicates = BuildIsMyCardPredicates(env, id);
             break;
         case QUERY_KEY:
