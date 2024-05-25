@@ -414,13 +414,13 @@ void ResultConvert::ConvertName(
         napi_set_property(env, objectElement, napiGivenNameKey, givenNameValue);
         napi_value napiGivenNamePhoneticKey = CreateNapiStringValue(env, "givenNamePhonetic");
         napi_set_property(env, objectElement, napiGivenNamePhoneticKey, givenNamePhoneticValue);
-        napi_value napiMiddleNamePhoneticKey = CreateNapiStringValue(env, "middleNamePhoneticKey");
+        napi_value napiMiddleNamePhoneticKey = CreateNapiStringValue(env, "middleNamePhonetic");
         napi_set_property(env, objectElement, napiMiddleNamePhoneticKey, middleNamePhoneticValue);
         napi_value napiMiddleNameKey = CreateNapiStringValue(env, "middleName");
         napi_set_property(env, objectElement, napiMiddleNameKey, middleNameValue);
-        napi_value napiNamePrefixKey = CreateNapiStringValue(env, "namePrefixKey");
+        napi_value napiNamePrefixKey = CreateNapiStringValue(env, "namePrefix");
         napi_set_property(env, objectElement, napiNamePrefixKey, namePrefixValue);
-        napi_value napiNameSuffixKey = CreateNapiStringValue(env, "nameSuffixKey");
+        napi_value napiNameSuffixKey = CreateNapiStringValue(env, "nameSuffix");
         napi_set_property(env, objectElement, napiNameSuffixKey, nameSuffixValue);
         napi_value napiElementKey;
         napi_create_string_utf8(env, name.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
@@ -577,8 +577,10 @@ void ResultConvert::ConvertPostalAddress(
         std::string regionKey = "region";
         std::string streetKey = "street";
         std::string cityKey = "city";
-        napi_value neighborhoodKeyValue = GetResultValue(env, streetKey, resultSet);
+		std::string countryKey = "country";
+        napi_value neighborhoodKeyValue = GetResultValue(env, neighborhoodKey, resultSet);
         napi_value cityKeyValue = GetResultValue(env, cityKey, resultSet);
+		napi_value countryKeyValue = GetResultValue(env, countryKey, resultSet);
         napi_value poboxKeyValue = GetResultValue(env, poboxKey, resultSet);
         napi_value postcodeKeyValue = GetResultValue(env, postcodeKey, resultSet);
         napi_value regionKeyValue = GetResultValue(env, regionKey, resultSet);
@@ -592,6 +594,7 @@ void ResultConvert::ConvertPostalAddress(
         napi_set_property(
             env, objectElement, CreateNapiStringValue(env, neighborhoodKey.c_str()), neighborhoodKeyValue);
         napi_set_property(env, objectElement, CreateNapiStringValue(env, cityKey.c_str()), cityKeyValue);
+		napi_set_property(env, objectElement, CreateNapiStringValue(env, countryKey.c_str()), countryKeyValue);
         napi_set_property(env, objectElement, CreateNapiStringValue(env, poboxKey.c_str()), poboxKeyValue);
         napi_set_property(env, objectElement, CreateNapiStringValue(env, postcodeKey.c_str()), postcodeKeyValue);
         napi_set_property(env, objectElement, CreateNapiStringValue(env, regionKey.c_str()), regionKeyValue);
@@ -618,7 +621,7 @@ void ResultConvert::ConvertRelation(
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
         napi_value customValue = GetResultValue(env, customDataKey, resultSet);
         napi_value extend7Value = GetResultValue(env, extend7Key, resultSet);
-        napi_value napiDetailInfoKey = CreateNapiStringValue(env, "relationName");
+        napi_value napiDetailInfoKey = CreateNapiStringValue(env, "sipAddress");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
         napi_value napiLabelNameKey = CreateNapiStringValue(env, "labelName");
         napi_set_property(env, objectElement, napiLabelNameKey, customValue);

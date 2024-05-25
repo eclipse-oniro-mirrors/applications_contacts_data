@@ -941,7 +941,10 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
 
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
-    if (executeHelper->dataShareHelper == nullptr) {
+	if (executeHelper->dataShareHelper == nullptr) {
+		HILOG_ERROR("PARAMETER_ERROR, please check your PARAMETER");
+		return;
+	} else if (executeHelper->dataShareHelper == nullptr) {
         HILOG_ERROR("create dataShareHelper is null, please check your permission");
         executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
@@ -1076,9 +1079,11 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
             executeHelper->predicates = BuildUpdateContactConvertParams(env, contact, attr, executeHelper);
             break;
         case IS_LOCAL_CONTACT:
+			ValidateParameterId(env, id, executeHelper);
             executeHelper->predicates = BuildIsLocalContactPredicates(env, id);
             break;
         case IS_MY_CARD:
+			ValidateParameterId(env, id, executeHelper);
             executeHelper->predicates = BuildIsMyCardPredicates(env, id);
             break;
         case QUERY_KEY:
@@ -1088,6 +1093,16 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
             executeHelper->predicates = ConvertParamsSwitchSplit(executeHelper->actionCode, env, key, hold, attr);
             break;
     }
+}
+
+void ValidateParameterId(napi_env env, napi_value id, ExecuteHelper *executeHelper)
+{
+	ContactsBuild contactsBuild;
+	int valueId = contactsBuild.GetInt(env, id);
+	if (valueId <= 0 || isinf(valueId)) {
+		executeHelper->resultData = RDB_PERMISSION_ERROR;
+		HILOG_ERROR("PARAMETER_ERROR valueId: %{public}d", valueId);
+	}
 }
 
 napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper, int actionCode)

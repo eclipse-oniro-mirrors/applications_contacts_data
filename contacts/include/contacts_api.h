@@ -66,6 +66,7 @@ void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteIsLocalContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper);
 napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper, int actionCode);
+void ValidateParameterId(napi_env env, napi_value id, ExecuteHelper *executeHelper);
 void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelper);
 DataShare::DataSharePredicates ConvertParamsSwitchSplit(
     int code, napi_env env, const napi_value &key, const napi_value &hold, const napi_value &attr);
