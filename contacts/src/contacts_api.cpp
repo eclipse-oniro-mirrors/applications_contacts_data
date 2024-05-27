@@ -730,11 +730,19 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
             if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
                 HILOG_ERROR("permission error");
                 result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
+            } else if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
+                HILOG_ERROR("parameter verification failed error");
+                result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
             }
             break;
         case QUERY_CONTACT:
         case QUERY_MY_CARD:
         case QUERY_KEY:
+            if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
+                HILOG_ERROR("parameter verification failed error");
+                result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
+            }
+            break;
         case QUERY_CONTACTS:
         case QUERY_CONTACTS_BY_EMAIL:
         case QUERY_CONTACTS_BY_PHONE_NUMBER:
@@ -941,8 +949,9 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
 
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
-    if (executeHelper->dataShareHelper == nullptr) {
-        HILOG_ERROR("create dataShareHelper is null, please check your permission");
+    if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
+        return;
+    } else if (executeHelper->dataShareHelper == nullptr) {
         executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
     }
@@ -1076,17 +1085,30 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
             executeHelper->predicates = BuildUpdateContactConvertParams(env, contact, attr, executeHelper);
             break;
         case IS_LOCAL_CONTACT:
+            VerificationParameterId(env, id, executeHelper);
             executeHelper->predicates = BuildIsLocalContactPredicates(env, id);
             break;
         case IS_MY_CARD:
+            VerificationParameterId(env, id, executeHelper);
             executeHelper->predicates = BuildIsMyCardPredicates(env, id);
             break;
         case QUERY_KEY:
+            VerificationParameterId(env, id, executeHelper);
             executeHelper->predicates = BuildQueryKeyPredicates(env, id, hold);
             break;
         default:
             executeHelper->predicates = ConvertParamsSwitchSplit(executeHelper->actionCode, env, key, hold, attr);
             break;
+    }
+}
+
+void VerificationParameterId(napi_env env, napi_value id, ExecuteHelper *executeHelper)
+{
+    ContactsBuild contactsBuild;
+    int valueId = contactsBuild.GetInt(env, id);
+    if (valueId <= 0 || isinf(valueId)) {
+        executeHelper->resultData = VERIFICATION_PERMISSION_ERROR;
+        HILOG_ERROR("PARAMETER_ERROR valueId: %{public}d", valueId);
     }
 }
 
