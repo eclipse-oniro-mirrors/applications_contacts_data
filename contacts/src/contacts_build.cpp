@@ -173,7 +173,7 @@ void ContactsBuild::GetValuesBucketEmail(Contacts &contact,
     for (unsigned int i = 0; i < emailsSize; i++) {
         DataShare::DataShareValuesBucket valuesBucketEmail;
         valuesBucketEmail.Put("detail_info", contact.emails[i].email);
-        if (contact.emails[i].labelId != ERROR) {
+        if (contact.emails[i].labelId != 0) {
             valuesBucketEmail.Put("extend7", std::to_string(contact.emails[i].labelId));
         }
         if (!contact.emails[i].labelName.empty()) {
@@ -201,7 +201,7 @@ void ContactsBuild::GetValuesBucketEvent(Contacts &contact,
     for (unsigned int i = 0; i < eventsSize; i++) {
         DataShare::DataShareValuesBucket valuesBucketEvent;
         valuesBucketEvent.Put("detail_info", contact.events[i].eventDate);
-        if (contact.events[i].labelId != ERROR) {
+        if (contact.events[i].labelId != 0) {
             valuesBucketEvent.Put("extend7", std::to_string(contact.events[i].labelId));
         }
         if (!contact.events[i].labelName.empty()) {
@@ -247,7 +247,7 @@ void ContactsBuild::GetValuesBucketImAddress(Contacts &contact,
     for (unsigned int i = 0; i < imAddressSize; i++) {
         DataShare::DataShareValuesBucket valuesBucketImAddress;
         valuesBucketImAddress.Put("detail_info", contact.imAddresses[i].imAddress);
-        if (contact.imAddresses[i].labelId != ERROR) {
+        if (contact.imAddresses[i].labelId != 0) {
             valuesBucketImAddress.Put("extend7", std::to_string(contact.imAddresses[i].labelId));
         }
         if (!contact.imAddresses[i].labelName.empty()) {
@@ -289,7 +289,7 @@ void ContactsBuild::GetValuesBucketPhoneNumber(
     for (unsigned int i = 0; i < phoneNumbersSize; i++) {
         DataShare::DataShareValuesBucket valuesBucketPhoneNumber;
         valuesBucketPhoneNumber.Put("detail_info", contact.phoneNumbers[i].phoneNumber);
-        if (contact.phoneNumbers[i].labelId != ERROR) {
+        if (contact.phoneNumbers[i].labelId != 0) {
             valuesBucketPhoneNumber.Put("extend7", std::to_string(contact.phoneNumbers[i].labelId));
         }
         if (!contact.phoneNumbers[i].labelName.empty()) {
@@ -314,7 +314,7 @@ void ContactsBuild::GetValuesBucketPostalAddress(
     for (unsigned int i = 0; i < postalAddressesSize; i++) {
         DataShare::DataShareValuesBucket valuesBucketPostalAddress;
         valuesBucketPostalAddress.Put("detail_info", contact.postalAddresses[i].postalAddress);
-        if (contact.postalAddresses[i].labelId != ERROR) {
+        if (contact.postalAddresses[i].labelId != 0) {
             valuesBucketPostalAddress.Put("extend7", std::to_string(contact.postalAddresses[i].labelId));
         }
         if (!contact.postalAddresses[i].labelName.empty()) {
@@ -360,7 +360,7 @@ void ContactsBuild::GetValuesBucketRelation(Contacts &contact,
     for (unsigned int i = 0; i < relationsSize; i++) {
         DataShare::DataShareValuesBucket valuesBucketRelation;
         valuesBucketRelation.Put("detail_info", contact.relations[i].relationName);
-        if (contact.relations[i].labelId != ERROR) {
+        if (contact.relations[i].labelId != 0) {
             valuesBucketRelation.Put("extend7", std::to_string(contact.relations[i].labelId));
         }
         if (!contact.relations[i].labelName.empty()) {
@@ -385,7 +385,7 @@ void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact,
     for (unsigned int i = 0; i < sipAddressesSize; i++) {
         DataShare::DataShareValuesBucket valuesBucketSipAddress;
         valuesBucketSipAddress.Put("detail_info", contact.sipAddresses[i].sipAddress);
-        if (contact.sipAddresses[i].labelId != ERROR) {
+        if (contact.sipAddresses[i].labelId != 0) {
             valuesBucketSipAddress.Put("extend7", std::to_string(contact.sipAddresses[i].labelId));
         }
         if (!contact.sipAddresses[i].labelName.empty()) {
