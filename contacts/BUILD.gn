@@ -95,6 +95,7 @@ ohos_shared_library("contact") {
     "ability_base:zuri",
     "ability_runtime:abilitykit_native",
     "ability_runtime:app_context",
+    "ability_runtime:extensionkit_native",
     "ability_runtime:napi_base_context",
     "c_utils:utils",
     "data_share:datashare_consumer",
