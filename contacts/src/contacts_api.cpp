@@ -757,7 +757,7 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
             if (executeHelper->resultData == RDB_PARAMETER_ERROR) {
                 HILOG_ERROR("parameter verification failed");
                 result = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-            } elseif (executeHelper->resultData == RDB_PERMISSION_ERROR) {
+            } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
                 HILOG_ERROR("permission error");
                 result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
             }
@@ -820,8 +820,8 @@ void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 {
     if (executeHelper->valueContactData.empty()) {
         HILOG_ERROR("addContact contact_data can not be empty");
-		executeHelper->resultData = RDB_PARAMETER_ERROR;
-		return;
+        executeHelper->resultData = RDB_PARAMETER_ERROR;
+        return;
     }
     ContactsControl contactsControl;
     int rawId = contactsControl.RawContactInsert(
