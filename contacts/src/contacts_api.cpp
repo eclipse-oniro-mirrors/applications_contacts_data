@@ -674,8 +674,8 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
             HandleExecuteResult(env, executeHelper, resultData[1]);
         } else {
             if (executeHelper->resultData < 0) {
-                HandleExecuteResult(env, executeHelper, resultData[0]);
-                napi_get_undefined(env, &resultData[1]);
+                HandleExecuteErrorCode(env, executeHelper, resultData[0]);
+                HandleExecuteResult(env, executeHelper, resultData[1]);
             } else {
                 napi_get_undefined(env, &resultData[0]);
                 HandleExecuteResult(env, executeHelper, resultData[1]);
@@ -727,12 +727,15 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
         case SELECT_CONTACT:
         case IS_LOCAL_CONTACT:
         case IS_MY_CARD:
-            if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
-                HILOG_ERROR("permission error");
-                result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
+            if (executeHelper->resultData == RDB_PARAMETER_ERROR || executeHelper->resultData == ERROR) {
+                HILOG_ERROR("handleExecuteErrorCode handle parm error");
+                result = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
             } else if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
                 HILOG_ERROR("parameter verification failed error");
                 result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
+            } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
+                HILOG_ERROR("permission error");
+                result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
             }
             break;
         case QUERY_CONTACT:
@@ -741,6 +744,9 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
             if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
                 HILOG_ERROR("parameter verification failed error");
                 result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
+            } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
+                HILOG_ERROR("permission error");
+                result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
             }
             break;
         case QUERY_CONTACTS:
@@ -748,7 +754,10 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
         case QUERY_CONTACTS_BY_PHONE_NUMBER:
         case QUERY_GROUPS:
         case QUERY_HOLDERS:
-            if (executeHelper->resultSet == nullptr) {
+            if (executeHelper->resultData == RDB_PARAMETER_ERROR) {
+                HILOG_ERROR("parameter verification failed");
+                result = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+            } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
                 HILOG_ERROR("permission error");
                 result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
             }
@@ -809,6 +818,11 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
 
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 {
+    if (executeHelper->valueContactData.empty()) {
+        HILOG_ERROR("addContact contact_data can not be empty");
+        executeHelper->resultData = RDB_PARAMETER_ERROR;
+        return;
+    }
     ContactsControl contactsControl;
     int rawId = contactsControl.RawContactInsert(
         executeHelper->dataShareHelper, (executeHelper->valueContact)[0]);
@@ -854,7 +868,15 @@ void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper)
     ContactsControl contactsControl;
     executeHelper->resultSet = contactsControl.ContactDataQuery(
         executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
-    executeHelper->resultData = SUCCESS;
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet = executeHelper->resultSet;
+    int rowCount = 0;
+    resultSet->GetRowCount(rowCount);
+    if (rowCount == 0) {
+        executeHelper->resultData = RDB_PARAMETER_ERROR;
+        resultSet->Close();
+    } else {
+        executeHelper->resultData = SUCCESS;
+    }
 }
 
 void LocalExecuteQueryGroup(napi_env env, ExecuteHelper *executeHelper)
