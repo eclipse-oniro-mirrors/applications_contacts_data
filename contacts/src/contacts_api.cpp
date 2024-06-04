@@ -675,7 +675,7 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         } else {
             if (executeHelper->resultData < 0) {
                 HandleExecuteErrorCode(env, executeHelper, resultData[0]);
-                HandleExecuteResult(env, executeHelper, &resultData[1]);
+                HandleExecuteResult(env, executeHelper, resultData[1]);
             } else {
                 napi_get_undefined(env, &resultData[0]);
                 HandleExecuteResult(env, executeHelper, resultData[1]);
