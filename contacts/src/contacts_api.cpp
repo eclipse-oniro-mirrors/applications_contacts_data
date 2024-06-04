@@ -674,8 +674,8 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
             HandleExecuteResult(env, executeHelper, resultData[1]);
         } else {
             if (executeHelper->resultData < 0) {
-                HandleExecuteResult(env, executeHelper, resultData[0]);
-                napi_get_undefined(env, &resultData[1]);
+                HandleExecuteErrorCode(env, executeHelper, resultData[0]);
+                HandleExecuteResult(env, &resultData[1]);
             } else {
                 napi_get_undefined(env, &resultData[0]);
                 HandleExecuteResult(env, executeHelper, resultData[1]);
@@ -757,7 +757,7 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
             if (executeHelper->resultData == RDB_PARAMETER_ERROR) {
                 HILOG_ERROR("parameter verification failed");
                 result = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-            } elseif (executeHelper->resultSet == nullptr) {
+            } elseif (executeHelper->resultSet == RDB_PERMISSION_ERROR) {
                 HILOG_ERROR("permission error");
                 result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
             }
@@ -818,6 +818,11 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
 
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 {
+    if (executeHelper->valueContactData.empty()) {
+        HILOG_ERROR("addContact contact_data can not be empty");
+		executeHelper->resultData = RDB_PARAMETER_ERROR;
+		return;
+    }
     ContactsControl contactsControl;
     int rawId = contactsControl.RawContactInsert(
         executeHelper->dataShareHelper, (executeHelper->valueContact)[0]);
@@ -863,7 +868,7 @@ void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper)
     ContactsControl contactsControl;
     executeHelper->resultSet = contactsControl.ContactDataQuery(
         executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
-	std::shared_ptr<DataShare::DataShareResultSet> resultSet = executeHelper->resultSet;
+    std::shared_ptr<DataShare::DataShareResultSet> resultSet = executeHelper->resultSet;
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     if (rowCount == 0) {
@@ -871,7 +876,7 @@ void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper)
         resultSet->Close();
     } else {
         executeHelper->resultData = SUCCESS;
-	}
+    }
 }
 
 void LocalExecuteQueryGroup(napi_env env, ExecuteHelper *executeHelper)
