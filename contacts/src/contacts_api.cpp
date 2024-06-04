@@ -675,7 +675,7 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         } else {
             if (executeHelper->resultData < 0) {
                 HandleExecuteErrorCode(env, executeHelper, resultData[0]);
-                HandleExecuteResult(env, &resultData[1]);
+                HandleExecuteResult(env, executeHelper, &resultData[1]);
             } else {
                 napi_get_undefined(env, &resultData[0]);
                 HandleExecuteResult(env, executeHelper, resultData[1]);
@@ -872,7 +872,7 @@ void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper)
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     if (rowCount == 0) {
-        executeHelper->resultSet = RDB_PARAMETER_ERROR;
+        executeHelper->resultData = RDB_PARAMETER_ERROR;
         resultSet->Close();
     } else {
         executeHelper->resultData = SUCCESS;
