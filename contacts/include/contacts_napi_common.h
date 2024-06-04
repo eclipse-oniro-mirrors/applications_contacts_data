@@ -33,6 +33,7 @@ constexpr int ERROR = -1;
 constexpr int SUCCESS = 0;
 constexpr int RESULT_DATA_SIZE = 2;
 constexpr int RDB_PERMISSION_ERROR = -2;
+constexpr int RDB_PARAMETER_ERROR = -3;
 constexpr int VERIFICATION_PERMISSION_ERROR = -4;
 constexpr int PERMISSION_ERROR = 201;
 constexpr int PARAMETER_ERROR = 401;
