@@ -66,10 +66,11 @@ void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteIsLocalContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper);
 napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper, int actionCode);
-void VerificationParameterId(napi_env env, napi_value id, ExecuteHelper *executeHelper);
+void VerificationParameterId(napi_env env, napi_value id, ExecuteHelper *executeHelper, napi_value hold);
+void VerificationParameterHolderId(napi_env env, ExecuteHelper *executeHelper, napi_value hold);
 void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelper);
-DataShare::DataSharePredicates ConvertParamsSwitchSplit(
-    int code, napi_env env, const napi_value &key, const napi_value &hold, const napi_value &attr);
+DataShare::DataSharePredicates ConvertParamsSwitchSplit(int code, napi_env env, const napi_value &key,
+    const napi_value &hold, const napi_value &attr, ExecuteHelper *executeHelper);
 bool GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper);
 void HolderPredicates(const Holder &holder, DataShare::DataSharePredicates &predicates);
 void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holder);

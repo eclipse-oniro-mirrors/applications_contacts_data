@@ -727,36 +727,21 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
         case SELECT_CONTACT:
         case IS_LOCAL_CONTACT:
         case IS_MY_CARD:
+        case QUERY_CONTACT:
+        case QUERY_MY_CARD:
+        case QUERY_KEY:
+        case QUERY_CONTACTS:
+        case QUERY_CONTACTS_BY_EMAIL:
+        case QUERY_CONTACTS_BY_PHONE_NUMBER:
+        case QUERY_GROUPS:
+        case QUERY_HOLDERS:
+            HILOG_INFO("HandleExecuteErrorCode resultData");
             if (executeHelper->resultData == RDB_PARAMETER_ERROR || executeHelper->resultData == ERROR) {
                 HILOG_ERROR("handleExecuteErrorCode handle parm error");
                 result = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
             } else if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
                 HILOG_ERROR("parameter verification failed error");
                 result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
-            } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
-                HILOG_ERROR("permission error");
-                result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
-            }
-            break;
-        case QUERY_CONTACT:
-        case QUERY_MY_CARD:
-        case QUERY_KEY:
-            if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
-                HILOG_ERROR("parameter verification failed error");
-                result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
-            } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
-                HILOG_ERROR("permission error");
-                result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
-            }
-            break;
-        case QUERY_CONTACTS:
-        case QUERY_CONTACTS_BY_EMAIL:
-        case QUERY_CONTACTS_BY_PHONE_NUMBER:
-        case QUERY_GROUPS:
-        case QUERY_HOLDERS:
-            if (executeHelper->resultData == RDB_PARAMETER_ERROR) {
-                HILOG_ERROR("parameter verification failed");
-                result = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
             } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
                 HILOG_ERROR("permission error");
                 result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
@@ -1049,24 +1034,29 @@ napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper)
     return result;
 }
 
-DataShare::DataSharePredicates ConvertParamsSwitchSplit(
-    int code, napi_env env, const napi_value &key, const napi_value &hold, const napi_value &attr)
+DataShare::DataSharePredicates ConvertParamsSwitchSplit(int code, napi_env env, const napi_value &key,
+    const napi_value &hold, const napi_value &attr, ExecuteHelper *executeHelper)
 {
     DataShare::DataSharePredicates predicates;
     switch (code) {
         case QUERY_CONTACT:
+            VerificationParameterHolderId(env, executeHelper, hold);
             predicates = BuildQueryContactPredicates(env, key, hold, attr);
             break;
         case QUERY_CONTACTS:
+            VerificationParameterHolderId(env, executeHelper, hold);
             predicates = BuildQueryContactsPredicates(env, hold, attr);
             break;
         case QUERY_CONTACTS_BY_EMAIL:
+            VerificationParameterHolderId(env, executeHelper, hold);
             predicates = BuildQueryContactsByEmailPredicates(env, key, hold, attr);
             break;
         case QUERY_CONTACTS_BY_PHONE_NUMBER:
+            VerificationParameterHolderId(env, executeHelper, hold);
             predicates = BuildQueryContactsByPhoneNumberPredicates(env, key, hold, attr);
             break;
         case QUERY_GROUPS:
+            VerificationParameterHolderId(env, executeHelper, hold);
             predicates = BuildQueryGroupsPredicates(env, hold);
             break;
         case QUERY_HOLDERS:
@@ -1107,30 +1097,47 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
             executeHelper->predicates = BuildUpdateContactConvertParams(env, contact, attr, executeHelper);
             break;
         case IS_LOCAL_CONTACT:
-            VerificationParameterId(env, id, executeHelper);
+            VerificationParameterId(env, id, executeHelper, hold);
             executeHelper->predicates = BuildIsLocalContactPredicates(env, id);
             break;
         case IS_MY_CARD:
-            VerificationParameterId(env, id, executeHelper);
+            VerificationParameterId(env, id, executeHelper, hold);
             executeHelper->predicates = BuildIsMyCardPredicates(env, id);
             break;
         case QUERY_KEY:
-            VerificationParameterId(env, id, executeHelper);
+            VerificationParameterId(env, id, executeHelper, hold);
             executeHelper->predicates = BuildQueryKeyPredicates(env, id, hold);
             break;
         default:
-            executeHelper->predicates = ConvertParamsSwitchSplit(executeHelper->actionCode, env, key, hold, attr);
+            executeHelper->predicates = ConvertParamsSwitchSplit(executeHelper->actionCode, env, key, hold,
+                attr, executeHelper);
             break;
     }
 }
 
-void VerificationParameterId(napi_env env, napi_value id, ExecuteHelper *executeHelper)
+void VerificationParameterId(napi_env env, napi_value id, ExecuteHelper *executeHelper, napi_value hold)
 {
     ContactsBuild contactsBuild;
+    Holder holder = contactsBuild.GetHolder(env, hold);
+    int holderId = holder.holderId;
     int valueId = contactsBuild.GetInt(env, id);
     if (valueId <= 0 || isinf(valueId)) {
         executeHelper->resultData = VERIFICATION_PERMISSION_ERROR;
         HILOG_ERROR("PARAMETER_ERROR valueId: %{public}d", valueId);
+    } else if (hold != nullptr && holderId != 1) {
+        executeHelper->resultData = VERIFICATION_PERMISSION_ERROR;
+        HILOG_ERROR("PARAMETER_ERROR holderId: %{public}d", holderId);
+    }
+}
+
+void VerificationParameterHolderId(napi_env env, ExecuteHelper *executeHelper, napi_value hold)
+{
+    ContactsBuild contactsBuild;
+    Holder holder = contactsBuild.GetHolder(env, hold);
+    int holderId = holder.holderId;
+    if (hold != nullptr && holderId != 1) {
+        executeHelper->resultData = VERIFICATION_PERMISSION_ERROR;
+        HILOG_ERROR("PARAMETER_ERROR holderId: %{public}d", holderId);
     }
 }
 
