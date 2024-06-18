@@ -304,14 +304,12 @@ DataShare::DataSharePredicates BuildQueryContactPredicates(
     ContactsBuild contactsBuild;
     std::string keyValue = contactsBuild.NapiGetValueString(env, key);
     Holder holder = contactsBuild.GetHolder(env, hold);
-    ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
     DataShare::DataSharePredicates predicates;
     if (!keyValue.empty()) {
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
         predicates.EqualTo("quick_search_key", keyValue);
         HolderPredicates(holder, predicates);
-        AttributesPredicates(false, attrs, predicates);
     }
     return predicates;
 }
@@ -389,7 +387,6 @@ DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(
     ContactsBuild contactsBuild;
     std::string email = contactsBuild.NapiGetValueString(env, emailobject);
     Holder holder = contactsBuild.GetHolder(env, hold);
-    ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
     DataShare::DataSharePredicates predicates;
     if (!email.empty() || email != "") {
         predicates.EqualTo("is_deleted", "0");
@@ -398,7 +395,6 @@ DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(
         predicates.And();
         predicates.EqualTo("content_type", "email");
         HolderPredicates(holder, predicates);
-        AttributesPredicates(false, attrs, predicates);
     }
     return predicates;
 }
@@ -417,7 +413,6 @@ DataShare::DataSharePredicates BuildQueryContactsByPhoneNumberPredicates(
     ContactsBuild contactsBuild;
     std::string phoneNumber = contactsBuild.NapiGetValueString(env, number);
     Holder holder = contactsBuild.GetHolder(env, hold);
-    ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
     DataShare::DataSharePredicates predicates;
     if (!phoneNumber.empty() || phoneNumber != "") {
         predicates.EqualTo("is_deleted", "0");
@@ -426,7 +421,6 @@ DataShare::DataSharePredicates BuildQueryContactsByPhoneNumberPredicates(
         predicates.And();
         predicates.EqualTo("content_type", "phone");
         HolderPredicates(holder, predicates);
-        AttributesPredicates(false, attrs, predicates);
     }
     return predicates;
 }
