@@ -112,7 +112,7 @@ ohos_shared_library("contact") {
 
   public_deps = []
   relative_install_dir = "module"
-  part_name = "contacts_data"
+  part_name = "contacts_data_hap"
   subsystem_name = "applications"
 }
 ## Build contactsapi.so }}}
