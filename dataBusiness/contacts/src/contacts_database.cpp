@@ -707,7 +707,7 @@ void ContactsDataBase::DeleteRecordInsert(
         }
         int rowId = 0;
         std::vector<std::string> whereArgs;
-        whereArgs.push_back(std:to_string(contactId));
+        whereArgs.push_back(std::to_string(contactId));
         std::string whereCase;
         whereCase.append(SearchContactColumns::CONTACT_ID).append(" = ?");
         int delAccount = store->Delete(rowId, ContactTableName::SEARCH_CONTACT, whereCase, whereArgs);
