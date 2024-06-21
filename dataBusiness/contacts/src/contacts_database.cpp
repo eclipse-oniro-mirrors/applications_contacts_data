@@ -710,7 +710,10 @@ void ContactsDataBase::DeleteRecordInsert(
         whereArgs.push_back(std::to_string(contactId));
         std::string whereCase;
         whereCase.append(SearchContactColumns::CONTACT_ID).append(" = ?");
-        int delAccount = store->Delete(rowId, ContactTableName::SEARCH_CONTACT, whereCase, whereArgs);
+        int delRet = store->Delete(rowId, ContactTableName::SEARCH_CONTACT, whereCase, whereArgs);
+		if (delRet != OHOS::NativeRdb::E_OK) {
+            HILOG_ERROR("deleteRawContact searchContact failed:%{public}d", delRet);
+        }
         std::vector<int> rawContactIdVector;
         rawContactIdVector.push_back(rawContactId);
         ContactsUpdateHelper contactsUpdateHelper;
