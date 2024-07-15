@@ -67,7 +67,7 @@ ohos_shared_library("contact") {
     "src/contacts_napi_utils.cpp",
     "src/native_module.cpp",
     "src/result_convert.cpp",
-	"src/contacts_telephony_permission.cpp",
+    "src/contacts_telephony_permission.cpp",
   ]
 
   include_dirs = [
