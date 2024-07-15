@@ -30,8 +30,8 @@ static constexpr const char *OHOS_PERMISSION_MANAGE_VOICEMAIL = "ohos.permission
 
 class ContactsTelephonyPermission {
 public:
-	ContactsTelephonyPermission();
-	~ContactsTelephonyPermission();
+    ContactsTelephonyPermission();
+    ~ContactsTelephonyPermission();
     static bool CheckPermission(const std::string &permissionName);
 };
 } // namespace Telephony
