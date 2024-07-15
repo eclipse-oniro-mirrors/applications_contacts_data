@@ -976,11 +976,11 @@ void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsTelephonyPermission permission;
-    if(!permission.CheckPermission(ContactApi::Permission::READ_CONTACTS)){
+    if (!permission.CheckPermission(ContactApi::Permission::READ_CONTACTS)) {
         HILOG_ERROR("LocalExecuteQueryContactsByData Permission denied!");
         executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
-    }else if(executeHelper->resultData == VERIFICATION_PARAMETER_ERROR){
+    } else if(executeHelper->resultData == VERIFICATION_PARAMETER_ERROR) {
         HILOG_ERROR("PARAMETER_ERROR, please check your PARAMETER");
         return;
     }
