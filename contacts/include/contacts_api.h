@@ -54,6 +54,7 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
 int GetRawIdByResultSet(const std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
 napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper);
+void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContact(napi_env env, ExecuteHelper *executeHelper);

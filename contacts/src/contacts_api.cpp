@@ -31,6 +31,7 @@
 #include "contacts_napi_utils.h"
 #include "hilog_wrapper_api.h"
 #include "result_convert.h"
+#include "contacts_telephony_permission.h"
 
 namespace OHOS {
 namespace ContactsApi {
@@ -950,10 +951,9 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
 
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
-    if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
-        return;
-    } else if (executeHelper->dataShareHelper == nullptr) {
-        executeHelper->resultData = RDB_PERMISSION_ERROR;
+    if (executeHelper->dataShareHelper == nullptr) {
+		HILOG_ERROR("create dataShareHelper is null, please check your permission");
+		executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
     }
     switch (executeHelper->actionCode) {
@@ -963,6 +963,28 @@ void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
         case DELETE_CONTACT:
             LocalExecuteDeleteContact(env, executeHelper);
             break;
+		case UPDATE_CONTACT:
+            LocalExecuteUpdateContact(env, executeHelper);
+            break;
+        default:
+			LocalExecuteSplit(env, executeHelper);
+            HILOG_INFO("LocalExecute case error===>");
+            break;
+    }
+}
+
+void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper)
+{
+	ContactsTelephonyPermission permission;
+	if(!permission.CheckPermission(ContactApi::Permission::READ_CONTACTS)){
+		HILOG_ERROR("LocalExecuteQueryContactsByData Permission denied!");
+		executeHelper->resultData = RDB_PERMISSION_ERROR;
+        return;
+	}else if(executeHelper->resultData == VERIFICATION_PARAMETER_ERROR){
+		HILOG_ERROR("PARAMETER_ERROR, please check your PARAMETER");
+		return;
+	}
+	switch (executeHelper->actionCode) {
         case QUERY_CONTACT:
             LocalExecuteQueryContact(env, executeHelper);
             break;
@@ -998,7 +1020,6 @@ void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
             HILOG_INFO("LocalExecute case error===>");
             break;
     }
-}
 
 void Execute(napi_env env, void *data)
 {
