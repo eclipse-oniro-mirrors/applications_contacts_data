@@ -104,9 +104,9 @@ ohos_shared_library("contact") {
     "napi:ace_napi",
     "relational_store:native_dataability",
     "relational_store:native_rdb",
-	"access_token:libaccesstoken_sdk",
-	"access_token:libprivacy_sdk",
-	"ipc:ipc_single",
+    "access_token:libaccesstoken_sdk",
+    "access_token:libprivacy_sdk",
+    "ipc:ipc_single",
   ]
 
   defines = [
