@@ -52,9 +52,9 @@ bool TelephonyPermission::CheckPermission(const std::string &permissionName)
     }
 
     auto callerToken = IPCSkeleton::GetCallingTokenID();
-	auto callerPid = IPCSkeleton::GetCallingPid();
-	HILOG_INFO("contactsCheckPermission, get callerPid = %{public}d, permission = %{public}s, ts = %{public}ld",
-		callerPid, permissionName.c_str(), time(NULL));
+    auto callerPid = IPCSkeleton::GetCallingPid();
+    HILOG_INFO("contactsCheckPermission, get callerPid = %{public}d, permission = %{public}s, ts = %{public}ld",
+        callerPid, permissionName.c_str(), time(NULL));
     auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
     int result = PermissionState::PERMISSION_DENIED;
     if (tokenType == ATokenTypeEnum::TOKEN_NATIVE) {
@@ -75,8 +75,8 @@ bool TelephonyPermission::CheckPermission(const std::string &permissionName)
             int32_t ret = PrivacyKit::AddPermissionUsedRecord(callerToken, permissionName, successCount, failCount);
             if (ret != 0) {
                 HILOG_ERROR("AddPermissionUsedRecord failed, permissionName = %{public}s, callerPid = %{public}d,"
-					"successCount = %{public}d, failCount = %{public}d, ret = %{public}d", permissionName.c_str(),
-					callerPid, successCount, failCount, ret);
+                    "successCount = %{public}d, failCount = %{public}d, ret = %{public}d", permissionName.c_str(),
+                    callerPid, successCount, failCount, ret);
             }
         }
     }
