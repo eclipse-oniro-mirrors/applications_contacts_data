@@ -31,11 +31,11 @@ namespace ContactsApi {
 
 using namespace Security::AccessToken;
 
-ContactsTelephonyPermission:ContactsTelephonyPermission(void)
+ContactsTelephonyPermission::ContactsTelephonyPermission(void)
 {
 }
 
-ContactsTelephonyPermission:~ContactsTelephonyPermission()
+ContactsTelephonyPermission::~ContactsTelephonyPermission()
 {
 }
 
