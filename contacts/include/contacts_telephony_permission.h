@@ -19,7 +19,7 @@
 #include <string>
 
 namespace OHOS {
-namespace ContacttsApi {
+namespace ContactsApi {
 namespace Permission {
 static constexpr const char *READ_CONTACTS = "ohos.permission.READ_CONTACTS";
 static constexpr const char *WRITE_CONTACTS = "ohos.permission.WRITE_CONTACTS";
