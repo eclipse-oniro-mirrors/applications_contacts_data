@@ -1007,9 +1007,6 @@ void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper)
         case QUERY_MY_CARD:
             LocalExecuteQueryMyCard(env, executeHelper);
             break;
-        case UPDATE_CONTACT:
-            LocalExecuteUpdateContact(env, executeHelper);
-            break;
         case IS_LOCAL_CONTACT:
             LocalExecuteIsLocalContact(env, executeHelper);
             break;
