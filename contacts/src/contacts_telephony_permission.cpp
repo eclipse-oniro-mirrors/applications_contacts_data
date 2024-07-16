@@ -44,7 +44,7 @@ ContactsTelephonyPermission:~ContactsTelephonyPermission(void)
  * @param permissionName permission name.
  * @return Returns true on success, false on failure.
  */
-bool TelephonyPermission::CheckPermission(const std::string &permissionName)
+bool ContactsTelephonyPermission::CheckPermission(const std::string &permissionName)
 {
     if (permissionName.empty()) {
         HILOG_ERROR("ContactsTelephonyPermission check failed, permission name is empty.");
