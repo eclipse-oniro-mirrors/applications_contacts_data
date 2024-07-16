@@ -35,7 +35,7 @@ ContactsTelephonyPermission:ContactsTelephonyPermission(void)
 {
 }
 
-ContactsTelephonyPermission:~ContactsTelephonyPermission(void)
+ContactsTelephonyPermission:~ContactsTelephonyPermission()
 {
 }
 
