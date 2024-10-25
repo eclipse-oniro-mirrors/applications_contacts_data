@@ -800,7 +800,7 @@ void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 {
     if (executeHelper->valueContactData.empty()) {
         HILOG_ERROR("addContact contact_data can not be empty");
-        executeHelper->resultData = RDB_PARAMETER_ERROR;
+        executeHelper->resultData = ERROR;
         return;
     }
     ContactsControl contactsControl;
