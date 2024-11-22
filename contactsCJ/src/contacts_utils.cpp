@@ -52,23 +52,25 @@ void freeBucketContent(ValuesBucket* bucket)
 }
 
 // return true if succeeded; after it b is fully allocated or completely empty with errCode set
-bool allocBucket(ValuesBucket* b, uint32_t total, int32_t *errCode)
+bool allocBucket(ValuesBucket* b, int total, int32_t *errCode)
 {
     if (*errCode != ContactsApi::SUCCESS) {
         return false;
     }
-    b->size = total;
-    b->key = (char**) malloc(total * sizeof(char*));
-    if (b->key == nullptr) {
-        *errCode = ContactsApi::ERROR;
-        freeBucketContent(b); // actually. there is nothing to free, just set size to 0
-        return false;
-    }
-    b->value = (struct CValueType*) malloc(total * sizeof(struct CValueType));
-    if (b->value == nullptr) {
-        *errCode = ContactsApi::ERROR;
-        freeBucketContent(b);
-        return false;
+    if (total > 0) {
+        b->size = total;
+        b->key = (char**) malloc(total * sizeof(char*));
+        if (b->key == nullptr) {
+            *errCode = ContactsApi::ERROR;
+            freeBucketContent(b); // actually. there is nothing to free, just set size to 0
+            return false;
+        }
+        b->value = (struct CValueType*) malloc(total * sizeof(struct CValueType));
+        if (b->value == nullptr) {
+            *errCode = ContactsApi::ERROR;
+            freeBucketContent(b);
+            return false;
+        }
     }
     return true;
 }
@@ -641,7 +643,11 @@ void releaseRresultSetMapBuckets(std::map<int, std::vector<ValuesBucket>> result
 ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> resultSetMap,
                                      std::map<int, std::string> quickSearchMap, int32_t *errCode)
 {
-    uint32_t totalContacts = resultSetMap.size();
+    int totalContacts = resultSetMap.size();
+    if (totalContacts == 0) {
+        return nullptr;
+    }
+
     ContactsData* allContacts = (struct ContactsData*) malloc(sizeof(struct ContactsData));
     if (allContacts == nullptr) {
         HILOG_ERROR("ContactUtils::allocCollectedContacts fail to mem alloc");
@@ -761,7 +767,7 @@ void resultSetAsGroup(ValuesBucket* groups, int idx, std::shared_ptr<DataShareRe
     groups[idx].size = total;
 
     // content_type for group is redundant
-    PutResultValue(groups[idx], 0, "detail_info", resultSet, "id", errCode);
+    PutResultValue(groups[idx], BUCKET_IDX_0, "detail_info", resultSet, "id", errCode);
     if (*errCode != ContactsApi::SUCCESS) {
         free(groups[idx].key);
         free(groups[idx].value);
@@ -769,7 +775,7 @@ void resultSetAsGroup(ValuesBucket* groups, int idx, std::shared_ptr<DataShareRe
         return;
     }
 
-    PutResultValue(groups[idx], 1, "group_name", resultSet, "group_name", errCode);
+    PutResultValue(groups[idx], BUCKET_IDX_1, "group_name", resultSet, "group_name", errCode);
     if (*errCode != ContactsApi::SUCCESS) {
         free(groups[idx].key);
         free(groups[idx].value);
@@ -803,9 +809,9 @@ void resultSetAsHolder(ValuesBucket* holders, int idx, std::shared_ptr<DataShare
     holders[idx].size = total;
 
     // content_type for holder is redundant
-    PutResultValue(holders[idx], 0, "detail_info", resultSet, "account_name", errCode);
-    PutResultValue(holders[idx], 1, "custom_data", resultSet, "account_type", errCode);
-    PutResultValue(holders[idx], 2, "extend7", resultSet, "id", errCode);
+    PutResultValue(holders[idx], BUCKET_IDX_0, "detail_info", resultSet, "account_name", errCode);
+    PutResultValue(holders[idx], BUCKET_IDX_1, "custom_data", resultSet, "account_type", errCode);
+    PutResultValue(holders[idx], BUCKET_IDX_2, "extend7", resultSet, "id", errCode);
 }
 
 // it closes resultSet after parse

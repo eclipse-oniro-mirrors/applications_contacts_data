@@ -61,7 +61,8 @@ struct Buckets {
     ValuesBucket* data = NULL;
     int64_t bucketCount = 0;
 
-    void free() {
+    void free()
+    {
         if (data != nullptr) {
             for (int b = 0; b < bucketCount; b++) {
                 ValuesBucket bucket = data[b];
@@ -71,7 +72,6 @@ struct Buckets {
             data = nullptr;
             bucketCount = 0;
         }
-
     }
 };
 using ContactData = Buckets;
