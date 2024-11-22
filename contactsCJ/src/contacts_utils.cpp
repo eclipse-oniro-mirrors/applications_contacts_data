@@ -19,12 +19,14 @@
 
 using namespace OHOS;
 using namespace OHOS::ContactsFfi;
+using namespace OHOS::DataShare;
 
 namespace OHOS {
 namespace ContactsFfi {
 
 // to be used to release content when an error happens
-void freeBucketContent(ValuesBucket* bucket) {
+void freeBucketContent(ValuesBucket* bucket)
+{
     if (bucket != nullptr) {
         for (int64_t i = 0; i < bucket->size; i++) {
             if (bucket->key != nullptr && bucket->key[i] != nullptr) {
@@ -32,7 +34,7 @@ void freeBucketContent(ValuesBucket* bucket) {
                 bucket->key[i] = nullptr;
             }
             if (bucket->value != nullptr &&
-                bucket->value[i].tag == DataShare::DataShareValueObjectType::TYPE_STRING) {
+                bucket->value[i].tag == DataShareValueObjectType::TYPE_STRING) {
                 free(bucket->value[i].string);
                 bucket->value[i].string = nullptr;
             }
@@ -50,7 +52,8 @@ void freeBucketContent(ValuesBucket* bucket) {
 }
 
 // return true if succeeded; after it b is fully allocated or completely empty with errCode set
-bool allocBucket(ValuesBucket* b, int total, int32_t *errCode) {
+bool allocBucket(ValuesBucket* b, uint32_t total, int32_t *errCode)
+{
     if (*errCode != ContactsApi::SUCCESS) {
         return false;
     }
@@ -61,7 +64,7 @@ bool allocBucket(ValuesBucket* b, int total, int32_t *errCode) {
         freeBucketContent(b); // actually. there is nothing to free, just set size to 0
         return false;
     }
-    b->value = (struct DataShare::CValueType*) malloc(total * sizeof(struct DataShare::CValueType));
+    b->value = (struct CValueType*) malloc(total * sizeof(struct CValueType));
     if (b->value == nullptr) {
         *errCode = ContactsApi::ERROR;
         freeBucketContent(b);
@@ -70,27 +73,29 @@ bool allocBucket(ValuesBucket* b, int total, int32_t *errCode) {
     return true;
 }
 
-DataShare::DataShareValuesBucket convertToDataShareVB(ContactsFfi::ValuesBucket vb) {
+DataShareValuesBucket convertToDataShareVB(ValuesBucket vb)
+{
     int64_t size = vb.size;
-    DataShare::DataShareValuesBucket dsvb = DataShare::DataShareValuesBucket();
+    DataShareValuesBucket dsvb = DataShareValuesBucket();
     for (int64_t i = 0; i < size; i++) {
         switch (vb.value[i].tag) {
-            case DataShare::DataShareValueObjectType::TYPE_STRING: {
-                DataShare::DataShareValueObject valueObject = DataShare::DataShareValueObject(std::string(vb.value[i].string));
+            case DataShareValueObjectType::TYPE_STRING: {
+                DataShareValueObject valueObject = DataShareValueObject(std::string(vb.value[i].string));
                 std::string keyStr = vb.key[i];
                 dsvb.Put(keyStr, valueObject);
                 break;
             }
-            case DataShare::DataShareValueObjectType::TYPE_INT: {
-                DataShare::DataShareValueObject valueObject = DataShare::DataShareValueObject(vb.value[i].integer);
+            case DataShareValueObjectType::TYPE_INT: {
+                DataShareValueObject valueObject = DataShareValueObject(vb.value[i].integer);
                 std::string keyStr = vb.key[i];
                 dsvb.Put(keyStr, valueObject);
                 break;
             }
             default: { // should not reach here
                 std::string keyStr = vb.key[i];
-                HILOG_ERROR("VB unsupported value type is %{public}d for key = %{public}s", vb.value[i].tag, keyStr.c_str());
-                dsvb.Put(vb.key[i], DataShare::DataShareValueObject());
+                HILOG_ERROR("VB unsupported value type is %{public}d for key = %{public}s",
+                    vb.value[i].tag, keyStr.c_str());
+                dsvb.Put(vb.key[i], DataShareValueObject());
                 break;
             }
         }
@@ -98,7 +103,7 @@ DataShare::DataShareValuesBucket convertToDataShareVB(ContactsFfi::ValuesBucket 
     return dsvb;
 }
 
-void PutQuickSearchKey(std::shared_ptr<DataShare::DataShareResultSet> &resultSet,
+void PutQuickSearchKey(std::shared_ptr<DataShareResultSet> &resultSet,
     std::map<int, std::string> &quickSearchMap, int contactIdValue)
 {
     std::string quickSearchValue = "";
@@ -126,7 +131,8 @@ std::vector<ValuesBucket> GetResultMapValue(std::map<int, std::vector<ValuesBuck
     return contactData;
 }
 
-void copyBucket(ValuesBucket* dst, int dstIdx, ValuesBucket &src) {
+void copyBucket(ValuesBucket* dst, int dstIdx, ValuesBucket &src)
+{
     dst[dstIdx].key = src.key;
     dst[dstIdx].value = src.value;
     dst[dstIdx].size = src.size;
@@ -154,7 +160,7 @@ void PutSingleString(ValuesBucket &bucket, int idx, std::string key, std::string
     if (*errCode != ContactsApi::SUCCESS) {
         return;
     }
-    bucket.value[idx].tag = static_cast<int>(OHOS::DataShare::DataType::TYPE_STRING);
+    bucket.value[idx].tag = static_cast<int>(DataType::TYPE_STRING);
     bucket.value[idx].string = TransformFromString(val, errCode);
 }
 
@@ -176,11 +182,11 @@ ValuesBucket singleStringAsValueBucket(std::string contentType, std::string valu
 }
 
 void PutResultValue(ValuesBucket &bucket, int idx, std::string contentStoreKey,
-                    std::shared_ptr<DataShare::DataShareResultSet> &resultSet, std::string contentLoadKey, int32_t *errCode)
+                    std::shared_ptr<DataShareResultSet> &resultSet, std::string contentLoadKey, int32_t *errCode)
 {
     int columnIndex = 0;
     resultSet->GetColumnIndex(contentLoadKey, columnIndex);
-    OHOS::DataShare::DataType columnType;
+    DataType columnType;
     resultSet->GetDataType(columnIndex, columnType);
 
     bucket.key[idx] = TransformFromString(contentStoreKey, errCode);
@@ -191,18 +197,18 @@ void PutResultValue(ValuesBucket &bucket, int idx, std::string contentStoreKey,
     bucket.value[idx].tag = static_cast<int>(columnType);
 
     // NULL and BLOB are ignored here
-    if (columnType == OHOS::DataShare::DataType::TYPE_STRING) {
+    if (columnType == DataType::TYPE_STRING) {
         std::string stringValue;
         resultSet->GetString(columnIndex, stringValue);
         bucket.value[idx].string = TransformFromString(stringValue, errCode);
         if (*errCode != ContactsApi::SUCCESS) {
             return;
         }
-    } else if (columnType == OHOS::DataShare::DataType::TYPE_INTEGER) {
+    } else if (columnType == DataType::TYPE_INTEGER) {
         int intValue = 0;
         resultSet->GetInt(columnIndex, intValue);
         bucket.value[idx].integer = intValue;
-    } else if (columnType == OHOS::DataShare::DataType::TYPE_FLOAT) {
+    } else if (columnType == DataType::TYPE_FLOAT) {
         double doubleValue = 0;
         resultSet->GetDouble(columnIndex, doubleValue);
         bucket.value[idx].dou = doubleValue;
@@ -210,7 +216,7 @@ void PutResultValue(ValuesBucket &bucket, int idx, std::string contentStoreKey,
 }
 
 void PutResultValue(ValuesBucket &bucket, int idx,
-                    std::shared_ptr<DataShare::DataShareResultSet> &resultSet, std::string contentKey, int32_t *errCode)
+                    std::shared_ptr<DataShareResultSet> &resultSet, std::string contentKey, int32_t *errCode)
 {
     PutResultValue(bucket, idx, contentKey, resultSet, contentKey, errCode);
 }
@@ -218,7 +224,7 @@ void PutResultValue(ValuesBucket &bucket, int idx,
 /**
  * @brief Converting resultset of a query to Email data ValuesBucket
  */
-ValuesBucket resultSetAsEmail(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsEmail(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_5, errCode)) {
@@ -242,7 +248,7 @@ ValuesBucket resultSetAsEmail(std::shared_ptr<DataShare::DataShareResultSet> &re
 /**
  * @brief Converting resultset of a query to Name data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsName(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsName(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_10, errCode)) {
@@ -263,7 +269,7 @@ ContactsFfi::ValuesBucket resultSetAsName(std::shared_ptr<DataShare::DataShareRe
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
         return b;
-    }    
+    }
 
     return b;
 }
@@ -271,7 +277,7 @@ ContactsFfi::ValuesBucket resultSetAsName(std::shared_ptr<DataShare::DataShareRe
 /**
  * @brief Converting resultset of a query to Portrait data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsPortrait(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsPortrait(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_2, errCode)) {
@@ -292,7 +298,7 @@ ContactsFfi::ValuesBucket resultSetAsPortrait(std::shared_ptr<DataShare::DataSha
 /**
  * @brief Converting resultset of a query to Event data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsEvent(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsEvent(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
@@ -315,7 +321,7 @@ ContactsFfi::ValuesBucket resultSetAsEvent(std::shared_ptr<DataShare::DataShareR
 /**
  * @brief Converting resultset of a query to Group data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsGroup(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsGroup(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_3, errCode)) {
@@ -337,7 +343,7 @@ ContactsFfi::ValuesBucket resultSetAsGroup(std::shared_ptr<DataShare::DataShareR
 /**
  * @brief Converting resultset of a query to ImAddress data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsImAddress(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsImAddress(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
@@ -360,7 +366,7 @@ ContactsFfi::ValuesBucket resultSetAsImAddress(std::shared_ptr<DataShare::DataSh
 /**
  * @brief Converting resultset of a query to PhoneNumber data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsPhone(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsPhone(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
@@ -383,7 +389,7 @@ ContactsFfi::ValuesBucket resultSetAsPhone(std::shared_ptr<DataShare::DataShareR
 /**
  * @brief Converting resultset of a query to PostalAddress data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsPostalAddress(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsPostAddress(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_11, errCode)) {
@@ -413,7 +419,7 @@ ContactsFfi::ValuesBucket resultSetAsPostalAddress(std::shared_ptr<DataShare::Da
 /**
  * @brief Converting resultset of a query to Relation data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsRelation(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsRelation(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
@@ -436,7 +442,7 @@ ContactsFfi::ValuesBucket resultSetAsRelation(std::shared_ptr<DataShare::DataSha
 /**
  * @brief Converting resultset of a query to SipAddress data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsSipAddress(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsSipAddress(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
@@ -459,7 +465,7 @@ ContactsFfi::ValuesBucket resultSetAsSipAddress(std::shared_ptr<DataShare::DataS
 /**
  * @brief Converting resultset of a query to Website data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsWebsite(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsWebsite(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_2, errCode)) {
@@ -480,7 +486,7 @@ ContactsFfi::ValuesBucket resultSetAsWebsite(std::shared_ptr<DataShare::DataShar
 /**
  * @brief Converting resultset of a query to Nickname data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsNickname(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsNickname(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_2, errCode)) {
@@ -501,7 +507,7 @@ ContactsFfi::ValuesBucket resultSetAsNickname(std::shared_ptr<DataShare::DataSha
 /**
  * @brief Converting resultset of a query to Note data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsNote(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsNote(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_2, errCode)) {
@@ -522,7 +528,7 @@ ContactsFfi::ValuesBucket resultSetAsNote(std::shared_ptr<DataShare::DataShareRe
 /**
  * @brief Converting resultset of a query to Organization data ValuesBucket
  */
-ContactsFfi::ValuesBucket resultSetAsOrganization(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ValuesBucket resultSetAsOrganization(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
     if (!allocBucket(&b, BUCKET_COUNT_3, errCode)) {
@@ -545,7 +551,7 @@ ContactsFfi::ValuesBucket resultSetAsOrganization(std::shared_ptr<DataShare::Dat
  * @brief Converting resultset of a query to one of contact's ValuesBucket
  */
 void addResultSetAsValuesBucket(std::vector<ValuesBucket> contactData,
-                                std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+                                std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     int typeIdValue = 0;
     std::string typeId = "type_id";
@@ -560,21 +566,82 @@ void addResultSetAsValuesBucket(std::vector<ValuesBucket> contactData,
         case ContactsApi::GROUP_MEMBERSHIP: contactData.push_back(resultSetAsGroup(resultSet, errCode)); return;
         case ContactsApi::IM:               contactData.push_back(resultSetAsImAddress(resultSet, errCode)); return;
         case ContactsApi::PHONE:            contactData.push_back(resultSetAsPhone(resultSet, errCode)); return;
-        case ContactsApi::POSTAL_ADDRESS:   contactData.push_back(resultSetAsPostalAddress(resultSet, errCode)); return;
+        case ContactsApi::POSTAL_ADDRESS:   contactData.push_back(resultSetAsPostAddress(resultSet, errCode)); return;
         case ContactsApi::RELATION:         contactData.push_back(resultSetAsRelation(resultSet, errCode)); return;
         case ContactsApi::SIP_ADDRESS:      contactData.push_back(resultSetAsSipAddress(resultSet, errCode)); return;
         case ContactsApi::WEBSITE:          contactData.push_back(resultSetAsWebsite(resultSet, errCode)); return;
         case ContactsApi::NICKNAME:         contactData.push_back(resultSetAsNickname(resultSet, errCode)); return;
         case ContactsApi::NOTE:             contactData.push_back(resultSetAsNote(resultSet, errCode)); return;
         case ContactsApi::ORGANIZATION:     contactData.push_back(resultSetAsOrganization(resultSet, errCode)); return;
-        default:             return;
+        default:                            return;
+    }
+}
+
+void allocateDataForContact(ContactsData* allContacts, int contactIndex, int contactId, std::string searchKey,
+                            std::vector<ValuesBucket> contactDataVector, int32_t *errCode)
+{
+    int bucketIndex = 0;
+    // consider passing contactId as integer value
+    ValuesBucket idBucket = singleStringAsValueBucket("id", std::to_string(contactId), errCode);
+    if (*errCode != ContactsApi::SUCCESS) {
+        free(allContacts->contactsData[contactIndex].data);
+        allContacts->contactsData[contactIndex].bucketCount = 0;
+        allContacts->contactsData[contactIndex].data = nullptr;
+        continue;
+    }
+    ValuesBucket searchKeyBucket = singleStringAsValueBucket("key", searchKey, errCode);
+    if (*errCode != ContactsApi::SUCCESS) {
+        freeBucketContent(&idBucket);
+        free(allContacts->contactsData[contactIndex].data);
+        allContacts->contactsData[contactIndex].bucketCount = 0;
+        allContacts->contactsData[contactIndex].data = nullptr;
+        continue;
+    }
+    copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, idBucket);
+    bucketIndex++;
+    copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, searchKeyBucket);
+    bucketIndex++;
+
+    // copy bucket pointers from vector
+    for (std::vector<ValuesBucket>::size_type i = 0; i < contactDataVector.size(); i++, bucketIndex++) {
+        copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, contactDataVector[i]);
+    }
+}
+
+void releaseAllContacts(ContactsData* allContacts)
+{
+    for (int i = 0; i < allContacts->contactsCount; i++) {
+        if (allContacts->contactsData[contactIndex].data != nullptr) {
+            for (int b = 0; b < allContacts->contactsData[contactIndex].bucketCount; b++) {
+                ValuesBucket bucket = allContacts->contactsData[contactIndex].data[b];
+                freeBucketContent(&bucket);
+            }
+            free(allContacts->contactsData[contactIndex].data);
+            allContacts->contactsData[contactIndex].data = nullptr;
+            allContacts->contactsData[contactIndex].bucketCount = 0;
+        }
+    }
+    free(allContacts->contactsData);
+    allContacts->contactsData = nullptr;
+    allContacts->contactsCount = 0;
+}
+
+void releaseRresultSetMapBuckets(std::map<int, std::vector<ValuesBucket>> resultSetMap)
+{
+    std::map<int, std::vector<ValuesBucket>>::iterator it;
+    for (it = resultSetMap.begin(); it != resultSetMap.end(); it++, contactIndex++) {
+        std::vector<ValuesBucket> contactDataVector = it->second;
+        for (std::vector<ValuesBucket>::size_type i = 0; i < contactDataVector.size(); i++) {
+            ValuesBucket bucket = contactDataVector[i];
+            freeBucketContent(&bucket);
+        }
     }
 }
 
 ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> resultSetMap,
-                                    std::map<int, std::string> quickSearchMap, int32_t *errCode)
+                                     std::map<int, std::string> quickSearchMap, int32_t *errCode)
 {
-    int totalContacts = resultSetMap.size();
+    uint32_t totalContacts = resultSetMap.size();
     ContactsData* allContacts = (struct ContactsData*) malloc(sizeof(struct ContactsData));
     if (allContacts == nullptr) {
         HILOG_ERROR("ContactUtils::allocCollectedContacts fail to mem alloc");
@@ -592,8 +659,7 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> re
 
     int contactIndex = 0;
     std::map<int, std::vector<ValuesBucket>>::iterator it;
-    for (it = resultSetMap.begin(); it != resultSetMap.end(); it++, contactIndex++)
-    {
+    for (it = resultSetMap.begin(); it != resultSetMap.end(); it++, contactIndex++) {
         int contactId = it->first;
         std::vector<ValuesBucket> contactDataVector = it->second;
         std::string searchKey = quickSearchMap.find(contactId)->second;
@@ -605,65 +671,19 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> re
         }
         int totalBuckets = 2 + contactDataVector.size(); // 2 more for contactId and searchKey buckets
         allContacts->contactsData[contactIndex].bucketCount = totalBuckets;
-        allContacts->contactsData[contactIndex].data = (struct ValuesBucket*) malloc(totalBuckets * sizeof(struct ValuesBucket));
+        allContacts->contactsData[contactIndex].data =
+            (struct ValuesBucket*) malloc(totalBuckets * sizeof(struct ValuesBucket));
         if (allContacts->contactsData[contactIndex].data == nullptr) {
             *errCode = ContactsApi::ERROR;
             continue;
         }
 
-        int bucketIndex = 0;
-        // consider passing contactId as integer value
-        ValuesBucket idBucket = singleStringAsValueBucket("id", std::to_string(contactId), errCode);
-        if (*errCode != ContactsApi::SUCCESS) {
-            free(allContacts->contactsData[contactIndex].data);
-            allContacts->contactsData[contactIndex].bucketCount = 0;
-            allContacts->contactsData[contactIndex].data = nullptr;
-            continue;
-        }
-        ValuesBucket searchKeyBucket = singleStringAsValueBucket("key", searchKey, errCode);
-        if (*errCode != ContactsApi::SUCCESS) {
-            freeBucketContent(&idBucket);
-            free(allContacts->contactsData[contactIndex].data);
-            allContacts->contactsData[contactIndex].bucketCount = 0;
-            allContacts->contactsData[contactIndex].data = nullptr;
-            continue;
-        }
-        copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, idBucket); bucketIndex++;
-        copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, searchKeyBucket); bucketIndex++;
-
-        // copy bucket pointers from vector
-        for(std::vector<ValuesBucket>::size_type i = 0; i < contactDataVector.size(); i++, bucketIndex++) {
-            copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, contactDataVector[i]);
-        }
+        allocateDataForContact(allContacts, contactIndex, contactId, searchKey, contactDataVector, errCode)
     }
 
     if (*errCode != ContactsApi::SUCCESS) {
-        // release allContacts
-        for (int i = 0; i < allContacts->contactsCount; i++) {
-            if (allContacts->contactsData[contactIndex].data != nullptr) {
-                for (int b = 0; b < allContacts->contactsData[contactIndex].bucketCount; b++) {
-                    ValuesBucket bucket = allContacts->contactsData[contactIndex].data[b];
-                    freeBucketContent(&bucket);
-                }
-                free(allContacts->contactsData[contactIndex].data);
-                allContacts->contactsData[contactIndex].data = nullptr;
-                allContacts->contactsData[contactIndex].bucketCount = 0;
-            }
-        }
-        free(allContacts->contactsData);
-        allContacts->contactsData = nullptr;
-        allContacts->contactsCount = 0;
-
-        // release buckets in resultSetMap
-        std::map<int, std::vector<ValuesBucket>>::iterator it;
-        for (it = resultSetMap.begin(); it != resultSetMap.end(); it++, contactIndex++) {
-            std::vector<ValuesBucket> contactDataVector = it->second;
-            for(std::vector<ValuesBucket>::size_type i = 0; i < contactDataVector.size(); i++) {
-                ValuesBucket bucket = contactDataVector[i];
-                freeBucketContent(&bucket);
-            }
-        }
-
+        releaseAllContacts(allContacts);
+        releaseRresultSetMapBuckets(resultSetMap);
         return nullptr;
     }
 
@@ -671,7 +691,7 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> re
 }
 
 // it closes resultSet after parse
-ContactsData* parseResultSetForContacts(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+ContactsData* parseResultSetForContacts(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     if (resultSet == nullptr) {
         HILOG_ERROR("ContactUtils::parseResultSetForContacts resultSet is nullptr");
@@ -708,7 +728,7 @@ ContactsData* parseResultSetForContacts(std::shared_ptr<DataShare::DataShareResu
         std::map<int, std::vector<ValuesBucket>>::iterator it;
         for (it = resultSetMap.begin(); it != resultSetMap.end(); it++) {
             std::vector<ValuesBucket> contactDataVector = it->second;
-            for(std::vector<ValuesBucket>::size_type i = 0; i < contactDataVector.size(); i++) {
+            for (std::vector<ValuesBucket>::size_type i = 0; i < contactDataVector.size(); i++) {
                 ValuesBucket bucket = contactDataVector[i];
                 freeBucketContent(&bucket);
             }
@@ -721,7 +741,7 @@ ContactsData* parseResultSetForContacts(std::shared_ptr<DataShare::DataShareResu
 /**
  * @brief Converting resultset of a query to Group data ValuesBucket
  */
-void resultSetAsGroup(ValuesBucket* groups, int idx, std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+void resultSetAsGroup(ValuesBucket* groups, int idx, std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     int total = 2;
     groups[idx].key = (char**) malloc(total * sizeof(char*));
@@ -731,7 +751,7 @@ void resultSetAsGroup(ValuesBucket* groups, int idx, std::shared_ptr<DataShare::
         return;
     }
 
-    groups[idx].value = (struct DataShare::CValueType*) malloc(total * sizeof(struct DataShare::CValueType));
+    groups[idx].value = (struct CValueType*) malloc(total * sizeof(struct CValueType));
     if (groups[idx].value == nullptr) {
         free(groups[idx].key);
         HILOG_ERROR("ContactUtils::resultSetAsGroup fail to mem alloc");
@@ -761,7 +781,8 @@ void resultSetAsGroup(ValuesBucket* groups, int idx, std::shared_ptr<DataShare::
 /**
  * @brief Converting resultset of a query to Holder data ValuesBucket
  */
-void resultSetAsHolder(ValuesBucket* holders, int idx, std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+void resultSetAsHolder(ValuesBucket* holders, int idx, std::shared_ptr<DataShareResultSet> &resultSet,
+                       int32_t *errCode)
 {
     int total = 3;
     holders[idx].key = (char**) malloc(total * sizeof(char*));
@@ -771,7 +792,7 @@ void resultSetAsHolder(ValuesBucket* holders, int idx, std::shared_ptr<DataShare
         return;
     }
 
-    holders[idx].value = (struct DataShare::CValueType*) malloc(total * sizeof(struct DataShare::CValueType));
+    holders[idx].value = (struct CValueType*) malloc(total * sizeof(struct CValueType));
     if (holders[idx].value == nullptr) {
         free(holders[idx].key);
         HILOG_ERROR("ContactUtils::resultSetAsHolder fail to mem alloc");
@@ -788,7 +809,7 @@ void resultSetAsHolder(ValuesBucket* holders, int idx, std::shared_ptr<DataShare
 }
 
 // it closes resultSet after parse
-GroupsData* parseResultSetForGroups(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+GroupsData* parseResultSetForGroups(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     if (resultSet == nullptr) {
         HILOG_ERROR("ContactUtils::parseResultSetForGroups resultSet is nullptr");
@@ -829,15 +850,7 @@ GroupsData* parseResultSetForGroups(std::shared_ptr<DataShare::DataShareResultSe
     resultSet->Close();
 
     if (*errCode != ContactsApi::SUCCESS) {
-        if (allGroups->data != nullptr) {
-            for (int b = 0; b < allGroups->bucketCount; b++) {
-                ValuesBucket bucket = allGroups->data[b];
-                freeBucketContent(&bucket);
-            }
-            free(allGroups->data);
-            allGroups->data = nullptr;
-            allGroups->bucketCount = 0;
-        }
+        allGroups.free();
         free(allGroups);
         allGroups = nullptr;
     }
@@ -846,7 +859,7 @@ GroupsData* parseResultSetForGroups(std::shared_ptr<DataShare::DataShareResultSe
 }
 
 // it closes resultSet after parse
-HoldersData* parseResultSetForHolders(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
+HoldersData* parseResultSetForHolders(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode)
 {
     if (resultSet == nullptr) {
         HILOG_ERROR("ContactUtils::parseResultSetForHolders resultSet is nullptr");
@@ -887,15 +900,7 @@ HoldersData* parseResultSetForHolders(std::shared_ptr<DataShare::DataShareResult
     resultSet->Close();
 
     if (*errCode != ContactsApi::SUCCESS) {
-        if (allHolders->data != nullptr) {
-            for (int b = 0; b < allHolders->bucketCount; b++) {
-                ValuesBucket bucket = allHolders->data[b];
-                freeBucketContent(&bucket);
-            }
-            free(allHolders->data);
-            allHolders->data = nullptr;
-            allHolders->bucketCount = 0;
-        }
+        allHolders.free();
         free(allHolders);
         allHolders = nullptr;
     }

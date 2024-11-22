@@ -27,10 +27,13 @@ extern "C" {
                                                 int64_t predicatesId, int32_t *errCode);
     FFI_EXPORT bool FfiOHOSContactIsLocalContact(int64_t contextId, int64_t contactId, int32_t *errCode);
     FFI_EXPORT bool FfiOHOSContactIsMyCard(int64_t contextId, int64_t contactId, int32_t *errCode);
-    FFI_EXPORT OHOS::ContactsFfi::ContactsData* FfiOHOSContactQueryMyCard(int64_t contextId, int64_t predicatesId, int32_t *errCode);
+    FFI_EXPORT OHOS::ContactsFfi::ContactsData* FfiOHOSContactQueryMyCard(int64_t contextId, int64_t predicatesId,
+                                                                          int32_t *errCode);
     FFI_EXPORT OHOS::ContactsFfi::HoldersData* FfiOHOSContactQueryHolders(int64_t contextId, int32_t *errCode);
-    FFI_EXPORT OHOS::ContactsFfi::ContactsData* FfiOHOSContactQueryContacts(int64_t contextId, int64_t predicatesId, int32_t *errCode);
-    FFI_EXPORT OHOS::ContactsFfi::GroupsData* FfiOHOSContactQueryGroups(int64_t contextId, int64_t predicatesId, int32_t *errCode);
+    FFI_EXPORT OHOS::ContactsFfi::ContactsData* FfiOHOSContactQueryContacts(int64_t contextId, int64_t predicatesId,
+                                                                            int32_t *errCode);
+    FFI_EXPORT OHOS::ContactsFfi::GroupsData* FfiOHOSContactQueryGroups(int64_t contextId, int64_t predicatesId,
+                                                                        int32_t *errCode);
 }
 
 #endif // CONTACTS_FFI_H

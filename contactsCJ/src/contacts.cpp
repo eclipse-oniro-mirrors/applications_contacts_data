@@ -35,11 +35,13 @@ namespace OHOS {
 namespace ContactsFfi {
 
 // works for contactId and holderId
-bool isInvalidId(int id) {
+bool IsInvalidId(int id)
+{
     return id <= 0;
 }
 
-std::shared_ptr<DataShareHelper> dsHelperFromContext(int64_t contextId) {
+std::shared_ptr<DataShareHelper> dsHelperFromContext(int64_t contextId)
+{
     sptr<CJAbilityContext> context = FFIData::GetData<CJAbilityContext>(contextId);
     return DataShareHelper::Creator(context->GetToken(), ContactsApi::CONTACTS_DATA_URI);
 }
@@ -57,7 +59,7 @@ int64_t Contacts::CJaddContact(int64_t contextId, DataShareValuesBucket rawConta
     }
 
     ContactsApi::ContactsControl contactsControl;
-    int rawId = contactsControl.RawContactInsert(dataShareHelper, rawContact);    
+    int rawId = contactsControl.RawContactInsert(dataShareHelper, rawContact);
 
     unsigned int size = contactData.size();
     for (unsigned int i = 0; i < size; ++i) {
@@ -88,7 +90,8 @@ void Contacts::CJdeleteContact(int64_t contextId, int64_t predicatesId, int32_t 
         return;
     }
 
-    std::shared_ptr<DataSharePredicates> predicates = FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    std::shared_ptr<DataSharePredicates> predicates =
+        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
 
     ContactsApi::ContactsControl contactsControl;
     int code = contactsControl.ContactDelete(dataShareHelper, *predicates);
@@ -103,7 +106,8 @@ DataSharePredicates buildQueryDataPredicates(int64_t contactId)
 {
     DataSharePredicates predicates;
     if (contactId != 0) {
-        std::vector<std::string> fields; fields.push_back("raw_contact_id");
+        std::vector<std::string> fields;
+        fields.push_back("raw_contact_id");
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
         predicates.EqualTo("contact_id", std::to_string(contactId));
@@ -121,20 +125,23 @@ void Contacts::CJupdateContact(int64_t contextId, int64_t contactId, std::vector
         *errCode = ContactsApi::PERMISSION_ERROR;
         return;
     }
-    if (isInvalidId(contactId)) {
+    if (IsInvalidId(contactId)) {
         HILOG_ERROR("CJupdateContact Parameter invalid! %{public}ld", contactId);
         *errCode = ContactsApi::PARAMETER_ERROR;
         return;
     }
 
-    std::shared_ptr<DataSharePredicates> deletePredicates = FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    std::shared_ptr<DataSharePredicates> deletePredicates =
+        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
     ContactsApi::ContactsControl contactsControl;
 
     // query raw_contact_id
-    std::vector<std::string> queryDataColumns; queryDataColumns.push_back("raw_contact_id");
+    std::vector<std::string> queryDataColumns;
+    queryDataColumns.push_back("raw_contact_id");
     DataSharePredicates queryDataPredicates = buildQueryDataPredicates(contactId);
 
-    std::shared_ptr<DataShareResultSet> resultSet = contactsControl.ContactQuery(dataShareHelper, queryDataColumns, queryDataPredicates);
+    std::shared_ptr<DataShareResultSet> resultSet =
+        contactsControl.ContactQuery(dataShareHelper, queryDataColumns, queryDataPredicates);
     int rawId = ContactsApi::GetRawIdByResultSet(resultSet);
     if (rawId <= 0) {
         HILOG_ERROR("CJupdateContact contact rawId equals %{public}d", rawId);
@@ -188,7 +195,7 @@ bool Contacts::CJisLocalContact(int64_t contextId, int64_t contactId, int32_t *e
         *errCode = ContactsApi::PERMISSION_ERROR;
         return false;
     }
-    if (isInvalidId(contactId)) {
+    if (IsInvalidId(contactId)) {
         HILOG_ERROR("CJisLocalContact Parameter invalid! %{public}ld", contactId);
         *errCode = ContactsApi::PARAMETER_ERROR;
         return false;
@@ -239,7 +246,7 @@ bool Contacts::CJisMyCard(int64_t contextId, int64_t contactId, int32_t *errCode
         *errCode = ContactsApi::PERMISSION_ERROR;
         return false;
     }
-    if (isInvalidId(contactId)) {
+    if (IsInvalidId(contactId)) {
         HILOG_ERROR("CJisMyCard Parameter invalid! %{public}ld", contactId);
         *errCode = ContactsApi::PARAMETER_ERROR;
         return false;
@@ -289,7 +296,8 @@ ContactsData* Contacts::CJqueryMyCard(int64_t contextId, int64_t predicatesId, i
         return nullptr;
     }
 
-    std::shared_ptr<DataSharePredicates> predicates = FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    std::shared_ptr<DataSharePredicates> predicates =
+        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
     ContactsApi::ContactsControl contactsControl;
 
     std::vector<std::string> columns;
@@ -318,7 +326,8 @@ GroupsData* Contacts::CJqueryGroups(int64_t contextId, int64_t predicatesId, int
         return nullptr;
     }
 
-    std::shared_ptr<DataSharePredicates> predicates = FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    std::shared_ptr<DataSharePredicates> predicates =
+        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
     ContactsApi::ContactsControl contactsControl;
 
     std::vector<std::string> columns;
@@ -376,11 +385,13 @@ ContactsData* Contacts::CJqueryContacts(int64_t contextId, int64_t predicatesId,
         return nullptr;
     }
 
-    std::shared_ptr<DataSharePredicates> predicates = FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    std::shared_ptr<DataSharePredicates> predicates =
+        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
     ContactsApi::ContactsControl contactsControl;
 
     std::vector<std::string> columns;
-    std::shared_ptr<DataShareResultSet> resultSet = contactsControl.ContactQuery(dataShareHelper, columns, *predicates);
+    std::shared_ptr<DataShareResultSet> resultSet =
+        contactsControl.ContactQuery(dataShareHelper, columns, *predicates);
     ContactsData* contacts = parseResultSetForContacts(resultSet, errCode); // resultSet is closed inside
 
     dataShareHelper->Release();
