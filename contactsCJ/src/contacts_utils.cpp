@@ -627,7 +627,7 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> re
     }
 
     int totalContacts = resultSetMap.size();
-    if (totalContacts == 0) {
+    if (totalContacts <= 0 || totalContacts > MAX_CONTACTS) {
         free(allContacts);
         return nullptr;
     }

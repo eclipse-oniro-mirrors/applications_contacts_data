@@ -12,8 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-
-CONTACT_ROOT = "//applications/standard/contacts_data"
+import("//applications/standard/contacts_data/contact.gni")
 
 ohos_shared_library("contact_cj") {
   sources = [

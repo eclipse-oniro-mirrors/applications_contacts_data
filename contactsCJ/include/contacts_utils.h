@@ -28,6 +28,8 @@
 namespace OHOS {
 namespace ContactsFfi {
 
+constexpr int MAX_CONTACTS = 1024 * 1024;
+
 constexpr int BUCKET_IDX_0 = 0;
 constexpr int BUCKET_IDX_1 = 1;
 constexpr int BUCKET_IDX_2 = 2;
@@ -52,7 +54,8 @@ struct ValuesBucket {
     DataShare::CValueType* value = NULL;
     int64_t size = 0;
 
-    void freeContent() {
+    void freeContent()
+    {
         for (int64_t i = 0; i < size; i++) {
             if (key != nullptr && key[i] != nullptr) {
                 free(key[i]);
@@ -112,7 +115,8 @@ ContactsData* parseResultSetForContacts(std::shared_ptr<OHOS::DataShare::DataSha
 
 GroupsData* parseResultSetForGroups(std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, int32_t *errCode);
 
-HoldersData* parseResultSetForHolders(std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, int32_t *errCode);
+HoldersData* parseResultSetForHolders(std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet,
+                                      int32_t *errCode);
 
 } // namespace ContactsFfi
 } // namespace OHOS
