@@ -161,12 +161,12 @@ void PutSingleString(ValuesBucket &bucket, int idx, std::string key, std::string
 ValuesBucket singleStringAsValueBucket(std::string contentType, std::string value, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 2, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_2, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", contentType, errCode);
-    PutSingleString(b, 1, "detail_info", value, errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", contentType, errCode);
+    PutSingleString(b, BUCKET_IDX_1, "detail_info", value, errCode);
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
         return b;
@@ -221,15 +221,15 @@ void PutResultValue(ValuesBucket &bucket, int idx,
 ValuesBucket resultSetAsEmail(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 5, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_5, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "email", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "alias_detail_info", errCode);
-    PutResultValue(b, 3, resultSet, "custom_data", errCode);
-    PutResultValue(b, 4, resultSet, "extend7", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "email", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "alias_detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_3, resultSet, "custom_data", errCode);
+    PutResultValue(b, BUCKET_IDX_4, resultSet, "extend7", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -245,20 +245,20 @@ ValuesBucket resultSetAsEmail(std::shared_ptr<DataShare::DataShareResultSet> &re
 ContactsFfi::ValuesBucket resultSetAsName(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 10, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_10, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "name", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "alpha_name", errCode);
-    PutResultValue(b, 3, resultSet, "other_lan_last_name", errCode);
-    PutResultValue(b, 4, resultSet, "other_lan_first_name", errCode);
-    PutResultValue(b, 5, resultSet, "family_name", errCode);
-    PutResultValue(b, 6, resultSet, "middle_name_phonetic", errCode);
-    PutResultValue(b, 7, resultSet, "given_name", errCode);
-    PutResultValue(b, 8, resultSet, "given_name_phonetic", errCode);
-    PutResultValue(b, 9, resultSet, "phonetic_name", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "name", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "alpha_name", errCode);
+    PutResultValue(b, BUCKET_IDX_3, resultSet, "other_lan_last_name", errCode);
+    PutResultValue(b, BUCKET_IDX_4, resultSet, "other_lan_first_name", errCode);
+    PutResultValue(b, BUCKET_IDX_5, resultSet, "family_name", errCode);
+    PutResultValue(b, BUCKET_IDX_6, resultSet, "middle_name_phonetic", errCode);
+    PutResultValue(b, BUCKET_IDX_7, resultSet, "given_name", errCode);
+    PutResultValue(b, BUCKET_IDX_8, resultSet, "given_name_phonetic", errCode);
+    PutResultValue(b, BUCKET_IDX_9, resultSet, "phonetic_name", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -274,12 +274,12 @@ ContactsFfi::ValuesBucket resultSetAsName(std::shared_ptr<DataShare::DataShareRe
 ContactsFfi::ValuesBucket resultSetAsPortrait(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 2, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_2, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "photo", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "photo", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -295,14 +295,14 @@ ContactsFfi::ValuesBucket resultSetAsPortrait(std::shared_ptr<DataShare::DataSha
 ContactsFfi::ValuesBucket resultSetAsEvent(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 4, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "contact_event", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "custom_data", errCode);
-    PutResultValue(b, 3, resultSet, "extend7", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "contact_event", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "custom_data", errCode);
+    PutResultValue(b, BUCKET_IDX_3, resultSet, "extend7", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -318,13 +318,13 @@ ContactsFfi::ValuesBucket resultSetAsEvent(std::shared_ptr<DataShare::DataShareR
 ContactsFfi::ValuesBucket resultSetAsGroup(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 3, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_3, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "group_membership", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "group_name", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "group_membership", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "group_name", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -340,14 +340,14 @@ ContactsFfi::ValuesBucket resultSetAsGroup(std::shared_ptr<DataShare::DataShareR
 ContactsFfi::ValuesBucket resultSetAsImAddress(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 4, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "im", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "custom_data", errCode);
-    PutResultValue(b, 3, resultSet, "extend7", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "im", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "custom_data", errCode);
+    PutResultValue(b, BUCKET_IDX_3, resultSet, "extend7", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -363,14 +363,14 @@ ContactsFfi::ValuesBucket resultSetAsImAddress(std::shared_ptr<DataShare::DataSh
 ContactsFfi::ValuesBucket resultSetAsPhone(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 4, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "phone", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "custom_data", errCode);
-    PutResultValue(b, 3, resultSet, "extend7", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "phone", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "custom_data", errCode);
+    PutResultValue(b, BUCKET_IDX_3, resultSet, "extend7", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -386,21 +386,21 @@ ContactsFfi::ValuesBucket resultSetAsPhone(std::shared_ptr<DataShare::DataShareR
 ContactsFfi::ValuesBucket resultSetAsPostalAddress(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 11, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_11, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "postal_address", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "neighborhood", errCode);
-    PutResultValue(b, 3, resultSet, "pobox", errCode);
-    PutResultValue(b, 4, resultSet, "postcode", errCode);
-    PutResultValue(b, 5, resultSet, "region", errCode);
-    PutResultValue(b, 6, resultSet, "street", errCode);
-    PutResultValue(b, 7, resultSet, "city", errCode);
-    PutResultValue(b, 8, resultSet, "country", errCode);
-    PutResultValue(b, 9, resultSet, "custom_data", errCode);
-    PutResultValue(b, 10, resultSet, "extend7", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "postal_address", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "neighborhood", errCode);
+    PutResultValue(b, BUCKET_IDX_3, resultSet, "pobox", errCode);
+    PutResultValue(b, BUCKET_IDX_4, resultSet, "postcode", errCode);
+    PutResultValue(b, BUCKET_IDX_5, resultSet, "region", errCode);
+    PutResultValue(b, BUCKET_IDX_6, resultSet, "street", errCode);
+    PutResultValue(b, BUCKET_IDX_7, resultSet, "city", errCode);
+    PutResultValue(b, BUCKET_IDX_8, resultSet, "country", errCode);
+    PutResultValue(b, BUCKET_IDX_9, resultSet, "custom_data", errCode);
+    PutResultValue(b, BUCKET_IDX_10, resultSet, "extend7", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -416,14 +416,14 @@ ContactsFfi::ValuesBucket resultSetAsPostalAddress(std::shared_ptr<DataShare::Da
 ContactsFfi::ValuesBucket resultSetAsRelation(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 4, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "relation", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "custom_data", errCode);
-    PutResultValue(b, 3, resultSet, "extend7", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "relation", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "custom_data", errCode);
+    PutResultValue(b, BUCKET_IDX_3, resultSet, "extend7", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -439,14 +439,14 @@ ContactsFfi::ValuesBucket resultSetAsRelation(std::shared_ptr<DataShare::DataSha
 ContactsFfi::ValuesBucket resultSetAsSipAddress(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 4, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_4, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "sip_address", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "custom_data", errCode);
-    PutResultValue(b, 3, resultSet, "extend7", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "sip_address", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "custom_data", errCode);
+    PutResultValue(b, BUCKET_IDX_3, resultSet, "extend7", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -462,12 +462,12 @@ ContactsFfi::ValuesBucket resultSetAsSipAddress(std::shared_ptr<DataShare::DataS
 ContactsFfi::ValuesBucket resultSetAsWebsite(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 2, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_2, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "website", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "website", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -483,12 +483,12 @@ ContactsFfi::ValuesBucket resultSetAsWebsite(std::shared_ptr<DataShare::DataShar
 ContactsFfi::ValuesBucket resultSetAsNickname(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 2, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_2, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "nickname", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "nickname", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -504,12 +504,12 @@ ContactsFfi::ValuesBucket resultSetAsNickname(std::shared_ptr<DataShare::DataSha
 ContactsFfi::ValuesBucket resultSetAsNote(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 2, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_2, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "note", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "note", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);
@@ -525,13 +525,13 @@ ContactsFfi::ValuesBucket resultSetAsNote(std::shared_ptr<DataShare::DataShareRe
 ContactsFfi::ValuesBucket resultSetAsOrganization(std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int32_t *errCode)
 {
     struct ValuesBucket b;
-    if (!allocBucket(&b, 3, errCode)) {
+    if (!allocBucket(&b, BUCKET_COUNT_3, errCode)) {
         return b;
     }
 
-    PutSingleString(b, 0, "content_type", "organization", errCode);
-    PutResultValue(b, 1, resultSet, "detail_info", errCode);
-    PutResultValue(b, 2, resultSet, "position", errCode);
+    PutSingleString(b, BUCKET_IDX_0, "content_type", "organization", errCode);
+    PutResultValue(b, BUCKET_IDX_1, resultSet, "detail_info", errCode);
+    PutResultValue(b, BUCKET_IDX_2, resultSet, "position", errCode);
 
     if (*errCode != ContactsApi::SUCCESS) {
         freeBucketContent(&b);

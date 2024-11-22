@@ -28,6 +28,25 @@
 namespace OHOS {
 namespace ContactsFfi {
 
+constexpr int BUCKET_IDX_0 = 0;
+constexpr int BUCKET_IDX_1 = 1;
+constexpr int BUCKET_IDX_2 = 2;
+constexpr int BUCKET_IDX_3 = 3;
+constexpr int BUCKET_IDX_4 = 4;
+constexpr int BUCKET_IDX_5 = 5;
+constexpr int BUCKET_IDX_6 = 6;
+constexpr int BUCKET_IDX_7 = 7;
+constexpr int BUCKET_IDX_8 = 8;
+constexpr int BUCKET_IDX_9 = 9;
+constexpr int BUCKET_IDX_10 = 10;
+
+constexpr int BUCKET_COUNT_2 = 2;
+constexpr int BUCKET_COUNT_3 = 3;
+constexpr int BUCKET_COUNT_4 = 4;
+constexpr int BUCKET_COUNT_5 = 5;
+constexpr int BUCKET_COUNT_10 = 10;
+constexpr int BUCKET_COUNT_11 = 11;
+
 struct ValuesBucket {
     char** key = NULL;
     DataShare::CValueType* value = NULL;

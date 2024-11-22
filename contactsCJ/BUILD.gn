@@ -12,17 +12,6 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/distributeddatamgr/relational_store/relational_store.gni")
-import("//foundation/distributeddatamgr/data_share/datashare.gni")
-
-config("cj_contacts_public_config") {
-  visibility = [ ":*" ]
-  include_dirs = [
-    "${datashare_cj_ffi_path}/data_share_predicates/include",
-    "include"
-  ]
-  cflags = []
-}
 
 ohos_shared_library("contact_cj") {
   sources = [
@@ -31,17 +20,9 @@ ohos_shared_library("contact_cj") {
     "src/contacts_utils.cpp",
   ]
 
-  public_configs = [ ":cj_contacts_public_config" ]
+  include_dirs = [ "include" ]
 
-  include_dirs = [
-    "//commonlibrary/c_utils/base/include",
-    "//applications/standard/contacts_data/contacts/include",
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
-  ]
-
-  deps = [
-    "//applications/standard/contacts_data/contacts:contact"
-  ]
+  deps = [ "//applications/standard/contacts_data/contacts:contact" ]
 
   sanitize = {
     cfi = true
@@ -57,8 +38,8 @@ ohos_shared_library("contact_cj") {
     "ability_runtime:app_context",
     "ability_runtime:napi_base_context",
     "c_utils:utils",
-    "data_share:datashare_consumer",
     "data_share:cj_data_share_predicates_ffi",
+    "data_share:datashare_consumer",
     "hilog:libhilog",
     "ipc:ipc_core",
     "napi:cj_bind_ffi",
