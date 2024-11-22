@@ -21,7 +21,7 @@
 
 #include "hilog_wrapper_api.h" // from contacts_data/contacts
 
-#include "cj_data_share_predicates_utils.h"
+#include "data_share_predicates_utils.h"
 #include "datashare_result_set.h"
 #include "datashare_values_bucket.h"
 

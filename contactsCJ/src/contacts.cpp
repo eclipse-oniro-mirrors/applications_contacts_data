@@ -14,7 +14,7 @@
  */
 
 #include "ability_runtime/cj_ability_context.h"
-#include "cj_data_share_predicates_impl.h"
+#include "data_share_predicates_impl.h"
 #include "contacts.h"
 #include "contacts_api.h" // from contacts_data/contacts
 #include "contacts_control.h" // from contacts_data/contacts
@@ -164,7 +164,7 @@ void Contacts::CJupdateContact(int64_t contextId, int64_t contactId, std::vector
 
     *errCode = resultCode;
 }
-// It is similar to code in contacts/src/contacts_api.cpp for js, consider reusing.
+
 DataSharePredicates buildIsLocalContactPredicates(int64_t id)
 {
     DataShare::DataSharePredicates predicates;
@@ -220,7 +220,6 @@ bool Contacts::CJisLocalContact(int64_t contextId, int64_t contactId, int32_t *e
     return isLocal;
 }
 
-// It is similar to code in contacts/src/contacts_api.cpp for js, consider reusing.
 DataSharePredicates buildIsMyCardPredicates(int64_t id)
 {
     DataShare::DataSharePredicates predicates;

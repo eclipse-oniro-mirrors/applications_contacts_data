@@ -62,35 +62,7 @@
                     "//applications/standard/contacts_data:contactsdataability",
                     "//applications/standard/contacts_data:Contacts_DataAbility"
                 ]
-            },
-            "inner_api": [
-                {
-                    "name": "//applications/standard/contacts_data/contacts:contact",
-                    "header": {
-                        "header_files": [
-                            "contacts_api.h",
-                            "contacts_build.h",
-                            "contacts_control.h",
-                            "contacts_napi_common.h",
-                            "contacts_napi_object.h",
-                            "contacts_napi_utils.h",
-                            "contacts_telephony_permission.h",
-                            "hilog_wrapper.h",
-                            "result_converter.h"
-                        ],
-                        "header_base":  "//applications/standard/contacts_data/contacts/include"
-                    }
-                },
-                {
-                    "name": "//applications/standard/contacts_data/contactsCJ:contact_cj",
-                    "header": {
-                        "header_files": [
-                            "contacts_ffi.h"
-                        ],
-                        "header_base":  "//applications/standard/contacts_data/contactsCJ/include"
-                    }
-                }
-            ]
+            }
         }
     }
 }
