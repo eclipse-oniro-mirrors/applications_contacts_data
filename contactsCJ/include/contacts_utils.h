@@ -25,8 +25,6 @@
 #include "datashare_result_set.h"
 #include "datashare_values_bucket.h"
 
-using namespace OHOS::DataShare;
-
 namespace OHOS {
 namespace ContactsFfi {
 
@@ -53,6 +51,29 @@ struct ValuesBucket {
     char** key = NULL;
     DataShare::CValueType* value = NULL;
     int64_t size = 0;
+
+    void freeContent() {
+        for (int64_t i = 0; i < size; i++) {
+            if (key != nullptr && key[i] != nullptr) {
+                free(key[i]);
+                key[i] = nullptr;
+            }
+            if (value != nullptr &&
+                value[i].tag == OHOS::DataShare::DataShareValueObjectType::TYPE_STRING) {
+                free(value[i].string);
+                value[i].string = nullptr;
+            }
+        }
+        if (key != nullptr) {
+            free(key);
+            key = nullptr;
+        }
+        if (value != nullptr) {
+            free(value);
+            value = nullptr;
+        }
+        size = 0;
+    }
 };
 
 using RawContact = ValuesBucket;
@@ -61,12 +82,12 @@ struct Buckets {
     ValuesBucket* data = NULL;
     int64_t bucketCount = 0;
 
-    void free()
+    void freeContent()
     {
         if (data != nullptr) {
             for (int b = 0; b < bucketCount; b++) {
                 ValuesBucket bucket = data[b];
-                freeBucketContent(&bucket);
+                bucket.freeContent();
             }
             free(data);
             data = nullptr;
@@ -84,13 +105,14 @@ struct ContactsData {
     int64_t contactsCount = 0;
 };
 
-DataShareValuesBucket convertToDataShareVB(OHOS::ContactsFfi::ValuesBucket vb);
+OHOS::DataShare::DataShareValuesBucket convertToDataShareVB(OHOS::ContactsFfi::ValuesBucket vb);
 
-ContactsData* parseResultSetForContacts(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode);
+ContactsData* parseResultSetForContacts(std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet,
+                                        int32_t *errCode);
 
-GroupsData* parseResultSetForGroups(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode);
+GroupsData* parseResultSetForGroups(std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, int32_t *errCode);
 
-HoldersData* parseResultSetForHolders(std::shared_ptr<DataShareResultSet> &resultSet, int32_t *errCode);
+HoldersData* parseResultSetForHolders(std::shared_ptr<OHOS::DataShare::DataShareResultSet> &resultSet, int32_t *errCode);
 
 } // namespace ContactsFfi
 } // namespace OHOS
