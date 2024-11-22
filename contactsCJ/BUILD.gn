@@ -11,8 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//build/ohos.gni")
 import("//applications/standard/contacts_data/contact.gni")
+import("//build/ohos.gni")
 
 ohos_shared_library("contact_cj") {
   sources = [
