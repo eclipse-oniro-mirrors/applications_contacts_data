@@ -126,7 +126,7 @@ void Contacts::CJupdateContact(int64_t contextId, int64_t contactId, std::vector
         return;
     }
     if (IsInvalidId(contactId)) {
-        HILOG_ERROR("CJupdateContact Parameter invalid! %{public}ld", contactId);
+        HILOG_ERROR("CJupdateContact Parameter invalid! %{public}lld", static_cast<long long>(contactId));
         *errCode = ContactsApi::PARAMETER_ERROR;
         return;
     }
@@ -196,7 +196,7 @@ bool Contacts::CJisLocalContact(int64_t contextId, int64_t contactId, int32_t *e
         return false;
     }
     if (IsInvalidId(contactId)) {
-        HILOG_ERROR("CJisLocalContact Parameter invalid! %{public}ld", contactId);
+        HILOG_ERROR("CJisLocalContact Parameter invalid! %{public}lld", static_cast<long long>(contactId));
         *errCode = ContactsApi::PARAMETER_ERROR;
         return false;
     }
@@ -247,7 +247,7 @@ bool Contacts::CJisMyCard(int64_t contextId, int64_t contactId, int32_t *errCode
         return false;
     }
     if (IsInvalidId(contactId)) {
-        HILOG_ERROR("CJisMyCard Parameter invalid! %{public}ld", contactId);
+        HILOG_ERROR("CJisMyCard Parameter invalid! %{public}lld", static_cast<long long>(contactId));
         *errCode = ContactsApi::PARAMETER_ERROR;
         return false;
     }
