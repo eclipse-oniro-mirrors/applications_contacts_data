@@ -55,7 +55,8 @@
                 "base_group": [
                 ],
                 "fwk_group": [
-                    "//applications/standard/contacts_data/contacts:contact"
+                    "//applications/standard/contacts_data/contacts:contact",
+                    "//applications/standard/contacts_data/contactsCJ:contact_cj"
                 ],
                 "service_group": [
                     "//applications/standard/contacts_data:contactsdataability",
