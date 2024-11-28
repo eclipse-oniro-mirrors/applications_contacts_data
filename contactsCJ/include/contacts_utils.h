@@ -19,8 +19,7 @@
 #include <cstdint>
 #include "errors.h"
 
-#include "hilog_wrapper_api.h" // from contacts_data/contacts
-
+#include "hilog_wrapper_api.h"
 #include "data_share_predicates_utils.h"
 #include "datashare_result_set.h"
 #include "datashare_values_bucket.h"
@@ -48,6 +47,33 @@ constexpr int BUCKET_COUNT_4 = 4;
 constexpr int BUCKET_COUNT_5 = 5;
 constexpr int BUCKET_COUNT_10 = 10;
 constexpr int BUCKET_COUNT_11 = 11;
+
+const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
+
+// contactsData type
+constexpr int EMAIL = 1;
+constexpr int IM = 2;
+constexpr int NICKNAME = 3;
+constexpr int ORGANIZATION = 4;
+constexpr int PHONE = 5;
+constexpr int NAME = 6;
+constexpr int POSTAL_ADDRESS = 7;
+constexpr int PHOTO = 8;
+constexpr int GROUP_MEMBERSHIP = 9;
+constexpr int NOTE = 10;
+constexpr int CONTACT_EVENT = 11;
+constexpr int WEBSITE = 12;
+constexpr int RELATION = 13;
+constexpr int CONTACT_MISC = 14;
+constexpr int HICALL_DEVICE = 15;
+constexpr int CAMCARD = 16;
+constexpr int SIP_ADDRESS = 17;
+
+constexpr int ERROR = -1;
+constexpr int SUCCESS = 0;
+
+constexpr int PERMISSION_ERROR = 201;
+constexpr int PARAMETER_ERROR = 401;
 
 struct ValuesBucket {
     char** key = NULL;
