@@ -197,7 +197,7 @@ bool GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
             HILOG_ERROR("Failed to get native stage context instance");
             return false;
         }
-        executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
+        executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI, "", 10);
     }
     return false;
 }
