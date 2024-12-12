@@ -941,6 +941,8 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
         executeHelper->resultData = isMyCard;
         return;
     }
+    int rowCount = 0;
+    resultSet->GetRowCount(rowCount);
     int resultSetNum = resultSet->GoToFirstRow();
     if (resultSetNum == OHOS::NativeRdb::E_OK) {
         isMyCard = 1;

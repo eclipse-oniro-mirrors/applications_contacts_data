@@ -115,6 +115,7 @@ ohos_shared_library("contact") {
   ]
 
   public_deps = []
+  relative_install_dir = "module"
   part_name = "contacts_data"
   subsystem_name = "applications"
 }

@@ -25,6 +25,8 @@ namespace ContactsFfi {
 
 class Contacts {
 public:
+    static const int INVALID_CONTACT_ID = -1;
+
     Contacts() {}
     ~Contacts() = default;
 
