@@ -29,25 +29,6 @@ namespace ContactsFfi {
 
 constexpr int MAX_CONTACTS = 1024 * 1024;
 
-constexpr int BUCKET_IDX_0 = 0;
-constexpr int BUCKET_IDX_1 = 1;
-constexpr int BUCKET_IDX_2 = 2;
-constexpr int BUCKET_IDX_3 = 3;
-constexpr int BUCKET_IDX_4 = 4;
-constexpr int BUCKET_IDX_5 = 5;
-constexpr int BUCKET_IDX_6 = 6;
-constexpr int BUCKET_IDX_7 = 7;
-constexpr int BUCKET_IDX_8 = 8;
-constexpr int BUCKET_IDX_9 = 9;
-constexpr int BUCKET_IDX_10 = 10;
-
-constexpr int BUCKET_COUNT_2 = 2;
-constexpr int BUCKET_COUNT_3 = 3;
-constexpr int BUCKET_COUNT_4 = 4;
-constexpr int BUCKET_COUNT_5 = 5;
-constexpr int BUCKET_COUNT_10 = 10;
-constexpr int BUCKET_COUNT_11 = 11;
-
 const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
 
 // contactsData type
@@ -132,6 +113,64 @@ using HoldersData = Buckets;
 struct ContactsData {
     ContactData* contactsData = NULL;
     int64_t contactsCount = 0;
+};
+
+char* TransformFromString(std::string &str, int32_t* errCode);
+
+// this is a pair of key and a kind of DataShare::CValueType but with std::string string
+struct KeyWithValueType {
+    std::string key;
+    int64_t integer;
+    double dou;
+    std::string string;
+    uint8_t tag;
+
+    KeyWithValueType(std::string k, int64_t v)
+    {
+        this->key = k;
+        this->integer = v;
+        this->tag = static_cast<int>(DataShare::DataType::TYPE_INTEGER);
+    }
+
+    KeyWithValueType(std::string k, double v)
+    {
+        this->key = k;
+        this->dou = v;
+        this->tag = static_cast<int>(DataShare::DataType::TYPE_FLOAT);
+    }
+
+    KeyWithValueType(std::string k, std::string v)
+    {
+        this->key = k;
+        this->string = v;
+        this->tag = static_cast<int>(DataShare::DataType::TYPE_STRING);
+    }
+
+    int32_t allocToBucket(ValuesBucket* dst, int dstIdx, int idx, int32_t *errCode)
+    {
+        dst[dstIdx].key[idx] = TransformFromString(this->key, errCode);
+        if (*errCode != SUCCESS) {
+            return *errCode;
+        }
+        if (this->tag == static_cast<int>(DataShare::DataType::TYPE_INTEGER)) {
+            dst[dstIdx].value[idx].integer = this->integer;
+        } else if (this->tag == static_cast<int>(DataShare::DataType::TYPE_FLOAT)) {
+            dst[dstIdx].value[idx].dou = this->dou;
+        } else {
+            std::string str = "";
+            if (this->tag == static_cast<int>(DataShare::DataType::TYPE_STRING)) {
+                str = this->string;
+            } else { // put empty string for unsupported tag
+                HILOG_ERROR("allocToBucket: for key %{public}s has tag %{public}d", this->key.c_str(), this->tag);
+            }
+            dst[dstIdx].value[idx].string = TransformFromString(str, errCode);
+            if (*errCode != SUCCESS) {
+                free(dst[dstIdx].key[idx]);
+                return *errCode;
+            }
+        }
+        return SUCCESS;
+    }
 };
 
 OHOS::DataShare::DataShareValuesBucket convertToDataShareVB(OHOS::ContactsFfi::ValuesBucket vb);
