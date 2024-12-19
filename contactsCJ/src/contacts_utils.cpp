@@ -24,7 +24,7 @@ namespace OHOS {
 namespace ContactsFfi {
 
 // return true if succeeded; after it b is fully allocated or completely empty with errCode set
-bool allocBucket(ValuesBucket* b, int total, int32_t *errCode)
+bool allocBucket(ValuesBucket* b, size_t total, int32_t *errCode)
 {
     if (*errCode != SUCCESS) {
         return false;
@@ -110,7 +110,7 @@ void copyBucket(ValuesBucket* dst, int dstIdx, ValuesBucket &src)
 
 char* TransformFromString(std::string &str, int32_t* errCode)
 {
-    int64_t len = str.size() + 1;
+    size_t len = str.size() + 1;
     char* retValue = static_cast<char *>(malloc(len));
     if (retValue == nullptr) {
         *errCode = ERROR;
@@ -127,14 +127,14 @@ char* TransformFromString(std::string &str, int32_t* errCode)
 ValuesBucket allocBucketData(std::vector<KeyWithValueType> &bucketData, int32_t *errCode)
 {
     struct ValuesBucket b;
-    int total = bucketData.size();
+    size_t total = bucketData.size();
     if (total > 0) {
         if (!allocBucket(&b, total, errCode)) {
             return b;
         }
         // Let's increment b.size one by one for b.freeContent() call in case of error
         b.size = 0;
-        for (int i = 0; i < total; i++) {
+        for (size_t i = 0; i < total; i++) {
             bucketData[i].allocToBucket(&b, 0, i, errCode);
             if (*errCode != SUCCESS) {
                 b.freeContent();
@@ -451,24 +451,6 @@ bool allocateDataForContact(ContactsData* allContacts, int contactIndex, int con
     return true;
 }
 
-void releaseAllContacts(ContactsData* allContacts)
-{
-    for (int i = 0; i < allContacts->contactsCount; i++) {
-        if (allContacts->contactsData[i].data != nullptr) {
-            for (int b = 0; b < allContacts->contactsData[i].bucketCount; b++) {
-                ValuesBucket bucket = allContacts->contactsData[i].data[b];
-                bucket.freeContent();
-            }
-            free(allContacts->contactsData[i].data);
-            allContacts->contactsData[i].data = nullptr;
-            allContacts->contactsData[i].bucketCount = 0;
-        }
-    }
-    free(allContacts->contactsData);
-    allContacts->contactsData = nullptr;
-    allContacts->contactsCount = 0;
-}
-
 void releaseRresultSetMapBuckets(std::map<int, std::vector<ValuesBucket>> resultSetMap)
 {
     std::map<int, std::vector<ValuesBucket>>::iterator it;
@@ -491,8 +473,8 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> &r
         return nullptr;
     }
 
-    int totalContacts = resultSetMap.size();
-    if (totalContacts <= 0 || totalContacts > MAX_CONTACTS) {
+    size_t totalContacts = resultSetMap.size();
+    if (totalContacts == 0 || totalContacts > MAX_CONTACTS) {
         free(allContacts);
         return nullptr;
     }
@@ -518,7 +500,7 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> &r
             allContacts->contactsData[contactIndex].data = nullptr;
             continue;
         }
-        int totalBuckets = 2 + contactDataVector.size(); // 2 more for contactId and searchKey buckets
+        size_t totalBuckets = 2 + contactDataVector.size(); // 2 more for contactId and searchKey buckets
         allContacts->contactsData[contactIndex].bucketCount = totalBuckets;
         allContacts->contactsData[contactIndex].data =
             (struct ValuesBucket*) malloc(totalBuckets * sizeof(struct ValuesBucket));
@@ -530,13 +512,16 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> &r
         allocateDataForContact(allContacts, contactIndex, contactId, searchKey, contactDataVector, errCode);
     }
 
-    if (*errCode != SUCCESS) {
-        releaseAllContacts(allContacts);
-        releaseRresultSetMapBuckets(resultSetMap);
-        return nullptr;
+    if (*errCode == SUCCESS) {
+        return allContacts;
     }
 
-    return allContacts;
+    allContacts->freeContent();
+    free(allContacts);
+    allContacts = nullptr;
+    releaseRresultSetMapBuckets(resultSetMap);
+
+    return nullptr;
 }
 
 // it closes resultSet after parse
