@@ -57,31 +57,32 @@ constexpr int PERMISSION_ERROR = 201;
 constexpr int PARAMETER_ERROR = 401;
 
 struct ValuesBucket {
-    char** key = NULL;
-    DataShare::CValueType* value = NULL;
-    int64_t size = 0;
+    char** key = nullptr;
+    DataShare::CValueType* value = nullptr;
+    uint64_t size = 0;
 
     void freeContent()
     {
-        for (int64_t i = 0; i < size; i++) {
-            if (key != nullptr && key[i] != nullptr) {
+        bool hasKey = key != nullptr;
+        bool hasValue = value != nullptr;
+        for (uint64_t i = 0; i < size; i++) {
+            if (hasKey) {
                 free(key[i]);
                 key[i] = nullptr;
             }
-            if (value != nullptr &&
+            if (hasValue &&
                 value[i].tag == OHOS::DataShare::DataShareValueObjectType::TYPE_STRING) {
                 free(value[i].string);
                 value[i].string = nullptr;
             }
         }
-        if (key != nullptr) {
-            free(key);
-            key = nullptr;
-        }
-        if (value != nullptr) {
-            free(value);
-            value = nullptr;
-        }
+
+        free(key);
+        key = nullptr;
+
+        free(value);
+        value = nullptr;
+
         size = 0;
     }
 };
@@ -89,8 +90,8 @@ struct ValuesBucket {
 using RawContact = ValuesBucket;
 
 struct Buckets {
-    ValuesBucket* data = NULL;
-    int64_t bucketCount = 0;
+    ValuesBucket* data = nullptr;
+    uint64_t bucketCount = 0;
 
     void freeContent()
     {
@@ -111,8 +112,21 @@ using HoldersData = Buckets;
 
 
 struct ContactsData {
-    ContactData* contactsData = NULL;
-    int64_t contactsCount = 0;
+    ContactData* contactsData = nullptr;
+    uint64_t contactsCount = 0;
+
+    void freeContent()
+    {
+        if (contactsData != nullptr) {
+            for (int i = 0; i < contactsCount; i++) {
+                ContactData contactData = contactsData[i];
+                contactData.freeContent();
+            }
+            free(contactsData);
+            contactsData = nullptr;
+            contactsCount = 0;
+        }
+    }
 };
 
 char* TransformFromString(std::string &str, int32_t* errCode);
@@ -120,8 +134,8 @@ char* TransformFromString(std::string &str, int32_t* errCode);
 // this is a pair of key and a kind of DataShare::CValueType but with std::string string
 struct KeyWithValueType {
     std::string key;
-    int64_t integer;
-    double dou;
+    int64_t integer = 0;
+    double dou = 0.0;
     std::string string;
     uint8_t tag;
 
