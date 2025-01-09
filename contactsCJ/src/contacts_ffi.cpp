@@ -30,7 +30,7 @@ extern "C" {
     {
         DataShare::DataShareValuesBucket convertedRawContact = convertToDataShareVB(rawContact[0]);
         std::vector<DataShare::DataShareValuesBucket> convertedContact;
-        for (int64_t i = 0; i < contactData->bucketCount; i++) {
+        for (uint64_t i = 0; i < contactData->bucketCount; i++) {
             ContactsFfi::ValuesBucket vb = contactData->data[i];
             convertedContact.push_back(convertToDataShareVB(vb));
         }
@@ -46,7 +46,7 @@ extern "C" {
                                      int64_t predicatesId, int32_t *errCode)
     {
         std::vector<DataShare::DataShareValuesBucket> convertedContact;
-        for (int64_t i = 0; i < contactData->bucketCount; i++) {
+        for (uint64_t i = 0; i < contactData->bucketCount; i++) {
             ContactsFfi::ValuesBucket vb = contactData->data[i];
             convertedContact.push_back(convertToDataShareVB(vb));
         }
