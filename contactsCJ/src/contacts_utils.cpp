@@ -49,9 +49,9 @@ bool allocBucket(ValuesBucket* b, size_t total, int32_t *errCode)
 
 DataShareValuesBucket convertToDataShareVB(ValuesBucket vb)
 {
-    int64_t size = vb.size;
+    uint64_t size = vb.size;
     DataShareValuesBucket dsvb = DataShareValuesBucket();
-    for (int64_t i = 0; i < size; i++) {
+    for (uint64_t i = 0; i < size; i++) {
         switch (vb.value[i].tag) {
             case DataShareValueObjectType::TYPE_STRING: {
                 DataShareValueObject valueObject = DataShareValueObject(std::string(vb.value[i].string));
@@ -620,7 +620,7 @@ GroupsData* parseResultSetForGroups(std::shared_ptr<DataShareResultSet> &resultS
     int totalGroups = 0;
     resultSet->GetRowCount(totalGroups);
     HILOG_INFO("parseResultSetForGroups GetRowCount is %{public}d", totalGroups);
-    if (totalGroups == 0) {
+    if (totalGroups <= 0) {
         return nullptr;
     }
 
@@ -637,7 +637,7 @@ GroupsData* parseResultSetForGroups(std::shared_ptr<DataShareResultSet> &resultS
         *errCode = ERROR;
         return NULL;
     }
-    allGroups->bucketCount = totalGroups;
+    allGroups->bucketCount = static_cast<uint64_t>(totalGroups);
 
     int resultSetNum = resultSet->GoToFirstRow();
     int count = 0;
@@ -670,7 +670,7 @@ HoldersData* parseResultSetForHolders(std::shared_ptr<DataShareResultSet> &resul
     int totalHolders = 0;
     resultSet->GetRowCount(totalHolders);
     HILOG_INFO("parseResultSetForHolders GetRowCount is %{public}d", totalHolders);
-    if (totalHolders == 0) {
+    if (totalHolders <= 0) {
         return nullptr;
     }
 
@@ -687,7 +687,7 @@ HoldersData* parseResultSetForHolders(std::shared_ptr<DataShareResultSet> &resul
         *errCode = ERROR;
         return nullptr;
     }
-    allHolders->bucketCount = totalHolders;
+    allHolders->bucketCount = static_cast<uint64_t>(totalHolders);
 
     int resultSetNum = resultSet->GoToFirstRow();
     int count = 0;

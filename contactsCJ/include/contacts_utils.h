@@ -96,7 +96,7 @@ struct Buckets {
     void freeContent()
     {
         if (data != nullptr) {
-            for (int b = 0; b < bucketCount; b++) {
+            for (uint64_t b = 0; b < bucketCount; b++) {
                 ValuesBucket bucket = data[b];
                 bucket.freeContent();
             }
@@ -118,7 +118,7 @@ struct ContactsData {
     void freeContent()
     {
         if (contactsData != nullptr) {
-            for (int i = 0; i < contactsCount; i++) {
+            for (uint64_t i = 0; i < contactsCount; i++) {
                 ContactData contactData = contactsData[i];
                 contactData.freeContent();
             }
