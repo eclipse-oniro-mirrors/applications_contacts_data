@@ -137,7 +137,7 @@ struct KeyWithValueType {
     int64_t integer = 0;
     double dou = 0.0;
     std::string string;
-    uint8_t tag;
+    uint8_t tag = static_cast<int>(DataShare::DataType::TYPE_NULL);
 
     KeyWithValueType(std::string k, int64_t v)
     {
@@ -166,6 +166,7 @@ struct KeyWithValueType {
         if (*errCode != SUCCESS) {
             return *errCode;
         }
+        dst[dstIdx].value[idx].tag = this->tag;
         if (this->tag == static_cast<int>(DataShare::DataType::TYPE_INTEGER)) {
             dst[dstIdx].value[idx].integer = this->integer;
         } else if (this->tag == static_cast<int>(DataShare::DataType::TYPE_FLOAT)) {

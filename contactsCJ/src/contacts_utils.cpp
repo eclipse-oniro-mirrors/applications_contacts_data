@@ -42,6 +42,9 @@ bool allocBucket(ValuesBucket* b, size_t total, int32_t *errCode)
             *errCode = ERROR;
             b->freeContent();
             return false;
+        } else {
+            b->value->tag = static_cast<int>(DataType::TYPE_NULL);
+            b->value->string = nullptr;
         }
     }
     return true;
