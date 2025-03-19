@@ -63,7 +63,16 @@
                     "//applications/standard/contacts_data:contactsdataability",
                     "//applications/standard/contacts_data:Contacts_DataAbility"
                 ]
-            }
+            },
+            "inner_kits": [
+                {
+                    "header": {
+                        "header_base": "//applications/standard/contacts_data/contactsCJ/include",
+                        "header_files": []
+                    },
+                    "name": "//applications/standard/contacts_data/contactsCJ:contact_cj"
+                }
+            ]
         }
     }
 }
