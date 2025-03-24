@@ -1970,10 +1970,17 @@ std::map<std::string, std::string> CharacterTransliterate::multiPronunciationMap
 
 CharacterTransliterate::CharacterTransliterate(void)
 {
+    UErrorCode status = U_ZERO_ERROR;
+    transliteratorLationToAscii = icu::Transliterator::createInstance (
+        icu::UnicodeString(LATIN_TO_ASCII_ICU_TRANSLITE_ID), UTransDirection::UTRANS_FORWARD, status);
+    transliteratorHanziToPinyin = icu::Transliterator::createInstance (
+        icu::UnicodeString(HANZI_TO_PINYIN_ICU_TRANSLITE_ID), UTransDirection::UTRANS_FORWARD, status);
 }
 
 CharacterTransliterate::~CharacterTransliterate()
 {
+    delete transliteratorLationToAscii;
+    delete transliteratorHanziToPinyin;
 }
 
 bool CharacterTransliterate::IsChineseCharacter(wchar_t chineseCharacter)
@@ -2039,19 +2046,25 @@ void CharacterTransliterate::GetCommonPronunciation(
     // If it is a Chinese character, there is no need to transcode Unicode here.
     // The system will transcode it. Only the Chinese character needs to be matched directly.
     if (IsChineseCharacter(chineseCharacter[0])) {
-        int len = 411;
-        for (int index = 0; index < len; index++) {
-            std::string::size_type find =
-                CharacterTransliterate::chineseTable_[index].chineseCharacters_.find(chineseCharacterString);
-            if (find != std::string::npos) {
-                initials.push_back(StringToWstring(CharacterTransliterate::chineseTable_[index].initials));
-                nameFullFights.push_back(StringToWstring(CharacterTransliterate::chineseTable_[index].nameFullFight_));
-            }
+        std::string targetstr;
+        transferByTranslite(transliteratorHanziToPinyin, chineseCharacterString, targetstr);
+        if (!targetstr.empty()) {
+            initials.push_back(StringToWstring(targetstr.substr(0, 1)));
+            nameFullFights.push_back(StringToWstring(targetstr));
         }
     } else {
         initials.push_back(chineseCharacter);
         nameFullFights.push_back(chineseCharacter);
     }
+}
+
+void CharacterTransliterate::transferByTranslite(icu::Transliterator* transliterator,
+    std::string &sourcestr, std::string &targetstr)
+{
+    icu_69::UnicodeString unicodeString(sourcestr.c_str());
+
+    transliterator -> transliterate(unicodeString);
+    unicodeString.toUTF8String(targetstr);
 }
 
 // sort Chinese Pinyin combinations

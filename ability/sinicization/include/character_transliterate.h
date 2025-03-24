@@ -19,6 +19,8 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <unistr.h>
+#include <unicode/translit.h>
 
 namespace OHOS {
 namespace Contacts {
@@ -51,8 +53,11 @@ public:
     std::wstring StringToWstring(std::string str);
     std::string WstringToString(std::wstring str);
 private:
+    icu::Transliterator* transliteratorLationToAscii;
+    icu::Transliterator* transliteratorHanziToPinyin;
     static std::map<std::string, std::string> multiPronunciationMap;
     std::string getMultiPronunciation(std::string chineseCharacter);
+    void transferByTranslite(icu::Transliterator* transliterator, std::string &sourcestr, std::string &targetstr);
 };
 } // namespace Contacts
 } // namespace OHOS
