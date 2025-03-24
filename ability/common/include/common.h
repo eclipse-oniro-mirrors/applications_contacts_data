@@ -123,6 +123,12 @@ constexpr const char *CONTACT_URI = "datashare:///com.ohos.contactsdataability";
 constexpr const char *VOICEMAIL_URI = "datashare:///com.ohos.voicemailability";
 constexpr const char *CALL_LOG_URI = "datashare:///com.ohos.calllogability";
 
+constexpr const char *ANONYMOUS_SORT_FIRST_LETTER = "...";
+constexpr const char *ANONYMOUS_SORT = "99";
+	 
+constexpr const char *LATIN_TO_ASCII_ICU_TRANSLITE_ID = "Latin-Ascii";
+constexpr const char *HANZI_TO_PINYIN_ICU_TRANSLITE_ID = "Han-Latin/Names; Latin-Ascii";
+
 constexpr const char *CREATE_CALLLOG =
     "CREATE TABLE IF NOT EXISTS [calllog]("
     "[id] INTEGER PRIMARY KEY AUTOINCREMENT, "

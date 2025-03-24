@@ -46,7 +46,8 @@
                 "safwk"
             ],
             "third_party": [
-                "jsoncpp"
+                "jsoncpp",
+                "icu"
             ]
         },
         "build": {
