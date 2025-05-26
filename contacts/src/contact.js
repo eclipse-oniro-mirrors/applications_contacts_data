@@ -15,6 +15,25 @@
 const featureAbility = requireNapi('ability.featureAbility');
 const contact = requireInternal('contact');
 const ARGUMENTS_LEN_TWO = 2;
+const ERROR_CODE_DEVICE_NOTFOUND = 801;
+const ERROR_MSG_DEVICE_NOTFOUND = 'The specified SystemCapability name was not found';
+
+class BusinessError extends Error {
+    constructor(code, message) {
+        super(message);
+        this.code = code;
+    }
+}
+
+async function contactsPickerSaveToExist(...args) {
+    console.log('[picker] contactsPickerSaveToExist start');
+    throw new BusinessError(ERROR_CODE_DEVICE_NOTFOUND, ERROR_MSG_DEVICE_NOTFOUND);
+}
+
+async function contactsPickerSave(...args) {
+    console.log('[picker] contactsPickerSave start');
+    throw new BusinessError(ERROR_CODE_DEVICE_NOTFOUND, ERROR_MSG_DEVICE_NOTFOUND);
+}
 
 async function contactsPickerSelect() {
   if (arguments.length === ARGUMENTS_LEN_TWO && typeof arguments[1] !== 'function') {
@@ -112,6 +131,8 @@ async function contactsPickerSelect() {
 export default {
   selectContact: contactsPickerSelect,
   selectContacts: contactsPickerSelect,
+  saveToExistingContactViaUI: contactsPickerSaveToExist,
+  addContactViaUI: contactsPickerSave,
   addContact: contact.addContact,
   deleteContact: contact.deleteContact,
   queryContact: contact.queryContact,
