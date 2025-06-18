@@ -35,7 +35,7 @@
 
 namespace OHOS {
 namespace ContactsApi {
-constexpr int32_t MAXCOUNT = 10;
+constexpr int32_t MAXCOUNT = 5;
 namespace {
 std::mutex g_mutex;
 }
