@@ -40,11 +40,13 @@
                 "eventhandler",
                 "hilog",
                 "ipc",
+                "jsoncpp",
                 "napi",
                 "os_account",
                 "preferences",
                 "relational_store",
                 "safwk",
+                "samgr",
                 "ace_engine"
             ],
             "third_party": [

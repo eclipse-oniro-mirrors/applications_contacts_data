@@ -48,9 +48,11 @@ ohos_shared_library("contact_cj") {
     "data_share:datashare_consumer",
     "hilog:libhilog",
     "ipc:ipc_core",
+    "ipc:ipc_single",
     "napi:ace_napi",
     "napi:cj_bind_ffi",
     "napi:cj_bind_native",
+    "samgr:samgr_proxy",
   ]
 
   defines = [
