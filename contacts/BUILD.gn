@@ -107,6 +107,7 @@ ohos_shared_library("contact") {
     "napi:ace_napi",
     "relational_store:native_dataability",
     "relational_store:native_rdb",
+    "samgr:samgr_proxy",
   ]
 
   defines = [
