@@ -40,18 +40,17 @@
                 "eventhandler",
                 "hilog",
                 "ipc",
-                "jsoncpp",
                 "napi",
                 "os_account",
                 "preferences",
                 "relational_store",
                 "safwk",
                 "samgr",
-                "ace_engine"
+                "ace_engine",
+                "jsoncpp",
+                "node"
             ],
-            "third_party": [
-                "jsoncpp"
-            ]
+            "third_party": []
         },
         "build": {
             "group_type": {

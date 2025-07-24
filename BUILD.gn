@@ -56,7 +56,6 @@ ohos_resources("Contacts_DataAbility_resources") {
 config("contactsdataability_public_config") {
   visibility = [ ":*" ]
   include_dirs = [
-    "//third_party/node/src",
     "ability/common/include",
     "ability/common/utils/include/",
     "dataBusiness/voicemail/include",
@@ -110,22 +109,14 @@ ohos_shared_library("contactsdataability") {
     "dataBusiness/voicemail/src/voicemail_database.cpp",
   ]
   include_dirs = [
-    "//commonlibrary/c_utils/base/include",
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
-    "//base/account/os_account/interfaces/innerkits/ohosaccount/native/include/",
-    "//base/account/os_account/interfaces/kits/napi/distributedaccount/include/",
-    "//base/account/os_account/interfaces/innerkits/include",
-    "//foundation/ability/ability_runtime/interfaces/inner_api/ability_manager/include",
-    "//foundation/ability/ability_runtime/interfaces/kits/native/ability/native",
   ]
-
-  deps = [ "//third_party/jsoncpp:jsoncpp" ]
 
   public_configs = [ ":contactsdataability_public_config" ]
   external_deps = [
     "ability_base:want",
     "ability_base:zuri",
     "ability_runtime:abilitykit_utils",
+    "ability_runtime:app_manager",
     "ability_runtime:app_context",
     "ability_runtime:dataobs_manager",
     "ability_runtime:extensionkit_native",
@@ -134,6 +125,7 @@ ohos_shared_library("contactsdataability") {
     "access_token:libtokenid_sdk",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
+    "c_utils:utils",
     "c_utils:utilsbase",
     "common_event_service:cesfwk_innerkits",
     "data_share:datashare_common",
@@ -143,6 +135,7 @@ ohos_shared_library("contactsdataability") {
     "ipc:ipc_single",
     "jsoncpp:jsoncpp",
     "napi:ace_napi",
+    "node:node_header_notice",
     "os_account:os_account_innerkits",
     "relational_store:native_dataability",
     "relational_store:native_rdb",
