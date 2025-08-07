@@ -72,6 +72,7 @@ config("contactsdataability_public_config") {
 }
 
 ohos_shared_library("contactsdataability") {
+  use_exceptions = true
   sources = [
     "ability/account/src/account_data_collection.cpp",
     "ability/account/src/account_manager.cpp",

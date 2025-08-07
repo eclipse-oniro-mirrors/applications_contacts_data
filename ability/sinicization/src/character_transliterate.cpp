@@ -1987,7 +1987,7 @@ std::string CharacterTransliterate::getMultiPronunciation(std::string chineseCha
     if (it != multiPronunciationMap.end()) {
         return it->second;
     }
-    return nullptr;
+    return "";
 }
 
 Container CharacterTransliterate::GetContainer(std::wstring wChinese)
@@ -2112,7 +2112,21 @@ std::wstring CharacterTransliterate::StringToWstring(std::string str)
 {
     using convert_typeX = std::codecvt_utf8<wchar_t>;
     std::wstring_convert<convert_typeX, wchar_t> converterX;
-    return converterX.from_bytes(str);
+    try {
+        return converterX.from_bytes(str);
+    } catch (const std::range_error& e) {
+        // 处理范围错误，可能是由于无效的UTF-8序列
+        HILOG_ERROR("StringToWstring range_error:%{public}s", e.what());
+        return L"";
+    } catch (const std::out_of_range& e) {
+        // 出来超出范围的错误
+        HILOG_ERROR("StringToWstring out_of_rangeError:%{public}s", e.what());
+        return L"";
+    } catch (const std::exception& e) {
+        // 出来超出范围的错误
+        HILOG_ERROR("StringToWstring exceptionError:%{public}s", e.what());
+        return L"";
+    }
 }
 } // namespace Contacts
 } // namespace OHOS
