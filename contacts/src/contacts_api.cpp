@@ -289,6 +289,9 @@ DataShare::DataSharePredicates BuildDeleteContactPredicates(napi_env env, Execut
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
         predicates.EqualTo("quick_search_key", keyValue);
+    } else {
+        HILOG_ERROR("BuildDeleteContactPredicates error");
+        executeHelper->resultData = RDB_PARAMETER_ERROR;
     }
     return predicates;
 }
@@ -823,6 +826,11 @@ void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 
 void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper)
 {
+    // 如果key为空，返回失败
+    if (executeHelper->resultData == RDB_PARAMETER_ERROR) {
+        HILOG_ERROR("LocalExecuteDeleteContact, key can not be empty");
+        return;
+    }
     ContactsControl contactsControl;
     int ret = contactsControl.ContactDelete(executeHelper->dataShareHelper, executeHelper->predicates);
     HILOG_INFO("LocalExecuteDeleteContact contact ret = %{public}d", ret);
