@@ -1500,8 +1500,6 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
                 if (!ContactsNapiUtils::MatchParameters(env, argv,
                     { napi_object, napi_string, napi_object, napi_function }) &&
                     !ContactsNapiUtils::MatchParameters(env, argv,
-                    { napi_object, napi_string, napi_object, napi_function }) &&
-                    !ContactsNapiUtils::MatchParameters(env, argv,
                     { napi_object, napi_string, napi_object, napi_object })) {
                     napi_throw(env, errorCode);
                 }
