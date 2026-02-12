@@ -21,6 +21,7 @@
 #include "values_bucket.h"
 
 #include "common.h"
+#include "rdb_store.h"
 
 namespace OHOS {
 namespace Contacts {
@@ -33,6 +34,10 @@ public:
     bool FindIllegalWords(std::string sql);
     bool StrCheck(char &ch, std::size_t strlen, std::string sql, std::size_t &pos);
     bool CharCheck(char &ch, std::string sql, std::size_t &pos);
+    bool CheckColumnExists(OHOS::NativeRdb::RdbStore &store, std::string table, std::string column);
+    std::vector<std::string> QueryAllTables(OHOS::NativeRdb::RdbStore &store);
+    std::vector<std::string> QueryAllFieldsFromTable(OHOS::NativeRdb::RdbStore &store, const std::string &table);
+    std::vector<std::string> QueryAllViews(OHOS::NativeRdb::RdbStore &store);
 
 private:
     inline bool IsNumber(char ch)

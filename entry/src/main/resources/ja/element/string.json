@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"アドレス帳",
+            "attr":{
+                "priority":"translate"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"これは、連絡先の誕生日を同期するために使用されます。",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

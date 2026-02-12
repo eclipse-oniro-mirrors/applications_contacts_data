@@ -33,7 +33,9 @@ ConstructionName ConstructionName::GetConstructionName(
     std::string &chineseCharacter, ConstructionName &constructionName)
 {
     CharacterTransliterate characterTransliterate;
-    if (strcmp(local.c_str(), "zh-CN") == 0) {
+    // 中文环境
+    if (local == "zh-CN") {
+        // 转拼音格式，生成名称拼音首字母的集合，拼音全字母的集合
         Container container =
             characterTransliterate.GetContainer(characterTransliterate.StringToWstring(chineseCharacter));
         std::wstring split(L"||");
@@ -41,39 +43,32 @@ ConstructionName ConstructionName::GetConstructionName(
         std::wstring nameFullFight = characterTransliterate.Join(container.nameFullFightContainer_, split);
         constructionName.initials_ = characterTransliterate.WstringToString(initials);
         constructionName.nameFullFight_ = characterTransliterate.WstringToString(nameFullFight);
-        const wchar_t *nameFullFightInitials = nameFullFight.c_str();
-        if ((nameFullFightInitials[0] >= L'a' && nameFullFightInitials[0] <= L'z') ||
-            (nameFullFightInitials[0] >= L'A' && nameFullFightInitials[0] <= L'Z')) {
-            std::string sortFirstLetterTemp = characterTransliterate.WstringToString(nameFullFight.substr(0, 1));
-            std::transform(
-                sortFirstLetterTemp.begin(), sortFirstLetterTemp.end(), sortFirstLetterTemp.begin(), std::toupper);
-            constructionName.sortFirstLetter_ = sortFirstLetterTemp;
-            int code = constructionName.sortFirstLetter_.c_str()[0];
-            constructionName.sortFirstLetterCode_ = code;
-            HILOG_INFO(" GetConstructionName sortFirstLetterCode :%{public}d", code);
-        } else {
-            std::wstring sortFirstLetter(L"#");
-            constructionName.sortFirstLetter_ = characterTransliterate.WstringToString(sortFirstLetter);
-            constructionName.sortFirstLetterCode_ = -1;
-        }
     } else {
         constructionName.initials_ = chineseCharacter;
         constructionName.nameFullFight_ = chineseCharacter;
-        if ((chineseCharacter[0] >= 'a' && chineseCharacter[0] <= 'z') ||
-            (chineseCharacter[0] >= 'A' && chineseCharacter[0] <= 'Z')) {
-            std::string sortFirstLetterTemp = chineseCharacter.substr(0, 1);
-            std::transform(
-                sortFirstLetterTemp.begin(), sortFirstLetterTemp.end(), sortFirstLetterTemp.begin(), std::toupper);
-            constructionName.sortFirstLetter_ = sortFirstLetterTemp;
-            int code = constructionName.sortFirstLetter_.c_str()[0];
-            constructionName.sortFirstLetterCode_ = code;
-            HILOG_INFO(" GetConstructionName sortFirstLetterCode1 :%{public}d", code);
-        } else {
-            std::string sortFirstLetter("#");
-            constructionName.sortFirstLetter_ = sortFirstLetter;
-            constructionName.sortFirstLetterCode_ = -1;
-        }
     }
+
+    // 排序sortKey关键字
+    std::wstring sortKeyWstring = characterTransliterate.getSortKey(
+        characterTransliterate.StringToWstring(chineseCharacter));
+    constructionName.sortKey = characterTransliterate.WstringToString(sortKeyWstring);
+    // 根据sortkey首字母，生成sortFirstLetter_，sortFirstLetterCode_
+    const wchar_t *sortKeyCharArrW = sortKeyWstring.c_str();
+    if ((sortKeyCharArrW[0] >= L'a' && sortKeyCharArrW[0] <= L'z') ||
+        (sortKeyCharArrW[0] >= L'A' && sortKeyCharArrW[0] <= L'Z')) {
+        std::string sortFirstLetterTemp = characterTransliterate.WstringToString(sortKeyWstring.substr(0, 1));
+        // 转大写
+        std::transform(
+            sortFirstLetterTemp.begin(), sortFirstLetterTemp.end(), sortFirstLetterTemp.begin(), std::toupper);
+        constructionName.sortFirstLetter_ = sortFirstLetterTemp;
+        int code = constructionName.sortFirstLetter_.c_str()[0];
+        constructionName.sortFirstLetterCode_ = code;
+    } else {
+        std::string sortFirstLetter("#");
+        constructionName.sortFirstLetter_ = sortFirstLetter;
+        constructionName.sortFirstLetterCode_ = -1;
+    }
+
     constructionName.disPlayName_ = chineseCharacter;
     return GetPhotoFirstName(constructionName);
 }

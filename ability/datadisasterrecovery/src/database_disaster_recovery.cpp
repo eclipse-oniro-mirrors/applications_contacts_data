@@ -37,7 +37,10 @@ std::map<std::string, std::shared_ptr<OHOS::NativeRdb::RdbStore>> DataBaseDisast
 std::shared_ptr<DataBaseDisasterRecovery> DataBaseDisasterRecovery::GetInstance()
 {
     if (instance_ == nullptr) {
-        instance_.reset(new DataBaseDisasterRecovery());
+        std::unique_lock<std::mutex> lock(g_mtx);
+        if (instance_ == nullptr) {
+            instance_.reset(new DataBaseDisasterRecovery());
+        }
     }
     return instance_;
 }
@@ -170,6 +173,10 @@ std::string DataBaseDisasterRecovery::GetBackUpDatabase(const std::shared_ptr<OH
     std::string sql = "select backup_path from ";
     sql.append(ContactTableName::DATABASE_BACKUP_TASK).append(" order by backup_time desc limit 0,1");
     auto result = store_->QuerySql(sql, std::vector<std::string>());
+    if (result == nullptr) {
+        HILOG_ERROR("GetBackUpDatabase QuerySqlResult is null");
+        return "";
+    }
     std::string currValue;
     if (result->GoToFirstRow() == OHOS::NativeRdb::E_OK) {
         int currValueIndex;

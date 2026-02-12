@@ -201,7 +201,7 @@ HWTEST_F(ContactGroupTest, groups_Insert_test_100, testing::ext::TestSize.Level1
     HILOG_INFO("--- groups_Insert_test_100 is staring! ---");
     OHOS::DataShare::DataShareValuesBucket valuesGroup;
     int64_t groupId = GroupsInsert("personnel", valuesGroup);
-    HILOG_INFO("groups_Insert_test_100: groupId = %{public}ld", groupId);
+    HILOG_INFO("groups_Insert_test_100: groupId = %{public}ld", (long) groupId);
     EXPECT_GT(groupId, 0);
 
     OHOS::DataShare::DataSharePredicates predicates;
@@ -224,7 +224,7 @@ HWTEST_F(ContactGroupTest, groups_Insert_test_200, testing::ext::TestSize.Level1
     HILOG_INFO("--- groups_Insert_test_200 is staring! ---");
     OHOS::DataShare::DataShareValuesBucket valuesGroup;
     int64_t groupId = GroupsInsert("Test a set", valuesGroup);
-    HILOG_INFO("groups_Insert_test_200: groupId = %{public}ld", groupId);
+    HILOG_INFO("groups_Insert_test_200: groupId = %{public}ld", (long) groupId);
     EXPECT_GT(groupId, 0);
     OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(groupId));
@@ -233,7 +233,7 @@ HWTEST_F(ContactGroupTest, groups_Insert_test_200, testing::ext::TestSize.Level1
 
     valuesGroup.Clear();
     groupId = GroupsInsert("Test group two", valuesGroup);
-    HILOG_INFO("groups_Insert_test_200: groupId = %{public}ld", groupId);
+    HILOG_INFO("groups_Insert_test_200: groupId = %{public}ld", (long) groupId);
     EXPECT_GT(groupId, 0);
     OHOS::DataShare::DataSharePredicates predicates2;
     predicates2.EqualTo("id", std::to_string(groupId));
@@ -241,7 +241,7 @@ HWTEST_F(ContactGroupTest, groups_Insert_test_200, testing::ext::TestSize.Level1
 
     valuesGroup.Clear();
     groupId = GroupsInsert("Test three groups", valuesGroup);
-    HILOG_INFO("groups_Insert_test_200: groupId = %{public}ld", groupId);
+    HILOG_INFO("groups_Insert_test_200: groupId = %{public}ld", (long) groupId);
     EXPECT_GT(groupId, 0);
     OHOS::DataShare::DataSharePredicates predicates3;
     predicates3.EqualTo("id", std::to_string(groupId));
@@ -588,7 +588,7 @@ HWTEST_F(ContactGroupTest, abnormal_groups_Delete_test_1200, testing::ext::TestS
     OHOS::Uri errorUri(ContactsUri::GROUPS_ERROR);
     OHOS::DataShare::DataShareValuesBucket values;
     int64_t groupId = GroupsInsert("Board of Directors 2", values);
-    HILOG_INFO("abnormal_groups_Delete_test_1200: groupId = %{public}ld", groupId);
+    HILOG_INFO("abnormal_groups_Delete_test_1200: groupId = %{public}ld", (long) groupId);
     EXPECT_GT(groupId, 0);
 
     OHOS::DataShare::DataSharePredicates predicates;
@@ -674,7 +674,7 @@ HWTEST_F(ContactGroupTest, abnormal_groups_Update_test_1400, testing::ext::TestS
     OHOS::Uri errorUri(ContactsUri::GROUPS_ERROR);
     OHOS::DataShare::DataShareValuesBucket valuesInsert;
     int64_t groupId = GroupsInsert("Board of Directors", valuesInsert);
-    HILOG_INFO("abnormal_groups_Update_test_1400: groupId = %{public}ld", groupId);
+    HILOG_INFO("abnormal_groups_Update_test_1400: groupId = %{public}ld", (long) groupId);
     EXPECT_GT(groupId, 0);
 
     OHOS::DataShare::DataShareValuesBucket updateValues;

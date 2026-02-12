@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"Хранилище контактов",
+            "attr":{
+                "priority":"translate"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"Используется для синхронизации данных дней рождения контактов.",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

@@ -900,7 +900,6 @@ describe('CalllogTest', function () {
           }
         ],
         (error, data) => {
-          console.info('logMessage calllog_delete_test_1800: executeBatch data = ' + JSON.stringify(data));
           console.info('logMessage calllog_delete_test_1800: data_3 = ' + data);
           console.info('logMessage calllog_delete_test_1800:  data_1= ' + data[0].count);
           expect(data[0].count === 0).assertTrue();
@@ -951,7 +950,6 @@ describe('CalllogTest', function () {
           }
         ],
         (error, data) => {
-          console.info('logMessage calllog_update_test_1900: executeBatch data = ' + JSON.stringify(data));
           console.info('logMessage calllog_update_test_1900: data_3 = ' + data);
           console.info('logMessage calllog_update_test_1900:  data_1= ' + data[0].count);
           expect(data[0].count === 0).assertTrue();

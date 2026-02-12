@@ -23,6 +23,7 @@
 #include "rdb_open_callback.h"
 #include "rdb_store.h"
 #include "result_set.h"
+#include "rdb_sql_utils.h"
 
 namespace OHOS {
 namespace Contacts {

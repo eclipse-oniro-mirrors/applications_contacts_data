@@ -51,6 +51,9 @@ public:
     std::shared_ptr<DataShare::DataShareResultSet> ContactQuery(
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> ContactCountQuery(
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+    DataShare::DataSharePredicates predicates);
     std::shared_ptr<DataShare::DataShareResultSet> ContactDataQuery(
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
@@ -63,6 +66,14 @@ public:
     std::shared_ptr<DataShare::DataShareResultSet> HolderQuery(
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
+    std::string QueryAppGroupDir(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper);
+    int OpenFileByDataShare(const std::string &fileName,
+    const std::shared_ptr<DataShare::DataShareHelper> &dataShareHelper);
+    std::shared_ptr<DataShare::DataShareResultSet> QueryContactByRawContactId(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> &columns,
+        int rawContactId);
+    int HandleAddFailed(const std::shared_ptr<DataShare::DataShareHelper> &dataShareHelper,
+        const DataShare::DataSharePredicates &predicates, const std::string &fileName);
 };
 } // namespace ContactsApi
 } // namespace OHOS

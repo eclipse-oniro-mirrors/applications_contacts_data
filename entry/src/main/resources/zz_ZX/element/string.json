@@ -1,0 +1,44 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"[TS_980536]_Contacts Storage"
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"[TS_980544]_This is used to sync contacts' birthdays."
+        },
+        {
+            "name":"permission_read_write_contacts",
+            "value":"[TS_980538]_Used to manage contacts。"
+        },
+        {
+            "name":"permission_manage_voicemail",
+            "value":"[TS_980547]_Used to manage voicemail。"
+        },
+        {
+            "name":"contacts",
+            "value":"[TS_980539]_Contacts"
+        },
+        {
+            "name":"permission_read_used_stats",
+            "value":"[TS_980540]_Used to record applications accessing the database."
+        },
+        {
+            "name":"permission_get_network_info",
+            "value":"[TS_980537]_Used to get network info."
+        },
+        {
+            "name":"permission_read_write_calllog",
+            "value":"[TS_980543]_Used to manage call records。"
+        },
+        {
+            "name":"hicall_cloud_url",
+            "value":""
+        },
+        {
+            "name":"backup_restore",
+            "value":"[TS_980545]_backup_restore"
+        }
+    ]
+}

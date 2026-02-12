@@ -18,6 +18,7 @@
 
 #include <string>
 
+#include "delay_async_task.h"
 namespace OHOS {
 namespace Telephony {
 namespace Permission {
@@ -29,6 +30,12 @@ static constexpr const char *OHOS_PERMISSION_MANAGE_VOICEMAIL = "ohos.permission
 } // namespace Permission
 
 class TelephonyPermission {
+private:
+    // 根据permissionName和tokenId，分组管理计数; 每组两个Counter对象：[0]成功数量，[1]失败数量
+    static std::map<std::string, std::vector<std::shared_ptr<Contacts::Counter>>> countGroupMap;
+    // 根据key，获得本组计数器(key为taskname，permissionName和tokenId信息)
+    static std::vector<std::shared_ptr<Contacts::Counter>>& getCountGroup(std::string &key);
+    static std::mutex g_mtx;
 public:
     static bool CheckPermission(const std::string &permissionName);
 };

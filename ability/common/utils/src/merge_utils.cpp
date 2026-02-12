@@ -48,6 +48,10 @@ std::set<std::string> MergeUtils::QueryRawContactByType(
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(std::to_string(rawId));
     auto rawIdsSet = store->QuerySql(sql, selectionArgs);
+    if (rawIdsSet == nullptr) {
+        HILOG_ERROR("QueryRawContactByType QuerySqlResult is null");
+        return {};
+    }
     std::set<int> rawIds;
     int resultSetNum = rawIdsSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -87,6 +91,10 @@ std::set<std::string> MergeUtils::QueryDataExecute(
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(std::to_string(typeId));
     auto resultSet = store->QuerySql(query, selectionArgs);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("QueryDataExecute QuerySqlResult is null");
+        return result;
+    }
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         std::string value;
@@ -98,41 +106,6 @@ std::set<std::string> MergeUtils::QueryDataExecute(
     }
     resultSet->Close();
     return result;
-}
-
-std::vector<int> MergeUtils::QueryByDataName(
-    int rawId, std::set<std::string> data, std::shared_ptr<OHOS::NativeRdb::RdbStore> store)
-{
-    std::vector<int> ids;
-    std::shared_ptr<ContactsDataBase> contactsDataBase = ContactsDataBase::GetInstance();
-    int nameType = contactsDataBase->GetTypeId(ContentTypeData::NAME);
-    for (auto it = data.begin(); it != data.end(); it++) {
-        std::string query = "SELECT ";
-        query.append(ContactDataColumns::RAW_CONTACT_ID)
-            .append(" FROM ")
-            .append(ViewName::VIEW_CONTACT_DATA)
-            .append(" WHERE ")
-            .append(ContactDataColumns::DETAIL_INFO)
-            .append(" = '")
-            .append(*it)
-            .append("' AND ")
-            .append(ContactDataColumns::TYPE_ID)
-            .append(" = ")
-            .append(std::to_string(nameType))
-            .append(" AND is_deleted = 0");
-        auto resultSet = store->QuerySql(query);
-        int resultSetNum = resultSet->GoToFirstRow();
-        while (resultSetNum == OHOS::NativeRdb::E_OK) {
-            int value = 0;
-            resultSet->GetInt(0, value);
-            if (value != rawId) {
-                ids.push_back(value);
-            }
-            resultSetNum = resultSet->GoToNextRow();
-        }
-        resultSet->Close();
-    }
-    return ids;
 }
 
 bool MergeUtils::SetEqual(std::set<std::string> setLeft, std::set<std::string> setRight)
@@ -166,6 +139,10 @@ void MergeUtils::AddHasJudgeForRawId(
         std::string sql = "SELECT 1 FROM contact_data WHERE type_id = " + std::to_string(types[i]);
         sql.append(" AND raw_contact_id = " + std::to_string(rawId)).append(" LIMIT 1");
         auto resultSet = store->QuerySql(sql);
+        if (resultSet == nullptr) {
+            HILOG_ERROR("AddHasJudgeForRawId QuerySqlResult is null");
+            continue;
+        }
         int resultSetNum = resultSet->GoToFirstRow();
         if (resultSetNum == 0) {
             switch (i) {
@@ -190,6 +167,7 @@ void MergeUtils::AddHasJudgeForRawId(
                     break;
             }
         }
+        resultSet->Close();
     }
 }
 
@@ -213,6 +191,10 @@ void MergeUtils::GetRawIdsByRawId(std::shared_ptr<OHOS::NativeRdb::RdbStore> sto
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(std::to_string(rawId));
     auto rawIdsSet = store->QuerySql(queryMergeId, selectionArgs);
+    if (rawIdsSet == nullptr) {
+        HILOG_ERROR("GetRawIdsByRawId QuerySqlResult is null");
+        return;
+    }
     int resultSetNum = rawIdsSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         int value = 0;
