@@ -62,6 +62,7 @@ ohos_fuzztest("VoicemailFuzzTest") {
     "samgr:samgr_proxy",
     "window_manager:libwm",
     "os_account:os_account_innerkits",
+    "ipc:ipc_napi",
   ]
 
   defines = [
