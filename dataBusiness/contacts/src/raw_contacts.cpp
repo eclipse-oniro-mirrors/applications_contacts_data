@@ -41,8 +41,15 @@ int RawContacts::InsertRawContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdb
     OHOS::NativeRdb::ValuesBucket rawContactValues)
 {
     int rowRet = rdbStore->Insert(outRawContactId, ContactTableName::RAW_CONTACT, rawContactValues);
+    if (rowRet == OHOS::NativeRdb::E_SQLITE_CORRUPT) {
+        rowRet = rdbStore->Restore("contacts.db.bak");
+        HILOG_ERROR("InsertRawContact Insert Restore retCode= %{public}d", rowRet);
+    }
     if (rowRet != OHOS::NativeRdb::E_OK) {
         HILOG_ERROR("RawContacts InsertRawContact fail:%{public}d", rowRet);
+    } else {
+        HILOG_INFO("rawcontacts InsertRawContact ret:%{public}d, outRawContactId:%{public}lld, ts = %{public}lld",
+            rowRet, (long long) outRawContactId, (long long) time(NULL));
     }
     return rowRet;
 }
@@ -80,6 +87,9 @@ int RawContacts::UpdateRawContactById(int &rawContactId, std::string type,
         rdbStore->Update(changedRows, ContactTableName::RAW_CONTACT, rawContactValues, upWhereClause, upWhereArgs);
     if (ret != OHOS::NativeRdb::E_OK) {
         HILOG_ERROR("RawContacts  UpdateRawContactById fail:%{public}d", ret);
+    } else {
+        HILOG_INFO("rawcontacts UpdateRawContactById ret:%{public}d, rawContactId:%{public}d, ts = %{public}lld",
+            ret, rawContactId, (long long) time(NULL));
     }
     return ret;
 }
@@ -121,6 +131,10 @@ int RawContacts::GetDeleteContactIdByAccountId(std::shared_ptr<OHOS::NativeRdb::
         .append(RawContactColumns::CONTACT_ID)
         .append(" NOT NULL )");
     auto rawResult = store_->QuerySql(sql, selectArgs);
+    if (rawResult == nullptr) {
+        HILOG_ERROR("GetDeleteContactIdByAccountId QuerySqlResult is null");
+        return RDB_OBJECT_EMPTY;
+    }
     int resultSetNum = rawResult->GoToFirstRow();
     int currConcactIdValue = 0;
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -161,6 +175,10 @@ int RawContacts::GetDeleteRawContactIdByAccountId(std::shared_ptr<OHOS::NativeRd
         .append(RawContactColumns::ACCOUNT_ID)
         .append(" NOT NULL");
     auto rawResult = store_->QuerySql(sql, selectArgs);
+    if (rawResult == nullptr) {
+        HILOG_ERROR("GetDeleteRawContactIdByAccountId QuerySqlResult is null");
+        return RDB_OBJECT_EMPTY;
+    }
     int resultSetNum = rawResult->GoToFirstRow();
     int currConcactIdValue = 0;
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -192,7 +210,8 @@ int RawContacts::DeleteRawcontactByRawId(
     std::string whereCase;
     whereCase.append(RawContactColumns::ID).append(" = ?");
     int delRawContact = store_->Delete(rowId, ContactTableName::RAW_CONTACT, whereCase, whereArgs);
-    HILOG_INFO("DeleteRawcontactByRawId : status is %{public}d", delRawContact);
+    HILOG_INFO("DeleteRawcontactByRawId : status is %{public}d, needDeleteRawContactId:%{public}d",
+        delRawContact, needDeleteRawContactId);
     return delRawContact;
 }
 } // namespace Contacts

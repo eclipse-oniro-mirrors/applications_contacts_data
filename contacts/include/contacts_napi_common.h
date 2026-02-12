@@ -16,6 +16,7 @@
 #ifndef CONTACT_NAPI_COMMON_H
 #define CONTACT_NAPI_COMMON_H
 
+#include "contacts_napi_object.h"
 #include "datashare_predicates.h"
 #include "datashare_helper.h"
 #include "napi/native_api.h"
@@ -25,6 +26,7 @@
 #include "rdb_open_callback.h"
 #include "rdb_predicates.h"
 #include "rdb_store.h"
+#include "pixel_map.h"
 
 namespace OHOS {
 namespace ContactsApi {
@@ -34,7 +36,7 @@ constexpr int SUCCESS = 0;
 constexpr int RESULT_DATA_SIZE = 2;
 constexpr int RDB_PERMISSION_ERROR = -2;
 constexpr int RDB_PARAMETER_ERROR = -3;
-constexpr int VERIFICATION_PERMISSION_ERROR = -4;
+constexpr int VERIFICATION_PARAMETER_ERROR = -4;
 constexpr int PERMISSION_ERROR = 201;
 constexpr int PARAMETER_ERROR = 401;
 
@@ -60,6 +62,7 @@ constexpr int UPDATE_CONTACT = 3001;
 
 constexpr int QUERY_CONTACTS = 4001;
 constexpr int QUERY_CONTACT = 4008;
+constexpr int QUERY_CONTACT_COUNT = 4009;
 
 constexpr int QUERY_CONTACTS_BY_EMAIL = 4002;
 constexpr int QUERY_CONTACTS_BY_PHONE_NUMBER = 4003;
@@ -132,6 +135,9 @@ struct ExecuteHelper {
     // operation result
     int resultData;
     std::shared_ptr<DataShare::DataShareResultSet> resultSet;
+    std::string grantUri;
+    Portrait portrait;
+    bool isNeedHandlePhoto = false;
 };
 } // namespace ContactsApi
 } // namespace OHOS

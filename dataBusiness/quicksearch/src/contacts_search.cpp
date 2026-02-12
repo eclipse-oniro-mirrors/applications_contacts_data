@@ -46,6 +46,16 @@ int64_t ContactsSearch::Insert(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSto
     return rowSearchContactRet;
 }
 
+int64_t ContactsSearch::BatchInsert(std::shared_ptr<OHOS::NativeRdb::RdbStore> &rdbStore,
+    std::vector<OHOS::NativeRdb::ValuesBucket> &rawContactValues, int64_t &outChangeRows)
+{
+    auto ret = rdbStore->BatchInsert(outChangeRows, ContactTableName::SEARCH_CONTACT, rawContactValues);
+    if (ret != OHOS::NativeRdb::E_OK) {
+        HILOG_ERROR("BatchInsert fail:%{public}d", ret);
+    }
+    return ret;
+}
+
 /**
  * @brief Update contact data by quick_search_key
  *

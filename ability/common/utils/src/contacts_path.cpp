@@ -19,7 +19,12 @@ namespace OHOS {
 namespace Contacts {
 std::string ContactsPath::RDB_PATH = "";
 std::string ContactsPath::RDB_EL1_PATH = "";
+std::string ContactsPath::RDB_EL5_PATH = "";
 std::string ContactsPath::RDB_BACKUP_PATH = "";
+
+std::string ContactsPath::DOUBLE_DB_FILE_PATH = "/data/storage/el2/database/contactsdata/rdb/contacts2_double.db";
+std::string ContactsPath::RDB_DOUBLE_DB_PATH = "/data/storage/el2/database/contactsdata";
+std::string ContactsPath::DOUBLE_DB_NAME = "contacts2_double.db";
 
 ContactsPath::ContactsPath(void)
 {

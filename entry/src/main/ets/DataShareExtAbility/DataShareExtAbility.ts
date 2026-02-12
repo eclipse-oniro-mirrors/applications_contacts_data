@@ -22,27 +22,27 @@ export default class DataShareExtAbility extends Extension {
     console.log('[ttt] [ContactsDataShare] <<Provider>> DataShareExtAbility onCreate, want:' + want.abilityName);
   }
 
-  getFileTypes(uri: string, mimeTypeFilter: string) {
+  getFileTypes(uri: string, mimeTypeFilter: string): void {
     console.info('[ttt] [ContactsDataShare] <<Provider>> [getFileTypes] enter');
   }
 
-  insert(uri, value, callback) {
+  insert(uri: string, value, callback): void {
     console.info('[ttt] [ContactsDataShare] <<Provider>> [insert] enter');
   }
 
-  update(uri, value, predicates, callback) {
+  update(uri: string, value, predicates, callback): void {
     console.info('[ttt] [ContactsDataShare] <<Provider>> [update] enter');
   }
 
-  delete(uri, predicates, callback) {
+  delete(uri: string, predicates, callback): void {
     console.info('[ttt] [ContactsDataShare] <<Provider>> [delete] enter');
   }
 
-  query(uri, columns, predicates, callback) {
+  query(uri: string, columns, predicates, callback): void {
     console.info('[ttt] [ContactsDataShare] <<Provider>> [query] enter');
   }
 
-  getType(uri: string) {
+  getType(uri: string): void {
     console.info('[ttt] [ContactsDataShare] <<Provider>> [getType] enter');
   }
 
@@ -50,11 +50,11 @@ export default class DataShareExtAbility extends Extension {
     console.info('[ttt] [ContactsDataShare] <<Provider>> [batchInsert] enter');
   }
 
-  normalizeUri(uri: string) {
+  normalizeUri(uri: string): void {
     console.info('[ttt] [ContactsDataShare] <<Provider>> [normalizeUri] enter');
   }
 
-  denormalizeUri(uri: string) {
+  denormalizeUri(uri: string): void {
     console.info('[ttt] [ContactsDataShare] <<Provider>> [denormalizeUri] enter');
   }
 }

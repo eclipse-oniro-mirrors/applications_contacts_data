@@ -14,8 +14,10 @@
  */
 
 #include "result_convert.h"
-
+#include "contacts_napi_object.h"
 #include "hilog_wrapper_api.h"
+#include <iostream>
+#include <sstream>
 
 namespace OHOS {
 namespace ContactsApi {
@@ -28,6 +30,53 @@ ResultConvert::~ResultConvert()
 }
 
 /**
+ * 将应用里的电话类型映射到文档里的电话类型
+ */
+std::map<int, int> ResultConvert::phoneTypeIdMap_ = {
+    {ContactPhoneNumber::TYPE_HOME, PhoneNumber::NUM_HOME},
+    {ContactPhoneNumber::TYPE_MOBILE, PhoneNumber::NUM_MOBILE},
+    {ContactPhoneNumber::TYPE_WORK, PhoneNumber::NUM_WORK},
+    {ContactPhoneNumber::TYPE_FAX_WORK, PhoneNumber::NUM_FAX_WORK},
+    {ContactPhoneNumber::TYPE_FAX_HOME, PhoneNumber::NUM_FAX_HOME},
+    {ContactPhoneNumber::TYPE_PAGER, PhoneNumber::NUM_PAGER},
+    {ContactPhoneNumber::TYPE_OTHER, PhoneNumber::NUM_OTHER},
+    {ContactPhoneNumber::TYPE_MAIN, PhoneNumber::NUM_MAIN},
+    {ContactPhoneNumber::TYPE_CUSTOM, PhoneNumber::CUSTOM_LABEL},
+    {ContactPhoneNumber::NEW_TYPE_CUSTOM, PhoneNumber::CUSTOM_LABEL}
+};
+
+/**
+ * 将应用里的IM类型映射到文档里的类型
+ */
+std::map<int, int> ResultConvert::imTypeIdMap_ = {
+    {ContactImAddress::NEW_TYPE_CUSTOM, ImAddress::CUSTOM_LABEL},
+    {ContactImAddress::TYPE_AIM, ImAddress::IM_AIM},
+    {ContactImAddress::TYPE_WINDOWSLIVE, ImAddress::IM_MSN},
+    {ContactImAddress::TYPE_YAHOO, ImAddress::IM_YAHOO},
+    {ContactImAddress::TYPE_SKYPE, ImAddress::IM_SKYPE},
+    {ContactImAddress::TYPE_QQ, ImAddress::IM_QQ},
+    {ContactImAddress::TYPE_HANGOUTS, ImAddress::IM_HANGOUTS},
+    {ContactImAddress::TYPE_ICQ, ImAddress::IM_ICQ},
+    {ContactImAddress::TYPE_JABBER, ImAddress::IM_JABBER},
+    {ContactImAddress::TYPE_CUSTOM, ImAddress::CUSTOM_LABEL},
+};
+
+/**
+ * 其他字段的统一处理
+ */
+std::map<int, int> ResultConvert::commonTypeIdMap_ = {
+    {ContactCommon::NEW_CUSTOM_LABEL, PostalAddress::CUSTOM_LABEL}
+};
+
+/**
+ * 将应用里的关系类型映射到文档里的类型
+ */
+std::map<int, int> ResultConvert::relationTypeIdMap_ = {
+    {ContactRelation::CUSTOM_LABEL, Relation::CUSTOM_LABEL},
+    {ContactRelation::NEW_CUSTOM_LABEL, Relation::CUSTOM_LABEL},
+};
+
+/**
  * @brief Get object array by resultSet
  *
  * @param env Conditions for convert operation
@@ -36,7 +85,7 @@ ResultConvert::~ResultConvert()
  * @return The result returned by convert operation
  */
 napi_value ResultConvert::ResultSetToObject(
-    napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
+    napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet, const std::string grantUri)
 {
     if (resultSet == nullptr) {
         HILOG_ERROR("ResultConvert::ResultSetToObject resultSet is nullptr");
@@ -64,7 +113,7 @@ napi_value ResultConvert::ResultSetToObject(
         resultSet->GetInt(contactIndex, contactIdValue);
         napi_value napiObject = GetResultMapValue(env, resultSetMap, contactIdValue);
         PutQuickSearchKey(env, resultSet, quickSearchMap, contactIdValue);
-        ConvertContactObject(env, napiObject, resultSet);
+        ConvertContactObject(env, napiObject, resultSet, grantUri);
         resultSetNum = resultSet->GoToNextRow();
     }
     resultSet->Close();
@@ -121,8 +170,8 @@ napi_value ResultConvert::ConvertContactArray(
  * @param napiObject Conditions for convert operation
  * @param resultSet Target of convert operation
  */
-void ResultConvert::ConvertContactObject(
-    napi_env env, napi_value napiObject, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
+void ResultConvert::ConvertContactObject(napi_env env, napi_value napiObject,
+    std::shared_ptr<DataShare::DataShareResultSet> &resultSet, const std::string grantUri)
 {
     int typeIdValue = 0;
     std::string typeId = "type_id";
@@ -131,7 +180,7 @@ void ResultConvert::ConvertContactObject(
     resultSet->GetInt(columnIndexType, typeIdValue);
     ConvertEmail(env, napiObject, typeIdValue, resultSet);
     ConvertName(env, napiObject, typeIdValue, resultSet);
-    ConvertUri(env, napiObject, typeIdValue, resultSet);
+    ConvertUri(env, napiObject, typeIdValue, resultSet, grantUri);
     ConvertEvent(env, napiObject, typeIdValue, resultSet);
     ConvertGroup(env, napiObject, typeIdValue, resultSet);
     ConvertImAddress(env, napiObject, typeIdValue, resultSet);
@@ -239,7 +288,7 @@ napi_value ResultConvert::ResultSetToGroup(
         resultSet->GetColumnIndex(id, idIndex);
         resultSet->GetInt(idIndex, idValue);
         napi_value napiIdKey;
-        napi_create_string_utf8(env, "id", NAPI_AUTO_LENGTH, &napiIdKey);
+        napi_create_string_utf8(env, "groupId", NAPI_AUTO_LENGTH, &napiIdKey);
         napi_value napiValue;
         napi_create_int64(env, idValue, &napiValue);
         napi_set_property(env, elementObject, napiIdKey, napiValue);
@@ -340,6 +389,48 @@ napi_value ResultConvert::GetResultValue(
     return napiValue;
 }
 
+napi_value ResultConvert::GetIntValueFromString(
+    napi_env env, std::string &contentKey, std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int &typeId)
+{
+    int columnIndex = ERROR;
+    resultSet->GetColumnIndex(contentKey, columnIndex);
+    OHOS::DataShare::DataType columnType;
+    resultSet->GetDataType(columnIndex, columnType);
+    napi_value napiValue = nullptr;
+    if (columnType == OHOS::DataShare::DataType::TYPE_STRING) {
+        std::string stringValue;
+        resultSet->GetString(columnIndex, stringValue);
+        //将字符串转为int
+        int intValue = PostalAddress::INVALID_LABEL_ID;
+        std::istringstream ss(stringValue);
+        ss >> intValue;
+
+        //对于应用不一致的类型，按照接口文档进行转换
+        std::map<int, int> typeIdMap_ = GetTypeIdMap(typeId);
+        std::map<int, int>::iterator iterator = typeIdMap_.find(intValue);
+        if (iterator != typeIdMap_.end()) {
+            intValue = iterator->second;
+        }
+
+        napi_create_int64(env, intValue, &napiValue);
+    }
+    return napiValue;
+}
+
+std::map<int, int> ResultConvert::GetTypeIdMap(int &typeId)
+{
+    if (typeId == PHONE) {
+        return ResultConvert::phoneTypeIdMap_;
+    };
+    if (typeId == IM) {
+        return ResultConvert::imTypeIdMap_;
+    };
+    if (typeId == RELATION) {
+        return ResultConvert::relationTypeIdMap_;
+    };
+    return ResultConvert::commonTypeIdMap_;
+}
+
 napi_value ResultConvert::CreateNapiStringValue(napi_env env, const std::string key)
 {
     napi_value keyValue;
@@ -362,15 +453,15 @@ void ResultConvert::ConvertEmail(
         std::string extend7Key = "extend7";
         std::string aliasDetailInfoKey = "alias_detail_info";
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
-        napi_value customValue = GetResultValue(env, customDataKey, resultSet);
+        napi_value customValue = GetIntValueFromString(env, customDataKey, resultSet, typeId);
         napi_value extend7Value = GetResultValue(env, extend7Key, resultSet);
         napi_value aliasDetailInfoValue = GetResultValue(env, aliasDetailInfoKey, resultSet);
         napi_value napiDetailInfoKey = CreateNapiStringValue(env, "email");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
         napi_value napiLabelNameKey = CreateNapiStringValue(env, "labelName");
-        napi_set_property(env, objectElement, napiLabelNameKey, customValue);
+        napi_set_property(env, objectElement, napiLabelNameKey, extend7Value);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
-        napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
+        napi_set_property(env, objectElement, napiLabelIdKey, customValue);
         napi_value napiDisplayNameIdKey = CreateNapiStringValue(env, "displayName");
         napi_set_property(env, objectElement, napiDisplayNameIdKey, aliasDetailInfoValue);
         napi_set_element(env, emailArray, count, objectElement);
@@ -380,8 +471,33 @@ void ResultConvert::ConvertEmail(
     }
 }
 
-void ResultConvert::ConvertName(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
+napi_value ResultConvert::ProcessHasName(napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
+{
+    std::string hasNameKey = "extend7";
+    napi_value hasNameValue = GetResultValue(env, hasNameKey, resultSet);
+    napi_valuetype valueType = napi_undefined;
+    napi_typeof(env, hasNameValue, &valueType);
+    size_t res = 0;
+    char buffer[PATH_MAX];
+    std::string hasNameStr = "";
+    if (valueType == napi_string) {
+        napi_get_value_string_utf8(env, hasNameValue, buffer, PATH_MAX, &res);
+        hasNameStr = std::string(buffer);
+        HILOG_DEBUG("ProcessHasName: hasNameStr is %{public}s", hasNameStr.c_str());
+        if (hasNameStr == "1.0") {
+            napi_get_boolean(env, false, &hasNameValue);
+        } else {
+            napi_get_boolean(env, true, &hasNameValue);
+        }
+    } else {
+        HILOG_DEBUG("ProcessHasName: hasNameStr is not string...");
+        napi_get_boolean(env, true, &hasNameValue);
+    }
+    return hasNameValue;
+}
+
+void ResultConvert::ConvertName(napi_env env, napi_value napiObject, int &typeId,
+    std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
 {
     if (typeId == NAME) {
         const std::string name = "name";
@@ -422,20 +538,42 @@ void ResultConvert::ConvertName(
         napi_set_property(env, objectElement, napiNamePrefixKey, namePrefixValue);
         napi_value napiNameSuffixKey = CreateNapiStringValue(env, "nameSuffix");
         napi_set_property(env, objectElement, napiNameSuffixKey, nameSuffixValue);
+        napi_value hasNameValue = ProcessHasName(env, resultSet);
+        napi_value napiHasNameKey = CreateNapiStringValue(env, "hasName");
+        napi_set_property(env, objectElement, napiHasNameKey, hasNameValue);
         napi_value napiElementKey;
         napi_create_string_utf8(env, name.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
         napi_set_property(env, napiObject, napiElementKey, objectElement);
     }
 }
 
-void ResultConvert::ConvertUri(
-    napi_env env, napi_value napiObject, int &typeId, std::shared_ptr<DataShare::DataShareResultSet> &resultSet)
+void ResultConvert::ConvertUri(napi_env env, napi_value napiObject, int &typeId,
+    std::shared_ptr<DataShare::DataShareResultSet> &resultSet, const std::string grantUri)
 {
     if (typeId == PHOTO) {
         const std::string portrait = "portrait";
         napi_value objectElement = GetNapiElementObject(env, napiObject, portrait);
         std::string uri = "detail_info";
         napi_value uriValue = GetResultValue(env, uri, resultSet);
+        napi_valuetype valueType = napi_undefined;
+        napi_typeof(env, uriValue, &valueType);
+        size_t res = 0;
+        char buffer[PATH_MAX];
+        std::string uriStr = "";
+        if (valueType == napi_string) {
+            napi_get_value_string_utf8(env, uriValue, buffer, PATH_MAX, &res);
+            if (res >= PATH_MAX) {
+                HILOG_ERROR("ConvertUri: uri string length over buffer");
+                return;
+            }
+            uriStr = std::string(buffer);
+            // 存在头像路径并且有授权路径
+            if (uriStr != "" && grantUri != "") {
+                uriStr = grantUri + '/' + uriStr;
+            }
+            HILOG_DEBUG("ConvertUri: uriStr is %{private}s", uriStr.c_str());
+        }
+        napi_create_string_utf8(env, uriStr.c_str(), NAPI_AUTO_LENGTH, &uriValue);
         napi_value napiUri = CreateNapiStringValue(env, "uri");
         napi_set_property(env, objectElement, napiUri, uriValue);
         napi_value napiElementKey;
@@ -458,14 +596,14 @@ void ResultConvert::ConvertEvent(
         std::string customDataKey = "custom_data";
         std::string extend7Key = "extend7";
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
-        napi_value customValue = GetResultValue(env, customDataKey, resultSet);
+        napi_value customValue = GetIntValueFromString(env, customDataKey, resultSet, typeId);
         napi_value extend7Value = GetResultValue(env, extend7Key, resultSet);
         napi_value napiDetailInfoKey = CreateNapiStringValue(env, "eventDate");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
         napi_value napiLabelNameKey = CreateNapiStringValue(env, "labelName");
-        napi_set_property(env, objectElement, napiLabelNameKey, customValue);
+        napi_set_property(env, objectElement, napiLabelNameKey, extend7Value);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
-        napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
+        napi_set_property(env, objectElement, napiLabelIdKey, customValue);
         napi_set_element(env, emailArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, events.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
@@ -511,14 +649,14 @@ void ResultConvert::ConvertImAddress(
         std::string customDataKey = "custom_data";
         std::string extend7Key = "extend7";
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
-        napi_value customValue = GetResultValue(env, customDataKey, resultSet);
+        napi_value customValue = GetIntValueFromString(env, customDataKey, resultSet, typeId);
         napi_value extend7Value = GetResultValue(env, extend7Key, resultSet);
         napi_value napiDetailInfoKey = CreateNapiStringValue(env, "imAddress");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
         napi_value napiLabelNameKey = CreateNapiStringValue(env, "labelName");
-        napi_set_property(env, objectElement, napiLabelNameKey, customValue);
+        napi_set_property(env, objectElement, napiLabelNameKey, extend7Value);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
-        napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
+        napi_set_property(env, objectElement, napiLabelIdKey, customValue);
         napi_set_element(env, imAddressArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, imAddresses.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
@@ -540,14 +678,14 @@ void ResultConvert::ConvertPhoneNumber(
         std::string customDataKey = "custom_data";
         std::string extend7Key = "extend7";
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
-        napi_value customValue = GetResultValue(env, customDataKey, resultSet);
+        napi_value customValue = GetIntValueFromString(env, customDataKey, resultSet, typeId);
         napi_value extend7Value = GetResultValue(env, extend7Key, resultSet);
         napi_value napiDetailInfoKey = CreateNapiStringValue(env, "phoneNumber");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
         napi_value napiLabelNameKey = CreateNapiStringValue(env, "labelName");
-        napi_set_property(env, objectElement, napiLabelNameKey, customValue);
+        napi_set_property(env, objectElement, napiLabelNameKey, extend7Value);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
-        napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
+        napi_set_property(env, objectElement, napiLabelIdKey, customValue);
         napi_set_element(env, phoneNumbersArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, phoneNumbers.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
@@ -569,7 +707,7 @@ void ResultConvert::ConvertPostalAddress(
         std::string customDataKey = "custom_data";
         std::string extend7Key = "extend7";
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
-        napi_value customValue = GetResultValue(env, customDataKey, resultSet);
+        napi_value customValue = GetIntValueFromString(env, customDataKey, resultSet, typeId);
         napi_value extend7Value = GetResultValue(env, extend7Key, resultSet);
         std::string neighborhoodKey = "neighborhood";
         std::string poboxKey = "pobox";
@@ -588,9 +726,9 @@ void ResultConvert::ConvertPostalAddress(
         napi_value napiDetailInfoKey = CreateNapiStringValue(env, "postalAddress");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
         napi_value napiLabelNameKey = CreateNapiStringValue(env, "labelName");
-        napi_set_property(env, objectElement, napiLabelNameKey, customValue);
+        napi_set_property(env, objectElement, napiLabelNameKey, extend7Value);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
-        napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
+        napi_set_property(env, objectElement, napiLabelIdKey, customValue);
         napi_set_property(
             env, objectElement, CreateNapiStringValue(env, neighborhoodKey.c_str()), neighborhoodKeyValue);
         napi_set_property(env, objectElement, CreateNapiStringValue(env, cityKey.c_str()), cityKeyValue);
@@ -619,14 +757,14 @@ void ResultConvert::ConvertRelation(
         std::string customDataKey = "custom_data";
         std::string extend7Key = "extend7";
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
-        napi_value customValue = GetResultValue(env, customDataKey, resultSet);
+        napi_value customValue = GetIntValueFromString(env, customDataKey, resultSet, typeId);
         napi_value extend7Value = GetResultValue(env, extend7Key, resultSet);
-        napi_value napiDetailInfoKey = CreateNapiStringValue(env, "sipAddress");
+        napi_value napiDetailInfoKey = CreateNapiStringValue(env, "relationName");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
         napi_value napiLabelNameKey = CreateNapiStringValue(env, "labelName");
-        napi_set_property(env, objectElement, napiLabelNameKey, customValue);
+        napi_set_property(env, objectElement, napiLabelNameKey, extend7Value);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
-        napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
+        napi_set_property(env, objectElement, napiLabelIdKey, customValue);
         napi_set_element(env, relationsArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, relations.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
@@ -648,14 +786,14 @@ void ResultConvert::ConvertSipAddress(
         std::string customDataKey = "custom_data";
         std::string extend7Key = "extend7";
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
-        napi_value customValue = GetResultValue(env, customDataKey, resultSet);
+        napi_value customValue = GetIntValueFromString(env, customDataKey, resultSet, typeId);
         napi_value extend7Value = GetResultValue(env, extend7Key, resultSet);
-        napi_value napiDetailInfoKey = CreateNapiStringValue(env, "relationName");
+        napi_value napiDetailInfoKey = CreateNapiStringValue(env, "sipAddress");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
         napi_value napiLabelNameKey = CreateNapiStringValue(env, "labelName");
-        napi_set_property(env, objectElement, napiLabelNameKey, customValue);
+        napi_set_property(env, objectElement, napiLabelNameKey, extend7Value);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
-        napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
+        napi_set_property(env, objectElement, napiLabelIdKey, customValue);
         napi_set_element(env, sipAddressArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, sipAddresses.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
@@ -677,14 +815,14 @@ void ResultConvert::ConvertWebsite(
         std::string customDataKey = "custom_data";
         std::string extend7Key = "extend7";
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
-        napi_value customValue = GetResultValue(env, customDataKey, resultSet);
+        napi_value customValue = GetIntValueFromString(env, customDataKey, resultSet, typeId);
         napi_value extend7Value = GetResultValue(env, extend7Key, resultSet);
         napi_value napiDetailInfoKey = CreateNapiStringValue(env, "website");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
         napi_value napiLabelNameKey = CreateNapiStringValue(env, "labelName");
-        napi_set_property(env, objectElement, napiLabelNameKey, customValue);
+        napi_set_property(env, objectElement, napiLabelNameKey, extend7Value);
         napi_value napiLabelIdKey = CreateNapiStringValue(env, "labelId");
-        napi_set_property(env, objectElement, napiLabelIdKey, extend7Value);
+        napi_set_property(env, objectElement, napiLabelIdKey, customValue);
         napi_set_element(env, websitesArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, websites.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);

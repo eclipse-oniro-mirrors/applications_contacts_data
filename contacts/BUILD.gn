@@ -25,13 +25,34 @@ config("contactsapi_public_config") {
 jspath = "src/contact.js"
 
 # compile .js to .abc.
-es2abc_gen_abc("gen_contact_abc") {
-  src_js = rebase_path(jspath)
-  dst_file = rebase_path(target_out_dir + "/contact.abc")
+action("gen_contact_abc") {
+  visibility = [ ":*" ]
+  script = "../../../../arkcompiler/ets_frontend/es2panda/scripts/generate_js_bytecode.py"
 
-  extra_args = [ "--module" ]
-  in_puts = [ jspath ]
-  out_puts = [ target_out_dir + "/contact.abc" ]
+  args = [
+    "--src-js",
+    rebase_path(jspath),
+    "--dst-file",
+    rebase_path(target_out_dir + "/contact.abc"),
+    "--frontend-tool-path",
+    rebase_path("${es2abc_build_path}"),
+    "--module",
+  ]
+
+  if (host_os == "linux") {
+    external_deps = [ "ets_frontend:es2panda(${toolchain_linux})" ]
+  }
+
+  if (host_os == "mac") {
+    external_deps = [ "ets_frontend:es2panda(${toolchain_mac})" ]
+  }
+
+  if (host_os == "ohos") {
+    external_deps = [ "ets_frontend:es2panda(${toolchain_ohos})" ]
+  }
+
+  inputs = [ jspath ]
+  outputs = [ target_out_dir + "/contact.abc" ]
 }
 
 base_output_path = get_label_info(":contact_js", "target_out_dir")
@@ -51,17 +72,20 @@ gen_js_obj("contact_abc") {
 }
 
 ohos_shared_library("contact") {
+  cflags_cc = [
+    "-fstack-protector-strong",
+    "-D_FORTIFY_SOURCE=2",
+    "-O2",
+  ]
   sources = [
     "src/contacts_api.cpp",
     "src/contacts_build.cpp",
     "src/contacts_control.cpp",
     "src/contacts_napi_utils.cpp",
-    "src/contacts_telephony_permission.cpp",
+    "src/kit_pixel_map_util.cpp",
     "src/native_module.cpp",
     "src/result_convert.cpp",
-  ]
-
-  include_dirs = [
+    "src/contacts_telephony_permission.cpp",
   ]
 
   public_configs = [ ":contactsapi_public_config" ]
@@ -78,22 +102,36 @@ ohos_shared_library("contact") {
   }
 
   external_deps = [
+    "ability_runtime:napi_common",
+    "ability_runtime:wantagent_innerkits",
+    "ability_base:want",
     "ability_base:zuri",
+    "ability_runtime:ability_context_native",
     "ability_runtime:abilitykit_native",
     "ability_runtime:app_context",
-    "ability_runtime:app_manager",
     "ability_runtime:extensionkit_native",
     "ability_runtime:napi_base_context",
-    "ability_runtime:napi_common",
-    "access_token:libaccesstoken_sdk",
-    "access_token:libprivacy_sdk",
+    "ability_runtime:ui_extension",
+    "app_file_service:fileuri_native",
+    "protobuf:protobuf_lite",
     "c_utils:utils",
     "data_share:datashare_consumer",
     "hilog:libhilog",
-    "ipc:ipc_single",
     "napi:ace_napi",
     "relational_store:native_dataability",
     "relational_store:native_rdb",
+    "access_token:libaccesstoken_sdk",
+    "access_token:libprivacy_sdk",
+    "image_framework:image",
+    "ipc:ipc_single",
+    "ace_engine:ace_uicontent",
+    "window_manager:libwm",
+    "i18n:intl_util",
+    "libphonenumber:phonenumber_standard",
+    "libphonenumber:geocoding",
+    "protobuf:protobuf_lite",
+    "protobuf:protobuf",
+   # "protobuf:protoc_lib",
     "samgr:samgr_proxy",
   ]
 

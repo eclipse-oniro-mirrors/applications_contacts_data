@@ -28,7 +28,6 @@ class CandidateStatus {
 public:
     CandidateStatus();
     ~CandidateStatus();
-    Candidate QueryAllForMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId);
 
 private:
     int PhoneMatch(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, std::set<std::string> phones, int id);

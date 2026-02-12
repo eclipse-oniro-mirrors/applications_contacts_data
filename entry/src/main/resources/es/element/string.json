@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"Almacenamiento de contactos",
+            "attr":{
+                "priority":"translate"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"Se utiliza para sincronizar cumpleaños de contactos.",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

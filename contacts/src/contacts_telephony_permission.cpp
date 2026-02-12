@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Huawei Device Co., Ltd.
+ * Copyright (C) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,8 +53,8 @@ bool ContactsTelephonyPermission::CheckPermission(const std::string &permissionN
 
     auto callerToken = IPCSkeleton::GetCallingTokenID();
     auto callerPid = IPCSkeleton::GetCallingPid();
-    HILOG_INFO("contactsCheckPermission, get callerPid = %{public}d, permission = %{public}s",
-        callerPid, permissionName.c_str());
+    HILOG_INFO("contactsCheckPermission,get callerPid = %{public}d,permission = %{public}s,ts = %{public}lld",
+        callerPid, permissionName.c_str(), (long long) time(NULL));
     auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
     int result = PermissionState::PERMISSION_DENIED;
     if (tokenType == ATokenTypeEnum::TOKEN_NATIVE) {
@@ -62,7 +62,7 @@ bool ContactsTelephonyPermission::CheckPermission(const std::string &permissionN
     } else if (tokenType == ATokenTypeEnum::TOKEN_HAP) {
         result = AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
     } else {
-        HILOG_ERROR("ContactsCheckPermission check failed");
+        HILOG_ERROR("ContactsTelephonyPermission check failed");
     }
 
     if (permissionName == Permission::READ_CALL_LOG
@@ -74,8 +74,8 @@ bool ContactsTelephonyPermission::CheckPermission(const std::string &permissionN
             int32_t failCount = status ? 0 : 1;
             int32_t ret = PrivacyKit::AddPermissionUsedRecord(callerToken, permissionName, successCount, failCount);
             if (ret != 0) {
-                HILOG_ERROR("AddPermissionUsedRecord failed, permissionName = %{public}s, callerPid = %{public}d,"
-                    "successCount = %{public}d, failCount = %{public}d, ret = %{public}d", permissionName.c_str(),
+                HILOG_INFO("AddPermissionUsedRecord failed, permissionName = %{public}s, callerPid = %{public}d,"
+                    "successCount = %{public}d,failCount = %{public}d,ret = %{public}d", permissionName.c_str(),
                     callerPid, successCount, failCount, ret);
             }
         }
