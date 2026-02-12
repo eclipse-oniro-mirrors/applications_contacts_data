@@ -25,7 +25,6 @@
 #include "contacts_path.h"
 #include "contacts_string_utils.h"
 #include "file_utils.h"
-#include "hash_utils.h"
 #include "merge_utils.h"
 #include "predicates_convert.h"
 #include "sql_analyzer.h"
@@ -75,18 +74,6 @@ void FileFuzz(const uint8_t *data, size_t size)
     std::string dataStr(reinterpret_cast<const char *>(data), size);
     fu.Mkdir(dataStr);
     remove(dataStr.c_str());
-}
-
-void HashFuzz(const uint8_t *data, size_t size)
-{
-    OHOS::Contacts::HashUtils hu;
-    std::string str(reinterpret_cast<const char *>(data), size);
-    std::vector<uint8_t> msg;
-    msg.push_back(1);
-    hu.Update(str);
-    hu.Update(msg);
-    hu.Final();
-    hu.Process();
 }
 
 void MergeFuzz(const uint8_t *data, size_t size)
@@ -161,7 +148,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     const FunctionInfo functions[] = {
         {Contacts::Test::StringFuzz, "StringFuzz"},
         {Contacts::Test::FileFuzz, "FileFuzz"},
-        {Contacts::Test::HashFuzz, "HashFuzz"},
         {Contacts::Test::MergeFuzz, "MergeFuzz"},
         {Contacts::Test::PredicatesConvertFuzz, "PredicatesConvertFuzz"},
         {Contacts::Test::SqlAnalyzerFuzz, "SqlAnalyzerFuzz"},

@@ -63,6 +63,7 @@ ohos_fuzztest("ContactsDataFuzzTest") {
     "samgr:samgr_proxy",
     "window_manager:libwm",
     "os_account:os_account_innerkits",  # os_account
+    "ipc:ipc_napi",
   ]
 
   defines = [
