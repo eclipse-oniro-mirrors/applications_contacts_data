@@ -1,0 +1,13 @@
+.idea/
+.vscode/
+.hvigor/
+CMakeLists.txt
+cmake-build-debug/
+build/
+entry/build/
+entry/libs/
+oh_modules/
+**/build/
+**/oh-package-lock.json5
+local.properties
+oh-package-lock.json5

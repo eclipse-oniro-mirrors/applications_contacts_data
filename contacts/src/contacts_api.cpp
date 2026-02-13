@@ -26,19 +26,38 @@
 #include "result_set.h"
 #include "securec.h"
 
-#include "contacts_control.h"
 #include "contacts_napi_common.h"
 #include "contacts_napi_utils.h"
 #include "hilog_wrapper_api.h"
 #include "result_convert.h"
 #include "contacts_telephony_permission.h"
+#include "ability.h"
+#include "ability_context.h"
+#include "context.h"
+#include "ui_content.h"
+#include "ui_extension_context.h"
+#include "napi_common_want.h"
+#include "modal_ui_extension_config.h"
+#include "window.h"
+#include "want.h"
+#include "phone_number_format.h"
+#include "locale_config.h"
+#include "image_packer.h"
+#include "file_uri.h"
+#include "kit_pixel_map_util.h"
+
+using i18n::phonenumbers::PhoneNumberUtil;
 
 namespace OHOS {
 namespace ContactsApi {
-constexpr int32_t MAXCOUNT = 10;
 namespace {
 std::mutex g_mutex;
 }
+
+static const std::string PHONE_NUMBER_PREFIX = "106";
+static const int OPEN_FILE_FAILED = -1;
+static const int ERR_OK = 0;
+
 /**
  * @brief Initialize NAPI object
  *
@@ -177,7 +196,7 @@ bool GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
         status = OHOS::AbilityRuntime::IsStageContext(env, abilityContext, isStageMode);
     }
 
-    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper = nullptr;    
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper = nullptr;
     if (status != napi_ok || !isStageMode) {
         HILOG_INFO("GetFAModeContext");
         auto ability = OHOS::AbilityRuntime::GetCurrentAbility(env);
@@ -198,8 +217,7 @@ bool GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
             HILOG_ERROR("Failed to get native stage context instance");
             return false;
         }
-        executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI,
-            "", MAXCOUNT);
+        executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
     }
     return false;
 }
@@ -220,10 +238,8 @@ void HolderPredicates(Holder &holder, DataShare::DataSharePredicates &predicates
         predicates.And();
         predicates.EqualTo("account_name", holder.displayName);
     }
-    if (holder.holderId > 0) {
-        predicates.And();
-        predicates.EqualTo("account_id", std::to_string(holder.holderId));
-    }
+    predicates.And();
+    predicates.EqualTo("account_id", std::to_string(holder.holderId));
 }
 
 /**
@@ -289,9 +305,6 @@ DataShare::DataSharePredicates BuildDeleteContactPredicates(napi_env env, Execut
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
         predicates.EqualTo("quick_search_key", keyValue);
-    } else {
-        HILOG_ERROR("BuildDeleteContactPredicates error");
-        executeHelper->resultData = RDB_PARAMETER_ERROR;
     }
     return predicates;
 }
@@ -315,7 +328,9 @@ DataShare::DataSharePredicates BuildQueryContactPredicates(
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
         predicates.EqualTo("quick_search_key", keyValue);
-        HolderPredicates(holder, predicates);
+        if (hold != nullptr) {
+            HolderPredicates(holder, predicates);
+        }
     }
     return predicates;
 }
@@ -328,9 +343,21 @@ void HoldersStructure(std::map<std::string, std::string> &holders, Holder &holde
     if (!holder.displayName.empty()) {
         holders["account_name"] = holder.displayName;
     }
-    if (holder.holderId > 0) {
-        holders["account_id"] = std::to_string(holder.holderId);
-    }
+    holders["account_id"] = std::to_string(holder.holderId);
+}
+
+/**
+ * @brief Resolve object interface in QUERY_CONTACTS_COUNT case
+ *
+ * @param env Conditions for resolve object interface operation
+ * @param hold Conditions for resolve object interface operation
+ * @param attr Conditions for resolve object interface operation
+ */
+DataShare::DataSharePredicates BuildQueryContactCountPredicates()
+{
+    DataShare::DataSharePredicates predicates;
+    predicates.EqualTo("is_deleted", "0");
+    return predicates;
 }
 
 /**
@@ -347,7 +374,9 @@ DataShare::DataSharePredicates BuildQueryContactsPredicates(napi_env env, napi_v
     ContactAttributes attrs = contactsBuild.GetContactAttributes(env, attr);
     DataShare::DataSharePredicates predicates;
     std::map<std::string, std::string> holders;
-    HoldersStructure(holders, holder);
+    if (hold != nullptr) {
+        HoldersStructure(holders, holder);
+    }
     unsigned int size = attrs.attributes.size();
     unsigned int mapSize = holders.size();
     std::map<std::string, std::string>::iterator it;
@@ -400,7 +429,9 @@ DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(
         predicates.EqualTo("detail_info", email);
         predicates.And();
         predicates.EqualTo("content_type", "email");
-        HolderPredicates(holder, predicates);
+        if (hold != nullptr) {
+            HolderPredicates(holder, predicates);
+        }
     }
     return predicates;
 }
@@ -418,17 +449,102 @@ DataShare::DataSharePredicates BuildQueryContactsByPhoneNumberPredicates(
 {
     ContactsBuild contactsBuild;
     std::string phoneNumber = contactsBuild.NapiGetValueString(env, number);
+    std::string formatPhoneNumber = GetE164FormatPhoneNumber(phoneNumber);
     Holder holder = contactsBuild.GetHolder(env, hold);
     DataShare::DataSharePredicates predicates;
     if (!phoneNumber.empty() || phoneNumber != "") {
         predicates.EqualTo("is_deleted", "0");
-        predicates.And();
+        predicates.BeginWrap();
         predicates.EqualTo("detail_info", phoneNumber);
+        predicates.Or();
+        predicates.EqualTo("format_phone_number", formatPhoneNumber);
+        predicates.EndWrap();
         predicates.And();
         predicates.EqualTo("content_type", "phone");
-        HolderPredicates(holder, predicates);
+        if (hold != nullptr) {
+            HolderPredicates(holder, predicates);
+        }
     }
     return predicates;
+}
+
+std::string GetE164FormatPhoneNumber(std::string &phoneNumber)
+{
+    std::string result;
+    std::map<std::string, std::string> options = {{"type", "E164"}};
+    std::string countryCode = GetCountryCode();
+    if (countryCode.empty()) {
+        return phoneNumber;
+    }
+    Global::I18n::PhoneNumberFormat *phoneNumberFormat = new Global::I18n::PhoneNumberFormat(countryCode, options);
+    bool isValidPhoneNumber = phoneNumberFormat->isValidPhoneNumber(phoneNumber);
+    if (isValidPhoneNumber) {
+        std::string formatPhoneNumber = FormatPhoneNumber(phoneNumber, countryCode);
+        if (!formatPhoneNumber.empty()) {
+            result = formatPhoneNumber;
+        } else {
+            HILOG_INFO("ContactsDataBase GetE164FormatPhoneNumber formatPhoneNumber is empty");
+        }
+    } else {
+        HILOG_INFO("ContactsDataBase GetE164FormatPhoneNumber isValidPhoneNumber false");
+    }
+    delete phoneNumberFormat;
+    return result;
+}
+
+std::string FormatPhoneNumber(const std::string &number, const std::string &country)
+{
+    PhoneNumberUtil *util = PhoneNumberUtil::GetInstance();
+    if (util == nullptr) {
+        HILOG_ERROR("FormatPhoneNumber: util is nullptr.");
+        return "";
+    }
+
+    std::string formattedNumber;
+    i18n::phonenumbers::PhoneNumber phoneNumber;
+    PhoneNumberUtil::ErrorType type = util->ParseAndKeepRawInput(number, country, &phoneNumber);
+    if (type != PhoneNumberUtil::ErrorType::NO_PARSING_ERROR) {
+        return "";
+    }
+    if (number.compare(0, PHONE_NUMBER_PREFIX.length(), PHONE_NUMBER_PREFIX) == 0) {
+        util->FormatInOriginalFormat(phoneNumber, country, &formattedNumber);
+    } else {
+        util->Format(phoneNumber, PhoneNumberUtil::PhoneNumberFormat::E164, &formattedNumber);
+    }
+    return formattedNumber;
+}
+
+std::string GetCountryCode()
+{
+    std::string countryCode;
+#ifdef CELLULAR_DATA_SUPPORT
+    int slotId = Telephony::CellularDataClient::GetInstance().GetDefaultCellularDataSlotId();
+    HILOG_INFO("ContactsDataBase GetCountryCode slotIds is %{public}d, ts = %{public}lld", slotId, (long long) time(NULL));
+    sptr<Telephony::NetworkState> networkClient = nullptr;
+    DelayedRefSingleton<Telephony::CoreServiceClient>::GetInstance().GetNetworkState(slotId, networkClient);
+    if (networkClient != nullptr && networkClient->IsRoaming()) {
+        HILOG_INFO("ContactsDataBase GetCountryCode networkState is nullptr");
+        HILOG_INFO("ContactsDataBase GetCountryCode Roaming is %{public}d", networkClient->IsRoaming());
+        return countryCode;
+    }
+    std::u16string countryCodeForNetwork;
+    DelayedRefSingleton<Telephony::CoreServiceClient>::GetInstance().GetIsoCountryCodeForNetwork(
+        slotId, countryCodeForNetwork);
+    countryCode = Str16ToStr8(countryCodeForNetwork);
+    if (countryCode.empty()) {
+        std::u16string countryCodeForSim;
+        DelayedRefSingleton<Telephony::CoreServiceClient>::GetInstance().GetISOCountryCodeForSim(
+            slotId, countryCodeForSim);
+        countryCode = Str16ToStr8(countryCodeForSim);
+    }
+#endif
+    if (countryCode.empty()) {
+        countryCode = Global::I18n::LocaleConfig::GetSystemRegion();
+    }
+    transform(countryCode.begin(), countryCode.end(), countryCode.begin(), toupper);
+    HILOG_INFO("ContactsDataBase GetCountryCode region is %{public}s",
+        countryCode.c_str());
+    return countryCode;
 }
 
 /**
@@ -443,7 +559,9 @@ DataShare::DataSharePredicates BuildQueryGroupsPredicates(napi_env env, napi_val
     Holder holder = contactsBuild.GetHolder(env, hold);
     DataShare::DataSharePredicates predicates;
     std::map<std::string, std::string> holders;
-    HoldersStructure(holders, holder);
+    if (hold != nullptr) {
+        HoldersStructure(holders, holder);
+    }
     predicates.EqualTo("is_deleted", "0");
     unsigned int size = holders.size();
     if (size > 0) {
@@ -476,7 +594,9 @@ DataShare::DataSharePredicates BuildQueryKeyPredicates(napi_env env, napi_value 
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
         predicates.EqualTo("contact_id", std::to_string(value));
-        HolderPredicates(holder, predicates);
+        if (hold != nullptr) {
+            HolderPredicates(holder, predicates);
+        }
     }
     return predicates;
 }
@@ -496,6 +616,7 @@ DataShare::DataSharePredicates BuildQueryMyCardPredicates(napi_env env, napi_val
     predicates.EqualTo("is_deleted", "0");
     if (size > 0) {
         predicates.And();
+        predicates.BeginWrap();
     }
     for (unsigned int i = 0; i < size; ++i) {
         predicates.EqualTo("type_id", std::to_string(attrs.attributes[i]));
@@ -503,11 +624,14 @@ DataShare::DataSharePredicates BuildQueryMyCardPredicates(napi_env env, napi_val
             predicates.Or();
         }
     }
+    if (size > 0) {
+        predicates.EndWrap();
+    }
     return predicates;
 }
 
 DataShare::DataSharePredicates BuildQueryContactData(napi_env env, napi_value &contactObject, napi_value &attrObject,
-    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+    ExecuteHelper *executeHelper)
 {
     ContactsBuild contactsBuild;
     Contacts contact;
@@ -525,7 +649,7 @@ DataShare::DataSharePredicates BuildQueryContactData(napi_env env, napi_value &c
     }
     unsigned int size = attrs.attributes.size();
     for (unsigned int i = 0; i < size; i++) {
-        contactsBuild.BuildValueContactDataByType(contact, attrs.attributes[i], valueContactData);
+        contactsBuild.BuildValueContactDataByType(contact, attrs.attributes[i], executeHelper);
     }
     return predicates;
 }
@@ -557,7 +681,7 @@ DataShare::DataSharePredicates BuildUpdateContactConvertParams(napi_env env, nap
 {
     executeHelper->valueContactData.clear();
     DataShare::DataSharePredicates predicates =
-        BuildQueryContactData(env, contact, attr, executeHelper->valueContactData);
+        BuildQueryContactData(env, contact, attr, executeHelper);
     executeHelper->columns = BuildUpdateContactColumns();
     executeHelper->deletePredicates = BuildDeleteContactDataPredicates(env, attr);
     return predicates;
@@ -622,9 +746,11 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
     HILOG_INFO("ExecuteDone workName: %{public}d", executeHelper->actionCode);
     napi_value result = nullptr;
     napi_deferred deferred = executeHelper->deferred;
+    // 处理结果
     HandleExecuteResult(env, executeHelper, result);
     if (executeHelper->abilityContext != nullptr) {
         HILOG_INFO("executeHelper->abilityContext != nullptr");
+        // 如果有错误，根据错误信息return，否则根据result返回
         napi_value errorCode = nullptr;
         HandleExecuteErrorCode(env, executeHelper, errorCode);
         if (errorCode != nullptr) {
@@ -633,20 +759,9 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
             NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
         }
     } else {
-        HILOG_INFO("executeHelper->abilityContext = nullptr");
         NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, deferred, result));
     }
     executeHelper->deferred = nullptr;
-    if (executeHelper->valueUpdateContact.capacity() != 0) {
-        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-    }
-    if (executeHelper->valueContact.capacity() != 0) {
-        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-    }
-    if (executeHelper->valueContactData.capacity() != 0) {
-        std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
-    }
-    
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, executeHelper->work));
     if (executeHelper->dataShareHelper != nullptr) {
         executeHelper->dataShareHelper->Release();
@@ -668,20 +783,24 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         HILOG_INFO("ExecuteSyncDone workName: %{public}d", executeHelper->actionCode);
         napi_value global;
         napi_get_global(env, &global);
+        // resultData[0] 为错误返回信息
+        // resultData[1] 为正常返回信息
         napi_value resultData[RESULT_DATA_SIZE];
+        // stage模型处理
         if (executeHelper->abilityContext != nullptr) {
             HandleExecuteErrorCode(env, executeHelper, resultData[0]);
             HandleExecuteResult(env, executeHelper, resultData[1]);
         } else {
             if (executeHelper->resultData < 0) {
+                // FA 模型会调用到这里，怀疑这里需要改为处理错误信息；但是FA模型较老，暂不修改
                 HandleExecuteErrorCode(env, executeHelper, resultData[0]);
                 HandleExecuteResult(env, executeHelper, resultData[1]);
             } else {
                 napi_get_undefined(env, &resultData[0]);
+                // 处理执行结果
                 HandleExecuteResult(env, executeHelper, resultData[1]);
             }
         }
-        
         napi_value result;
         napi_value callBack;
         napi_get_reference_value(env, executeHelper->callBack, &callBack);
@@ -718,7 +837,7 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
 
 void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
 {
-    HILOG_INFO("HandleExecuteErrorCode");
+    HILOG_INFO("HandleExecuteErrorCode, actionCode = %{public}d", executeHelper->actionCode);
     ResultConvert resultConvert;
     switch (executeHelper->actionCode) {
         case ADD_CONTACT:
@@ -735,12 +854,13 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
         case QUERY_CONTACTS_BY_PHONE_NUMBER:
         case QUERY_GROUPS:
         case QUERY_HOLDERS:
+            // 参数错误
             HILOG_INFO("HandleExecuteErrorCode resultData");
             if (executeHelper->resultData == RDB_PARAMETER_ERROR || executeHelper->resultData == ERROR) {
-                HILOG_ERROR("handleExecuteErrorCode handle parm error");
+                HILOG_ERROR("handleExecuteErrorCode handle param error: %{public}d", executeHelper->resultData);
                 result = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-            } else if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
-                HILOG_ERROR("parameter verification failed error");
+            } else if (executeHelper->resultData == VERIFICATION_PARAMETER_ERROR) {
+                HILOG_ERROR("parameter verification failed");
                 result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
             } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
                 HILOG_ERROR("permission error");
@@ -756,12 +876,16 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
 {
     ResultConvert resultConvert;
     napi_value results = nullptr;
+    HILOG_INFO("HandleExecuteResult, actionCode = %{public}d", executeHelper->actionCode);
     switch (executeHelper->actionCode) {
         case ADD_CONTACT:
         case DELETE_CONTACT:
         case UPDATE_CONTACT:
         case SELECT_CONTACT:
-            if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
+            if (executeHelper->resultData == RDB_PARAMETER_ERROR || executeHelper->resultData == ERROR
+                || executeHelper->resultData == RDB_PERMISSION_ERROR) {
+                // execute error
+                HILOG_ERROR("handleExecuteResult handle error: %{public}d", executeHelper->resultData);
                 napi_create_int64(env, ERROR, &result);
             } else {
                 napi_create_int64(env, executeHelper->resultData, &result);
@@ -773,22 +897,19 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
             break;
         case QUERY_CONTACT:
         case QUERY_MY_CARD:
-            results = resultConvert.ResultSetToObject(env, executeHelper->resultSet);
-            if (results != nullptr) {
-                napi_get_element(env, results, 0, &result);
-            }
-            break;
         case QUERY_KEY:
-            results = resultConvert.ResultSetToObject(env, executeHelper->resultSet);
+            results = resultConvert.ResultSetToObject(env, executeHelper->resultSet, executeHelper->grantUri);
             if (results != nullptr) {
                 napi_get_element(env, results, 0, &result);
+                if (executeHelper->actionCode == QUERY_KEY) {
+                    napi_get_named_property(env, result, "key", &result);
+                }
             }
-            napi_get_named_property(env, result, "key", &result);
             break;
         case QUERY_CONTACTS:
         case QUERY_CONTACTS_BY_EMAIL:
         case QUERY_CONTACTS_BY_PHONE_NUMBER:
-            result = resultConvert.ResultSetToObject(env, executeHelper->resultSet);
+            result = resultConvert.ResultSetToObject(env, executeHelper->resultSet, executeHelper->grantUri);
             break;
         case QUERY_GROUPS:
             result = resultConvert.ResultSetToGroup(env, executeHelper->resultSet);
@@ -796,19 +917,48 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
         case QUERY_HOLDERS:
             result = resultConvert.ResultSetToHolder(env, executeHelper->resultSet);
             break;
+        case QUERY_CONTACT_COUNT:
+            HandleQueryContactCountResult(env, executeHelper, result);
+            break;
         default:
             break;
     }
 }
 
+void HandleQueryContactCountResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
+{
+    if (executeHelper->resultSet == nullptr) {
+        HILOG_ERROR("resultSet is null");
+        napi_create_int64(env, ERROR, &result);
+        return;
+    }
+
+    int rowCount = 0;
+    executeHelper->resultSet->GetRowCount(rowCount);
+    if (rowCount == 0) {
+        napi_create_int64(env, ERROR, &result);
+        executeHelper->resultSet->Close();
+        return;
+    }
+
+    executeHelper->resultSet->GoToFirstRow();
+    int contactCount = 0;
+    executeHelper->resultSet->GetInt(0, contactCount);
+    napi_create_int64(env, contactCount, &result);
+
+    executeHelper->resultSet->Close();
+}
+
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
 {
+    // 如果contact_data没有数据，不能插入，直接设置插入结果为错误
     if (executeHelper->valueContactData.empty()) {
-        HILOG_ERROR("addContact contact_data can not be empty");
-        executeHelper->resultData = ERROR;
+        HILOG_ERROR("addContact, contact_data can not be empty");
+        executeHelper->resultData = RDB_PARAMETER_ERROR;
         return;
     }
     ContactsControl contactsControl;
+    // 插入 RawContact
     int rawId = contactsControl.RawContactInsert(
         executeHelper->dataShareHelper, (executeHelper->valueContact)[0]);
     std::vector<DataShare::DataShareValuesBucket> value = executeHelper->valueContactData;
@@ -816,6 +966,13 @@ void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
     for (unsigned int i = 0; i < size; ++i) {
         (executeHelper->valueContactData)[i].Put("raw_contact_id", rawId);
     }
+    if (executeHelper->portrait.isNeedHandlePhoto) {
+        int result = InsertContactPortrait(executeHelper, contactsControl, rawId);
+        if (result != ERR_OK) {
+            return;
+        }
+    }
+    // 插入 ContactData
     int code = contactsControl.ContactDataInsert(executeHelper->dataShareHelper, executeHelper->valueContactData);
     if (code == 0) {
         executeHelper->resultData = rawId;
@@ -824,17 +981,102 @@ void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper)
     }
 }
 
+int HandleConverPortraitFailed(ExecuteHelper *executeHelper, ContactsControl &contactsControl, int rawContactId,
+    const std::string &contactId, int errorCode)
+{
+    executeHelper->resultData =
+        (errorCode == RDB_PERMISSION_ERROR ? RDB_PERMISSION_ERROR : VERIFICATION_PARAMETER_ERROR);
+    DataShare::DataSharePredicates predicates;
+    predicates.EqualTo("id", rawContactId);
+    std::string fileName = contactId + "_" + std::to_string(rawContactId) + ".jpg";
+    return contactsControl.HandleAddFailed(executeHelper->dataShareHelper, predicates, fileName);
+}
+
+int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contactsControl, int rawContactId)
+{
+    std::string contactId = QueryContactIdByRawContactId(
+        executeHelper->dataShareHelper, contactsControl, rawContactId);
+    if (contactId.empty()) {
+        HILOG_ERROR("InsertContactPortrait failed, contactId is null %{public}d", rawContactId);
+        return OPEN_FILE_FAILED;
+    }
+    std::string fileName = contactId + "_" + std::to_string(rawContactId) + ".jpg";
+    int fd = contactsControl.OpenFileByDataShare(fileName, executeHelper->dataShareHelper);
+    if (fd == OPEN_FILE_FAILED || fd == RDB_PERMISSION_ERROR) {
+        HILOG_ERROR("InsertContactPortrait OpenFileByDataShare failed");
+        HandleConverPortraitFailed(executeHelper, contactsControl, rawContactId, contactId, fd);
+        return fd;
+    }
+    int result = OHOS::Contacts::KitPixelMapUtil::SavePixelMapToFile(executeHelper->portrait.photo, fd);
+    close(fd);
+    if (result != ERR_OK) {
+        HandleConverPortraitFailed(executeHelper, contactsControl, rawContactId, contactId, result);
+        return result;
+    }
+    DataShare::DataShareValuesBucket valuesBucketPortrait;
+    valuesBucketPortrait.Put("PortraitFileName", fileName);
+    valuesBucketPortrait.Put("contactId", contactId);
+    valuesBucketPortrait.Put("rawContactId", std::to_string(rawContactId));
+    executeHelper->valueContactData.push_back(valuesBucketPortrait);
+    return result;
+}
+
+std::string QueryContactIdByRawContactId(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+  ContactsControl &contactsControl, int rawContactId)
+{
+    std::vector<std::string> columns;
+    columns.push_back("contact_id");
+
+    auto resultSet = contactsControl.QueryContactByRawContactId(dataShareHelper, columns, rawContactId);
+
+    if (resultSet == nullptr) {
+        HILOG_ERROR("QueryContactByRawContactId failed, resultSet is nullptr");
+        return "";
+    }
+    int rowCount = 0;
+    resultSet->GetRowCount(rowCount);
+    if (rowCount == 0) {
+        resultSet->Close();
+        HILOG_ERROR("QueryContactByRawContactId failed, rowCount is 0");
+        return "";
+    }
+    std::vector<std::string> contactIdVector;
+    int resultSetNum = resultSet->GoToFirstRow();
+    while (resultSetNum == 0) {
+        std::string contactId;
+        int columnIndex = 0;
+        resultSet->GetColumnIndex("contact_id", columnIndex);
+        resultSet->GetString(columnIndex, contactId);
+        contactIdVector.push_back(contactId);
+        resultSetNum = resultSet->GoToNextRow();
+    }
+    resultSet->Close();
+    for (std::string contactId : contactIdVector) {
+        if (!contactId.empty()) {
+            return contactId;
+        }
+    }
+    HILOG_ERROR("QueryContactByRawContactId failed, contactId is empty");
+    return "";
+}
+
 void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper)
 {
-    // 如果key为空，返回失败
-    if (executeHelper->resultData == RDB_PARAMETER_ERROR) {
-        HILOG_ERROR("LocalExecuteDeleteContact, key can not be empty");
-        return;
-    }
     ContactsControl contactsControl;
     int ret = contactsControl.ContactDelete(executeHelper->dataShareHelper, executeHelper->predicates);
     HILOG_INFO("LocalExecuteDeleteContact contact ret = %{public}d", ret);
     executeHelper->resultData = ret;
+}
+
+void LocalExecuteQueryContactCount(napi_env env, ExecuteHelper *executeHelper)
+{
+    ContactsControl contactsControl;
+    std::vector<std::string> columns;
+    columns.push_back("count(*) as count");
+    executeHelper->columns = columns;
+    executeHelper->resultSet = contactsControl.ContactCountQuery(
+        executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
+    executeHelper->resultData = SUCCESS;
 }
 
 void LocalExecuteQueryContact(napi_env env, ExecuteHelper *executeHelper)
@@ -853,6 +1095,13 @@ void LocalExecuteQueryContactsOrKey(napi_env env, ExecuteHelper *executeHelper)
     executeHelper->resultData = SUCCESS;
 }
 
+void LocalExecuteQueryAppGroupDir(napi_env env, ExecuteHelper *executeHelper)
+{
+    ContactsControl contactsControl;
+    executeHelper->grantUri = contactsControl.QueryAppGroupDir(executeHelper->dataShareHelper);
+    executeHelper->resultData = SUCCESS;
+}
+
 void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper)
 {
     ContactsControl contactsControl;
@@ -860,8 +1109,14 @@ void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper)
         executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     std::shared_ptr<DataShare::DataShareResultSet> resultSet = executeHelper->resultSet;
     int rowCount = 0;
+    if (resultSet == nullptr) {
+        HILOG_ERROR("LocalExecuteQueryContactsByData resultSet is nullprt");
+        executeHelper->resultData = RDB_PARAMETER_ERROR;
+        return;
+    }
     resultSet->GetRowCount(rowCount);
     if (rowCount == 0) {
+        HILOG_ERROR("LocalExecuteQueryContactsByData parameter verification failed");
         executeHelper->resultData = RDB_PARAMETER_ERROR;
         resultSet->Close();
     } else {
@@ -914,6 +1169,13 @@ void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper)
     executeHelper->deletePredicates.EqualTo("raw_contact_id", std::to_string(rawId));
     int resultCode = contactsControl.ContactDataDelete(
         executeHelper->dataShareHelper, executeHelper->deletePredicates);
+    if (executeHelper->portrait.isNeedHandlePhoto) {
+        int result = InsertContactPortrait(executeHelper, contactsControl, rawId);
+        if (result != ERR_OK) {
+            executeHelper->resultData = RDB_PARAMETER_ERROR;
+            return;
+        }
+    }
     if (resultCode >= 0) {
         resultCode = contactsControl.ContactDataInsert(
             executeHelper->dataShareHelper, executeHelper->valueContactData);
@@ -966,8 +1228,10 @@ void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
         executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
     }
+    HILOG_INFO("LocalExecute, actionCode = %{public}d", executeHelper->actionCode);
     switch (executeHelper->actionCode) {
         case ADD_CONTACT:
+            // 执行添加联系人操作
             LocalExecuteAddContact(env, executeHelper);
             break;
         case DELETE_CONTACT:
@@ -990,11 +1254,15 @@ void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper)
         HILOG_ERROR("LocalExecuteQueryContactsByData Permission denied!");
         executeHelper->resultData = RDB_PERMISSION_ERROR;
         return;
-    } else if (executeHelper->resultData == VERIFICATION_PERMISSION_ERROR) {
+    } else if (executeHelper->resultData == VERIFICATION_PARAMETER_ERROR) {
         HILOG_ERROR("PARAMETER_ERROR, please check your PARAMETER");
         return;
     }
+    LocalExecuteQueryAppGroupDir(env, executeHelper);
     switch (executeHelper->actionCode) {
+        case QUERY_CONTACT_COUNT:
+            LocalExecuteQueryContactCount(env, executeHelper);
+            break;
         case QUERY_CONTACT:
             LocalExecuteQueryContact(env, executeHelper);
             break;
@@ -1040,7 +1308,10 @@ napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper)
 {
     napi_value workName;
     napi_value result = nullptr;
+    // 执行处理方法：Execute
+    // 执行完处理后执行方法：ExecuteSyncDone，ExecuteDone
     if (executeHelper->sync == NAPI_CALL_TYPE_CALLBACK) {
+        HILOG_INFO("CreateAsyncWork ExecuteSyncDone");
         napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &workName);
         napi_create_reference(env, executeHelper->argv[executeHelper->argc - 1], 1, &executeHelper->callBack);
         napi_create_async_work(env, nullptr, workName, Execute, ExecuteSyncDone,
@@ -1062,6 +1333,10 @@ DataShare::DataSharePredicates ConvertParamsSwitchSplit(int code, napi_env env, 
 {
     DataShare::DataSharePredicates predicates;
     switch (code) {
+        case QUERY_CONTACT_COUNT:
+            VerificationParameterHolderId(env, executeHelper, hold);
+            predicates = BuildQueryContactCountPredicates();
+            break;
         case QUERY_CONTACT:
             VerificationParameterHolderId(env, executeHelper, hold);
             predicates = BuildQueryContactPredicates(env, key, hold, attr);
@@ -1108,10 +1383,10 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
         ObjectInit(env, executeHelper->argv[i], hold, attr, contact);
     }
     ContactsBuild contactsBuild;
+    HILOG_INFO("SetChildActionCodeAndConvertParams, actionCode = %{public}d", executeHelper->actionCode);
     switch (executeHelper->actionCode) {
         case ADD_CONTACT:
-            contactsBuild.GetContactData(
-                env, executeHelper->argv[0], executeHelper->valueContact, executeHelper->valueContactData);
+            contactsBuild.GetContactData(env, executeHelper);
             break;
         case DELETE_CONTACT:
             executeHelper->predicates = BuildDeleteContactPredicates(env, executeHelper);
@@ -1145,10 +1420,10 @@ void VerificationParameterId(napi_env env, napi_value id, ExecuteHelper *execute
     int holderId = holder.holderId;
     int valueId = contactsBuild.GetInt(env, id);
     if (valueId <= 0 || isinf(valueId)) {
-        executeHelper->resultData = VERIFICATION_PERMISSION_ERROR;
+        executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
         HILOG_ERROR("PARAMETER_ERROR valueId: %{public}d", valueId);
     } else if (hold != nullptr && holderId != 1) {
-        executeHelper->resultData = VERIFICATION_PERMISSION_ERROR;
+        executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
         HILOG_ERROR("PARAMETER_ERROR holderId: %{public}d", holderId);
     }
 }
@@ -1159,7 +1434,7 @@ void VerificationParameterHolderId(napi_env env, ExecuteHelper *executeHelper, n
     Holder holder = contactsBuild.GetHolder(env, hold);
     int holderId = holder.holderId;
     if (hold != nullptr && holderId != 1) {
-        executeHelper->resultData = VERIFICATION_PERMISSION_ERROR;
+        executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
         HILOG_ERROR("PARAMETER_ERROR holderId: %{public}d", holderId);
     }
 }
@@ -1250,6 +1525,382 @@ napi_value AddContact(napi_env env, napi_callback_info info)
     return result;
 }
 
+static void StartContactsPickerExecute(napi_env env, void *data)
+{
+    HILOG_INFO("[ContactsPicker] StartContactsPickerExecute");
+    auto *context = static_cast<OHOS::ContactsApi::BaseContext*>(data);
+    while (!context->pickerCallBack->ready) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
+    }
+}
+
+static std::string SplicePickerData(std::string *pickerData, int32_t dataIndex)
+{
+    std::stringstream splicePickerData;
+    splicePickerData << "["; // 开始的方括号
+    // 遍历pickerData中的每一个字符串
+    for (int32_t i = 0; i < (dataIndex + 1); ++i) {
+        // 去除字符串两端的方括号
+        std::string currentData = pickerData[i].substr(1, pickerData[i].length() - OFFSET_TWO);
+        // 如果不是第一个元素，添加逗号
+        if (i > 0 && pickerData[i].length() != 0) {
+            splicePickerData << ",";
+        }
+        // 添加处理后的字符串
+        splicePickerData << currentData;
+    }
+    splicePickerData << "]"; // 结束的方括号
+    HILOG_WARN("[ContactsPicker] end of SplicePickerData");
+    return splicePickerData.str();
+}
+
+static void StartSaveContactsPickerAsyncCallbackComplete(napi_env env, napi_status status, void *data)
+{
+    auto *context = static_cast<OHOS::ContactsApi::BaseContext*>(data);
+    CHECK_NULL_PTR_RETURN_VOID(context, "[ContactsPicker] Async context is null");
+
+    auto jsContext = std::make_unique<JSAsyncContextOutput>();
+    jsContext->status = false;
+    CHECK_ARGS_RET_VOID(env, napi_get_undefined(env, &jsContext->data), JS_ERR_PARAMETER_INVALID);
+    CHECK_ARGS_RET_VOID(env, napi_get_undefined(env, &jsContext->error), JS_ERR_PARAMETER_INVALID);
+    napi_value result = nullptr;
+    napi_create_object(env, &result);
+    napi_value resultCode = nullptr;
+    napi_create_int32(env, context->pickerCallBack->resultCode, &resultCode);
+    status = napi_set_named_property(env, result, "resultCode", resultCode);
+    if (status != napi_ok) {
+        HILOG_ERROR("[ContactsPicker] napi_set_named_property resultCode failed");
+    }
+    napi_value jsContactId = nullptr;
+    
+    CHECK_ARGS_RET_VOID(env, napi_create_int32(env, context->pickerCallBack->dataIndex, &jsContactId), JS_INNER_FAIL);
+    if (napi_set_named_property(env, result, "jsContactId", jsContactId) != napi_ok) {
+        HILOG_ERROR("[ContactsPicker] napi_set_named_property total failed");
+    }
+    if (result != nullptr) {
+        jsContext->data = result;
+        jsContext->status = true;
+    } else {
+        HILOG_ERROR("[ContactsPicker] failed to create js object");
+    }
+    if (context->work != nullptr) {
+        ContactsNapiUtils::InvokeJSAsyncMethod(env, context->deferred, context->callbackRef,
+            context->work, *jsContext);
+    }
+    delete context;
+    HILOG_WARN("[ContactsPicker] StartContactsPickerExecute end");
+}
+
+static void StartContactsPickerAsyncCallbackComplete(napi_env env, napi_status status, void *data)
+{
+    auto *context = static_cast<OHOS::ContactsApi::BaseContext*>(data);
+    CHECK_NULL_PTR_RETURN_VOID(context, "[ContactsPicker] Async context is null");
+
+    auto jsContext = std::make_unique<JSAsyncContextOutput>();
+    jsContext->status = false;
+    CHECK_ARGS_RET_VOID(env, napi_get_undefined(env, &jsContext->data), JS_ERR_PARAMETER_INVALID);
+    CHECK_ARGS_RET_VOID(env, napi_get_undefined(env, &jsContext->error), JS_ERR_PARAMETER_INVALID);
+    napi_value result = nullptr;
+    napi_create_object(env, &result);
+    napi_value resultCode = nullptr;
+    napi_create_int32(env, context->pickerCallBack->resultCode, &resultCode);
+    status = napi_set_named_property(env, result, "resultCode", resultCode);
+    if (status != napi_ok) {
+        HILOG_ERROR("[ContactsPicker] napi_set_named_property resultCode failed");
+    }
+
+    std::string pickerTemp;
+    if (context->pickerCallBack->resultCode == 1) {
+        pickerTemp = "[]";
+        context->pickerCallBack->total = 0;
+    } else {
+        pickerTemp = SplicePickerData(context->pickerCallBack->pickerData, context->pickerCallBack->dataIndex);
+    }
+    const std::string &pickerData = pickerTemp;
+
+    napi_value jsPickerData = nullptr;
+    CHECK_ARGS_RET_VOID(env, napi_create_string_utf8(env, pickerData.c_str(),
+        NAPI_AUTO_LENGTH, &jsPickerData), JS_INNER_FAIL);
+    if (napi_set_named_property(env, result, "pickerData", jsPickerData) != napi_ok) {
+        HILOG_ERROR("[ContactsPicker] napi_set_named_property jsPickerData failed");
+    }
+    napi_value jsTotal = nullptr;
+    CHECK_ARGS_RET_VOID(env, napi_create_int32(env, context->pickerCallBack->total, &jsTotal), JS_INNER_FAIL);
+    if (napi_set_named_property(env, result, "total", jsTotal) != napi_ok) {
+        HILOG_ERROR("[ContactsPicker] napi_set_named_property total failed");
+    }
+    if (result != nullptr) {
+        jsContext->data = result;
+        jsContext->status = true;
+    } else {
+        HILOG_ERROR("[ContactsPicker] failed to create js object");
+    }
+    if (context->work != nullptr) {
+        ContactsNapiUtils::InvokeJSAsyncMethod(env, context->deferred, context->callbackRef,
+            context->work, *jsContext);
+    }
+    delete context;
+}
+
+void StartUIExtensionAbility(OHOS::AAFwk::Want& request, std::unique_ptr<OHOS::ContactsApi::BaseContext>& asyncContext)
+{
+    HILOG_INFO("[ContactsPicker] begin StartUIExtensionAbility");
+    if (asyncContext == nullptr) {
+        HILOG_ERROR("[ContactsPicker] asyncContext is nullptr");
+        return;
+    }
+    if (asyncContext->context == nullptr &&
+        asyncContext->uiExtensionContext == nullptr) {
+        HILOG_ERROR("[ContactsPicker] abilityContext && uiExtensionContext is nullptr");
+        return;
+    }
+    auto uiContent = ContactsNapiUtils::GetUIContent(asyncContext);
+    if (uiContent == nullptr) {
+        HILOG_ERROR("[ContactsPicker] UIContent is nullptr");
+        return;
+    }
+    asyncContext->pickerCallBack = std::make_shared<PickerCallBack>();
+    auto callback = std::make_shared<ModalUICallback>(uiContent, asyncContext);
+    // 构建回调，onRelease、OnResultForModal、OnError、OnDestroy
+    OHOS::Ace::ModalUIExtensionCallbacks extensionCallbacks = {
+        std::bind(&ModalUICallback::OnRelease, callback, std::placeholders::_1),
+        std::bind(&ModalUICallback::OnResultForModal, callback, std::placeholders::_1, std::placeholders::_2),
+        std::bind(&ModalUICallback::OnReceive, callback, std::placeholders::_1),
+        std::bind(&ModalUICallback::OnError, callback, std::placeholders::_1, std::placeholders::_2,
+                  std::placeholders::_3),
+    };
+    OHOS::Ace::ModalUIExtensionConfig config;
+    config.isProhibitBack = true;
+    // 调用CreateModalUIExtension拉页面
+    HILOG_WARN("[ContactsPicker] CreateModalUIExtension");
+    int32_t sessionId = uiContent->CreateModalUIExtension(request, extensionCallbacks, config);
+    callback->SetSessionId(sessionId);
+    HILOG_INFO("[ContactsPicker] end StartUIExtensionAbility");
+    return;
+}
+
+/* 解析AbilityContext */
+static bool ParseAbilityContextReq(
+    napi_env env, const napi_value& obj, std::shared_ptr<AbilityRuntime::AbilityContext>& abilityContext,
+    std::shared_ptr<AbilityRuntime::UIExtensionContext>& uiExtensionContext)
+{
+    HILOG_INFO("[ContactsPicker] begin ParseAbilityContextReq");
+    bool stageMode = false;
+    napi_status status = AbilityRuntime::IsStageContext(env, obj, stageMode);
+    if (status != napi_ok || !stageMode) {
+        HILOG_ERROR("[ContactsPicker] it is not a stage mode");
+        return false;
+    }
+    auto context = AbilityRuntime::GetStageModeContext(env, obj);
+    if (context == nullptr) {
+        HILOG_ERROR("[ContactsPicker] GetStageModeContext failed");
+        return false;
+    }
+    abilityContext = AbilityRuntime::Context::ConvertTo<AbilityRuntime::AbilityContext>(context);
+    if (abilityContext == nullptr) {
+        HILOG_ERROR("[ContactsPicker] get abilityContext failed");
+        uiExtensionContext =
+            AbilityRuntime::Context::ConvertTo<AbilityRuntime::UIExtensionContext>(context);
+        if (uiExtensionContext == nullptr) {
+            HILOG_ERROR("[ContactsPicker] get uiExtensionContext failed");
+            return false;
+        }
+    }
+    HILOG_INFO("[ContactsPicker] end ParseAbilityContextReq");
+    return true;
+}
+
+napi_value ContactsPickerSelect(napi_env env, napi_callback_info info)
+{
+    HILOG_WARN("[ContactsPicker] ContactsPickerSelect start");
+    size_t argc = MAX_PARAMS;
+    napi_value argv[MAX_PARAMS] = {0};
+    napi_value thisVar = nullptr;
+    napi_value result = nullptr;
+    void *data;
+    // 获取JS接口传入的参数
+    napi_get_cb_info(env, info, &argc, &(argv[0]), &thisVar, &data);
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
+                napi_throw(env, errorCode);
+                break;
+        }
+    }
+    // init request of Want，构建 want 请求
+    OHOS::AAFwk::Want request;
+    AppExecFwk::UnwrapWant(env, argv[1], request);
+    request.SetElementName(CONTACT_PACKAGE_NAME, CONTACT_UI_EXT_ABILITY_NAME); // 设置包名 和 ability name
+    std::string targetType = CONTACT_UI_EXT_TYPE;
+    std::string targetUrl = "BatchSelectContactsPage";
+    request.SetParam(UI_EXT_TYPE, targetType);
+    request.SetParam(UI_EXT_TARGETURL, targetUrl);
+    // init request Context，第一个参数是Context，解析参数，转成AbilityContext或者UIExtensionContext
+    auto asyncContext = std::make_unique<OHOS::ContactsApi::BaseContext>();
+    asyncContext->env = env;
+    if (!ParseAbilityContextReq(env, argv[0],
+        asyncContext->context, asyncContext->uiExtensionContext)) {
+        HILOG_ERROR("[ContactsPicker] ParseAbilityContextReq failed");
+        return result;
+    }
+    NAPI_CALL(env, ContactsNapiUtils::GetParamCallback(env, asyncContext, argc, argv)); // 解析Promise对象，用于返回JS结果
+    // start UIExtension Ability，启动UIExtensionAbility
+    StartUIExtensionAbility(request, asyncContext);
+    HILOG_INFO("[ContactsPicker] ContactsPickerSelect end");
+    return ContactsNapiUtils::NapiCreateAsyncWork(env, asyncContext, "ContactsPickerSelect",
+        StartContactsPickerExecute, StartContactsPickerAsyncCallbackComplete);
+}
+
+napi_value ContactsPickerSave(napi_env env, napi_callback_info info)
+{
+    HILOG_WARN("[ContactsPicker] ContactsPickerSave start");
+    size_t argc = MAX_PARAMS;
+    napi_value argv[MAX_PARAMS] = {0};
+    napi_value thisVar = nullptr;
+    void *data;
+    napi_get_cb_info(env, info, &argc, &(argv[0]), &thisVar, &data);
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
+                napi_throw(env, errorCode);
+                break;
+        }
+    }
+    napi_value result = nullptr;
+    
+    result = argv[1];
+    HILOG_INFO("[ContactsPicker] SetChildActionCodeAndConvertParams, ");
+
+    // init request of Want，构建 want 请求
+    OHOS::AAFwk::Want request;
+    AppExecFwk::UnwrapWant(env, argv[1], request);
+    request.SetElementName(CONTACT_PACKAGE_NAME, CONTACT_UI_EXT_ABILITY_NAME); // 设置包名 和 ability name
+    std::string targetType = CONTACT_UI_EXT_TYPE;
+    std::string targetUrl = "Accountants";
+    request.SetParam(UI_EXT_TYPE, targetType);
+    request.SetParam(UI_EXT_TARGETURL, targetUrl);
+
+    ResultConvert resultConvert;
+    napi_value parameters = resultConvert.GetNapiValue(env, "parameters", argv[1]);
+    if (parameters != nullptr) {
+        napi_value contactNapi = resultConvert.GetNapiValue(env, "contact", parameters);
+        ContactsBuild contactsBuild;
+        Contacts contact;
+        contactsBuild.GetContactDataByObject(env, contactNapi, contact);
+        std::string uri = contact.portrait.uri;
+        request.SetFlags(OHOS::AAFwk::Want::FLAG_AUTH_WRITE_URI_PERMISSION | OHOS::AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION);
+        request.SetUri(uri);
+    }
+    
+    // init request Context，第一个参数是Context，解析参数，转成AbilityContext或者UIExtensionContext
+    auto asyncContext = std::make_unique<OHOS::ContactsApi::BaseContext>();
+    asyncContext->env = env;
+    if (!ParseAbilityContextReq(env, argv[0],
+        asyncContext->context, asyncContext->uiExtensionContext)) {
+        HILOG_ERROR("[ContactsPicker] ParseAbilityContextReq failed");
+        return result;
+    }
+    NAPI_CALL(env, ContactsNapiUtils::GetParamCallback(env, asyncContext, argc, argv)); // 解析Promise对象，用于返回JS结果
+    // start UIExtension Ability，启动UIExtensionAbility
+    StartUIExtensionAbility(request, asyncContext);
+    HILOG_INFO("[ContactsPicker] ContactsPickerSave end");
+    return ContactsNapiUtils::NapiCreateAsyncWork(env, asyncContext, "contactsPickerSave",
+        StartContactsPickerExecute, StartSaveContactsPickerAsyncCallbackComplete);
+}
+
+napi_value ContactsPickerSaveExist(napi_env env, napi_callback_info info)
+{
+    HILOG_WARN("[ContactsPicker] ContactsPickerSaveExist start");
+    size_t argc = MAX_PARAMS;
+    napi_value argv[MAX_PARAMS] = {0};
+    napi_value thisVar = nullptr;
+    napi_value result = nullptr;
+    void *data;
+    // 获取JS接口传入的参数
+    napi_get_cb_info(env, info, &argc, &(argv[0]), &thisVar, &data);
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            case ARGS_THREE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object, napi_function })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
+                napi_throw(env, errorCode);
+                break;
+        }
+    }
+    // init request of Want，构建 want 请求
+    OHOS::AAFwk::Want request;
+    AppExecFwk::UnwrapWant(env, argv[1], request);
+    request.SetElementName(CONTACT_PACKAGE_NAME, CONTACT_UI_EXT_ABILITY_NAME); // 设置包名 和 ability name
+    std::string targetType = CONTACT_UI_EXT_TYPE;
+    std::string targetUrl = "BatchSelectContactsPage";
+    request.SetParam(UI_EXT_TYPE, targetType);
+    request.SetParam(UI_EXT_TARGETURL, targetUrl);
+
+    ResultConvert resultConvert;
+    napi_value parameters = resultConvert.GetNapiValue(env, "parameters", argv[1]);
+    if (parameters != nullptr) {
+        napi_value contactNapi = resultConvert.GetNapiValue(env, "contact", parameters);
+        ContactsBuild contactsBuild;
+        Contacts contact;
+        contactsBuild.GetContactDataByObject(env, contactNapi, contact);
+        std::string uri = contact.portrait.uri;
+        request.SetFlags(OHOS::AAFwk::Want::FLAG_AUTH_WRITE_URI_PERMISSION | OHOS::AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION);
+        request.SetUri(uri);
+    }
+    
+    // init request Context，第一个参数是Context，解析参数，转成AbilityContext或者UIExtensionContext
+    auto asyncContext = std::make_unique<OHOS::ContactsApi::BaseContext>();
+    asyncContext->env = env;
+    if (!ParseAbilityContextReq(env, argv[0],
+        asyncContext->context, asyncContext->uiExtensionContext)) {
+        HILOG_ERROR("[ContactsPicker] ParseAbilityContextReq failed");
+        return result;
+    }
+    NAPI_CALL(env, ContactsNapiUtils::GetParamCallback(env, asyncContext, argc, argv)); // 解析Promise对象，用于返回JS结果
+    // start UIExtension Ability，启动UIExtensionAbility
+    StartUIExtensionAbility(request, asyncContext);
+    HILOG_INFO("[ContactsPicker] ContactsPickerSaveExist end");
+    return ContactsNapiUtils::NapiCreateAsyncWork(env, asyncContext, "ContactsPickerSaveExist",
+        StartContactsPickerExecute, StartSaveContactsPickerAsyncCallbackComplete);
+}
+
 /**
  * @brief Test interface DELETE_CONTACT
  *
@@ -1328,7 +1979,8 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
                 break;
             case ARGS_FOUR:
                 if (!ContactsNapiUtils::MatchParameters(env, argv,
-                    { napi_object, napi_object, napi_object, napi_function })) {
+                    { napi_object, napi_object, napi_object, napi_function
+                })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -1341,6 +1993,46 @@ napi_value UpdateContact(napi_env env, napi_callback_info info)
     napi_value result = nullptr;
     if (executeHelper != nullptr) {
         result = Scheduling(env, info, executeHelper, UPDATE_CONTACT);
+        return result;
+    }
+    napi_create_int64(env, ERROR, &result);
+    return result;
+}
+
+/**
+ * @brief Test interface QUERY_CONTACT_COUNT
+ *
+ * @param env Conditions for resolve object interface operation
+ * @param info Conditions for resolve object interface operation
+ *
+ * @return The result returned by test
+ */
+napi_value QueryContactsCount(napi_env env, napi_callback_info info)
+{
+    size_t argc = MAX_PARAMS;
+    napi_value argv[MAX_PARAMS] = {0};
+    napi_value thisVar = nullptr;
+    void *data;
+    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
+        switch (argc) {
+            case ARGS_ONE:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
+                napi_throw(env, errorCode);
+                break;
+        }
+    }
+    ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
+    napi_value result = nullptr;
+    if (executeHelper != nullptr) {
+        result = Scheduling(env, info, executeHelper, QUERY_CONTACT_COUNT);
         return result;
     }
     napi_create_int64(env, ERROR, &result);
@@ -1381,7 +2073,8 @@ napi_value QueryContact(napi_env env, napi_callback_info info)
                 if (!ContactsNapiUtils::MatchParameters(env, argv,
                     { napi_object, napi_string, napi_object, napi_function }) &&
                     !ContactsNapiUtils::MatchParameters(env, argv,
-                    { napi_object, napi_string, napi_object, napi_object })) {
+                    { napi_object, napi_string, napi_object, napi_object
+                })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -1447,7 +2140,8 @@ napi_value QueryContacts(napi_env env, napi_callback_info info)
                 break;
             case ARGS_FOUR:
                 if (!ContactsNapiUtils::MatchParameters(env, argv,
-                    { napi_object, napi_object, napi_object, napi_function })) {
+                    { napi_object, napi_object, napi_object, napi_function
+                })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -1500,7 +2194,10 @@ napi_value QueryContactsByEmail(napi_env env, napi_callback_info info)
                 if (!ContactsNapiUtils::MatchParameters(env, argv,
                     { napi_object, napi_string, napi_object, napi_function }) &&
                     !ContactsNapiUtils::MatchParameters(env, argv,
-                    { napi_object, napi_string, napi_object, napi_object })) {
+                    { napi_object, napi_string, napi_object, napi_function }) &&
+                    !ContactsNapiUtils::MatchParameters(env, argv,
+                    { napi_object, napi_string, napi_object, napi_object
+                })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -1561,7 +2258,8 @@ napi_value QueryContactsByPhoneNumber(napi_env env, napi_callback_info info)
                 if (!ContactsNapiUtils::MatchParameters(env, argv,
                     { napi_object, napi_string, napi_object, napi_function }) &&
                     !ContactsNapiUtils::MatchParameters(env, argv,
-                    { napi_object, napi_string, napi_object, napi_object })) {
+                    { napi_object, napi_string, napi_object, napi_object
+                })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -1723,7 +2421,8 @@ napi_value QueryKey(napi_env env, napi_callback_info info)
                 break;
             case ARGS_FOUR:
                 if (!ContactsNapiUtils::MatchParameters(env, argv,
-                    { napi_object, napi_number, napi_object, napi_function })) {
+                    { napi_object, napi_number, napi_object, napi_function
+                })) {
                     napi_throw(env, errorCode);
                 }
                 break;
@@ -2155,12 +2854,73 @@ napi_value DeclareAttributeConst(napi_env env, napi_value exports)
     return exports;
 }
 
+napi_value DeclareFilterConditionConst(napi_env env, napi_value exports)
+{
+    // FilterCondition
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("IS_NOT_NULL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(FilterCondition::IS_NOT_NULL))),
+        DECLARE_NAPI_STATIC_PROPERTY("EQUAL_TO",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(FilterCondition::EQUAL_TO))),
+        DECLARE_NAPI_STATIC_PROPERTY("NOT_EQUAL_TO",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(FilterCondition::NOT_EQUAL_TO))),
+        DECLARE_NAPI_STATIC_PROPERTY("IN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(FilterCondition::IN))),
+        DECLARE_NAPI_STATIC_PROPERTY("NOT_IN",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(FilterCondition::NOT_IN))),
+        DECLARE_NAPI_STATIC_PROPERTY("CONTAINS",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(FilterCondition::CONTAINS))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "FilterCondition", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "FilterCondition", result);
+    return exports;
+}
+
+napi_value DeclareDataFieldConst(napi_env env, napi_value exports)
+{
+    // DataField
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("EMAIL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(DataField::EMAIL))),
+        DECLARE_NAPI_STATIC_PROPERTY("PHONE",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(DataField::PHONE))),
+        DECLARE_NAPI_STATIC_PROPERTY("ORGANIZATION",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(DataField::ORGANIZATION))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "DataField", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "DataField", result);
+    return exports;
+}
+
+napi_value DeclareFilterTypeConst(napi_env env, napi_value exports)
+{
+    // FilterType
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("SHOW_FILTER",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(FilterType::SHOW_FILTER))),
+        DECLARE_NAPI_STATIC_PROPERTY("DEFAULT_SELECT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(FilterType::DEFAULT_SELECT))),
+        DECLARE_NAPI_STATIC_PROPERTY("SHOW_FILTER_AND_DEFAULT_SELECT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(FilterType::SHOW_FILTER_AND_DEFAULT_SELECT))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "FilterType", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "FilterType", result);
+    return exports;
+}
+
 void Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor exportFuncs[] = {
         DECLARE_NAPI_FUNCTION("addContact", OHOS::ContactsApi::AddContact),
         DECLARE_NAPI_FUNCTION("deleteContact", OHOS::ContactsApi::DeleteContact),
         DECLARE_NAPI_FUNCTION("updateContact", OHOS::ContactsApi::UpdateContact),
+        DECLARE_NAPI_FUNCTION("queryContactsCount", OHOS::ContactsApi::QueryContactsCount),
         DECLARE_NAPI_FUNCTION("queryContact", OHOS::ContactsApi::QueryContact),
         DECLARE_NAPI_FUNCTION("queryContacts", OHOS::ContactsApi::QueryContacts),
         DECLARE_NAPI_FUNCTION("queryContactsByEmail", OHOS::ContactsApi::QueryContactsByEmail),
@@ -2171,6 +2931,9 @@ void Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("queryMyCard", OHOS::ContactsApi::QueryMyCard),
         DECLARE_NAPI_FUNCTION("isMyCard", OHOS::ContactsApi::IsMyCard),
         DECLARE_NAPI_FUNCTION("isLocalContact", OHOS::ContactsApi::IsLocalContact),
+        DECLARE_NAPI_FUNCTION("startContactsPicker", OHOS::ContactsApi::ContactsPickerSelect),
+        DECLARE_NAPI_FUNCTION("startSaveContactsPicker", OHOS::ContactsApi::ContactsPickerSave),
+        DECLARE_NAPI_FUNCTION("startSaveExistContactsPicker", OHOS::ContactsApi::ContactsPickerSaveExist)
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     // Declare class const initialization
@@ -2183,6 +2946,9 @@ void Init(napi_env env, napi_value exports)
     DeclareRelationConst(env, exports);
     DeclareSipAddressConst(env, exports);
     DeclareAttributeConst(env, exports);
+    DeclareFilterConditionConst(env, exports);
+    DeclareDataFieldConst(env, exports);
+    DeclareFilterTypeConst(env, exports);
 }
 } // namespace ContactsApi
 } // namespace OHOS

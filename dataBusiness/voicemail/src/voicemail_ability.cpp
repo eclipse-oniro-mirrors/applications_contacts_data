@@ -91,10 +91,12 @@ void VoiceMailAbility::OnStart(const Want &want)
  */
 bool VoiceMailAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
 {
-    mutex.try_lock();
+    bool ret = mutex.try_lock();
     if (code != 0) {
-        HILOG_ERROR("IsBeginTransactionOK fail");
-        mutex.unlock();
+        HILOG_ERROR("IsBeginTransactionOK failed");
+        if (ret) {
+            mutex.unlock();
+        }
         return false;
     }
     return true;
@@ -110,10 +112,12 @@ bool VoiceMailAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
  */
 bool VoiceMailAbility::IsCommitOK(int code, std::mutex &mutex)
 {
-    mutex.try_lock();
+    bool ret = mutex.try_lock();
     if (code != 0) {
-        HILOG_ERROR("IsCommitOK fail");
-        mutex.unlock();
+        HILOG_ERROR("IsCommitOK failed");
+        if (ret) {
+            mutex.unlock();
+        }
         return false;
     }
     return true;
@@ -129,7 +133,7 @@ bool VoiceMailAbility::IsCommitOK(int code, std::mutex &mutex)
  */
 int VoiceMailAbility::Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value)
 {
-    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         HILOG_ERROR("Permission denied!");
         return Contacts::RDB_PERMISSION_ERROR;
     }
@@ -200,7 +204,7 @@ int VoiceMailAbility::InsertExecute(const OHOS::Uri &uri, const OHOS::NativeRdb:
  */
 int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
-    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         HILOG_ERROR("Permission denied!");
         return Contacts::RDB_PERMISSION_ERROR;
     }
@@ -258,7 +262,7 @@ int VoiceMailAbility::BatchInsert(const Uri &uri, const std::vector<DataShare::D
 int VoiceMailAbility::Update(
     const Uri &uri, const DataShare::DataSharePredicates &predicates, const DataShare::DataShareValuesBucket &value)
 {
-    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         HILOG_ERROR("Permission denied!");
         return Contacts::RDB_PERMISSION_ERROR;
     }
@@ -293,7 +297,12 @@ int VoiceMailAbility::Update(
             break;
     }
     g_mutex.unlock();
-    DataBaseNotifyChange(Contacts::CONTACT_UPDATE, uri);
+    if (ret > 0) {
+        DataBaseNotifyChange(Contacts::CONTACT_UPDATE, uri);
+    } else {
+        HILOG_INFO("VoiceMailAbility ====>update row is %{public}d, skill notify, ts = %{public}lld",
+            ret, (long long) time(NULL));
+    }
     return ret;
 }
 
@@ -307,7 +316,7 @@ int VoiceMailAbility::Update(
  */
 int VoiceMailAbility::Delete(const Uri &uri, const DataShare::DataSharePredicates &predicates)
 {
-    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         HILOG_ERROR("Permission denied!");
         return Contacts::RDB_PERMISSION_ERROR;
     }
@@ -352,7 +361,7 @@ std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(const Uri
     const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
     DataShare::DatashareBusinessError &businessError)
 {
-    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
+    if (!Telephony::TelephonyPermission::CheckPermission(OHOS_PERMISSION_MANAGE_VOICEMAIL)) {
         HILOG_ERROR("Permission denied!");
         return nullptr;
     }
@@ -383,10 +392,6 @@ std::shared_ptr<DataShare::DataShareResultSet> VoiceMailAbility::Query(const Uri
             break;
     }
     if (!isUriMatch) {
-        return nullptr;
-    }
-    if (result == nullptr) {
-        HILOG_ERROR("AbsSharedResultSet is nullptr");
         return nullptr;
     }
     auto queryResultSet = RdbDataShareAdapter::RdbUtils::ToResultSetBridge(result);

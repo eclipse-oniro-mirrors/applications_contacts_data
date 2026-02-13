@@ -1,0 +1,5 @@
+{
+    "path": "contacts/contact",
+    "type":"rdb",
+    "scope":"application"
+}

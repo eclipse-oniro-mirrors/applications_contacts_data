@@ -507,7 +507,7 @@ HWTEST_F(PerformanceTest, voicemail_update_performance_test_600, testing::ext::T
     int updateCode = voicemailAbility.Update(uriVoiceMail, predicates, updateValues);
     endTime = GetCurrentTime();
     elaps = CalcTime(startTime, endTime);
-    HILOG_INFO("voicemail_update_performance_test_600 : time is %{public}d", elaps);
+    HILOG_INFO("voicemail_update_performance_test_600 : time is %{public}d ", elaps);
     ASSERT_LE(elaps, TIME_USEC_VOICEMAIL_UPDATE);
     EXPECT_EQ(updateCode, 0);
 }

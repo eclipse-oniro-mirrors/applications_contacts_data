@@ -36,8 +36,6 @@ public:
         std::shared_ptr<OHOS::NativeRdb::RdbStore> store, std::set<int> &rawIds, int typeId);
     std::set<std::string> QueryDataExecute(
         std::shared_ptr<OHOS::NativeRdb::RdbStore> store, std::set<int> rawIds, int typeId);
-    std::vector<int> QueryByDataName(
-        int rawId, std::set<std::string> data, std::shared_ptr<OHOS::NativeRdb::RdbStore> store);
     bool SetEqual(std::set<std::string> setLeft, std::set<std::string> setRight);
     void AddHasJudgeForRawId(
         std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId, OHOS::NativeRdb::ValuesBucket &value);

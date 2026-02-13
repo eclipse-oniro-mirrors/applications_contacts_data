@@ -17,9 +17,113 @@
 #define CONTACT_NAPI_OBJECT_H
 
 #include <string>
+#include "pixel_map_napi.h"
 
 namespace OHOS {
 namespace ContactsApi {
+
+enum class FilterCondition {
+    /**
+     * Field is not null.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+	IS_NOT_NULL,
+
+    /**
+     * Field equal to value, value type is string.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+	EQUAL_TO,
+
+    /**
+     * Field not equal to value, value type is string.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+	NOT_EQUAL_TO,
+
+    /**
+     * Field in value, value type is ValueType[].
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+	IN,
+
+    /**
+     * Field not in value, value type is ValueType[].
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+	NOT_IN,
+
+    /**
+     * Field contains value, value type is string.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+	CONTAINS,
+};
+
+enum class DataField {
+    /**
+     * Indicates list of contact email addresses.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+	EMAIL,
+
+    /**
+     * Indicates a phone number of the contact.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+	PHONE,
+
+    /**
+     * Indicates organization information about the contact.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+	ORGANIZATION,
+};
+
+enum class FilterType {
+    /**
+     * Only the contacts that meet the filter criteria are displayed.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+    SHOW_FILTER,
+
+    /**
+     * Contacts that meet the filter criteria are selected by default.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+    DEFAULT_SELECT,
+
+    /**
+     * Only the contacts that meet the filter criteria are displayed and are selected by default.
+     *
+     * @syscap SystemCapability.Applications.Contacts
+     * @since 15
+     */
+    SHOW_FILTER_AND_DEFAULT_SELECT,
+};
+
 enum class Attribute {
     /**
      * Indicates the email address.
@@ -238,6 +342,23 @@ public:
 };
 
 /**
+ * 联系人应用不一致的类型
+ */
+class ContactImAddress {
+public:
+    static const int NEW_TYPE_CUSTOM = 10000;
+    static const int TYPE_AIM = 1;
+    static const int TYPE_WINDOWSLIVE = 2;
+    static const int TYPE_YAHOO = 3;
+    static const int TYPE_SKYPE = 4;
+    static const int TYPE_QQ = 5;
+    static const int TYPE_HANGOUTS = 6;
+    static const int TYPE_ICQ = 7;
+    static const int TYPE_JABBER = 8;
+    static const int TYPE_CUSTOM = 0;
+};
+
+/**
  * Provides methods for ImAddress information
  */
 class ImAddress {
@@ -271,6 +392,11 @@ public:
      * Indicates a QQ instant message.
      */
     static const int IM_QQ = 4;
+
+    /**
+     * Indicates a HANGOUTS message.
+     */
+    static const int IM_HANGOUTS = 5;
 
     /**
      * Indicates an ICQ instant message.
@@ -387,6 +513,23 @@ public:
      * Indicates the title of the contact.
      */
     std::string title;
+};
+
+/**
+ * 联系人应用不一致的类型
+ */
+class ContactPhoneNumber {
+public:
+    static const int TYPE_MOBILE = 1;
+    static const int TYPE_HOME = 2;
+    static const int TYPE_WORK = 3;
+    static const int TYPE_FAX_WORK = 4;
+    static const int TYPE_FAX_HOME = 5;
+    static const int TYPE_PAGER = 6;
+    static const int TYPE_OTHER = 7;
+    static const int TYPE_MAIN = 12;
+    static const int TYPE_CUSTOM = 99;
+    static const int NEW_TYPE_CUSTOM = 10000;
 };
 /**
  * Provides methods for phone number information
@@ -528,7 +671,10 @@ public:
      * Indicates the uri of the contact portrait.
      */
     std::string uri;
+    std::shared_ptr<Media::PixelMap> photo;
+    bool isNeedHandlePhoto = false;
 };
+
 /**
  * Provides methods for postal address information
  */
@@ -608,6 +754,17 @@ public:
      * Indicates the label id.
      */
     int labelId = -1;
+};
+
+/**
+ * 联系人应用不一致的类型
+ */
+class ContactRelation {
+public:
+    static const int CUSTOM_LABEL = 0;
+    static const int RELATION_DOMESTIC_PARTNER = 10;
+    static const int RELATION_PARTNER = 4;
+    static const int NEW_CUSTOM_LABEL = 10000;
 };
 
 class Relation {
@@ -749,6 +906,14 @@ public:
      * Indicates the label id.
      */
     int labelId = -1;
+};
+
+/**
+ * 联系人应用不一致的类型
+ */
+class ContactCommon {
+public:
+    static const int NEW_CUSTOM_LABEL = 10000;
 };
 
 class Website {

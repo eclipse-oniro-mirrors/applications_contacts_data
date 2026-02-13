@@ -1,8 +1,11 @@
 {
-  "string":[
-    {
-      "name": "app_name",
-      "value": "ContactsData"
-    }
-  ]
+    "string":[
+        {
+            "name":"app_name",
+            "value":"Contacts Storage",
+            "attr":{
+                "priority":"LT"
+            }
+        }
+    ]
 }

@@ -138,5 +138,84 @@ bool SqlAnalyzer::FindIllegalWords(std::string sql)
     }
     return false;
 }
+bool SqlAnalyzer::CheckColumnExists(OHOS::NativeRdb::RdbStore &store, std::string table, std::string column)
+{
+    std::string querySql = "SELECT * FROM " + table + " LIMIT 0";
+    auto resultSet = store.QuerySql(querySql);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("CheckColumnExists QuerySqlResult is null");
+        return false;
+    }
+    int columnIndex = -1;
+    resultSet->GetColumnIndex(column, columnIndex);
+    HILOG_WARN("SqlAnalyzer CheckColumnExists columnIndex is %{public}d", columnIndex);
+    resultSet->Close();
+    if (columnIndex == -1) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+std::vector<std::string> SqlAnalyzer::QueryAllTables(OHOS::NativeRdb::RdbStore &store)
+{
+    std::vector<std::string> tables{};
+    std::string sql = "SELECT name FROM sqlite_master WHERE type='table';";
+    auto resultSet = store.QuerySql(sql);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("QueryAllTables is nullptr.");
+        return tables;
+    }
+    int rowRecord = resultSet->GoToFirstRow();
+    while (rowRecord == OHOS::NativeRdb::E_OK) {
+        std::string tableName;
+        resultSet->GetString(INDEX_ZERO, tableName);
+        tables.push_back(tableName);
+        rowRecord = resultSet->GoToNextRow();
+    }
+    resultSet->Close();
+    return tables;
+}
+
+std::vector<std::string> SqlAnalyzer::QueryAllViews(OHOS::NativeRdb::RdbStore &store)
+{
+    std::vector<std::string> views{};
+    std::string sql = "SELECT name FROM sqlite_master WHERE type='view';";
+    auto resultSet = store.QuerySql(sql);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("QueryAllViews is nullptr.");
+        return views;
+    }
+    int rowRecord = resultSet->GoToFirstRow();
+    while (rowRecord == OHOS::NativeRdb::E_OK) {
+        std::string viewName;
+        resultSet->GetString(INDEX_ZERO, viewName);
+        views.push_back(viewName);
+        rowRecord = resultSet->GoToNextRow();
+    }
+    resultSet->Close();
+    return views;
+}
+
+std::vector<std::string> SqlAnalyzer::QueryAllFieldsFromTable(
+    OHOS::NativeRdb::RdbStore &store, const std::string &table)
+{
+    std::vector<std::string> fields{};
+    std::string sql = "SELECT name FROM pragma_table_info('" + table + "');";
+    auto resultSet = store.QuerySql(sql);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("QueryAllFieldsFromTable %{public}s is nullptr.", table.c_str());
+        return fields;
+    }
+    int rowRecord = resultSet->GoToFirstRow();
+    while (rowRecord == OHOS::NativeRdb::E_OK) {
+        std::string fieldName;
+        resultSet->GetString(INDEX_ZERO, fieldName);
+        fields.push_back(fieldName);
+        rowRecord = resultSet->GoToNextRow();
+    }
+    resultSet->Close();
+    return fields;
+}
 } // namespace Contacts
 } // namespace OHOS

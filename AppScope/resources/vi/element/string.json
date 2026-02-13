@@ -1,0 +1,11 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"Lưu trữ Danh bạ",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

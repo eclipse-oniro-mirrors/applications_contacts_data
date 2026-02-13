@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"Lưu trữ Danh bạ",
+            "attr":{
+                "priority":"translate"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"Quyền này được sử dụng để đồng bộ ngày sinh của các liên hệ.",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

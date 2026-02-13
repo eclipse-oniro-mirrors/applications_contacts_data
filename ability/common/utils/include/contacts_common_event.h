@@ -25,9 +25,13 @@ namespace Contacts {
 constexpr const char *CONTACT_EVENT = "com.ohos.contactsdataability";
 constexpr const char *CALL_LOG_EVENT = "com.ohos.calllogability";
 constexpr const char *VOICEMAIL_EVENT = "com.ohos.voicemailability";
+constexpr const char *POSTER_EVENT = "com.ohos.contacts.posters";
+
 constexpr int CONTACT_EVENT_CODE = 10000;
 constexpr int CALL_LOG_EVENT_CODE = 20000;
 constexpr int VOICEMAIL_EVENT_CODE = 30000;
+constexpr int DOWNLOAD_RESULT_EVENT_CODE = 40000;
+constexpr int DOWNLOAD_DONE_EVENT_CODE = 40001;
 
 // action
 constexpr int CONTACT_INSERT = 0;
@@ -43,12 +47,12 @@ public:
     ~ContactsCommonEvent() = default;
     static std::shared_ptr<ContactsCommonEvent> subscriber;
     void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data);
-    static bool PublishContactEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData);
-    static void UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber);
-    static void RegisterSubscriber();
+    static bool PublishContactEvent(const OHOS::AAFwk::Want &want,
+        int eventCode, const std::string &eventData,  const std::string &permission, bool order);
     static void SendContactChange(int actionCode);
     static void SendCallLogChange(int actionCode);
     static void SendVoiceMailChange(int actionCode);
+    static void SendPosterEvent(int actionCode, const std::string& eventData);
 };
 } // namespace Contacts
 } // namespace OHOS

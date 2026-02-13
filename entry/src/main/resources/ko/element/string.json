@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"주소록 저장소",
+            "attr":{
+                "priority":"translate"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"이는 연락처 생일을 동기화하는 데 사용됩니다.",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}
