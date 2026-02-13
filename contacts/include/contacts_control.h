@@ -40,6 +40,8 @@ public:
         DataShare::DataShareValuesBucket rawContactValues);
     int ContactDataInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
         std::vector<DataShare::DataShareValuesBucket> contactsDataValues);
+    int ContactBatchInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+        const std::vector<DataShare::OperationStatement> &statements, ExecuteHelper *executeHelper);
     int RawContactUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
         DataShare::DataShareValuesBucket updateValues, DataShare::DataSharePredicates predicates);
     int ContactDataUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
@@ -49,6 +51,9 @@ public:
     int ContactDataDelete(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
         DataShare::DataSharePredicates predicates);
     std::shared_ptr<DataShare::DataShareResultSet> ContactQuery(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+        DataShare::DataSharePredicates predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> ContactCountQuery(
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
     std::shared_ptr<DataShare::DataShareResultSet> ContactDataQuery(
@@ -63,6 +68,14 @@ public:
     std::shared_ptr<DataShare::DataShareResultSet> HolderQuery(
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
+    std::string QueryAppGroupDir(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper);
+    int OpenFileByDataShare(const std::string &fileName,
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper);
+    std::shared_ptr<DataShare::DataShareResultSet> QueryContactByRawContactId(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+        int rawContactId);
+    int HandleAddFailed(const std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+        DataShare::DataSharePredicates predicates, const std::string &fileName);
 };
 } // namespace ContactsApi
 } // namespace OHOS
