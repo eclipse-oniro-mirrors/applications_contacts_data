@@ -13,9 +13,13 @@
  * limitations under the License.
  */
 
+#include <regex>
 #include "contacts_json_utils.h"
 
+#include "common.h"
 #include "contacts_columns.h"
+#include "hilog_wrapper.h"
+#include "common_tool_type.h"
 
 namespace OHOS {
 namespace Contacts {
@@ -79,5 +83,79 @@ void ContactsJsonUtils::GetValue(std::vector<std::string> &columnNames, unsigned
         }
     }
 }
+
+std::string ContactsJsonUtils::GetDataFromValueBucket(std::vector<OHOS::NativeRdb::ValuesBucket> &valuesRdb)
+{
+    Json::Value dataResult;
+    Json::Value arrayValue;
+    ParseData(arrayValue, valuesRdb);
+    dataResult[AliasName::DATA] = arrayValue;
+    Json::StreamWriterBuilder builder;
+    const std::string contactInfoJson = Json::writeString(builder, dataResult);
+    return contactInfoJson;
+}
+
+void ContactsJsonUtils::ParseData(
+    Json::Value &arrayValue, std::vector<OHOS::NativeRdb::ValuesBucket> &valuesRdb)
+{
+    unsigned int size = valuesRdb.size();
+    for (unsigned int i = 0; i < size; i++) {
+        // get typeId
+        int typeId = getIntValueFromRdbBucket(valuesRdb[i],
+            Contacts::ContactDataColumns::TYPE_ID);
+        if (typeId == Contacts::ContentTypeData::PHONE_INT_VALUE ||
+         typeId == Contacts::ContentTypeData::EMAIL_INT_VALUE) {
+            Json::Value data;
+            std::string detailInfo = getStringValueFromRdbBucket(valuesRdb[i],
+                Contacts::ContactDataColumns::DETAIL_INFO);
+            int contact_id = getIntValueFromRdbBucket(valuesRdb[i],
+                Contacts::ContactDataColumns::RAW_CONTACT_ID);
+            data["contactId"] = std::to_string(contact_id);
+            data["type"] = std::to_string(typeId);
+            data["value"] = detailInfo;
+            arrayValue.append(data);
+        }
+    }
+}
+
+int ContactsJsonUtils::getIntValueFromRdbBucket(
+    const OHOS::NativeRdb::ValuesBucket &valuesBucket,
+    const std::string &colName)
+{
+    OHOS::NativeRdb::ValueObject value;
+    valuesBucket.GetObject(colName, value);
+    int colVal = Contacts::OPERATION_ERROR;
+    if (value.GetType() == OHOS::NativeRdb::ValueObjectType::TYPE_NULL) {
+        HILOG_ERROR("get %{public}s value is nullptr, ts = %{public}lld", colName.c_str(), (long long) time(NULL));
+        colVal = Contacts::OPERATION_ERROR;
+    } else if (value.GetType() == OHOS::NativeRdb::ValueObjectType::TYPE_INT) {
+        value.GetInt(colVal);
+    } else if (value.GetType() == OHOS::NativeRdb::ValueObjectType::TYPE_STRING) {
+        std::string tempString;
+        value.GetString(tempString);
+        if (!CommonToolType::ConvertToInt(tempString, colVal)) {
+            HILOG_ERROR("GetContactByValue ValueObjectType String tempString = %{public}s", tempString.c_str());
+        }
+    } else if (value.GetType() == OHOS::NativeRdb::ValueObjectType::TYPE_DOUBLE) {
+        double temp = 0;
+        value.GetDouble(temp);
+        colVal = ceil(temp);
+    } else {
+        HILOG_ERROR("get %{public}s int value from OHOS::NativeRdb::ValuesBucket error, is other type",
+            colName.c_str());
+    }
+    return colVal;
+}
+
+std::string ContactsJsonUtils::getStringValueFromRdbBucket(const OHOS::NativeRdb::ValuesBucket &valuesBucket,
+    const std::string &colName)
+{
+    OHOS::NativeRdb::ValueObject value;
+    std::string colVal;
+    valuesBucket.GetObject(colName, value);
+    value.GetString(colVal);
+    return colVal;
+}
+
 } // namespace Contacts
 } // namespace OHOS

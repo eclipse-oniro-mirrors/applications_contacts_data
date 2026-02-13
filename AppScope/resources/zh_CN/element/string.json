@@ -1,0 +1,11 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"联系人存储",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

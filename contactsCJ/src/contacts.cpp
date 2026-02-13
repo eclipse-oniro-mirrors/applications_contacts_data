@@ -41,6 +41,10 @@ bool IsInvalidId(int id)
 std::shared_ptr<DataShareHelper> dsHelperFromContext(int64_t contextId)
 {
     sptr<CJAbilityContext> context = FFIData::GetData<CJAbilityContext>(contextId);
+    if (context == nullptr) {
+        HILOG_ERROR("dsHelperFromContext context is null");
+        return nullptr;
+    }
     return DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
 }
 

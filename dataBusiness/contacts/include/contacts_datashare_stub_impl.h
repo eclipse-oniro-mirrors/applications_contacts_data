@@ -33,6 +33,7 @@ public:
     std::shared_ptr<DataShareResultSet> Query(const Uri &uri, const DataSharePredicates &predicates,
         std::vector<std::string> &columns, DatashareBusinessError &businessError) override;
     int BatchInsert(const Uri &uri, const std::vector<DataShareValuesBucket> &values) override;
+    Uri getUriPrintByUri(const Uri &uriTemp);
 
     std::vector<std::string> GetFileTypes(const Uri &uri, const std::string &mimeTypeFilter) override;
     int OpenFile(const Uri &uri, const std::string &mode) override;
@@ -41,18 +42,23 @@ public:
     bool RegisterObserver(const Uri &uri, const sptr<AAFwk::IDataAbilityObserver> &dataObserver) override;
     bool UnregisterObserver(const Uri &uri, const sptr<AAFwk::IDataAbilityObserver> &dataObserver) override;
     bool NotifyChange(const Uri &uri) override;
+    bool NotifyChangeExt(const Uri &uri, const std::vector<DataShareValuesBucket> &values, std::string operateType);
     Uri NormalizeUri(const Uri &uri) override;
     Uri DenormalizeUri(const Uri &uri) override;
 
     void SetContactsDataAbility(std::shared_ptr<DataShareExtAbility> extension);
     void SetCallLogAbility(std::shared_ptr<DataShareExtAbility> extension);
     void SetVoiceMailAbility(std::shared_ptr<DataShareExtAbility> extension);
+    bool GetBundleNameByUid(int32_t uid, std::string &bundleName);
+    static std::string bundleName_;
 
 private:
     std::shared_ptr<DataShareExtAbility> GetOwner(const Uri &uri);
     std::shared_ptr<DataShareExtAbility> GetContactsDataAbility();
     std::shared_ptr<DataShareExtAbility> GetCallLogAbility();
     std::shared_ptr<DataShareExtAbility> GetVoiceMailAbility();
+    int addFailedDeleteFile(const std::string &fileName);
+    bool TryDeleteFile(const Uri &uri);
 
 private:
     std::shared_ptr<DataShareExtAbility> contactsDataAbility_ = nullptr;

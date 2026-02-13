@@ -31,9 +31,16 @@ public:
     ContactsJsonUtils();
     ~ContactsJsonUtils();
     std::string GetDeleteData(std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
+    std::string GetDataFromValueBucket(std::vector<OHOS::NativeRdb::ValuesBucket> &valuesRdb);
+    
     void ConvertResultSet(Json::Value &arrayValue, std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
+    void ParseData(Json::Value &arrayValue, std::vector<OHOS::NativeRdb::ValuesBucket> &valuesRdb);
     void GetValue(std::vector<std::string> &columnNames, unsigned int &index, Json::Value &data,
-                  std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
+        std::shared_ptr<OHOS::NativeRdb::ResultSet> &resultSet);
+    int getIntValueFromRdbBucket(const OHOS::NativeRdb::ValuesBucket &value,
+        const std::string &colName);
+    std::string getStringValueFromRdbBucket(const OHOS::NativeRdb::ValuesBucket &value,
+        const std::string &colName);
 };
 } // namespace Contacts
 } // namespace OHOS

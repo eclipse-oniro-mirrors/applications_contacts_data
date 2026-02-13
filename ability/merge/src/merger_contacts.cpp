@@ -80,7 +80,6 @@ int MergerContacts::MergeCircle(std::shared_ptr<OHOS::NativeRdb::RdbStore> store
         }
         MatchCandidate matchCandidate;
         matchCandidate.AddHasByRawId(store, minId);
-        matchCandidate.FindMatchContact(store, minId);
     }
     if (isModeHasError) {
         HILOG_ERROR("MergerContacts::MergeCircle only one candidate has auto_merge_mode");
@@ -142,6 +141,10 @@ std::set<int> MergerContacts::HandleIds(std::shared_ptr<OHOS::NativeRdb::RdbStor
                 .append(std::to_string(*id))
                 .append(")");
             auto resultSet = store->QuerySql(sqlBuilder);
+            if (resultSet == nullptr) {
+                HILOG_ERROR("HandleIds QuerySqlResult is null");
+                continue;
+            }
             int resultSetNum = resultSet->GoToFirstRow();
             while (resultSetNum == OHOS::NativeRdb::E_OK) {
                 int rawId = 0;
@@ -172,6 +175,10 @@ void MergerContacts::UpdateRawContacts(
         .append(RawContactColumns::IS_DELETED)
         .append(" = 0");
     auto resultSet = store->QuerySql(sqlBuilder);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("UpdateRawContacts QuerySqlResult is null");
+        return;
+    }
     int minContactId = 0;
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -245,6 +252,10 @@ std::string MergerContacts::QueryCandidateName(std::shared_ptr<OHOS::NativeRdb::
         .append(" = ")
         .append(std::to_string(nameType));
     auto resultSet = store->QuerySql(sqlBuilder);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("QueryCandidateName QuerySqlResult is null");
+        return "";
+    }
     std::string candidateName;
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -276,6 +287,10 @@ std::set<int> MergerContacts::QueryTargetName(
             .append(std::to_string(nameType))
             .append(" AND is_deleted = 0");
         auto resultSet = store->QuerySql(query);
+        if (resultSet == nullptr) {
+            HILOG_ERROR("QueryTargetName QuerySqlResult is null");
+            continue;
+        }
         int resultSetNum = resultSet->GoToFirstRow();
         while (resultSetNum == OHOS::NativeRdb::E_OK) {
             int value = 0;
@@ -310,6 +325,10 @@ std::vector<std::set<int>> MergerContacts::QueryMergeContacts(
         .append(std::to_string(mode));
     std::vector<int> currentIds;
     auto resultSet = store->QuerySql(sqlBuilder);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("QueryMergeContacts QuerySqlResult is null");
+        return {};
+    }
     int resultSetNum = resultSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         int currentId = 0;
@@ -445,7 +464,6 @@ int MergerContacts::ReContactMerge(
             return RDB_EXECUTE_FAIL;
         }
         MatchCandidate matchCandidate;
-        matchCandidate.FindMatchContact(store, minId);
     }
     if (isModeHasError) {
         HILOG_ERROR("MergerContacts::MergeCircle only one candidate has manual_merge_mode");
@@ -491,6 +509,10 @@ std::vector<std::set<int>> MergerContacts::SelectIdsByName(
             .append(" = ")
             .append(std::to_string(nameType));
         auto resultSet = store->QuerySql(sql);
+        if (resultSet == nullptr) {
+            HILOG_ERROR("SelectIdsByName QuerySqlResult is null");
+            continue;
+        }
         int resultSetNum = resultSet->GoToFirstRow();
         while (resultSetNum == OHOS::NativeRdb::E_OK) {
             std::string name;
@@ -528,6 +550,10 @@ void MergerContacts::UpdateIdsByName(std::shared_ptr<OHOS::NativeRdb::RdbStore> 
         }
         std::set<int> currentIds;
         auto resultSet = store->QuerySql(sqlBuilder);
+        if (resultSet == nullptr) {
+            HILOG_ERROR("UpdateIdsByName QuerySqlResult is null");
+            continue;
+        }
         int resultSetNum = resultSet->GoToFirstRow();
         while (resultSetNum == OHOS::NativeRdb::E_OK) {
             int id = 0;

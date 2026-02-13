@@ -34,43 +34,6 @@ MatchCandidate::~MatchCandidate()
 }
 
 /**
- * @brief Query operation for update candidate's merge_mode
- *
- * @param store Conditions for query operation
- * @param rawId Contacts's raw_contact_id to query
- *
- * @return The result returned by the update operation
- */
-int MatchCandidate::FindMatchContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId)
-{
-    CandidateStatus candidateStatus;
-    // Query candidates
-    Candidate candidate = candidateStatus.QueryAllForMerge(store, rawId);
-    if (candidate.autoIds_.size() > 1) {
-        int minAutoid = *candidate.autoIds_.begin();
-        if (minAutoid != -1) {
-            std::string updateMergeTarget = "UPDATE ";
-            updateMergeTarget.append(ContactTableName::RAW_CONTACT)
-                .append(" SET ")
-                .append(RawContactColumns::IS_MERGE_TARGET)
-                .append(" = 1 ")
-                .append(" WHERE ")
-                .append(ContactPublicColumns::ID)
-                .append(" = ")
-                .append(std::to_string(minAutoid));
-            int code = store->ExecuteSql(updateMergeTarget);
-            if (code != OHOS::NativeRdb::E_OK) {
-                HILOG_ERROR("update is_merge_target error code is : %{public}d ", code);
-            }
-        }
-    }
-    // update merge_mode
-    int retCode = UpdateMergeMode(store, candidate);
-    HILOG_INFO("MatchCandidate::FindMatchContact retCode : %{public}d ", retCode);
-    return retCode;
-}
-
-/**
  * @brief Split operation for already merged contacts
  *
  * @param store Conditions for split operation
@@ -99,7 +62,6 @@ int MatchCandidate::Split(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int 
         }
         code = UpdateRawContact(store, *newRawId, contactsId);
         UpdateSearch(store, *newRawId, contactsId);
-        FindMatchContact(store, *newRawId);
     }
     AddHasByRawId(store, rawId);
     return code;
@@ -161,6 +123,10 @@ int64_t MatchCandidate::AddNewContact(std::shared_ptr<OHOS::NativeRdb::RdbStore>
         .append(" = ")
         .append(std::to_string(rawId));
     std::shared_ptr<OHOS::NativeRdb::ResultSet> resultSet = store->QuerySql(sql);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("AddNewContact QuerySqlResult is null");
+        return 0;
+    }
     std::vector<OHOS::NativeRdb::ValuesBucket> value = ResultSetToValuesBucket(resultSet);
     value[0].PutInt(ContactColumns::NAME_RAW_CONTACT_ID, rawId);
     mergeUtils.AddHasJudgeForRawId(store, rawId, value[0]);
@@ -171,6 +137,7 @@ int64_t MatchCandidate::AddNewContact(std::shared_ptr<OHOS::NativeRdb::RdbStore>
     if (contactsRet != OHOS::NativeRdb::E_OK) {
         HILOG_ERROR("MatchCandidate AddNewContact is error %{public}d", contactsRet);
     }
+    resultSet->Close();
     return contactsId;
 }
 
@@ -196,27 +163,6 @@ int MatchCandidate::ExecuteUpdateMode(std::shared_ptr<OHOS::NativeRdb::RdbStore>
     }
     ret = store->ExecuteSql(sql);
     return ret;
-}
-
-int MatchCandidate::UpdateMergeMode(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, Candidate candidate)
-{
-    HILOG_INFO("MatchCandidate::UpdateMergeMode is start mode :%{public}d ", candidate.mergeMode_);
-    int error = RDB_EXECUTE_FAIL;
-    switch (candidate.mergeMode_) {
-        case MERGE_MODE_DEFAULT:
-            error = ExecuteUpdateMode(store, candidate.manualIds_, MERGE_MODE_DEFAULT);
-            break;
-        case MERGE_MODE_MANUAL:
-            error = ExecuteUpdateMode(store, candidate.manualIds_, MERGE_MODE_MANUAL);
-            break;
-        case MERGE_MODE_AUTO:
-            error = ExecuteUpdateMode(store, candidate.autoIds_, MERGE_MODE_AUTO);
-            break;
-        default:
-            HILOG_ERROR("UpdateMergeMode mode error");
-            break;
-    }
-    return error;
 }
 
 int MatchCandidate::UpdateRawContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId, int64_t contactsId)

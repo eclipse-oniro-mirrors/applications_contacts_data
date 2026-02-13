@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"ئالاقىداش مەلۇماتى",
+            "attr":{
+                "priority":"LT"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"بۇ ئىجازەت ئالاقىداشنىڭ تۇغۇلغان كۈنىنى كالېندارغا ماسقەدەملەش ئۈچۈن ئىشلىتىلىدۇ.",
+            "attr":{
+                "priority":"LT"
+            }
+        }
+    ]
+}

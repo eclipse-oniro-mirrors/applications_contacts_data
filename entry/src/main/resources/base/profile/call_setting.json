@@ -1,0 +1,5 @@
+{
+  "path": "calls/call_settings",
+  "type":"rdb",
+  "scope":"application"
+}

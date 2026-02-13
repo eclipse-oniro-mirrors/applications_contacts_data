@@ -1,0 +1,27 @@
+{
+    "app": {
+    "products": [
+      {
+        "name": "default",
+        "compileSdkVersion": 23,
+        "compatibleSdkVersion": 20,
+        "targetSdkVersion": 20,
+        "runtimeOS": "OpenHarmony"
+      }
+    ]
+    },
+    "modules" : [
+        {
+            "name": "contactsdata",
+            "srcPath": "./entry",
+            "targets": [
+                {
+                    "name": "default",
+                    "applyToProducts": [
+                        "default"
+                    ]
+                }
+            ]
+        }
+    ]
+}

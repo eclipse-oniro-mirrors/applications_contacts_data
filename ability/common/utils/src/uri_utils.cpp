@@ -41,7 +41,7 @@ std::map<std::string, std::string> UriUtils::getQueryParameter(OHOS::Uri &uri)
         size_t childSize = childTempVector.size();
         if (childSize != REQUEST_PARAMS_NUM) {
             HILOG_ERROR("UriUtils uriParse getQueryParameter query parameter error");
-            break;
+            continue;
         }
         std::string key = childTempVector[0];
         std::string value = childTempVector[1];
@@ -73,6 +73,15 @@ int UriUtils::UriParse(OHOS::Uri &uri, std::map<std::string, int> &keyMap)
         return iterator->second;
     }
     return OPERATION_ERROR;
+}
+
+void UriUtils::GetFileTypeAndFileName(const OHOS::Uri &uri, std::string &openFileType, std::string &fileName)
+{
+    std::vector<std::string> parts = split(uri.ToString(), "/");
+    if (parts.size() >= 2) {
+        openFileType = parts[parts.size() - 2];
+        fileName = parts[parts.size() - 1];
+    }
 }
 } // namespace Contacts
 } // namespace OHOS

@@ -17,85 +17,85 @@
 #define CONTACT_NAPI_OBJECT_H
 
 #include <string>
-#include "pixel_map.h"
+#include "pixel_map_napi.h"
 
 namespace OHOS {
 namespace ContactsApi {
 
 enum class FilterCondition {
     /**
-     * Filed is not null
-     * 
+     * Field is not null.
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
-    IS_NOT_NULL,
+	IS_NOT_NULL,
 
     /**
-     * Filed equal to value, value type is string
-     * 
+     * Field equal to value, value type is string.
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
-    EQUAL_TO,
+	EQUAL_TO,
 
     /**
-     * Filed not equal to value, value type is string
-     * 
+     * Field not equal to value, value type is string.
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
-    NOT_EQUAL_TO,
+	NOT_EQUAL_TO,
 
     /**
-     * Filed in value, value type is ValueType[].
-     * 
+     * Field in value, value type is ValueType[].
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
-    IN,
+	IN,
 
     /**
-     * Filed in value, value type is ValueType[].
-     * 
+     * Field not in value, value type is ValueType[].
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
-    NOT_IN,
+	NOT_IN,
 
     /**
-     * Filed contains value, value type is string.
-     * 
+     * Field contains value, value type is string.
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
-    CONTAINS,
+	CONTAINS,
 };
 
 enum class DataField {
     /**
-     * indicates list of contact email addresses.
-     * 
+     * Indicates list of contact email addresses.
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
-    EMAIL,
+	EMAIL,
 
     /**
-     * indicates a phone number of the contact.
-     * 
+     * Indicates a phone number of the contact.
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
-    PHONE,
+	PHONE,
 
     /**
-     * indicates organization information about the contact.
-     * 
+     * Indicates organization information about the contact.
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
-    ORGANIZATION,
+	ORGANIZATION,
 };
 
 enum class FilterType {
@@ -109,7 +109,7 @@ enum class FilterType {
 
     /**
      * Contacts that meet the filter criteria are selected by default.
-     * 
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
@@ -117,7 +117,7 @@ enum class FilterType {
 
     /**
      * Only the contacts that meet the filter criteria are displayed and are selected by default.
-     * 
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
@@ -356,7 +356,7 @@ public:
     static const int TYPE_ICQ = 7;
     static const int TYPE_JABBER = 8;
     static const int TYPE_CUSTOM = 0;
-}
+};
 
 /**
  * Provides methods for ImAddress information
@@ -766,7 +766,7 @@ public:
     static const int RELATION_DOMESTIC_PARTNER = 10;
     static const int RELATION_PARTNER = 4;
     static const int NEW_CUSTOM_LABEL = 10000;
-}
+};
 
 class Relation {
 public:
@@ -914,7 +914,7 @@ public:
  */
 class ContactCommon {
 public:
-    static const int NEW_CUSTOM_LABEL = 10000;    
+    static const int NEW_CUSTOM_LABEL = 10000;
 };
 
 class Website {
