@@ -946,7 +946,7 @@ void HandleAddContactsResult(napi_env env, ExecuteHelper *executeHelper, napi_va
     auto resultSize = executeHelper->operationResultData.size();
     HILOG_WARN("HandleAddContactsResult result: %{public}d", executeHelper->resultData);
     napi_create_array_with_length(env, resultSize, &result);
-    if (executeHelper->resultData == DataShare::ExecErrorCode::EXEC_SUCCESS || 
+    if (executeHelper->resultData == DataShare::ExecErrorCode::EXEC_SUCCESS ||
         executeHelper->resultData == DataShare::ExecErrorCode::EXEC_PARTIAL_SUCCESS) {
         for (size_t i = 0; i < resultSize; i++) {
             napi_value element;
@@ -1086,7 +1086,7 @@ void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, Exec
         if (insertPortraitResult != ERR_OK) {
             HILOG_ERROR("BatchInsertPortrait InsertContactPortrait failed: %{public}d", insertPortraitResult);
             auto &opResult = executeHelper->operationResultData;
-            auto iter = std::find(opResult.begin(), opResult.end(), rawId);
+            auto iter = std::find(opResult.begin(), opResult.end(), rawId); 
             if (iter != opResult.end()) {
                 *iter = INVALID_CONTACT_ID;
             }
@@ -1106,7 +1106,7 @@ void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, Exec
 void HandleContactBatchInsertResult(const DataShare::ExecResultSet &execResultSet,
     const std::vector<DataShare::OperationStatement> &statements, ExecuteHelper *executeHelper)
 {
-    for(size_t i = 0; i < statements.size(); ++i) {
+    for (size_t i = 0; i < statements.size(); ++i) {
         if (statements[i].HasBackReference()) {
             continue;
         }
@@ -1691,7 +1691,7 @@ napi_value AddContact(napi_env env, napi_callback_info info)
  * @param env Conditions for resolve object interface operation
  * @param info Conditions for resolve object interface operation
  *
- * @return the result returned by test
+ * @return The result returned by test
  */
 napi_value AddContacts(napi_env env, napi_callback_info info)
 {

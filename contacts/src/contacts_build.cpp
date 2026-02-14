@@ -136,7 +136,7 @@ void ContactsBuild::GetContactsByObject(napi_env env, ExecuteHelper *executeHelp
 void ContactsBuild::BuildOperationStatements(napi_env env, ExecuteHelper *executeHelper)
 {
     std::vector<Contacts> contacts;
-    GetContactsDataByObject(env, executeHelper, contacts);
+    GetContactsByObject(env, executeHelper, contacts);
     DataShare::DataSharePredicates predicate;
     std::string contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
     std::string rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
@@ -154,7 +154,7 @@ void ContactsBuild::BuildOperationStatements(napi_env env, ExecuteHelper *execut
             DataShare::BackReference backReference;
             DataShare::OperationStatement contactStatement{
                DataShare::Operation::INSERT, rawContactUri, predicate, valueContact, backReference}; 
-            statements.emplace_back(contactDataStatement);
+            statements.emplace_back(contactStatement);
         }
         for (const auto &valueContactData : valueContactDatas) {
             DataShare::BackReference backReference("raw_contact_id", rawContactIndex);
@@ -1043,7 +1043,7 @@ std::string ContactsBuild::GetContactIdStr(napi_env env, napi_value id)
         return std::to_string(value);
     }
     napi_get_value_double(env, id, &value);
-    std::string contactIdStr = (std::floor(value) == value)? std::to_string(static_cast<int> (value))
+    std::string contactIdStr = (std::floor(value) == value)? std::to_string(static_cast<int>(value))
                                  : std::to_string(value);
     return contactIdStr;
 }

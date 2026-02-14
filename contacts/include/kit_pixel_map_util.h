@@ -20,7 +20,7 @@
 namespace OHOS {
 namespace Contacts {
 namespace KitPixelMapUtil {
-enum class AddPortraitType {
+    enum class AddPortraitType {
     ADD_URI_PORTRAIT = 1,
     ADD_PIXELMAP_PORTRAIT,
     UPDATE_URI_PORTRAIT,

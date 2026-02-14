@@ -67,7 +67,7 @@ void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteAddContacts(napi_env env, ExecuteHelper *executeHelper);
 void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, ExecuteHelper *executeHelper);
-void HandleContactBatchInsertResult(const DataShare::ExecResultSet &execResultSet, 
+void HandleContactBatchInsertResult(const DataShare::ExecResultSet &execResultSet,
     const std::vector<DataShare::OperationStatement> &statements, ExecuteHelper *executeHelper);
 void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContact(napi_env env, ExecuteHelper *executeHelper);
@@ -119,7 +119,7 @@ void ObjectInit(napi_env env, napi_value object, napi_value &hold, napi_value &a
 void ObjectInitId(napi_env env, napi_value object, napi_value &id);
 void ObjectInitString(napi_env env, napi_value object, napi_value &key);
 int GetType(napi_env env, napi_value value);
-int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contactsControl, 
+int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contactsControl,
     int rawContactId, bool isAddType);
 std::string QueryContactIdByRawContactId(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
     ContactsControl &contactsControl, int rawContactId);
