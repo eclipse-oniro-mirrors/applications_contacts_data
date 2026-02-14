@@ -50,10 +50,10 @@ int ContactsControl::ContactDataInsert(std::shared_ptr<DataShare::DataShareHelpe
 }
 
 int ContactsControl::ContactBatchInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
-    std::vector<DataShare::OperationStatement> &statements, DataShare::ExecResultSet &result)
+    const std::vector<DataShare::OperationStatement> &statements, DataShare::ExecResultSet &result)
 {
     int code = 0;
-    OHOS::Uri uriContactData("datashare:///com.ohos.contactsdataability/contacts/applyBatch");
+    std::string uri("datashare:///com.ohos.contactsdataability/contacts/applyBatch");
     code = dataShareHelper->ExecuteBatch(statements, result);
     HILOG_WARN("ContactsControl::ContactBatchInsert insert code %{public}d", code);
     return code;

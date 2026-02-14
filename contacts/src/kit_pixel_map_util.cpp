@@ -120,8 +120,8 @@ void GetPixelMapSize(const std::shared_ptr<Media::PixelMap>& pixelMap, int32_t &
     }
     Media::ImageInfo info;
     pixelMap->GetImageInfo(info);
-    height = info.size.height();
-    width = info.size.width();
+    height = info.size.height;
+    width = info.size.width;
 }
 
 int32_t GetAddPortraitType(bool isAddType, bool isUriPortrait)

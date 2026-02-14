@@ -117,7 +117,7 @@ void ContactsBuild::GetContactData(napi_env env, ExecuteHelper *executeHelper)
 void ContactsBuild::GetContactsByObject(napi_env env, ExecuteHelper *executeHelper, std::vector<Contacts> &contacts)
 {
     bool isArray = false;
-    napi_is_array(env, executeHelper->argv[0], &isArray)
+    napi_is_array(env, executeHelper->argv[0], &isArray);
     if (!isArray) {
         HILOG_ERROR("[GetContactsByObject] is not array");
         return;
@@ -136,7 +136,7 @@ void ContactsBuild::GetContactsByObject(napi_env env, ExecuteHelper *executeHelp
 void ContactsBuild::BuildOperationStatements(napi_env env, ExecuteHelper *executeHelper)
 {
     std::vector<Contacts> contacts;
-    GetContactDataByObject(env, contactObject, contact);
+    GetContactsDataByObject(env, executeHelper, contacts);
     DataShare::DataSharePredicates predicate;
     std::string contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
     std::string rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
@@ -147,13 +147,13 @@ void ContactsBuild::BuildOperationStatements(napi_env env, ExecuteHelper *execut
     for (auto &contact : contacts) {
         std::vector<DataShare::DataShareValuesBucket> valueContacts;
         BuildValueContact(contact, valueContacts);
-        std::vector<DataShare::DatashareValuesBucket> valueContactDatas;
+        std::vector<DataShare::DataShareValuesBucket> valueContactDatas;
         BuildValueContactData(contact, valueContactDatas);
         for (const auto &valueContact : valueContacts) {
-            if (valueContact.IsEmpty() && valueContacts.empty()) { continue; }
+            if (valueContact.IsEmpty() && valueContactDatas.empty()) { continue; }
             DataShare::BackReference backReference;
             DataShare::OperationStatement contactStatement{
-               DataShare::Operation::Insert, contactDataUri, predicate, valueContactData, backReference}; 
+               DataShare::Operation::INSERT, rawContactUri, predicate, valueContact, backReference}; 
             statements.emplace_back(contactDataStatement);
         }
         for (const auto &valueContactData : valueContactDatas) {
@@ -168,15 +168,15 @@ void ContactsBuild::BuildOperationStatements(napi_env env, ExecuteHelper *execut
         rawContactIndex += (valueContacts.size() + valueContactDatas.size());
         statementIndex += (valueContacts.size() + valueContactDatas.size());
         if (rawContactIndex >= EXECUTE_BATCH_COUNT) {
-            ->operationStatement.emplace_back(statements);
+            executeHelper->operationStatements.emplace_back(statements);
             statements.clear();
             rawContactIndex = static_cast<size_t>(0);
         }
     }
-    if (!statement.empty()) {
+    if (!statements.empty()) {
         executeHelper->operationStatements.emplace_back(statements);
     }
-    HILOG_WARN("[BuildOperationStatements] end operationStatements size: %{public}zu", 
+    HILOG_WARN("[BuildOperationStatements] end, operationStatements size: %{public}zu", 
         executeHelper->operationStatements.size());
 }
 
@@ -1039,14 +1039,15 @@ std::string ContactsBuild::GetContactIdStr(napi_env env, napi_value id)
 {
     double value = 0;
     if (id == nullptr) {
-        HILOG_ERROR("GetContactIdStr id is null")
+        HILOG_ERROR("GetContactIdStr id is null");
         return std::to_string(value);
     }
     napi_get_value_double(env, id, &value);
     std::string contactIdStr = (std::floor(value) == value)? std::to_string(static_cast<int> (value))
-                                  : std::to_string(value);
+                                 : std::to_string(value);
     return contactIdStr;
 }
+
 Holder ContactsBuild::GetHolder(napi_env env, napi_value object)
 {
     Holder holder;

@@ -400,7 +400,7 @@ export default {
   saveToExistingContactViaUI: contactsPickerSaveToExist,
   addContactViaUI: contactsPickerSave,
   addContact: contact.addContact,
-  addContact: contact.addContacts,
+  addContacts: contact.addContacts,
   deleteContact: contact.deleteContact,
   queryContactsCount: contact.queryContactsCount,
   queryContact: contact.queryContact,

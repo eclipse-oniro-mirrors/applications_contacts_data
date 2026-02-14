@@ -41,7 +41,7 @@ public:
     int ContactDataInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
         std::vector<DataShare::DataShareValuesBucket> contactsDataValues);
     int ContactBatchInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
-        const std::vector<DataShare::OperationStatement> &statements, ExecuteHelper *executeHelper);
+        const std::vector<DataShare::OperationStatement> &statements, DataShare::ExecResultSet &result);
     int RawContactUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
         DataShare::DataShareValuesBucket updateValues, DataShare::DataSharePredicates predicates);
     int ContactDataUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,

@@ -62,9 +62,10 @@ const std::vector<int> needGroupVec = {
     QUERY_CONTACT,
     QUERY_CONTACTS,
     QUERY_CONTACTS_BY_EMAIL,
-    QUERY_CONTACT_BY_PHONE_NUMBER,
+    QUERY_CONTACTS_BY_PHONE_NUMBER,
     QUERY_MY_CARD
 };
+
 /**
  * @brief Initialize NAPI object
  *
@@ -597,7 +598,7 @@ DataShare::DataSharePredicates BuildQueryGroupsPredicates(napi_env env, napi_val
 DataShare::DataSharePredicates BuildQueryKeyPredicates(napi_env env, napi_value id, napi_value hold)
 {
     ContactsBuild contactsBuild;
-    std::string value = contactsBuild.GetIntContactIdStr(env, id);
+    std::string value = contactsBuild.GetContactIdStr(env, id);
     Holder holder = contactsBuild.GetHolder(env, hold);
     DataShare::DataSharePredicates predicates;
     if (value != "0") {
@@ -716,9 +717,8 @@ DataShare::DataSharePredicates BuildDeleteContactDataPredicates(napi_env env, na
 DataShare::DataSharePredicates BuildIsLocalContactPredicates(napi_env env, napi_value id)
 {
     ContactsBuild contactsBuild;
-    int value = contactsBuild.GetInt(env, id);
     DataShare::DataSharePredicates predicates;
-    std::string value = contactBuild.GetContactIdStr(env, id);
+    std::string value = contactsBuild.GetContactIdStr(env, id);
     if (value != "0") {
         predicates.EqualTo("is_deleted", "0");
         predicates.And();
@@ -958,14 +958,14 @@ void HandleAddContactsResult(napi_env env, ExecuteHelper *executeHelper, napi_va
 
 void HandleAddContactsErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
 {
-    HILOG_ERROR("HandleAddContactsErrorCode resultData: %{public}d", executeHelper->resultData);
+    HILOG_ERROR("handleExecuteErrorCode resultData: %{public}d", executeHelper->resultData);
     if (executeHelper->resultData == RDB_PARAMETER_ERROR || executeHelper->resultData == ERROR) {
         HILOG_ERROR("internal error: %{public}d", executeHelper->resultData);
         result = ContactsNapiUtils::CreateError(env, CONTACT_GENERAL_ERROR);
     } else if (executeHelper->resultData == VERIFICATION_PARAMETER_ERROR) {
         HILOG_ERROR("parameter invalid");
         result = ContactsNapiUtils::CreateErrorByVerification(env, INVALID_PARAMETER);
-    } else if (executeHelper->resultData == RDB_PARAMETER_ERROR) {
+    } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
         HILOG_ERROR("permission error");
         result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
     }
@@ -1051,20 +1051,20 @@ void LocalExecuteAddContacts(napi_env env, ExecuteHelper *executeHelper)
     ContactsControl contactsControl;
     // 插入 operationStatement
     size_t operationSize = 0;
-    std::vector<DataShare::ExecResult> result;
-    for (auto &statements ： executeHelper->operationStatements) {
+    std::vector<DataShare::ExecResult> results;
+    for (auto &statements : executeHelper->operationStatements) {
         DataShare::ExecResultSet batchInsertResult;
-        contactsControl.ContactBatchInsert(executeHelper->dataShareHelperm statement, batchInsertResult);
+        contactsControl.ContactBatchInsert(executeHelper->dataShareHelper, statements, batchInsertResult);
         HandleContactBatchInsertResult(batchInsertResult, statements, executeHelper);
         operationSize += statements.size();
         statements.clear();
-        results.insert(results.end, batchInsertResult.result.begin(), batchInsertResult.result.end());
+        results.insert(results.end(), batchInsertResult.results.begin(), batchInsertResult.results.end());
     }
     executeHelper->operationStatements.clear();
     if (operationSize == static_cast<size_t>(executeHelper->resultData)) {
         executeHelper->resultData = DataShare::ExecErrorCode::EXEC_FAILED;
     } else if (executeHelper->resultData > 0) {
-        ->resultData = DataShare::ExecErrorCode::EXEC_PARTIAL_SUCCESS;
+        executeHelper->resultData = DataShare::ExecErrorCode::EXEC_PARTIAL_SUCCESS;
     }
     BatchInsertPortrait(results, executeHelper);
 }
@@ -1075,7 +1075,7 @@ void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, Exec
     ContactsBuild contactsBuild;
     for (const auto &[index, portrait] : executeHelper->portraits) {
         if (results[index].code != DataShare::ExecErrorCode::EXEC_SUCCESS) {
-            HILOG_ERROR("BatchInsertPortrait insert Contact[%{public}zu] failed, skip insert portrait", index);
+            HILOG_ERROR("BatchInsertPortrait Insert Contact[%{public}zu] failed, skip insert portrait", index);
             continue;
         }
         auto rawId = std::stoi(results[index].message);
@@ -1084,7 +1084,7 @@ void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, Exec
         contactsBuild.BuildExecuteHelperPortrait(contact, executeHelper);
         int insertPortraitResult = InsertContactPortrait(executeHelper, contactsControl, rawId, true);
         if (insertPortraitResult != ERR_OK) {
-            HILOG_ERROR("BatchInsertPortrait InsertContactPortrait failed %{public}d", insertPortraitResult);
+            HILOG_ERROR("BatchInsertPortrait InsertContactPortrait failed: %{public}d", insertPortraitResult);
             auto &opResult = executeHelper->operationResultData;
             auto iter = std::find(opResult.begin(), opResult.end(), rawId);
             if (iter != opResult.end()) {
@@ -1095,9 +1095,9 @@ void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, Exec
     if (!executeHelper->valueContactData.empty()) {
         int code = contactsControl.ContactDataInsert(executeHelper->dataShareHelper, executeHelper->valueContactData);
         if (code == 0) {
-            HILOG_WARN("BatchInsertPortrait ContactDataInsert result %{public}d", code);
+            HILOG_WARN("BatchInsertPortrait ContactDataInsert, result: %{public}d", code);
         } else {
-            HILOG_ERROR("BatchInsertPortrait ContactDataInsert failed result %{public}d", code);
+            HILOG_ERROR("BatchInsertPortrait ContactDataInsert failed, result: %{public}d", code);
         }
         executeHelper->valueContactData.clear();
     }
@@ -1110,11 +1110,11 @@ void HandleContactBatchInsertResult(const DataShare::ExecResultSet &execResultSe
         if (statements[i].HasBackReference()) {
             continue;
         }
-    }
-    auto &execResult = execResultSet.results[i];
-    executeHelper->operationResultData.emplace_back(std::atoi(execResult.message.c_str()));
-    if (execResult.code != DataShare::ExecErrorCode::EXEC_SUCCESS) {
-        executeHelper->resultData++;
+        auto &execResult = execResultSet.results[i];
+        executeHelper->operationResultData.emplace_back(std::atoi(execResult.message.c_str()));
+        if (execResult.code != DataShare::ExecErrorCode::EXEC_SUCCESS) {
+            executeHelper->resultData++;
+        }
     }
 }
 
@@ -1159,9 +1159,9 @@ int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contact
     valuesBucketPortrait.Put("PortraitFileName", fileName);
     valuesBucketPortrait.Put("contactId", contactId);
     valuesBucketPortrait.Put("rawContactId", std::to_string(rawContactId));
-    valuesBucketPortrait.put("srcHeight", srcHeight);
-    valuesBucketPortrait.put("srcWidth", srcWidth);
-    valuesBucketPortrait.put("addPortraitType", 
+    valuesBucketPortrait.Put("srcHeight", srcHeight);
+    valuesBucketPortrait.Put("srcWidth", srcWidth);
+    valuesBucketPortrait.Put("addPortraitType", 
         OHOS::Contacts::KitPixelMapUtil::GetAddPortraitType(isAddType, executeHelper->portrait.isUriPortrait));
     executeHelper->valueContactData.push_back(valuesBucketPortrait);
     return result;
@@ -1413,7 +1413,7 @@ void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper)
         HILOG_ERROR("PARAMETER_ERROR, please check your PARAMETER");
         return;
     }
-    if (std::find(needGroupVer.begin(), needGroupVer.end(), executeHelper->actionCode != needGroupVer.end())) {
+    if (std::find(needGroupVec.begin(), needGroupVec.end(), executeHelper->actionCode) != needGroupVec.end()) {
         LocalExecuteQueryAppGroupDir(env, executeHelper);
     }
     switch (executeHelper->actionCode) {
@@ -1687,13 +1687,13 @@ napi_value AddContact(napi_env env, napi_callback_info info)
 
 /**
  * @brief Test interface ADD_CONTACT
- * 
+ *
  * @param env Conditions for resolve object interface operation
  * @param info Conditions for resolve object interface operation
- * 
+ *
  * @return the result returned by test
  */
-napi_value AddContacts(napi_env env, napi_callback_info info) 
+napi_value AddContacts(napi_env env, napi_callback_info info)
 {
     size_t argc = MAX_PARAMS;
     napi_value argv[MAX_PARAMS] = {0};
@@ -1701,9 +1701,9 @@ napi_value AddContacts(napi_env env, napi_callback_info info)
     void *data;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
     bool isStageMode = false;
-    OHOS:AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
     if (isStageMode) {
-        napi_value errorCode = ContacrsNapiUtils::CreateError(env, INVALID_PARAMETER);
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, INVALID_PARAMETER);
         switch (argc) {
             HILOG_WARN("AddContacts argc: %{public}zu", argc);
             case ARGS_TWO:
@@ -3127,7 +3127,7 @@ void Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor exportFuncs[] = {
         DECLARE_NAPI_FUNCTION("addContact", OHOS::ContactsApi::AddContact),
-        DECLARE_NAPI_FUNCTION("addContacts", OHOS::ContactsApi::AddContact),
+        DECLARE_NAPI_FUNCTION("addContacts", OHOS::ContactsApi::AddContacts),
         DECLARE_NAPI_FUNCTION("deleteContact", OHOS::ContactsApi::DeleteContact),
         DECLARE_NAPI_FUNCTION("updateContact", OHOS::ContactsApi::UpdateContact),
         DECLARE_NAPI_FUNCTION("queryContactsCount", OHOS::ContactsApi::QueryContactsCount),

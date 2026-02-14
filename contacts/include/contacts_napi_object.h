@@ -101,7 +101,7 @@ enum class DataField {
 enum class FilterType {
     /**
      * Only the contacts that meet the filter criteria are displayed.
-     * 
+     *
      * @syscap SystemCapability.Applications.Contacts
      * @since 15
      */
@@ -671,7 +671,7 @@ public:
      * Indicates the uri of the contact portrait.
      */
     std::string uri;
-    std::shared_ptr<Media::PixeMap> photo;
+    std::shared_ptr<Media::PixelMap> photo;
     bool isNeedHandlePhoto = false;
     bool isUriPortrait = true;
 };

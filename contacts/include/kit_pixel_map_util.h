@@ -30,7 +30,7 @@ int SavePixelMapToFile(const std::shared_ptr<Media::PixelMap>& pixelMap, int fd)
 std::unique_ptr<Media::PixelMap> GetPixelMapFromUri(const std::string &uri);
 void CropPixelMap(const std::shared_ptr<Media::PixelMap>& pixelMap);
 void GetPixelMapSize(const std::shared_ptr<Media::PixelMap>& pixelMap, int32_t &height, int32_t &width);
-int 32_t GetAddPortraitType(bool isAddType, bool isUriPottrait);
+int32_t GetAddPortraitType(bool isAddType, bool isUriPortrait);
 }
 } // namespace Contacts
 } // namespace OHOS

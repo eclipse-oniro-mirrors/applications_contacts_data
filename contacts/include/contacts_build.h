@@ -42,9 +42,9 @@ public:
     ~ContactsBuild();
     void GetContactDataByObject(napi_env env, napi_value object, Contacts &contacts);
     int GetInt(napi_env env, napi_value id);
-    std::string getContactIdStr(napi_env env, napi_value id);
+    std::string GetContactIdStr(napi_env env, napi_value id);
     void GetContactData(napi_env env, ExecuteHelper *executeHelper);
-    void GetContactsByObject(napi_env env, ExecuteHelper *executeHelper, std::vector<Contacts> &contact);
+    void GetContactsByObject(napi_env env, ExecuteHelper *executeHelper, std::vector<Contacts> &contacts);
     void BuildOperationStatements(napi_env env, ExecuteHelper *executeHelper);
     std::string NapiGetValueString(napi_env env, napi_value value);
     ContactAttributes GetContactAttributes(napi_env env, napi_value object);
@@ -97,7 +97,7 @@ private:
     void GetValuesBucketNote(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketOrganization(Contacts &contacts,
         std::vector<DataShare::DataShareValuesBucket> &valueContactData);
-    Media::ImageType parseImageType(napi_env env, napi_value value);
+    Media::ImageType ParseImageType(napi_env env, napi_value value);
 };
 } // namespace ContactsApi
 } // namespace OHOS

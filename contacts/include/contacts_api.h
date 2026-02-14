@@ -67,13 +67,13 @@ void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteAddContacts(napi_env env, ExecuteHelper *executeHelper);
 void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, ExecuteHelper *executeHelper);
-void HandleContactBatchInsertPortrait(const DataShare::ExecResultSet &execResultSet, 
+void HandleContactBatchInsertResult(const DataShare::ExecResultSet &execResultSet, 
     const std::vector<DataShare::OperationStatement> &statements, ExecuteHelper *executeHelper);
 void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContactCount(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContactsOrKey(napi_env env, ExecuteHelper *executeHelper);
-void LocalExecuteQueryContactCount(napi_env env, ExecuteHelper *executeHelper);
+void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryGroup(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryHolders(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryMyCard(napi_env env, ExecuteHelper *executeHelper);
@@ -100,7 +100,6 @@ std::vector<std::string> BuildUpdateContactColumns();
 DataShare::DataSharePredicates BuildUpdateContactConvertParams(
     napi_env env, napi_value &contacts, napi_value &attr, ExecuteHelper &executeHelper);
 DataShare::DataSharePredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr);
-DataShare::DataSharePredicates BuildQueryContactsPredicates();
 DataShare::DataSharePredicates BuildQueryContactCountPredicates();
 DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(
     napi_env env, std::string email, napi_value hold, napi_value attr);
@@ -120,9 +119,10 @@ void ObjectInit(napi_env env, napi_value object, napi_value &hold, napi_value &a
 void ObjectInitId(napi_env env, napi_value object, napi_value &id);
 void ObjectInitString(napi_env env, napi_value object, napi_value &key);
 int GetType(napi_env env, napi_value value);
-int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contactsControl, int rawContactId);
+int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contactsControl, 
+    int rawContactId, bool isAddType);
 std::string QueryContactIdByRawContactId(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
-  ContactsControl &contactsControl, int rawContactId);
+    ContactsControl &contactsControl, int rawContactId);
 int HandleConverPortraitFailed(ExecuteHelper *executeHelper, ContactsControl &contactsControl, int rawContactId,
     const std::string &contactId, int errorCode);
 } // namespace ContactsApi
