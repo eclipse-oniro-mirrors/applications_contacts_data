@@ -34,6 +34,7 @@ ohos_shared_library("contact_cj") {
   external_deps = [
     "ability_base:want",
     "ability_base:zuri",
+    "ability_runtime:ability_connect_callback_stub",
     "ability_runtime:ability_manager",
     "ability_runtime:abilitykit_native",
     "ability_runtime:app_context",
@@ -59,7 +60,6 @@ ohos_shared_library("contact_cj") {
     "LOG_DOMAIN = 0xD001F09",
   ]
 
-  public_deps = []
   innerapi_tags = [ "platformsdk" ]
   part_name = "contacts_data"
   subsystem_name = "applications"

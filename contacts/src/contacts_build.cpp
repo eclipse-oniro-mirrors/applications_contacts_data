@@ -153,7 +153,7 @@ void ContactsBuild::BuildOperationStatements(napi_env env, ExecuteHelper *execut
             if (valueContact.IsEmpty() && valueContactDatas.empty()) { continue; }
             DataShare::BackReference backReference;
             DataShare::OperationStatement contactStatement{
-               DataShare::Operation::INSERT, rawContactUri, predicate, valueContact, backReference}; 
+               DataShare::Operation::INSERT, rawContactUri, predicate, valueContact, backReference};
             statements.emplace_back(contactStatement);
         }
         for (const auto &valueContactData : valueContactDatas) {
@@ -176,7 +176,7 @@ void ContactsBuild::BuildOperationStatements(napi_env env, ExecuteHelper *execut
     if (!statements.empty()) {
         executeHelper->operationStatements.emplace_back(statements);
     }
-    HILOG_WARN("[BuildOperationStatements] end, operationStatements size: %{public}zu", 
+    HILOG_WARN("[BuildOperationStatements] end, operationStatements size: %{public}zu",
         executeHelper->operationStatements.size());
 }
 
