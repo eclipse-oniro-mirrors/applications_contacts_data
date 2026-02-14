@@ -102,8 +102,6 @@ ohos_shared_library("contact") {
   }
 
   external_deps = [
-    "ability_runtime:napi_common",
-    "ability_runtime:wantagent_innerkits",
     "ability_base:want",
     "ability_base:zuri",
     "ability_runtime:ability_context_native",
@@ -111,6 +109,7 @@ ohos_shared_library("contact") {
     "ability_runtime:app_context",
     "ability_runtime:extensionkit_native",
     "ability_runtime:napi_base_context",
+    "ability_runtime:napi_common",
     "ability_runtime:ui_extension",
     "app_file_service:fileuri_native",
     "protobuf:protobuf_lite",
@@ -131,7 +130,7 @@ ohos_shared_library("contact") {
     "libphonenumber:geocoding",
     "protobuf:protobuf_lite",
     "protobuf:protobuf",
-   # "protobuf:protoc_lib",
+    "protobuf:protoc_lib",
     "samgr:samgr_proxy",
   ]
 
@@ -140,7 +139,6 @@ ohos_shared_library("contact") {
     "LOG_DOMAIN = 0xD001F09",
   ]
 
-  public_deps = []
   relative_install_dir = "module"
   part_name = "contacts_data"
   subsystem_name = "applications"

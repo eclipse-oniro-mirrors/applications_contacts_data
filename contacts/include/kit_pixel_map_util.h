@@ -20,9 +20,17 @@
 namespace OHOS {
 namespace Contacts {
 namespace KitPixelMapUtil {
+enum class AddPortraitType {
+    ADD_URI_PORTRAIT = 1,
+    ADD_PIXELMAP_PORTRAIT,
+    UPDATE_URI_PORTRAIT,
+    UPDATE_PIXELMAP_PORTRAIT,
+};
 int SavePixelMapToFile(const std::shared_ptr<Media::PixelMap>& pixelMap, int fd);
 std::unique_ptr<Media::PixelMap> GetPixelMapFromUri(const std::string &uri);
 void CropPixelMap(const std::shared_ptr<Media::PixelMap>& pixelMap);
+void GetPixelMapSize(const std::shared_ptr<Media::PixelMap>& pixelMap, int32_t &height, int32_t &width);
+int 32_t GetAddPortraitType(bool isAddType, bool isUriPottrait);
 }
 } // namespace Contacts
 } // namespace OHOS
