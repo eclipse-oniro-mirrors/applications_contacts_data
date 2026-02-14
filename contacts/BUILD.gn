@@ -27,7 +27,7 @@ jspath = "src/contact.js"
 # compile .js to .abc.
 action("gen_contact_abc") {
   visibility = [ ":*" ]
-  script = "../../../../arkcompiler/ets_frontend/es2panda/scripts/generate_js_bytecode.py"
+  script = "//build/scripts/generate_js_bytecode.py"
 
   args = [
     "--src-js",
