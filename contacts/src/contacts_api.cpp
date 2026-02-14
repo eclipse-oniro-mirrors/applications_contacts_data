@@ -1086,7 +1086,7 @@ void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, Exec
         if (insertPortraitResult != ERR_OK) {
             HILOG_ERROR("BatchInsertPortrait InsertContactPortrait failed: %{public}d", insertPortraitResult);
             auto &opResult = executeHelper->operationResultData;
-            auto iter = std::find(opResult.begin(), opResult.end(), rawId); 
+            auto iter = std::find(opResult.begin(), opResult.end(), rawId);
             if (iter != opResult.end()) {
                 *iter = INVALID_CONTACT_ID;
             }
@@ -1161,7 +1161,7 @@ int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contact
     valuesBucketPortrait.Put("rawContactId", std::to_string(rawContactId));
     valuesBucketPortrait.Put("srcHeight", srcHeight);
     valuesBucketPortrait.Put("srcWidth", srcWidth);
-    valuesBucketPortrait.Put("addPortraitType", 
+    valuesBucketPortrait.Put("addPortraitType",
         OHOS::Contacts::KitPixelMapUtil::GetAddPortraitType(isAddType, executeHelper->portrait.isUriPortrait));
     executeHelper->valueContactData.push_back(valuesBucketPortrait);
     return result;
