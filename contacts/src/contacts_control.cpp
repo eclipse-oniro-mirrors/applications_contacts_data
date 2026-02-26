@@ -48,6 +48,17 @@ int ContactsControl::ContactDataInsert(std::shared_ptr<DataShare::DataShareHelpe
     contactDataValues.clear();
     return code;
 }
+
+int ContactsControl::ContactBatchInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+    const std::vector<DataShare::OperationStatement> &statements, DataShare::ExecResultSet &result)
+{
+    int code = 0;
+    std::string uri("datashare:///com.ohos.contactsdataability/contacts/applyBatch");
+    code = dataShareHelper->ExecuteBatch(statements, result);
+    HILOG_WARN("ContactsControl::ContactBatchInsert insert code %{public}d", code);
+    return code;
+}
+
 int ContactsControl::ContactDataDelete(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
     DataShare::DataSharePredicates predicates)
 {

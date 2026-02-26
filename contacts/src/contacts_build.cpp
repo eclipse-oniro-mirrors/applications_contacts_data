@@ -20,6 +20,8 @@
 #include "image_packer.h"
 #include "kit_pixel_map_util.h"
 
+constexpr size_t EXECUTE_BATCH_COUNT = 400;
+
 namespace OHOS {
 namespace ContactsApi {
 ContactsBuild::ContactsBuild(void)
@@ -112,6 +114,72 @@ void ContactsBuild::GetContactData(napi_env env, ExecuteHelper *executeHelper)
     BuildExecuteHelperPortrait(contact, executeHelper);
 }
 
+void ContactsBuild::GetContactsByObject(napi_env env, ExecuteHelper *executeHelper, std::vector<Contacts> &contacts)
+{
+    bool isArray = false;
+    napi_is_array(env, executeHelper->argv[0], &isArray);
+    if (!isArray) {
+        HILOG_ERROR("[GetContactsByObject] is not array");
+        return;
+    }
+    uint32_t size = 0;
+    napi_get_array_length(env, executeHelper->argv[0], &size);
+    for (uint32_t i = 0; i < size; i++) {
+        napi_value contactObject;
+        napi_get_element(env, executeHelper->argv[0], i, &contactObject);
+        Contacts contact;
+        GetContactDataByObject(env, contactObject, contact);
+        contacts.emplace_back(contact);
+    }
+}
+
+void ContactsBuild::BuildOperationStatements(napi_env env, ExecuteHelper *executeHelper)
+{
+    std::vector<Contacts> contacts;
+    GetContactsByObject(env, executeHelper, contacts);
+    DataShare::DataSharePredicates predicate;
+    std::string contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
+    std::string rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+    size_t rawContactIndex = 0;
+    size_t statementIndex = 0;
+    std::vector<DataShare::OperationStatement> statements;
+    HILOG_WARN("[BuildOperationStatements] contacts size: %{public}zu", contacts.size());
+    for (auto &contact : contacts) {
+        std::vector<DataShare::DataShareValuesBucket> valueContacts;
+        BuildValueContact(contact, valueContacts);
+        std::vector<DataShare::DataShareValuesBucket> valueContactDatas;
+        BuildValueContactData(contact, valueContactDatas);
+        for (const auto &valueContact : valueContacts) {
+            if (valueContact.IsEmpty() && valueContactDatas.empty()) { continue; }
+            DataShare::BackReference backReference;
+            DataShare::OperationStatement contactStatement{
+                DataShare::Operation::INSERT, rawContactUri, predicate, valueContact, backReference};
+            statements.emplace_back(contactStatement);
+        }
+        for (const auto &valueContactData : valueContactDatas) {
+            DataShare::BackReference backReference("raw_contact_id", rawContactIndex);
+            DataShare::OperationStatement contactDataStatement{
+                DataShare::Operation::INSERT, contactDataUri, predicate, valueContactData, backReference};
+            statements.emplace_back(contactDataStatement);
+        }
+        if (contact.portrait.isNeedHandlePhoto) {
+            executeHelper->portraits.emplace(statementIndex, contact.portrait);
+        }
+        rawContactIndex += (valueContacts.size() + valueContactDatas.size());
+        statementIndex += (valueContacts.size() + valueContactDatas.size());
+        if (rawContactIndex >= EXECUTE_BATCH_COUNT) {
+            executeHelper->operationStatements.emplace_back(statements);
+            statements.clear();
+            rawContactIndex = static_cast<size_t>(0);
+        }
+    }
+    if (!statements.empty()) {
+        executeHelper->operationStatements.emplace_back(statements);
+    }
+    HILOG_WARN("[BuildOperationStatements] end, operationStatements size: %{public}zu",
+        executeHelper->operationStatements.size());
+}
+
 void ContactsBuild::BuildExecuteHelperPortrait(const Contacts &contact, ExecuteHelper *executeHelper)
 {
     if (!contact.portrait.isNeedHandlePhoto) {
@@ -120,8 +188,10 @@ void ContactsBuild::BuildExecuteHelperPortrait(const Contacts &contact, ExecuteH
     if (contact.portrait.uri.empty()) {
         executeHelper->portrait.photo = contact.portrait.photo;
         executeHelper->portrait.isNeedHandlePhoto = contact.portrait.isNeedHandlePhoto;
+        executeHelper->portrait.isUriPortrait = false;
         return;
     }
+    executeHelper->portrait.isUriPortrait = true;
     // 适配旧uri类型，photo/contactId_rawContactId
     if (contact.portrait.uri.find("photo/") == 0 && contact.portrait.uri.find('_') != std::string::npos) {
         DataShare::DataShareValuesBucket valuesBucketPortrait;
@@ -963,6 +1033,19 @@ int ContactsBuild::GetInt(napi_env env, napi_value id)
     }
     napi_get_value_int64(env, id, &value);
     return value;
+}
+
+std::string ContactsBuild::GetContactIdStr(napi_env env, napi_value id)
+{
+    double value = 0;
+    if (id == nullptr) {
+        HILOG_ERROR("GetContactIdStr id is null");
+        return std::to_string(value);
+    }
+    napi_get_value_double(env, id, &value);
+    std::string contactIdStr = (std::floor(value) == value)? std::to_string(static_cast<int>(value))
+                                 : std::to_string(value);
+    return contactIdStr;
 }
 
 Holder ContactsBuild::GetHolder(napi_env env, napi_value object)

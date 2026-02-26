@@ -39,6 +39,8 @@ constexpr int RDB_PARAMETER_ERROR = -3;
 constexpr int VERIFICATION_PARAMETER_ERROR = -4;
 constexpr int PERMISSION_ERROR = 201;
 constexpr int PARAMETER_ERROR = 401;
+constexpr int CONTACT_GENERAL_ERROR = 16700001;
+constexpr int INVALID_PARAMETER = 16700002;
 
 constexpr int NAPI_GET_STRING_SIZE = 256;
 constexpr int REQUEST_PARAMS_COUNT_ONE = 1;
@@ -57,6 +59,7 @@ constexpr int TYPE_CONTACT = 4;
 
 // Execute action code
 constexpr int ADD_CONTACT = 1001;
+constexpr int ADD_CONTACTS = 1002;
 constexpr int DELETE_CONTACT = 2001;
 constexpr int UPDATE_CONTACT = 3001;
 
@@ -100,7 +103,7 @@ constexpr int ARGS_TWO = 2;
 constexpr int ARGS_THREE = 3;
 constexpr int ARGS_FOUR = 4;
 constexpr int ARGS_FIVE = 5;
-const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
+inline const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
 
 struct ExecuteHelper {
     ExecuteHelper()
@@ -129,6 +132,9 @@ struct ExecuteHelper {
     std::vector<DataShare::DataShareValuesBucket> valueContact;
     // insertContactData
     std::vector<DataShare::DataShareValuesBucket> valueContactData;
+    // batchInsert
+    std::vector<std::vector<DataShare::OperationStatement>> operationStatements;
+    std::vector<int> operationResultData;
     // dataShareHelper
     std::shared_ptr<DataShare::DataShareHelper> dataShareHelper;
 
@@ -137,6 +143,7 @@ struct ExecuteHelper {
     std::shared_ptr<DataShare::DataShareResultSet> resultSet;
     std::string grantUri;
     Portrait portrait;
+    std::map<size_t, Portrait> portraits;
     bool isNeedHandlePhoto = false;
 };
 } // namespace ContactsApi

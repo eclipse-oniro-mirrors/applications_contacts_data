@@ -45,7 +45,7 @@ ohos_fuzztest("VoicemailFuzzTest") {
     "ability_runtime:abilitykit_utils",
     "ability_runtime:data_ability_helper",
     "access_token:libaccesstoken_sdk",
-    "access_token:libnativetoken",
+    "access_token:libnativetoken_shared",
     "access_token:libprivacy_sdk",
     "access_token:libtoken_setproc",
     "c_utils:utils",

@@ -673,6 +673,7 @@ public:
     std::string uri;
     std::shared_ptr<Media::PixelMap> photo;
     bool isNeedHandlePhoto = false;
+    bool isUriPortrait = true;
 };
 
 /**

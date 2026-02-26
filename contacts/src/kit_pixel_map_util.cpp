@@ -24,9 +24,10 @@ namespace Contacts {
 namespace KitPixelMapUtil {
 constexpr uint8_t IMAGE_QUALITY = 90;
 constexpr uint32_t IMAGE_NUMBER_HINT = 1;
-constexpr uint32_t IMAGE_MAX_HEIGHT = 1080;
-constexpr uint32_t IMAGE_MAX_WIDTH = 1920;
+constexpr int32_t IMAGE_MAX_HEIGHT = 1080;
+constexpr int32_t IMAGE_MAX_WIDTH = 1920;
 const std::string IMAGE_FORMAT = "image/jpeg";
+
 
 /**
  * @brief save PixelMap to fileDescriptor
@@ -109,6 +110,28 @@ void CropPixelMap(const std::shared_ptr<Media::PixelMap>& pixelMap)
     HILOG_INFO("KitPixelMapUtil CropPixelMap height %{public}d width %{public}d scale %{public}f",
         height, width, scale);
     pixelMap->scale(scale, scale);
+}
+
+void GetPixelMapSize(const std::shared_ptr<Media::PixelMap>& pixelMap, int32_t &height, int32_t &width)
+{
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("GetPixelMapSize failed, pixelMap is null");
+        return;
+    }
+    Media::ImageInfo info;
+    pixelMap->GetImageInfo(info);
+    height = info.size.height;
+    width = info.size.width;
+}
+
+int32_t GetAddPortraitType(bool isAddType, bool isUriPortrait)
+{
+    if (isAddType) {
+        return isUriPortrait ? static_cast<int32_t>(AddPortraitType::ADD_URI_PORTRAIT) :
+            static_cast<int32_t>(AddPortraitType::ADD_PIXELMAP_PORTRAIT);
+    }
+    return isUriPortrait ? static_cast<int32_t>(AddPortraitType::UPDATE_URI_PORTRAIT) :
+        static_cast<int32_t>(AddPortraitType::UPDATE_URI_PORTRAIT);
 }
 
 }

@@ -36,6 +36,7 @@ napi_value DeclareSipAddressConst(napi_env env, napi_value exports);
 napi_value DeclareAttributeConst(napi_env env, napi_value exports);
 napi_value ContactsPickerSelect(napi_env env, napi_callback_info info);
 napi_value AddContact(napi_env env, napi_callback_info info);
+napi_value AddContacts(napi_env env, napi_callback_info info);
 napi_value DeleteContact(napi_env env, napi_callback_info info);
 napi_value UpdateContact(napi_env env, napi_callback_info info);
 napi_value QueryContactsCount(napi_env env, napi_callback_info info);
@@ -55,12 +56,19 @@ void ExecuteDone(napi_env env, napi_status status, void *data);
 void ExecuteSyncDone(napi_env env, napi_status status, void *data);
 void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &errorCode);
 void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
+void HandleAddContactsResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
+void HandleAddContactsErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
+void HandleSelectContactResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
 void HandleQueryContactCountResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
 int GetRawIdByResultSet(const std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
 napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper);
+void LocalExecuteAddContacts(napi_env env, ExecuteHelper *executeHelper);
+void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, ExecuteHelper *executeHelper);
+void HandleContactBatchInsertResult(const DataShare::ExecResultSet &execResultSet,
+    const std::vector<DataShare::OperationStatement> &statements, ExecuteHelper *executeHelper);
 void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContactCount(napi_env env, ExecuteHelper *executeHelper);
@@ -111,9 +119,10 @@ void ObjectInit(napi_env env, napi_value object, napi_value &hold, napi_value &a
 void ObjectInitId(napi_env env, napi_value object, napi_value &id);
 void ObjectInitString(napi_env env, napi_value object, napi_value &key);
 int GetType(napi_env env, napi_value value);
-int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contactsControl, int rawContactId);
+int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contactsControl,
+    int rawContactId, bool isAddType);
 std::string QueryContactIdByRawContactId(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
-  ContactsControl &contactsControl, int rawContactId);
+    ContactsControl &contactsControl, int rawContactId);
 int HandleConverPortraitFailed(ExecuteHelper *executeHelper, ContactsControl &contactsControl, int rawContactId,
     const std::string &contactId, int errorCode);
 } // namespace ContactsApi
