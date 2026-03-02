@@ -1447,7 +1447,7 @@ int ContactsDataAbility::ProcessExecuteBatchInsert(ExecuteBatchStatement &execut
     auto &execResult = executeBatchStatement.execResult;
     OHOS::Uri uriTemp(statement.uri);
     int code = UriParseAndSwitch(uriTemp);
-    OHOS::NativeRdb::ValuesBucket valuesBucket = 
+    OHOS::NativeRdb::ValuesBucket valuesBucket =
         RdbDataShareAdapter::RdbUtils::ToValuesBucket(statement.valuesBucket);
     auto processBackReferenceResult = ProcessBackReference(statement, operationResultMap, valuesBucket);
     if (processBackReferenceResult == Contacts::ProcessBackReferenceResult::FAILED) {
@@ -1490,7 +1490,7 @@ int ContactsDataAbility::ProcessExecuteBatchInsert(ExecuteBatchStatement &execut
 
 Contacts::ProcessBackReferenceResult ContactsDataAbility::ProcessBackReference(
     const DataShare::OperationStatement &statement,
-    const std::map<int32_t, int32_t> &operationResultMap, 
+    const std::map<int32_t, int32_t> &operationResultMap,
     OHOS::NativeRdb::ValuesBucket &valuesBucket)
 {
     if (statement.HasBackReference()) {
