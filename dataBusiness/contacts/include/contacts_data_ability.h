@@ -31,7 +31,19 @@
 #include "contact_connect_ability.h"
 
 namespace OHOS {
+namespace Contacts {
+enum class ProcessBackReferenceResult: uint32_t {
+    SUCCESS = 0;
+    FAILED = 1;
+    NOT_FOUND = 2;
+}
+} // namespace Contacts
 namespace AbilityRuntime {
+struct ExecuteBatchStatement {
+    int32_t index;
+    DataShare::OperationStatement statement;
+    DataShare::ExecResult execResult;
+};
 class ContactsDataAbility : public DataShare::DataShareExtAbility {
 public:
     ContactsDataAbility();
@@ -49,6 +61,14 @@ public:
     virtual std::shared_ptr<DataShare::DataShareResultSet> Query(const Uri &uri,
         const DataShare::DataSharePredicates &predicates, std::vector<std::string> &columns,
         DataShare::DatashareBusinessError &businessError) override;
+    int ExecuteBatch(
+        const std::vector<DataShare::OperationStatement> &statements, DataShare::ExecResultSet &result) override;
+    int ProcessExecuteBatchInsert(ExecuteBatchStatement &executeBatchStatement,
+        std::map<int32_t, int32_t> &operationResultMap, std::set<std::string> &addFailedRawContacts,
+        DataShare::ExecResultSet &result);
+    Contacts::ProcessBackReferenceResult ProcessBackReference(const DataShare::OperationStatement &statement,
+        const std::map<int32_t, int32_t> &operationResultMap, OHOS::NativeRdb::ValuesBucket &valuesBucket);
+    int HandleExecuteBatchFailed(DataShare::ExecResultSet &result, const std::set<std::string> &adddFailedRawContacts)
     // 转换Bucket，根据DataShareValuesBucket，生成一个RdbBucket
     static void transferDataShareToRdbBucket(const std::vector<DataShare::DataShareValuesBucket> &values,
         std::vector<OHOS::NativeRdb::ValuesBucket> &valuesRdb);

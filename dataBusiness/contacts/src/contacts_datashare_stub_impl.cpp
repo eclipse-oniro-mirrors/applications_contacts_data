@@ -286,6 +286,55 @@ int ContactsDataShareStubImpl::BatchInsert(const Uri &uri, const std::vector<Dat
     return ret;
 }
 
+int ContactsDataShareStubImpl::ExecuteBatch(const std::vector<OperationStatement> &statement, ExecResultSet &result)
+{
+    if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
+        HILOG_ERROR("Permission denied!");
+        return Contacts::RDB_PERMISSION_ERROR;
+    }
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    std::string callingBundleName;
+    if (!GetBundleNameByUid(uid, callingBundleName)) {
+        HILOG_ERROR("ContactsDataShareStubImpl ExecuteBatch getbundleName faild");
+    }
+    unsigned int size = statements.size();
+    std::chrono::milliseconds beginTime = std::crono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now().time_since_epoch());
+    HILOG_WARN("ExecuteBatch begin. beginTime = %{public}lld,callingBundleName = %{public}s,"
+        "values.size is %{public}d", beginTime.count(), callingBundleName.c_str(), size);
+    int ret = 0;
+    auto extension = GetContactDataAblity();
+    if (extension == nullptr) {
+        HILOG_ERROR("ContactsDataShareStubImpl ExecuteBatch faild, extension is null.");
+        return ret;
+    }
+    ret = extension->ExecuteBatch(statements, result);
+    if (ret != Contacts::OPERATION_ERROR) {
+        std::map<std::string, std::vector<DataShare::DataShareValuesBucket>> values;
+        for (const auto &statement : statements) {
+            if (values.find(statement.uri) != values.end()) {
+                values[statement.uri].emplace_back(statement.valuesBucket);
+                continue;
+            }
+            std::vector<DataShare::DataShareValuesBucket> tmp{statement.valuesBucket};
+            values.emplace(statement.uri, tmp);
+        }
+        for (const auto &[uri, value] : values) {
+            NotifyChangeExt(Uri(uri), value, Contacts::OPERATE_TYPE_INSERT);
+        }
+    } else {
+        HILOG_ERROR("ExecuteBatch faild");
+    }
+    if (endTime.count() - beginTime.count() > g_operateDataTime) {
+        HILOG_WARN("ExecuteBatch end successfully.ret: %{public}d,contact db cost time = %{public}lld",
+            ret, endTime.count() - beginTime.count());
+    } else {
+        HILOG_WARN("ExecuteBatch end successfully.ret: %{public}d, endTime = %{public}lld",
+            ret, endTime.count());
+    }
+    return ret;
+}
+
 Uri ContactsDataShareStubImpl::getUriPrintByUri(const Uri &uriTemp)
 {
     std::string uriStr = uriTemp.ToString();

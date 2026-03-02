@@ -1398,6 +1398,133 @@ bool ContactsDataAbility::QueryExecute(std::shared_ptr<OHOS::NativeRdb::ResultSe
     return isUriMatch;
 }
 
+int ContactsDataAbility::ExecuteBatch(
+    const std::vector<DataShare::OperationStatement> &statements, DataShare::ExecResultSet &result)
+{
+    HILOG_WARN("ExecuteBatch enter, statements size: %{public}zu", statements.size());
+    if (statements.empty()) {
+        HILOG_ERROR("ExecuteBatch statements is empty");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
+    std::map<int32_t, int32_t> operationResultMap;
+    std::set<std::string> addFailedRawContacts;
+    std::lock_guard<std::mutex> lock(g_mutex);
+    contactDataBase_ = Contacts::ContactsDataBase::GetInstance();
+    int ret = contactDataBase_->BeginTransaction();
+    if (!IsBeginTransactionOK(ret, g_mutex)) {
+        HILOG_ERROR("ExecuteBatch IsBeginTransactionOK error");
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
+    int32_t index = -1;
+    for (const auto &statement: statements) {
+        index++;
+        DataShare::ExecResult execResult{
+            statement.operationType, DataShare::ExecErrorCode::EXEC_SUCCESS, std::to_string(-1)};
+        ExecuteBatchStatement executeBatchStatement{index, statement, execResult};
+        ProcessExecuteBatchInsert(executeBatchStatement, operationResultMap, addFailedRawContacts, result);
+        result.results.emplace_back(executeBatchStatement.execResult);
+    }
+    int commitRet = contactDatabase_->Commit();
+    if (!IsCommitOK(commitRet, g_mutex)) {
+        HILOG_ERROR("ExecuteBatch IsCommitOK error");
+        contactDataBase_->RollBack();
+        return Contacts::RDB_EXECUTE_FAIL;
+    }
+    result.errorCode = DataShare::ExecErrorCode::EXEC_SUCCESS;
+    if (!addFailedRawContacts.empty()) {
+        HandleExecuteBatchFailed(result, addFailedRawContacts);
+    }
+    HILOG_WARN("ExecuteBatch end");
+    return Contacts::RDB_EXECUTE_OK;
+}
+
+int ContactsDataAbility::ProcessExecuteBatchInsert(ExcuteBatchStatement &executeBatchStatement,
+    std::map<int32_t, int32_t> &operationResultMap, std::set<std::string> &addFailedRawContacts,
+    DataShare::ExecResultSet &result)
+{
+    auto &index = executeBatchStatement.index;
+    auto &statement = executeBatchStatement.statement;
+    auto &execResult = executeBatchStatement.execResult;
+    OHOS::Uri uriTemp(statement.uri);
+    int code = UriParseAndSwitch(uriTemp);
+    OHOS::NativeRdb::ValuesBucket valuesBucket = 
+        RdbDataShareAdapter::RdbUtils::ToValuesBucket(statement.valueBucket);
+    auto processBackReferenceResult = ProcessBackReference(statement, operationResultMap, valueBucket);
+    if (processBackReferenceResult == Contacts::ProcessBackReferenceResult::FAILED) {
+        HILOG_ERROR("ExecuteBatch processBackReferenceResult failed");
+        execResult.code = DataShare::ExecErrorCode::EXEC_FAILED;
+        return Contacts::OPENRATION_ERROR;
+    }
+    std::string isSync = "false";
+    auto insertResult = InsertExecute(code, valuesBucket, isSync);
+    if (insertResult != Contacts::OPERATION_ERROR) {
+        execResult.message = std::to_string(insertResult);
+        operationResultMap.emplace(index, insertResult);
+        return insertResult;
+    }
+    HILOG_ERROR("ExecuteBatch InsertExecute error");
+    execResult.code = DataShare::ExecErrorCode::EXEC_FAILED;
+    if (processBackReferenceResult != Contacts::ProcessBackReferenceResult::SUCCESS) {
+        return Contacts::OPERATION_ERROR;
+    }
+    int32_t fromIndex = statement.backReference.GetFromIndex();
+    if (operationResultMap.find(fromIndex) != operationResultMap.end()) {
+        addFailedRawContacts.emplace(std::to_string(operationResultMap.at(fromIndex)));
+        operationResultMap.erase(fromIndex);
+        int32_t startIndex = 0;
+        int32_t endIndex = static_cast<int32_t>(result.results.size());
+        // 检查for循环的上界和下界
+        if (fromIndex > 0) {
+            startIndex = fromIndex;
+        }
+        if (index < endIndex) {
+            endIndex = index;
+        }
+        for (int32_t i = startIndex; i < endIndex; i++) {
+            result.results[i].code = DataShare::ExecErrorCode::EXEC_FAILED;
+            result.results[i].message = std::to_string(insertResult);
+        }
+    }
+    return Contacts::OPERATION_ERROR;
+}
+
+Contacts::ProcessBackReferenceResult ContactsDataAbility::ProcessBackReference(
+    const DataShare::OperationStatement &statement,
+    const std::map<int32_t, int32_t> &operationResultMap, 
+    OHOS::NativeRdb::ValuesBucket &valuesBucket)
+{
+    if (statement.HasBackReference()) {
+        std::string columnName = statement.backReference.GetColumn();
+        int32_t fromIndex = statement.backReference.GetFromIndex();
+        if (operationResultMap.find(fromIndex) != operationResultMap.end()) {
+            valueBucket.Delete(columnName);
+            valueBucket.PutInt(columnName, operationResultMap.at(fromIndex));
+            return Contacts::ProcessBackReferenceResult::FAILED;
+        }
+    }
+    return Contacts::ProcessBackReferenceResult::NOT_FOUND;
+}
+
+int ContactsDataAbility::HandleExeuteBatchFailed(
+    DataShare::ExecResultSet &result, const std::set<std::string> addFailedRawContacts)
+{
+    result.errorCode = DataShare::ExecErrorCode::EXEC_PARTIAL_SUCCESS;
+    if (addFailedRawContacts.size() == result.results.size()) {
+        result.errorCode = DataShare::ExecErrorCode::EXEC_FAILED;
+    }
+    HILOG_ERROR("HandleExeuteBatchFailed failed num: %{public}zu", addFailedRawContacts.size());
+    std::vector<std::string> rawContactIds(addFailedRawContacts.begin(), addFailedRawContacts.end());
+    DataShare::DataSharePredicates predicates;
+    predicates.In("id", rawContactIds);
+    auto ret = contactDataBase_->HardDelete(predicates);
+    if (static_cast<size_t>(ret) == rawContactIds) {
+        HILOG_WARN("HandleExeuteBatchFailed HardDelete failed, clear dirty data success");
+    } else {
+        HILOG_ERROR("HandleExeuteBatchFailed HardDelete failed, clear dirty data failed: %{public}d", ret);
+    }
+    return Contacts::OPERATION_OK;
+}
+
 /**
  * 添加查询不包含名片夹群组的信息条件
  * @param rdbPredicates
