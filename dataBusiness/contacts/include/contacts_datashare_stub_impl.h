@@ -33,7 +33,7 @@ public:
     std::shared_ptr<DataShareResultSet> Query(const Uri &uri, const DataSharePredicates &predicates,
         std::vector<std::string> &columns, DatashareBusinessError &businessError) override;
     int BatchInsert(const Uri &uri, const std::vector<DataShareValuesBucket> &values) override;
-    int ExecuteBatch(const std::vector<OperationStationStatement> &statements, ExecResultSet &result) override;
+    int ExecuteBatch(const std::vector<OperationStatement> &statements, ExecResultSet &result) override;
     Uri getUriPrintByUri(const Uri &uriTemp);
 
     std::vector<std::string> GetFileTypes(const Uri &uri, const std::string &mimeTypeFilter) override;

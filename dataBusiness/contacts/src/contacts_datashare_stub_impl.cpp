@@ -298,12 +298,12 @@ int ContactsDataShareStubImpl::ExecuteBatch(const std::vector<OperationStatement
         HILOG_ERROR("ContactsDataShareStubImpl ExecuteBatch getbundleName faild");
     }
     unsigned int size = statements.size();
-    std::chrono::milliseconds beginTime = std::crono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::milliseconds beginTime = std::chrono::duration_cast<std::chrono::milliseconds >(
         std::chrono::system_clock::now().time_since_epoch());
     HILOG_WARN("ExecuteBatch begin. beginTime = %{public}lld,callingBundleName = %{public}s,"
         "values.size is %{public}d", beginTime.count(), callingBundleName.c_str(), size);
     int ret = 0;
-    auto extension = GetContactDataAblity();
+    auto extension = GetContactsDataAbility();
     if (extension == nullptr) {
         HILOG_ERROR("ContactsDataShareStubImpl ExecuteBatch faild, extension is null.");
         return ret;
@@ -325,6 +325,8 @@ int ContactsDataShareStubImpl::ExecuteBatch(const std::vector<OperationStatement
     } else {
         HILOG_ERROR("ExecuteBatch faild");
     }
+    std::chrono::milliseconds endTime = std::chrono::duration_cast<std::chrono::milliseconds >(
+        std::chrono::system_clock::now().time_since_epoch());
     if (endTime.count() - beginTime.count() > g_operateDataTime) {
         HILOG_WARN("ExecuteBatch end successfully.ret: %{public}d,contact db cost time = %{public}lld",
             ret, endTime.count() - beginTime.count());

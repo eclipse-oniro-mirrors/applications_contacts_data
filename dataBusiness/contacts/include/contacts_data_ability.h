@@ -33,9 +33,9 @@
 namespace OHOS {
 namespace Contacts {
 enum class ProcessBackReferenceResult: uint32_t {
-    SUCCESS = 0;
-    FAILED = 1;
-    NOT_FOUND = 2;
+    SUCCESS = 0,
+    FAILED = 1,
+    NOT_FOUND = 2,
 }
 } // namespace Contacts
 namespace AbilityRuntime {
@@ -68,7 +68,7 @@ public:
         DataShare::ExecResultSet &result);
     Contacts::ProcessBackReferenceResult ProcessBackReference(const DataShare::OperationStatement &statement,
         const std::map<int32_t, int32_t> &operationResultMap, OHOS::NativeRdb::ValuesBucket &valuesBucket);
-    int HandleExecuteBatchFailed(DataShare::ExecResultSet &result, const std::set<std::string> &adddFailedRawContacts)
+    int HandleExecuteBatchFailed(DataShare::ExecResultSet &result, const std::set<std::string> &addFailedRawContacts);
     // 转换Bucket，根据DataShareValuesBucket，生成一个RdbBucket
     static void transferDataShareToRdbBucket(const std::vector<DataShare::DataShareValuesBucket> &values,
         std::vector<OHOS::NativeRdb::ValuesBucket> &valuesRdb);

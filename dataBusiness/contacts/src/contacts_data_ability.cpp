@@ -1424,7 +1424,7 @@ int ContactsDataAbility::ExecuteBatch(
         ProcessExecuteBatchInsert(executeBatchStatement, operationResultMap, addFailedRawContacts, result);
         result.results.emplace_back(executeBatchStatement.execResult);
     }
-    int commitRet = contactDatabase_->Commit();
+    int commitRet = contactDataBase_->Commit();
     if (!IsCommitOK(commitRet, g_mutex)) {
         HILOG_ERROR("ExecuteBatch IsCommitOK error");
         contactDataBase_->RollBack();
@@ -1438,7 +1438,7 @@ int ContactsDataAbility::ExecuteBatch(
     return Contacts::RDB_EXECUTE_OK;
 }
 
-int ContactsDataAbility::ProcessExecuteBatchInsert(ExcuteBatchStatement &executeBatchStatement,
+int ContactsDataAbility::ProcessExecuteBatchInsert(ExecuteBatchStatement &executeBatchStatement,
     std::map<int32_t, int32_t> &operationResultMap, std::set<std::string> &addFailedRawContacts,
     DataShare::ExecResultSet &result)
 {
@@ -1448,12 +1448,12 @@ int ContactsDataAbility::ProcessExecuteBatchInsert(ExcuteBatchStatement &execute
     OHOS::Uri uriTemp(statement.uri);
     int code = UriParseAndSwitch(uriTemp);
     OHOS::NativeRdb::ValuesBucket valuesBucket = 
-        RdbDataShareAdapter::RdbUtils::ToValuesBucket(statement.valueBucket);
-    auto processBackReferenceResult = ProcessBackReference(statement, operationResultMap, valueBucket);
+        RdbDataShareAdapter::RdbUtils::ToValuesBucket(statement.valuesBucket);
+    auto processBackReferenceResult = ProcessBackReference(statement, operationResultMap, valuesBucket);
     if (processBackReferenceResult == Contacts::ProcessBackReferenceResult::FAILED) {
         HILOG_ERROR("ExecuteBatch processBackReferenceResult failed");
         execResult.code = DataShare::ExecErrorCode::EXEC_FAILED;
-        return Contacts::OPENRATION_ERROR;
+        return Contacts::OPERATION_ERROR;
     }
     std::string isSync = "false";
     auto insertResult = InsertExecute(code, valuesBucket, isSync);
@@ -1497,30 +1497,31 @@ Contacts::ProcessBackReferenceResult ContactsDataAbility::ProcessBackReference(
         std::string columnName = statement.backReference.GetColumn();
         int32_t fromIndex = statement.backReference.GetFromIndex();
         if (operationResultMap.find(fromIndex) != operationResultMap.end()) {
-            valueBucket.Delete(columnName);
-            valueBucket.PutInt(columnName, operationResultMap.at(fromIndex));
-            return Contacts::ProcessBackReferenceResult::FAILED;
+            valuesBucket.Delete(columnName);
+            valuesBucket.PutInt(columnName, operationResultMap.at(fromIndex));
+            return Contacts::ProcessBackReferenceResult::SUCCESS;
         }
+        return Contacts::ProcessBackReferenceResult::FAILED;
     }
     return Contacts::ProcessBackReferenceResult::NOT_FOUND;
 }
 
-int ContactsDataAbility::HandleExeuteBatchFailed(
-    DataShare::ExecResultSet &result, const std::set<std::string> addFailedRawContacts)
+int ContactsDataAbility::HandleExecuteBatchFailed(
+    DataShare::ExecResultSet &result, const std::set<std::string> &addFailedRawContacts)
 {
     result.errorCode = DataShare::ExecErrorCode::EXEC_PARTIAL_SUCCESS;
     if (addFailedRawContacts.size() == result.results.size()) {
         result.errorCode = DataShare::ExecErrorCode::EXEC_FAILED;
     }
-    HILOG_ERROR("HandleExeuteBatchFailed failed num: %{public}zu", addFailedRawContacts.size());
+    HILOG_ERROR("HandleExecuteBatchFailed, failed num: %{public}zu", addFailedRawContacts.size());
     std::vector<std::string> rawContactIds(addFailedRawContacts.begin(), addFailedRawContacts.end());
     DataShare::DataSharePredicates predicates;
     predicates.In("id", rawContactIds);
     auto ret = contactDataBase_->HardDelete(predicates);
-    if (static_cast<size_t>(ret) == rawContactIds) {
-        HILOG_WARN("HandleExeuteBatchFailed HardDelete failed, clear dirty data success");
+    if (static_cast<size_t>(ret) == rawContactIds.size()) {
+        HILOG_WARN("HandleExecuteBatchFailed HardDelete failed, clear dirty data success");
     } else {
-        HILOG_ERROR("HandleExeuteBatchFailed HardDelete failed, clear dirty data failed: %{public}d", ret);
+        HILOG_ERROR("HandleExecuteBatchFailed HardDelete failed, clear dirty data failed: %{public}d", ret);
     }
     return Contacts::OPERATION_OK;
 }
