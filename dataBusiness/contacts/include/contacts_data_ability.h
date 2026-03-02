@@ -36,7 +36,7 @@ enum class ProcessBackReferenceResult: uint32_t {
     SUCCESS = 0,
     FAILED = 1,
     NOT_FOUND = 2,
-}
+};
 } // namespace Contacts
 namespace AbilityRuntime {
 struct ExecuteBatchStatement {
