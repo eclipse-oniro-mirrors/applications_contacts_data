@@ -1515,9 +1515,12 @@ int ContactsDataAbility::HandleExecuteBatchFailed(
     }
     HILOG_ERROR("HandleExecuteBatchFailed, failed num: %{public}zu", addFailedRawContacts.size());
     std::vector<std::string> rawContactIds(addFailedRawContacts.begin(), addFailedRawContacts.end());
+    OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     DataShare::DataSharePredicates predicates;
     predicates.In("id", rawContactIds);
-    auto ret = contactDataBase_->HardDelete(predicates);
+    rdbPredicates =
+                predicatesConvert.ConvertPredicates(Contacts::ContactTableName::RAW_CONTACT, predicates);
+    auto ret = contactDataBase_->HardDelete(rdbPredicates);
     if (static_cast<size_t>(ret) == rawContactIds.size()) {
         HILOG_WARN("HandleExecuteBatchFailed HardDelete failed, clear dirty data success");
     } else {
