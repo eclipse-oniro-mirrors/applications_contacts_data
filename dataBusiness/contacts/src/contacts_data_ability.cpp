@@ -1518,6 +1518,7 @@ int ContactsDataAbility::HandleExecuteBatchFailed(
     OHOS::NativeRdb::RdbPredicates rdbPredicates("");
     DataShare::DataSharePredicates predicates;
     predicates.In("id", rawContactIds);
+    Contacts::PredicatesConvert predicatesConvert;
     rdbPredicates =
                 predicatesConvert.ConvertPredicates(Contacts::ContactTableName::RAW_CONTACT, predicates);
     auto ret = contactDataBase_->HardDelete(rdbPredicates);
