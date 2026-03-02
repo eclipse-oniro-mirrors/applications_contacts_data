@@ -1,0 +1,9 @@
+{
+  "launchInfos":[
+    {
+      "storeId": "contacts",
+      "tableNames":["cloud_raw_contact", "cloud_groups"]
+    }
+  ],
+  "launchForCleanData": true
+}

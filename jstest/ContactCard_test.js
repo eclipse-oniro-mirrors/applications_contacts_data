@@ -320,7 +320,7 @@ describe('ContactCardTest', function() {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
             "content_type" : "email",
-            "detail_info" : "166@163.com"
+            "detail_info" : "166@email"
         };
         try {
             var contactDataId1 = await dataShareHelper.insert(profileContactDataUri, contactDataValues1);
@@ -329,7 +329,7 @@ describe('ContactCardTest', function() {
             expect(contactDataId1 > 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId1.toString());
-            map.set("detail_info", "166@163.com");
+            map.set("detail_info", "166@email");
             await contactsQuery(map, "contactCard_insert_test_500_1", profileContactDataUri);
         } catch (error) {
             console.info("logMessage contactCard_insert_test_500: contact_data email insert error = " + error);
@@ -496,7 +496,7 @@ describe('ContactCardTest', function() {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
             "content_type" : "website",
-            "detail_info" : "www.com"
+            "detail_info" : "website"
         };
         try {
             var contactDataId1 = await dataShareHelper.insert(profileContactDataUri, contactDataValues1);
@@ -505,7 +505,7 @@ describe('ContactCardTest', function() {
             expect(contactDataId1 > 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId1.toString());
-            map.set("detail_info", "www.com");
+            map.set("detail_info", "id");
             await contactsQuery(map, "contactCard_insert_test_700_1", profileContactDataUri);
             await ContactDataRelationInsert();
         } catch (error) {
@@ -935,7 +935,7 @@ describe('ContactCardTest', function() {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
             "content_type" : "email",
-            "detail_info" : "166@163.com"
+            "detail_info" : "166@email"
         };
         try {
             var contactDataId = await dataShareHelper.insert(profileContactDataUri, contactDataValues);
@@ -949,7 +949,7 @@ describe('ContactCardTest', function() {
 
     async function dataEmailUpdate(dataShareHelper, rawContactId)
     {
-        var updateValues = {"detail_info" : "199@163.com"};
+        var updateValues = {"detail_info" : "199@email"};
         let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
@@ -959,7 +959,7 @@ describe('ContactCardTest', function() {
             expect(updateCode == 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
-            map.set("detail_info", "199@163.com");
+            map.set("detail_info", "199@email");
             await contactsQuery(map, "contactCard_update_test_1600", profileContactDataUri);
         } catch (error) {
             console.info('logMessage contactCard_update_test_1600: update error = ' + error);
@@ -1237,7 +1237,7 @@ describe('ContactCardTest', function() {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
             "content_type" : "website",
-            "detail_info" : "www.com"
+            "detail_info" : "website"
         };
         try {
             var contactDataId = await dataShareHelper.insert(profileContactDataUri, contactDataValues1);
@@ -1251,7 +1251,7 @@ describe('ContactCardTest', function() {
 
     async function dataWebsiteUpdate(dataShareHelper, rawContactId)
     {
-        var updateValues = {"detail_info" : "www.123.com"};
+        var updateValues = {"detail_info" : "updateValues"};
         let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
@@ -1261,7 +1261,7 @@ describe('ContactCardTest', function() {
             expect(updateCode == 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
-            map.set("detail_info", "www.123.com");
+            map.set("detail_info", "id");
             await contactsQuery(map, "contactCard_update_test_2100", profileContactDataUri);
         } catch (error) {
             console.info('logMessage contactCard_update_test_2100: update error = ' + error);
@@ -2306,7 +2306,7 @@ describe('ContactCardTest', function() {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
             "content_type" : "email",
-            "detail_info" : "16658@163.com"
+            "detail_info" : "email"
         };
         try {
             var contactDataId = await dataShareHelper.insert(profileContactDataUri, contactDataValues);
@@ -2334,7 +2334,7 @@ describe('ContactCardTest', function() {
                     console.info('logMessage contactCard_query_test_4000: raw_contact_id = ' + resultSet.getString(1));
                     expect(resultSet.getString(1) == rawContactId.toString()).assertTrue();
                     console.info('logMessage contactCard_query_test_4000: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "16658@163.com").assertTrue();
+                    expect(resultSet.getString(array_two) == "16658@email").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3495,7 +3495,7 @@ describe('ContactCardTest', function() {
             var contactDataValues = {
                 "raw_contact_id" : rawContactId,
                 "content_type" : "email",
-                "detail_info" : "1564@163.com"
+                "detail_info" : "1564@email"
             };
             try {
                 var contactDataId = await dataShareHelper.insert(profileContactDataUri, contactDataValues);
@@ -3528,7 +3528,7 @@ describe('ContactCardTest', function() {
                         'logMessage contactCard_fuzzyquery_test_900: raw_contact_id = ' + resultSet.getString(1));
                     expect(resultSet.getString(1) == rawContactId.toString()).assertTrue();
                     console.info('logMessage contactCard_fuzzyquery_test_900: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "1564@163.com").assertTrue();
+                    expect(resultSet.getString(array_two) == "1564@email").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -4156,8 +4156,6 @@ describe('ContactCardTest', function() {
                 interrupted : true,
             } ],
                 (error, data) => {
-                    console.info(
-                        "logMessage contactCard_delete_test_5500: executeBatch data = " + JSON.stringify(data));
                     console.info("logMessage contactCard_delete_test_5500: data_3 = " + data);
                     console.info("logMessage contactCard_delete_test_5500:  data_1= " + data[0].count);
                     expect(data[0].count == 0).assertTrue();
@@ -4203,8 +4201,6 @@ describe('ContactCardTest', function() {
                 interrupted : true,
             } ],
                 (error, data) => {
-                    console.info(
-                        "logMessage contactCard_update_test_5600: executeBatch data = " + JSON.stringify(data));
                     console.info("logMessage contactCard_update_test_5600: data_3 = " + data);
                     console.info("logMessage contactCard_update_test_5600:  data_1= " + data[0].count);
                     expect(data[0].count == 0).assertTrue();
@@ -4592,12 +4588,12 @@ describe('ContactCardTest', function() {
             await insertData(rawContactId, "phone", "6500", "");
             await insertData(rawContactId, "organization", "TTTTT", "Deve");
             await insertData(rawContactId, "nickname", "xxxxcai", "");
-            await insertData(rawContactId, "email", "111@fox.com", "");
+            await insertData(rawContactId, "email", "111@email", "");
             await insertData(rawContactId, "postal_address", "dddd", "");
             await insertData(rawContactId, "note", "caicai", "");
             await insertData(rawContactId, "im", "999999999", "");
             await insertData(rawContactId, "contact_event", "1125", "");
-            await insertData(rawContactId, "website", "wwww.xxx.com", "");
+            await insertData(rawContactId, "website", "website", "");
             await insertData(rawContactId, "relation", "xiaobai", "");
             await insertData(rawContactId, "group_membership", 1, "");
             await insertData(rawContactId, "contact_misc", "5678", "");
@@ -5110,9 +5106,9 @@ describe('ContactCardTest', function() {
             await queryAlldata("contactCard_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd3, "TTTTT");
             var contactdatd4 = await insertData(rawContactId, "nickname", "xxxxcai", "");
             await queryAlldata("contactCard_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd4, "xxxxcai");
-            var contactdatd5 = await insertData(rawContactId, "email", "111@fox.com", "");
+            var contactdatd5 = await insertData(rawContactId, "email", "111@email", "");
             await queryAlldata(
-                "contactCard_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd5, "111@fox.com");
+                "contactCard_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd5, "111@email");
             var contactdatd6 = await insertData(rawContactId, "postal_address", "dddd", "");
             await queryAlldata("contactCard_insertDataAll_test_7600", dataShareHelper, rawContactId, contactdatd6, "dddd");
             var contactdatd7 = await insertData(rawContactId, "note", "caicai", "");
@@ -5181,9 +5177,9 @@ describe('ContactCardTest', function() {
             await queryAlldata("contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd3, "TTTTT");
             var contactdatd4 = await insertData(rawContactId, "nickname", "xxxxcai", "");
             await queryAlldata("contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd4, "xxxxcai");
-            var contactdatd5 = await insertData(rawContactId, "email", "111@fox.com", "");
+            var contactdatd5 = await insertData(rawContactId, "email", "111@email", "");
             await queryAlldata(
-                "contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd5, "111@fox.com");
+                "contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd5, "111@email");
             var contactdatd6 = await insertData(rawContactId, "postal_address", "dddd", "");
             await queryAlldata("contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd6, "dddd");
             var contactdatd7 = await insertData(rawContactId, "note", "caicai", "");
@@ -5193,9 +5189,9 @@ describe('ContactCardTest', function() {
                 "contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd8, "999999999");
             var contactdatd9 = await insertData(rawContactId, "contact_event", "1125", "");
             await queryAlldata("contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd9, "1125");
-            var contactdatd10 = await insertData(rawContactId, "website", "wwww.xxx.com", "");
+            var contactdatd10 = await insertData(rawContactId, "website", "website", "");
             await queryAlldata(
-                "contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd10, "wwww.xxx.com");
+                "contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd10, "website");
             var contactdatd11 = await insertData(rawContactId, "relation", "xiaobai", "");
             await queryAlldata("contactCard_insertDataAll_test_7700", dataShareHelper, rawContactId, contactdatd11, "xiaobai");
             var contactdatd12 = await insertData(rawContactId, "group_membership", 1, "");

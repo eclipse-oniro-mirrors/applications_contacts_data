@@ -1,0 +1,78 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/config/features.gni")
+import("//build/ohos.gni")
+import("//build/test.gni")
+
+ohos_fuzztest("ContactsDataFuzzTest") {
+  module_out_path = "contacts_data/contacts_data"
+  fuzz_config_file = "//applications/standard/contacts_data/test/fuzztest/contactsdata_fuzzer"  # Fuzz组套路径
+
+  cflags = [
+    "-g",
+    "-O0",
+    "-Wno-unused-variable",
+    "-fno-omit-frame-pointer",
+    "-flto",
+    "-fvisibility=hidden",
+    "-fsanitize=cfi",
+    "-fsanitize-cfi-cross-dso",
+  ]
+  
+  ldflags = [
+    "-flto",
+    "-fsanitize=cfi",
+    "-fsanitize-cfi-cross-dso",
+  ]
+
+  sources = [ "contactfuzz_test.cpp" ]
+
+  deps = [ "//applications/standard/contacts_data:contactsdataability" ]
+
+  external_deps = [
+    "ability_base:zuri",
+    "ability_runtime:ability_manager",
+    "ability_runtime:abilitykit_utils",
+    "ability_runtime:data_ability_helper",
+    "access_token:libaccesstoken_sdk",
+    "access_token:libnativetoken",
+    "access_token:libprivacy_sdk",
+    "access_token:libtoken_setproc",
+    "c_utils:utils",
+    "data_share:datashare_common",
+    "data_share:datashare_consumer",
+    "data_share:datashare_provider",
+    "hilog:libhilog",
+    "ipc:ipc_core",
+    "ipc:ipc_single",
+    "napi:ace_napi",
+    "preferences:native_preferences",
+    "relational_store:native_dataability",
+    "relational_store:native_rdb",
+    "samgr:samgr_proxy",
+    "window_manager:libwm",
+    "os_account:os_account_innerkits",  # os_account
+    "ipc:ipc_napi",
+  ]
+
+  defines = [
+    "CONTACTSDATA_LOG_TAG = \"ContactsFuzztest\"",
+    "LOG_DOMAIN = 0xD001F09",
+  ]
+}
+
+group("fuzztest") {
+  testonly = true
+  deps = [ ":ContactsDataFuzzTest" ]
+}

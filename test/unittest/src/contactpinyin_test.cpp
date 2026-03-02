@@ -179,7 +179,7 @@ HWTEST_F(ContactPinyinTest, pinyin_conversion_Insert_test_300, testing::ext::Tes
 
     OHOS::DataShare::DataShareValuesBucket values;
     int64_t contactDataId = ContactDataInsert(rawContactId, "name", "Tom", "", values);
-    HILOG_INFO("pinyin_conversion_Insert_test_300 : contactDataId = %{public}ld", contactDataId);
+    HILOG_INFO("pinyin_conversion_Insert_test_300 : contactDataId = %{public}ld", (long) contactDataId);
     EXPECT_GT(contactDataId, 0);
 
     OHOS::DataShare::DataSharePredicates predicates;

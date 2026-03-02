@@ -13,21 +13,26 @@
 
 import("//build/lite/config/component/lite_component.gni")
 import("//build/ohos.gni")
-import("signature/pm.gni")
 
 ## Build Contacts_DataAbility.hap
-ohos_hap("Contacts_DataAbility") {
-  hap_profile = "entry/src/main/module.json"
+ohos_app("Contacts_DataAbility") {
   deps = [
-    ":Contacts_DataAbility_js_assets",
-    ":Contacts_DataAbility_resources",
   ]
-  shared_libraries = [ ":contactsdataability" ]
+  publicity_file = "publicity.xml"
   certificate_profile = "./signature/contactsdata.p7b"
   hap_name = "Contacts_DataAbility"
   part_name = "contacts_data"
   subsystem_name = "applications"
   module_install_dir = "app/com.ohos.contactsdataability"
+#  hvigor_home = "//commandline-tools/command-line-tools/hvigor"
+#  sdk_home = "//commandline-tools/command-line-tools/sdk"
+#  node_version = "v18.20.1"
+#  sdk_type_name = [ "hwsdk.dir" ]
+  system_lib_deps = [ "//applications/standard/contacts_data:contactsdataability" ]
+  assemble_type = "assembleHap"
+  js_build_mode = "release"
+  build_level = "module"
+  build_modules = [ "contactsdata" ]
   if (defined(sign_hap_py_path)) {
     certificate_profile = "${certificate_profile_path}"
     key_alias = "contacts_data"
@@ -61,14 +66,16 @@ config("contactsdataability_public_config") {
     "dataBusiness/voicemail/include",
     "dataBusiness/calllog/include",
     "dataBusiness/contacts/include",
+    "dataBusiness/poster/include",
     "ability/account/include",
     "dataBusiness/quicksearch/include",
     "ability/sinicization/include",
     "ability/account/include",
     "ability/merge/include",
     "ability/datadisasterrecovery/include",
+    "dataBusiness/spam_call/include",
   ]
-  cflags = []
+  cflags = [ "-Wno-c99-designator" ]
 }
 
 ohos_shared_library("contactsdataability") {
@@ -77,6 +84,7 @@ ohos_shared_library("contactsdataability") {
     "ability/account/src/account_data_collection.cpp",
     "ability/account/src/account_manager.cpp",
     "ability/account/src/account_sync.cpp",
+    "ability/common/utils/src/board_report_util.cpp",
     "ability/common/utils/src/contacts_common_event.cpp",
     "ability/common/utils/src/contacts_json_utils.cpp",
     "ability/common/utils/src/contacts_path.cpp",
@@ -87,6 +95,10 @@ ohos_shared_library("contactsdataability") {
     "ability/common/utils/src/sql_analyzer.cpp",
     "ability/common/utils/src/telephony_permission.cpp",
     "ability/common/utils/src/uri_utils.cpp",
+    "ability/common/utils/src/phone_number_utils.cpp",
+    "ability/common/utils/src/pixel_map_util.cpp",
+    "ability/common/utils/src/zip_util.cpp",
+    "ability/common/utils/src/hi_audit.cpp",
     "ability/datadisasterrecovery/src/database_disaster_recovery.cpp",
     "ability/merge/src/candidate.cpp",
     "ability/merge/src/candidate_status.cpp",
@@ -96,58 +108,115 @@ ohos_shared_library("contactsdataability") {
     "ability/sinicization/src/construction_name.cpp",
     "dataBusiness/calllog/src/calllog_ability.cpp",
     "dataBusiness/calllog/src/calllog_database.cpp",
+    "dataBusiness/calllog/src/calllog_manager.cpp",
     "dataBusiness/contacts/src/contacts.cpp",
     "dataBusiness/contacts/src/contacts_account.cpp",
+    "dataBusiness/contacts/src/blocklist_database.cpp",
     "dataBusiness/contacts/src/contacts_data_ability.cpp",
     "dataBusiness/contacts/src/contacts_database.cpp",
+    "dataBusiness/contacts/src/number_identity_helper.cpp",
+    "dataBusiness/contacts/src/contacts_manager.cpp",
     "dataBusiness/contacts/src/contacts_datashare_stub_impl.cpp",
     "dataBusiness/contacts/src/contacts_type.cpp",
     "dataBusiness/contacts/src/contacts_update_helper.cpp",
     "dataBusiness/contacts/src/profile_database.cpp",
     "dataBusiness/contacts/src/raw_contacts.cpp",
+    "dataBusiness/contacts/src/ptivacy_contacts_manager.cpp",
     "dataBusiness/quicksearch/src/contacts_search.cpp",
     "dataBusiness/voicemail/src/voicemail_ability.cpp",
     "dataBusiness/voicemail/src/voicemail_database.cpp",
-  ]
-  include_dirs = [
+    "dataBusiness/contacts/src/contact_connect_ability.cpp",
+    "dataBusiness/contacts/src/cloud_contacts_observer.cpp",
+    "dataBusiness/contacts/src/auto_sync_detail_progress_observer.cpp",
+    "dataBusiness/spam_call/src/callback_stub_helper.cpp",
+    "dataBusiness/spam_call/src/spam_call_adapter.cpp",
+    "dataBusiness/spam_call/src/spam_call_connection.cpp",
+    "dataBusiness/spam_call/src/spam_call_proxy.cpp",
+    "dataBusiness/spam_call/src/spam_call_stub.cpp",
+    "dataBusiness/poster/src/poster_callback_stub.cpp",
+    "dataBusiness/poster/src/poster_call_adapter.cpp",
+    "dataBusiness/poster/src/poster_call_connection.cpp",
+    "dataBusiness/poster/src/poster_call_proxy.cpp",
+    "dataBusiness/poster/src/poster_call_stub.cpp",
   ]
 
   public_configs = [ ":contactsdataability_public_config" ]
   external_deps = [
+    "app_file_service:fileuri_native",
+    "ability_base:base",
     "ability_base:want",
     "ability_base:zuri",
-    "ability_runtime:ability_connect_callback_stub",
-    "ability_runtime:abilitykit_utils",
-    "ability_runtime:app_manager",
     "ability_runtime:app_context",
+    "ability_runtime:app_manager",
     "ability_runtime:dataobs_manager",
+    "ability_runtime:extension_manager",
     "ability_runtime:extensionkit_native",
+    "ability_runtime:ability_deps_wrapper",
+    "ability_runtime:ability_manager",
+    "ability_runtime:dataobs_manager",
+    "ability_runtime:abilitykit_utils",
+    "ability_runtime:data_ability_helper",
     "access_token:libaccesstoken_sdk",
     "access_token:libprivacy_sdk",
     "access_token:libtokenid_sdk",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
-    "c_utils:utilsbase",
+    "core_service:tel_core_service_api",
     "common_event_service:cesfwk_innerkits",
-    "data_share:datashare_common",
-    "data_share:datashare_provider",
-    "hilog:libhilog",
     "ipc:ipc_napi",
     "ipc:ipc_single",
+    "data_share:datashare_common",
+    "ability_runtime:uri_permission_mgr",
+    "data_share:datashare_provider",
+    "data_share:datashare_consumer",
+    "icu:shared_icui18n",
+    "icu:icundk",
+    "icu:shared_icuuc",
+    "image_framework:image_native",
+    "hilog:libhilog",
     "jsoncpp:jsoncpp",
     "napi:ace_napi",
-    "node:node_header_notice",
-    "os_account:os_account_innerkits",
     "relational_store:native_dataability",
     "relational_store:native_rdb",
     "relational_store:rdb_data_share_adapter",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+    "i18n:intl_util",
+    "os_account:os_account_innerkits", # os_account
+    "os_account:libaccountkits", # ohos_account
+    "napi:ace_napi",
+    "player_framework:system_sound_client",
+    "audio_framework:audio_client",
+    "protobuf:protobuf_lite",
+    "file_api:securitylabel",
+    "libphonenumber:phonenumber_standard",
+    "libphonenumber:geocoding",
+    "protobuf:protobuf_lite",
+    "protobuf:protobuf",
+  #  "protobuf:protoc_lib",
+    "zlib:shared_libz",
+    "openssl:libcrypto_shared",
+    "ability_runtime:ability_connect_callback_stub"
   ]
 
   defines = [
     "CONTACTSDATA_LOG_TAG = \"ContactsData\"",
     "LOG_DOMAIN = 0xD001F09",
   ]
+
+  if (defined(global_parts_info) &&
+    defined(global_parts_info.telephony_cellular_data) &&
+      global_parts_info.telephony_cellular_data) {
+    external_deps += [ "cellular_data:tel_cellular_data_api" ]
+    defines += [ "CELLULAR_DATA_SUPPORT" ]
+  }
+
+  if (defined(global_parts_info) &&
+    defined(global_parts_info.telephony_telephony_enhanced) &&
+    global_parts_info.telephony_telephony_enhanced) {
+    defines += [ "ABILITY_CUST_SUPPORT" ]
+  }
 
   public_deps = []
   part_name = "contacts_data"

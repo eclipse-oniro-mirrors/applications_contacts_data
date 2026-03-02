@@ -17,6 +17,9 @@
 
 #include "result_convert.h"
 
+#include "image_packer.h"
+#include "kit_pixel_map_util.h"
+
 namespace OHOS {
 namespace ContactsApi {
 ContactsBuild::ContactsBuild(void)
@@ -25,6 +28,59 @@ ContactsBuild::ContactsBuild(void)
 
 ContactsBuild::~ContactsBuild()
 {
+}
+
+/**
+ * 将文档里的电话类型映射到应用里的电话类型
+ */
+std::map<int, int> ContactsBuild::phoneTypeIdMap_ = {
+    {PhoneNumber::NUM_HOME,     ContactPhoneNumber::TYPE_HOME},
+    {PhoneNumber::NUM_MOBILE,   ContactPhoneNumber::TYPE_MOBILE},
+    {PhoneNumber::NUM_WORK,     ContactPhoneNumber::TYPE_WORK},
+    {PhoneNumber::NUM_FAX_WORK, ContactPhoneNumber::TYPE_FAX_WORK},
+    {PhoneNumber::NUM_FAX_HOME, ContactPhoneNumber::TYPE_FAX_HOME},
+    {PhoneNumber::NUM_PAGER,    ContactPhoneNumber::TYPE_PAGER},
+    {PhoneNumber::NUM_OTHER,    ContactPhoneNumber::TYPE_OTHER},
+    {PhoneNumber::NUM_MAIN,     ContactPhoneNumber::TYPE_MAIN},
+    {PhoneNumber::CUSTOM_LABEL, ContactPhoneNumber::NEW_TYPE_CUSTOM}
+};
+
+/**
+ * 将文档里的类型映射到应用里的IM类型
+ */
+std::map<int, int> ContactsBuild::imTypeIdMap_ = {
+    {ImAddress::CUSTOM_LABEL, ContactImAddress::NEW_TYPE_CUSTOM},
+    {ImAddress::IM_AIM,       ContactImAddress::TYPE_AIM},
+    {ImAddress::IM_MSN,       ContactImAddress::TYPE_WINDOWSLIVE},
+    {ImAddress::IM_YAHOO,     ContactImAddress::TYPE_YAHOO},
+    {ImAddress::IM_SKYPE,     ContactImAddress::TYPE_SKYPE},
+    {ImAddress::IM_QQ,        ContactImAddress::TYPE_QQ},
+    {ImAddress::IM_HANGOUTS,  ContactImAddress::TYPE_HANGOUTS},
+    {ImAddress::IM_ICQ,       ContactImAddress::TYPE_ICQ},
+    {ImAddress::IM_JABBER,    ContactImAddress::TYPE_JABBER}
+};
+
+/**
+ * 其他字段的统一处理
+ */
+std::map<int, int> ContactsBuild::commonTypeIdMap_ = {
+    {PostalAddress::CUSTOM_LABEL, ContactCommon::NEW_CUSTOM_LABEL}
+};
+
+int ContactsBuild::MapLabelId(int typeId, int labelId)
+{
+    std::map<int, int> typeIdMap_ = ContactsBuild::commonTypeIdMap_;
+    if (typeId == PHONE) {
+        typeIdMap_ = ContactsBuild::phoneTypeIdMap_;
+    };
+    if (typeId == IM) {
+        typeIdMap_ = ContactsBuild::imTypeIdMap_;
+    };
+    std::map<int, int>::iterator iterator = typeIdMap_.find(labelId);
+    if (iterator != typeIdMap_.end()) {
+        return iterator->second;
+    }
+    return labelId;
 }
 
 void ContactsBuild::GetContactDataByObject(napi_env env, napi_value object, Contacts &contact)
@@ -36,7 +92,7 @@ void ContactsBuild::GetContactDataByObject(napi_env env, napi_value object, Cont
     contact.groups = GetGroup(env, object);
     contact.imAddresses = GetImAddress(env, object);
     contact.phoneNumbers = GetPhoneNumbers(env, object);
-    contact.portrait = GetUri(env, object);
+    contact.portrait = GetPortrait(env, object);
     contact.relations = GetRelation(env, object);
     contact.sipAddresses = GetSipAddress(env, object);
     contact.websites = GetWebsite(env, object);
@@ -47,14 +103,36 @@ void ContactsBuild::GetContactDataByObject(napi_env env, napi_value object, Cont
     contact.postalAddresses = GetPostalAddress(env, object);
 }
 
-void ContactsBuild::GetContactData(napi_env env, napi_value object,
-    std::vector<DataShare::DataShareValuesBucket> &valueContact,
-    std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+void ContactsBuild::GetContactData(napi_env env, ExecuteHelper *executeHelper)
 {
     Contacts contact;
-    GetContactDataByObject(env, object, contact);
-    BuildValueContact(contact, valueContact);
-    BuildValueContactData(contact, valueContactData);
+    GetContactDataByObject(env, executeHelper->argv[0], contact);
+    BuildValueContact(contact, executeHelper->valueContact);
+    BuildValueContactData(contact, executeHelper->valueContactData);
+    BuildExecuteHelperPortrait(contact, executeHelper);
+}
+
+void ContactsBuild::BuildExecuteHelperPortrait(const Contacts &contact, ExecuteHelper *executeHelper)
+{
+    if (!contact.portrait.isNeedHandlePhoto) {
+        return;
+    }
+    if (contact.portrait.uri.empty()) {
+        executeHelper->portrait.photo = contact.portrait.photo;
+        executeHelper->portrait.isNeedHandlePhoto = contact.portrait.isNeedHandlePhoto;
+        return;
+    }
+    // 适配旧uri类型，photo/contactId_rawContactId
+    if (contact.portrait.uri.find("photo/") == 0 && contact.portrait.uri.find('_') != std::string::npos) {
+        DataShare::DataShareValuesBucket valuesBucketPortrait;
+        valuesBucketPortrait.Put("detail_info", contact.portrait.uri);
+        valuesBucketPortrait.Put("content_type", "photo");
+        executeHelper->valueContactData.push_back(valuesBucketPortrait);
+        executeHelper->portrait.isNeedHandlePhoto = false;
+        return;
+    }
+    executeHelper->portrait.photo = OHOS::Contacts::KitPixelMapUtil::GetPixelMapFromUri(contact.portrait.uri);
+    executeHelper->portrait.isNeedHandlePhoto = contact.portrait.isNeedHandlePhoto;
 }
 
 void ContactsBuild::BuildValueContact(Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContact)
@@ -79,7 +157,6 @@ void ContactsBuild::BuildValueContactData(Contacts &contact,
     GetValuesBucketEvent(contact, valueContactData);
     GetValuesBucketGroup(contact, valueContactData);
     GetValuesBucketImAddress(contact, valueContactData);
-    GetValuesBucketPortrait(contact, valueContactData);
     GetValuesBucketPhoneNumber(contact, valueContactData);
     GetValuesBucketPostalAddress(contact, valueContactData);
     GetValuesBucketRelation(contact, valueContactData);
@@ -92,57 +169,58 @@ void ContactsBuild::BuildValueContactData(Contacts &contact,
 }
 
 void ContactsBuild::BuildValueContactDataByType(
-    Contacts &contact, int typeId, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+    Contacts &contact, int typeId, ExecuteHelper *executeHelper)
 {
+    HILOG_INFO("BuildValueContactDataByType typeId = %{public}d", typeId);
     switch (typeId) {
         case EMAIL:
-            GetValuesBucketEmail(contact, valueContactData);
+            GetValuesBucketEmail(contact, executeHelper->valueContactData);
             break;
         case IM:
-            GetValuesBucketImAddress(contact, valueContactData);
+            GetValuesBucketImAddress(contact, executeHelper->valueContactData);
             break;
         case NICKNAME:
-            GetValuesBucketNickName(contact, valueContactData);
+            GetValuesBucketNickName(contact, executeHelper->valueContactData);
             break;
         case ORGANIZATION:
-            GetValuesBucketOrganization(contact, valueContactData);
+            GetValuesBucketOrganization(contact, executeHelper->valueContactData);
             break;
         case PHONE:
-            GetValuesBucketPhoneNumber(contact, valueContactData);
+            GetValuesBucketPhoneNumber(contact, executeHelper->valueContactData);
             break;
         case NAME:
-            GetValuesBucketName(contact, valueContactData);
+            GetValuesBucketName(contact, executeHelper->valueContactData);
             break;
         case POSTAL_ADDRESS:
-            GetValuesBucketPostalAddress(contact, valueContactData);
+            GetValuesBucketPostalAddress(contact, executeHelper->valueContactData);
             break;
         default:
-            TypeSwitchSplit(typeId, contact, valueContactData);
+            TypeSwitchSplit(typeId, contact, executeHelper);
             break;
     }
 }
 
 void ContactsBuild::TypeSwitchSplit(
-    int typeId, Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
+    int typeId, Contacts &contact, ExecuteHelper *executeHelper)
 {
     switch (typeId) {
         case PHOTO:
-            GetValuesBucketPortrait(contact, valueContactData);
+            BuildExecuteHelperPortrait(contact, executeHelper);
             break;
         case GROUP_MEMBERSHIP:
-            GetValuesBucketGroup(contact, valueContactData);
+            GetValuesBucketGroup(contact, executeHelper->valueContactData);
             break;
         case NOTE:
-            GetValuesBucketNote(contact, valueContactData);
+            GetValuesBucketNote(contact, executeHelper->valueContactData);
             break;
         case CONTACT_EVENT:
-            GetValuesBucketEvent(contact, valueContactData);
+            GetValuesBucketEvent(contact, executeHelper->valueContactData);
             break;
         case WEBSITE:
-            GetValuesBucketWebsite(contact, valueContactData);
+            GetValuesBucketWebsite(contact, executeHelper->valueContactData);
             break;
         case RELATION:
-            GetValuesBucketRelation(contact, valueContactData);
+            GetValuesBucketRelation(contact, executeHelper->valueContactData);
             break;
         case CONTACT_MISC:
             HILOG_INFO("TypeSwitchSplit is CONTACT_MISC ");
@@ -152,7 +230,7 @@ void ContactsBuild::TypeSwitchSplit(
             break;
         case CAMCARD:
         case SIP_ADDRESS:
-            GetValuesBucketSipAddress(contact, valueContactData);
+            GetValuesBucketSipAddress(contact, executeHelper->valueContactData);
             break;
         default:
             HILOG_ERROR("TypeSwitchSplit type is error ");
@@ -174,11 +252,11 @@ void ContactsBuild::GetValuesBucketEmail(Contacts &contact,
         DataShare::DataShareValuesBucket valuesBucketEmail;
         valuesBucketEmail.Put("detail_info", contact.emails[i].email);
         if (contact.emails[i].labelId != 0) {
-            valuesBucketEmail.Put("extend7", std::to_string(contact.emails[i].labelId));
+            valuesBucketEmail.Put("custom_data", std::to_string(MapLabelId(EMAIL, contact.emails[i].labelId)));
         }
         if (!contact.emails[i].labelName.empty()) {
-            valuesBucketEmail.Put("custom_data", contact.emails[i].labelName);
-            valuesBucketEmail.Put("extend7", std::to_string(Email::CUSTOM_LABEL));
+            valuesBucketEmail.Put("extend7", contact.emails[i].labelName);
+            valuesBucketEmail.Put("custom_data", std::to_string(ContactCommon::NEW_CUSTOM_LABEL));
         }
         if (!contact.emails[i].displayName.empty()) {
             valuesBucketEmail.Put("alias_detail_info", contact.emails[i].displayName);
@@ -202,11 +280,11 @@ void ContactsBuild::GetValuesBucketEvent(Contacts &contact,
         DataShare::DataShareValuesBucket valuesBucketEvent;
         valuesBucketEvent.Put("detail_info", contact.events[i].eventDate);
         if (contact.events[i].labelId != 0) {
-            valuesBucketEvent.Put("extend7", std::to_string(contact.events[i].labelId));
+            valuesBucketEvent.Put("custom_data", std::to_string(MapLabelId(CONTACT_EVENT, contact.events[i].labelId)));
         }
         if (!contact.events[i].labelName.empty()) {
-            valuesBucketEvent.Put("custom_data", contact.events[i].labelName);
-            valuesBucketEvent.Put("extend7", std::to_string(Event::CUSTOM_LABEL));
+            valuesBucketEvent.Put("extend7", contact.events[i].labelName);
+            valuesBucketEvent.Put("custom_data", std::to_string(ContactCommon::NEW_CUSTOM_LABEL));
         }
         valuesBucketEvent.Put("content_type", "contact_event");
         valueContactData.push_back(valuesBucketEvent);
@@ -248,11 +326,11 @@ void ContactsBuild::GetValuesBucketImAddress(Contacts &contact,
         DataShare::DataShareValuesBucket valuesBucketImAddress;
         valuesBucketImAddress.Put("detail_info", contact.imAddresses[i].imAddress);
         if (contact.imAddresses[i].labelId != 0) {
-            valuesBucketImAddress.Put("extend7", std::to_string(contact.imAddresses[i].labelId));
+            valuesBucketImAddress.Put("custom_data", std::to_string(MapLabelId(IM, contact.imAddresses[i].labelId)));
         }
         if (!contact.imAddresses[i].labelName.empty()) {
-            valuesBucketImAddress.Put("custom_data", contact.imAddresses[i].labelName);
-            valuesBucketImAddress.Put("extend7", std::to_string(ImAddress::CUSTOM_LABEL));
+            valuesBucketImAddress.Put("extend7", contact.imAddresses[i].labelName);
+            valuesBucketImAddress.Put("custom_data", std::to_string(ContactCommon::NEW_CUSTOM_LABEL));
         }
         valuesBucketImAddress.Put("content_type", "im");
         valueContactData.push_back(valuesBucketImAddress);
@@ -273,6 +351,7 @@ void ContactsBuild::GetValuesBucketPortrait(Contacts &contact,
         valuesBucketPortrait.Put("detail_info", contact.portrait.uri);
         valuesBucketPortrait.Put("content_type", "photo");
         valueContactData.push_back(valuesBucketPortrait);
+        return;
     }
 }
 
@@ -290,11 +369,12 @@ void ContactsBuild::GetValuesBucketPhoneNumber(
         DataShare::DataShareValuesBucket valuesBucketPhoneNumber;
         valuesBucketPhoneNumber.Put("detail_info", contact.phoneNumbers[i].phoneNumber);
         if (contact.phoneNumbers[i].labelId != 0) {
-            valuesBucketPhoneNumber.Put("extend7", std::to_string(contact.phoneNumbers[i].labelId));
+            valuesBucketPhoneNumber.Put("custom_data", std::to_string(MapLabelId(PHONE,
+                contact.phoneNumbers[i].labelId)));
         }
         if (!contact.phoneNumbers[i].labelName.empty()) {
-            valuesBucketPhoneNumber.Put("custom_data", contact.phoneNumbers[i].labelName);
-            valuesBucketPhoneNumber.Put("extend7", std::to_string(PhoneNumber::CUSTOM_LABEL));
+            valuesBucketPhoneNumber.Put("extend7", contact.phoneNumbers[i].labelName);
+            valuesBucketPhoneNumber.Put("custom_data", std::to_string(ContactCommon::NEW_CUSTOM_LABEL));
         }
         valuesBucketPhoneNumber.Put("content_type", "phone");
         valueContactData.push_back(valuesBucketPhoneNumber);
@@ -315,11 +395,12 @@ void ContactsBuild::GetValuesBucketPostalAddress(
         DataShare::DataShareValuesBucket valuesBucketPostalAddress;
         valuesBucketPostalAddress.Put("detail_info", contact.postalAddresses[i].postalAddress);
         if (contact.postalAddresses[i].labelId != 0) {
-            valuesBucketPostalAddress.Put("extend7", std::to_string(contact.postalAddresses[i].labelId));
+            valuesBucketPostalAddress.Put("custom_data", std::to_string(MapLabelId(POSTAL_ADDRESS,
+                contact.postalAddresses[i].labelId)));
         }
         if (!contact.postalAddresses[i].labelName.empty()) {
-            valuesBucketPostalAddress.Put("custom_data", contact.postalAddresses[i].labelName);
-            valuesBucketPostalAddress.Put("extend7", std::to_string(PostalAddress::CUSTOM_LABEL));
+            valuesBucketPostalAddress.Put("extend7", contact.postalAddresses[i].labelName);
+            valuesBucketPostalAddress.Put("custom_data", std::to_string(ContactCommon::NEW_CUSTOM_LABEL));
         }
         if (!contact.postalAddresses[i].neighborhood.empty()) {
             valuesBucketPostalAddress.Put("neighborhood", contact.postalAddresses[i].neighborhood);
@@ -361,11 +442,11 @@ void ContactsBuild::GetValuesBucketRelation(Contacts &contact,
         DataShare::DataShareValuesBucket valuesBucketRelation;
         valuesBucketRelation.Put("detail_info", contact.relations[i].relationName);
         if (contact.relations[i].labelId != 0) {
-            valuesBucketRelation.Put("extend7", std::to_string(contact.relations[i].labelId));
+            valuesBucketRelation.Put("custom_data", std::to_string(MapLabelId(RELATION, contact.relations[i].labelId)));
         }
         if (!contact.relations[i].labelName.empty()) {
-            valuesBucketRelation.Put("custom_data", contact.relations[i].labelName);
-            valuesBucketRelation.Put("extend7", std::to_string(Relation::CUSTOM_LABEL));
+            valuesBucketRelation.Put("extend7", contact.relations[i].labelName);
+            valuesBucketRelation.Put("custom_data", std::to_string(ContactCommon::NEW_CUSTOM_LABEL));
         }
         valuesBucketRelation.Put("content_type", "relation");
         valueContactData.push_back(valuesBucketRelation);
@@ -386,11 +467,12 @@ void ContactsBuild::GetValuesBucketSipAddress(Contacts &contact,
         DataShare::DataShareValuesBucket valuesBucketSipAddress;
         valuesBucketSipAddress.Put("detail_info", contact.sipAddresses[i].sipAddress);
         if (contact.sipAddresses[i].labelId != 0) {
-            valuesBucketSipAddress.Put("extend7", std::to_string(contact.sipAddresses[i].labelId));
+            valuesBucketSipAddress.Put("custom_data", std::to_string(MapLabelId(SIP_ADDRESS,
+                contact.sipAddresses[i].labelId)));
         }
         if (!contact.sipAddresses[i].labelName.empty()) {
-            valuesBucketSipAddress.Put("custom_data", contact.sipAddresses[i].labelName);
-            valuesBucketSipAddress.Put("extend7", std::to_string(SipAddress::CUSTOM_LABEL));
+            valuesBucketSipAddress.Put("extend7", contact.sipAddresses[i].labelName);
+            valuesBucketSipAddress.Put("custom_data", std::to_string(ContactCommon::NEW_CUSTOM_LABEL));
         }
         valuesBucketSipAddress.Put("content_type", "sip_address");
         valueContactData.push_back(valuesBucketSipAddress);
@@ -577,18 +659,58 @@ Name ContactsBuild::GetName(napi_env env, napi_value object)
     return name;
 }
 
-Portrait ContactsBuild::GetUri(napi_env env, napi_value object)
+Portrait ContactsBuild::GetPortrait(napi_env env, napi_value object)
 {
     Portrait portrait;
     napi_value portraitObj = GetObjectByKey(env, object, "portrait");
     napi_valuetype valueType;
     napi_typeof(env, portraitObj, &valueType);
     if (portraitObj == nullptr || valueType != napi_object) {
-        HILOG_ERROR("ContactsBuild GetUri portraitObj is null or object type is not object");
+        HILOG_ERROR("ContactsBuild GetPortrait portraitObj is null or object type is not object");
         return portrait;
     }
     portrait.uri = GetStringValueByKey(env, portraitObj, "uri");
+    if (!portrait.uri.empty()) {
+        HILOG_WARN("ContactsBuild GetPortrait uri is not empty");
+        portrait.isNeedHandlePhoto = true;
+        return portrait;
+    }
+    napi_value pixelMapObj = GetObjectByKey(env, portraitObj, "photo");
+    if (pixelMapObj == nullptr) {
+        HILOG_ERROR("ContactsBuild GetPortrait pixelMapObj is null");
+        return portrait;
+    }
+    if (ParseImageType(env, pixelMapObj) == Media::ImageType::TYPE_PIXEL_MAP) {
+        portrait.photo = Media::PixelMapNapi::GetPixelMap(env, pixelMapObj);
+        portrait.isNeedHandlePhoto = true;
+    }
     return portrait;
+}
+
+Media::ImageType ContactsBuild::ParseImageType(napi_env env, napi_value value)
+{
+    napi_value constructor = nullptr;
+    napi_value global = nullptr;
+    bool isInstance = false;
+    napi_status ret = napi_invalid_arg;
+    ret = napi_get_global(env, &global);
+    if (ret != napi_ok) {
+        HILOG_ERROR("Get PixelMapNapi property failed!");
+        return Media::ImageType::TYPE_UNKNOWN;
+    }
+    ret = napi_get_named_property(env, global, "PixelMap", &constructor);
+    if (ret != napi_ok) {
+        HILOG_ERROR("Get PixelMapNapi property failed!");
+        return Media::ImageType::TYPE_UNKNOWN;
+    }
+
+    ret = napi_instanceof(env, value, constructor, &isInstance);
+    if (ret == napi_ok && isInstance) {
+        return Media::ImageType::TYPE_PIXEL_MAP;
+    }
+
+    HILOG_WARN("Invalid type!");
+    return Media::ImageType::TYPE_UNKNOWN;
 }
 
 std::vector<Email> ContactsBuild::GetEmails(napi_env env, napi_value object)
@@ -892,7 +1014,7 @@ std::string ContactsBuild::NapiGetValueString(napi_env env, napi_value value)
     napi_get_value_string_utf8(env, value, valueString, valueSize, &resultSize);
     std::string resultValue = valueString;
     if (resultValue == "") {
-        HILOG_ERROR("ContactsBuild NapiGetValueString Data error");
+        HILOG_ERROR("ContactsBuild NapiGetValueString Data error, ts = %{public}lld", (long long) time(NULL));
         return "";
     }
     return resultValue;

@@ -45,6 +45,8 @@ int Contacts::InsertContact(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore,
     OHOS::NativeRdb::ValuesBucket contactValues = StructureContactDataValueBucket(rawContactValues);
     contactValues.PutInt(ContactColumns::NAME_RAW_CONTACT_ID, outRawContactId);
     int rowContactRet = rdbStore->Insert(contactId, ContactTableName::CONTACT, contactValues);
+    HILOG_INFO("contacts InsertContact ret:%{public}d, outRawContactId:%{public}lld, ts = %{public}lld",
+        rowContactRet, (long long) outRawContactId, (long long) time(NULL));
     return rowContactRet;
 }
 
@@ -59,6 +61,9 @@ int Contacts::UpdateContact(const int &rawContactId, std::shared_ptr<OHOS::Nativ
     int ret = rdbStore->Update(changedRows, ContactTableName::CONTACT, linkDataDataValues, upWhereClause, upWhereArgs);
     if (ret != OHOS::NativeRdb::E_OK) {
         HILOG_ERROR("ContactsUpdateHelper UpdateDisplay  UpdateSearchContact fail:%{public}d", ret);
+    } else {
+        HILOG_INFO("contacts UpdateContact ret:%{public}d, rawContactId:%{public}d, ts = %{public}lld",
+            ret, rawContactId, (long long) time(NULL));
     }
     return ret;
 }
@@ -136,6 +141,8 @@ int Contacts::DeleteContactById(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSt
     std::string whereCase;
     whereCase.append(ContactColumns::ID).append(" = ?");
     int delContact = store->Delete(rowId, ContactTableName::CONTACT, whereCase, whereArgs);
+    HILOG_INFO("contacts DeleteContactById ret:%{public}d, needDeleteContactId:%{public}d, ts = %{public}lld",
+        delContact, needDeleteContactId, (long long) time(NULL));
     return delContact;
 }
 } // namespace Contacts

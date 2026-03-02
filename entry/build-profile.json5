@@ -1,0 +1,28 @@
+{
+  "apiType": 'stageMode', 
+  "buildOption": {
+    "arkOptions": {
+      "obfuscation": {
+        "ruleOptions": {
+          "enable": false
+        }
+      }
+    },
+    "nativeLib": {
+      "debugSymbol": {
+        "strip": true,
+        "exclude": [
+          "**/libcontactsdataability.z.so",
+        ]
+      }
+    }
+  },
+  "targets": [
+    {
+      "name": "default"
+    },
+    {
+      "name": "ohosTest",
+    }
+  ]
+}

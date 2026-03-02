@@ -70,6 +70,7 @@ void ContactsType::PrepopulateCommonTypes(std::shared_ptr<OHOS::NativeRdb::RdbSt
     vectorType.push_back(ContentTypeData::HICALL_DEVICE);
     vectorType.push_back(ContentTypeData::CAMCARD);
     vectorType.push_back(ContentTypeData::SIP_ADDRESS);
+    vectorType.push_back(ContentTypeData::POSTER);
     int size = (int)vectorType.size();
     for (int i = 0; i < size; i++) {
         std::string typeValue = vectorType[i];
@@ -91,9 +92,18 @@ int ContactsType::LookupTypeId(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSto
         .append(" = ? ");
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(typeValue);
+    if (store_ == nullptr) {
+        HILOG_ERROR("LookupTypeId store_ is null");
+        return RDB_EXECUTE_FAIL;
+    }
     auto resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("LookupTypeId QuerySqlResult is null");
+        return RDB_EXECUTE_FAIL;
+    }
     int ret = resultSet->GoToFirstRow();
     if (ret != OHOS::NativeRdb::E_OK) {
+        resultSet->Close();
         return RDB_EXECUTE_FAIL;
     }
     int columnIndex = RDB_EXECUTE_FAIL;
@@ -104,7 +114,20 @@ int ContactsType::LookupTypeId(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbSto
     return typeId;
 }
 
-std::string ContactsType::GetTypeText(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, int typeId)
+int64_t ContactsType::LookupTypeIdOrInsertTypeValue(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore,
+    std::string typeValue)
+{
+    int64_t typeId = LookupTypeId(Contacts::ContactsDataBase::store_, typeValue);
+    if (typeId == Contacts::RDB_EXECUTE_FAIL) {
+        // type not found. insert the default type
+        HILOG_INFO("%{public}s not exist, begin insert", typeValue.c_str());
+        typeId = Insert(Contacts::ContactsDataBase::store_, typeValue, Contacts::RDB_OBJECT_EMPTY);
+    }
+    return typeId;
+}
+
+void ContactsType::GetTypeText(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, int typeId,
+    std::string &typeText)
 {
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &store_ = rdbStore;
     std::string sqlBuilder = "SELECT * FROM ";
@@ -115,17 +138,20 @@ std::string ContactsType::GetTypeText(std::shared_ptr<OHOS::NativeRdb::RdbStore>
     std::vector<std::string> selectionArgs;
     selectionArgs.push_back(std::to_string(typeId));
     auto resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("GetTypeText QuerySqlResult is null");
+        return;
+    }
     int ret = resultSet->GoToFirstRow();
     if (ret != OHOS::NativeRdb::E_OK) {
         resultSet->Close();
         HILOG_ERROR("ContactsType lookupTypeText ret :%{public}d", ret);
+        return;
     }
-    std::string TypeText;
     int columnIndex = RDB_EXECUTE_FAIL;
     resultSet->GetColumnIndex(ContentTypeColumns::CONTENT_TYPE, columnIndex);
-    resultSet->GetString(columnIndex, TypeText);
+    resultSet->GetString(columnIndex, typeText);
     resultSet->Close();
-    return TypeText;
 }
 } // namespace Contacts
 } // namespace OHOS

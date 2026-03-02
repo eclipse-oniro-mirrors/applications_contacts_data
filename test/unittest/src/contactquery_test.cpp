@@ -137,7 +137,7 @@ HWTEST_F(ContactQueryTest, contact_data_Insert_test_100, testing::ext::TestSize.
     int64_t contactDataIdFour = ContactDataInsert(rawContactId, "nickname", "买键盘", "", valuesFour);
     EXPECT_GT(contactDataIdFour, 0);
 
-    int64_t contactDataIdFive = ContactDataInsert(rawContactId, "email", "1667894561@163.com", "", valuesFive);
+    int64_t contactDataIdFive = ContactDataInsert(rawContactId, "email", "1667894561@email", "", valuesFive);
     EXPECT_GT(contactDataIdFive, 0);
 
     int64_t contactDataIdSix = ContactDataInsert(rawContactId, "postal_address", "南京市", "", valuesSix);
@@ -146,7 +146,7 @@ HWTEST_F(ContactQueryTest, contact_data_Insert_test_100, testing::ext::TestSize.
     int64_t contactDataIdSeven = ContactDataInsert(rawContactId, "note", "LanguagemjavaC++", "", valuesSeven);
     EXPECT_GT(contactDataIdSeven, 0);
 
-    int64_t contactDataIdEight = ContactDataInsert(rawContactId, "im", "14487956@1.com", "", valuesEight);
+    int64_t contactDataIdEight = ContactDataInsert(rawContactId, "im", "14487956@email", "", valuesEight);
     EXPECT_GT(contactDataIdEight, 0);
     ClearData();
 }
@@ -372,7 +372,7 @@ HWTEST_F(ContactQueryTest, query_by_email_test_900, testing::ext::TestSize.Level
     std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(contactData, columns, predicates);
 
     OHOS::DataShare::DataShareValuesBucket values;
-    values.Put("detail_info", "1667894561@163.com");
+    values.Put("detail_info", "1667894561@email");
     CheckResultSet(values, resultSet, "query_by_email_test_900");
     ClearData();
 }
@@ -458,7 +458,7 @@ HWTEST_F(ContactQueryTest, query_by_aim_test_1200, testing::ext::TestSize.Level1
     std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSet = ContactQuery(contactData, columns, predicates);
 
     OHOS::DataShare::DataShareValuesBucket values;
-    values.Put("detail_info", "14487956@1.com");
+    values.Put("detail_info", "14487956@email");
     CheckResultSet(values, resultSet, "query_by_aim_test_1200");
     ClearData();
 }

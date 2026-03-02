@@ -59,5 +59,23 @@ std::string &ContactsStringUtils::Trim(std::string &str)
     str.erase(str.find_last_not_of(" ") + 1);
     return str;
 }
+ 
+std::string ContactsStringUtils::MaskPhoneForLog(std::string &str)
+{
+    if (str.empty()) {
+        return str;
+    }
+    unsigned int PHONE_POST_NUM = 4;
+    unsigned int PHONE_PRE_NUM = 3;
+    std::string result = "";
+    result.append(str.size() >= PHONE_PRE_NUM ? str.substr(0, PHONE_PRE_NUM).c_str()
+                                            : str.c_str());
+    result.append(":");
+    result.append(str.size() >= PHONE_POST_NUM ? str.substr(str.size() - PHONE_POST_NUM).c_str()
+                                            : str.c_str());
+    result.append(":");
+    result.append(std::to_string(str.size()));
+    return result;
+}
 } // namespace Contacts
 } // namespace OHOS

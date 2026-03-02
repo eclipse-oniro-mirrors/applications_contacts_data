@@ -2,25 +2,42 @@
   "module": {
     "name": "contactsdata",
     "type": "entry",
-    "srcEntrance": "./ets/Application/ContactsDataAbilityStage.ts",
+    "srcEntrance": "./ets/Application/ContactsDataAbilityStage.ets",
     "description": "$string:app_name",
-    "mainElement": "MainAbility",
+    "mainElement": "com.ohos.contactsdataability.ServiceAbility",
     "deviceTypes": [
       "default",
-      "tablet"
+      "tablet",
+      "2in1",
+      "wearable"
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
-    "pages": "",
+    "pages": "$profile:main_pages",
     "abilities": [
       {
         "name": "MainAbility",
+        "label": "$string:contacts",
+        "icon": "$media:ic_contact_full_icon",
         "srcEntrance": "",
         "description": "dataability_description",
         "visible": false
       }
     ],
     "extensionAbilities": [
+      {
+        "name": "com.ohos.contactsdataability.ServiceAbility",
+        "icon": "$media:ic_contact_full_icon",
+        "description": "service",
+        "type": "service",
+        "visible": true,
+        "srcEntrance": "./ets/ServiceAbility/ServiceAbility.ts",
+        "label": "$string:contacts",
+        "permissions": [
+          "ohos.permission.READ_CONTACTS",
+          "ohos.permission.WRITE_CONTACTS"
+        ]
+      },
       {
         "name": "ContactsDataAbility",
         "srcEntrance": "./ets/DataShareExtAbility/DataShareExtAbility.ts",
@@ -30,7 +47,8 @@
         "type": "dataShare",
         "uri": "datashare://com.ohos.contactsdataability",
         "visible": true,
-        "srcLanguage": "c++"
+        "srcLanguage": "c++",
+        "metadata": [{"name": "ohos.extension.dataShare", "resource": "$profile:data_share_config"}]
       },
       {
         "name": "VoiceMailAbility",
@@ -54,6 +72,181 @@
         "uri": "datashare://com.ohos.calllogability",
         "visible": true,
         "srcLanguage": "c++"
+      },
+      {
+        "name": "com.ohos.contactsdataability.HandleContactEventsServiceAbility",
+        "icon": "$media:ic_contact_full_icon",
+        "description": "service",
+        "type": "service",
+        "visible": true,
+        "srcEntry": "./ets/ServiceAbility/HandleContactEventsServiceAbility.ets",
+        "label": "$string:contacts",
+        "permissions": [
+          "ohos.permission.READ_CONTACTS",
+          "ohos.permission.WRITE_CONTACTS"
+        ]
+      },
+      {
+        "name": "PermissionExtAbility",
+        "srcEntry": "./ets/uiExtensionAbility/PermissionExtAbility.ets",
+        "description": "permission dialog",
+        "type": 'sys/commonUI',
+        "exported": true,
+        "permissions": [
+          "ohos.permission.READ_CONTACTS",
+          "ohos.permission.WRITE_CONTACTS"
+        ]
+      }
+    ],
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.START_ABILITIES_FROM_BACKGROUND"
+      },
+      {
+        "name": "ohos.permission.PROTECT_SCREEN_LOCK_DATA"
+      },
+      {
+        "name": "ohos.permission.GET_BUNDLE_INFO"
+      },
+      {
+        "name": "ohos.permission.READ_CONTACTS",
+        "reason": "$string:permission_read_write_contacts",
+        "usedScene": {
+          "abilities": [
+            "com.ohos.contactsdataability.ServiceAbility",
+            "ContactsDataAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.WRITE_RINGTONE",
+        "usedScene": {
+          "abilities": [
+            "com.ohos.contactsdataability.ServiceAbility",
+            "ContactsDataAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.WRITE_CONTACTS",
+        "reason": "$string:permission_read_write_contacts",
+        "usedScene": {
+          "abilities": [
+            "com.ohos.contactsdataability.ServiceAbility",
+            "ContactsDataAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.GET_TELEPHONY_STATE",
+        "usedScene": {
+          "abilities": [
+            "com.ohos.contactsdataability.ServiceAbility",
+            "ContactsDataAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.READ_CALL_LOG",
+        "reason": "$string:permission_read_write_calllog",
+        "usedScene": {
+          "abilities": [
+            "CallLogAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.WRITE_CALL_LOG",
+        "reason": "$string:permission_read_write_calllog",
+        "usedScene": {
+          "abilities": [
+            "CallLogAbility"
+          ]
+        }
+      },
+	  {
+        "name": "ohos.permission.PERMISSION_USED_STATS",
+        "reason": "$string:permission_read_used_stats",
+        "usedScene": {
+          "abilities": [
+            "CallLogAbility",
+            "VoiceMailAbility",
+            "ContactsDataAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO",
+        "reason": "$string:permission_get_network_info",
+        "usedScene": {
+          "abilities": [
+            "CallLogAbility",
+            "VoiceMailAbility",
+            "ContactsDataAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.READ_CALENDAR",
+        "reason": "$string:contact_birthday_synchronization",
+        "usedScene": {
+          "abilities": [
+            "ContactsDataAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.WRITE_CALENDAR",
+        "reason": "$string:contact_birthday_synchronization",
+        "usedScene": {
+          "abilities": [
+            "ContactsDataAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS"
+      },
+      {
+        "name": "ohos.permission.MANAGE_LOCAL_ACCOUNTS"
+      }
+    ],
+    "proxyDatas":[
+      {
+        "uri": "datashareproxy://com.ohos.contactsdataability/contacts/setting",
+        "requiredReadPermission": "ohos.permission.READ_CONTACTS",
+        "requiredWritePermission": "ohos.permission.WRITE_CONTACTS",
+        "metadata": {
+          "name": "dataProperties",
+          "resource": "$profile:setting"
+        }
+      },
+      {
+        "uri": "datashareproxy://com.ohos.contactsdataability/calls/call_setting",
+        "requiredReadPermission": "ohos.permission.READ_CALL_LOG",
+        "requiredWritePermission": "ohos.permission.WRITE_CALL_LOG",
+        "metadata": {
+          "name": "dataProperties",
+          "resource": "$profile:call_setting"
+        }
+      },
+      {
+        "uri": "datashareproxy://com.ohos.contactsdataability/calls/calllog",
+        "requiredReadPermission": "ohos.permission.READ_CALL_LOG",
+        "requiredWritePermission": "ohos.permission.WRITE_CALL_LOG",
+        "metadata": {
+          "name": "dataProperties",
+          "resource": "$profile:call_log"
+        }
+      },
+      {
+        "uri": "datashareproxy://com.ohos.contactsdataability/callsEl5/calllog",
+        "requiredReadPermission": "ohos.permission.READ_CALL_LOG",
+        "requiredWritePermission": "ohos.permission.WRITE_CALL_LOG",
+        "metadata": {
+          "name": "dataProperties",
+          "resource": "$profile:call_log_el5"
+        }
       }
     ]
   }

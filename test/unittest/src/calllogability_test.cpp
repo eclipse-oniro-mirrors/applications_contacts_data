@@ -1176,7 +1176,7 @@ HWTEST_F(CalllogAbilityTest, abnormal_calllog_Update_test_2700, testing::ext::Te
 
     std::shared_ptr<OHOS::DataShare::DataShareResultSet> resultSetTwo = CalllogQuery(columns, predicates3);
     int rowCountTwo = 0;
-    resultSetTwo->GetRowCount(rowCountOne);
+    resultSetTwo->GetRowCount(rowCountTwo);
     EXPECT_EQ(0, rowCountTwo);
     OHOS::DataShare::DataShareValuesBucket oldValue;
     oldValue.Put("phone_number", phoneNumber);

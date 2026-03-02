@@ -35,22 +35,26 @@ public:
     napi_value GetNapiElementObject(napi_env env, napi_value object, const std::string keyChar);
     napi_value GetResultValue(
         napi_env env, std::string &contentKey, std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
+    napi_value GetIntValueFromString(
+        napi_env env, std::string &contentKey, std::shared_ptr<DataShare::DataShareResultSet> &resultSet, int &typeId);
     napi_value ResultSetToHolder(napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
     napi_value ResultSetToGroup(napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
-    napi_value ResultSetToObject(napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
+    napi_value ResultSetToObject(napi_env env,
+        std::shared_ptr<DataShare::DataShareResultSet> &resultSet, const std::string grantUri = "");
     napi_value ConvertContactArray(
         napi_env env, std::map<int, napi_value> &resultSetMap, std::map<int, std::string> &quickSearchMap);
     void PutQuickSearchKey(napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet,
         std::map<int, std::string> &quickSearchMap, int contactsIdValue);
-    void ConvertContactObject(
-        napi_env env, napi_value napiObject, std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
+    void ConvertContactObject(napi_env env, napi_value napiObject,
+        std::shared_ptr<DataShare::DataShareResultSet> &resultSet, const std::string grantUri = "");
     napi_value GetResultMapValue(napi_env env, std::map<int, napi_value> &resultSetMap, int &contactsId);
     void ConvertEmail(napi_env env, napi_value napiObject, int &typeId,
         std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
+    napi_value ProcessHasName(napi_env env, std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
     void ConvertName(napi_env env, napi_value napiObject, int &typeId,
         std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
     void ConvertUri(napi_env env, napi_value napiObject, int &typeId,
-        std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
+        std::shared_ptr<DataShare::DataShareResultSet> &resultSet, const std::string grantUri = "");
     void ConvertEvent(napi_env env, napi_value napiObject, int &typeId,
         std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
     void ConvertGroup(napi_env env, napi_value napiObject, int &typeId,
@@ -75,6 +79,12 @@ public:
         std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
     napi_value CreateNapiStringValue(napi_env env, const std::string key);
     bool IsEmpty(std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
+private:
+    static std::map<int, int> phoneTypeIdMap_;
+    static std::map<int, int> imTypeIdMap_;
+    static std::map<int, int> commonTypeIdMap_;
+    static std::map<int, int> relationTypeIdMap_;
+    std::map<int, int> GetTypeIdMap(int &typeId);
 };
 } // namespace ContactsApi
 } // namespace OHOS

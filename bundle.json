@@ -3,8 +3,8 @@
     "version": "3.1.0",
     "description": "contacts data ability",
     "publishAs": "code-segment",
-    "homePage": "https://gitee.com/openharmony",
-    "repository": "https://gitee.com/openharmony/applications_contacts_data",
+    "homePage": "",
+    "repository": "",
     "license": "Apache License 2.0",
     "language": "",
     "private": false,
@@ -30,49 +30,62 @@
         "ram": "7MB",
         "deps": {
             "components": [
+                "file_api",
+                "icu",
+                "libphonenumber",
+                "node",
                 "ability_base",
                 "ability_runtime",
                 "access_token",
                 "bundle_framework",
                 "common_event_service",
                 "c_utils",
+                "cellular_data",
+                "core_service",
                 "data_share",
                 "eventhandler",
                 "hilog",
                 "ipc",
+                "jsoncpp",
                 "napi",
                 "os_account",
                 "preferences",
                 "relational_store",
                 "safwk",
                 "samgr",
+                "i18n",
                 "ace_engine",
-                "jsoncpp",
-                "node"
-            ],
-            "third_party": []
+                "window_manager",
+                "player_framework",
+                "audio_framework",
+                "protobuf",
+                "ets_frontend",
+                "zlib",
+                "openssl",
+                "app_file_service",
+                "image_framework"
+            ]
         },
         "build": {
             "group_type": {
                 "base_group": [
                 ],
                 "fwk_group": [
-                    "//applications/standard/contacts_data/contacts:contact",
-                    "//applications/standard/contacts_data/contactsCJ:contact_cj"
+                    "//applications/standard/contacts_data/contacts:contact"
                 ],
                 "service_group": [
                     "//applications/standard/contacts_data:contactsdataability",
                     "//applications/standard/contacts_data:Contacts_DataAbility"
                 ]
             },
-            "inner_kits": [
-                {
-                    "header": {
-                        "header_base": "//applications/standard/contacts_data/contactsCJ/include",
-                        "header_files": []
-                    },
-                    "name": "//applications/standard/contacts_data/contactsCJ:contact_cj"
-                }
+            "test": [
+                "//applications/standard/contacts_data/test/fuzztest/calllog_fuzzer:fuzztest",
+                "//applications/standard/contacts_data/test/fuzztest/contactsdata_fuzzer:fuzztest",
+                "//applications/standard/contacts_data/test/fuzztest/contactsother_fuzzer:fuzztest",
+                "//applications/standard/contacts_data/test/fuzztest/contactsutils_fuzzer:fuzztest",
+                "//applications/standard/contacts_data/test/fuzztest/database_fuzzer:fuzztest",
+                "//applications/standard/contacts_data/test/fuzztest/transliterate_fuzzer:fuzztest",
+                "//applications/standard/contacts_data/test/fuzztest/voicemail_fuzzer:fuzztest"
             ]
         }
     }

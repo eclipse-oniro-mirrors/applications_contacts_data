@@ -32,8 +32,17 @@ public:
     FileUtils();
     ~FileUtils();
     int IsFolderExist(std::string path);
-    void Mkdir(std::string path);
-    void WriteStringToFileAppend(std::string dirStr, const std::string str);
+    void Mkdir(const std::string &path, mode_t mode = S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+    bool DirIterator(const std::string& filePath, std::vector<std::string>& iters);
+    bool IsDir(const std::string& filePath);
+    bool IsPathExist(const std::string& path);
+    std::string GetFileNameFromPath(const std::string& fullPath);
+    bool CopyPath(const std::string& srcPath, const std::string& dstPath);
+    bool ParentPathExist(const std::string& path);
+    bool GetGroupPath(std::string &groupPath);
+    bool GetGroupDir(std::string &path);
+    bool GetFileSize(const int fd, int32_t &fileSize);
+    bool DeleteFile(const std::string &filePath);
 };
 } // namespace Contacts
 } // namespace OHOS
