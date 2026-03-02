@@ -286,7 +286,7 @@ int ContactsDataShareStubImpl::BatchInsert(const Uri &uri, const std::vector<Dat
     return ret;
 }
 
-int ContactsDataShareStubImpl::ExecuteBatch(const std::vector<OperationStatement> &statement, ExecResultSet &result)
+int ContactsDataShareStubImpl::ExecuteBatch(const std::vector<OperationStatement> &statements, ExecResultSet &result)
 {
     if (!Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::WRITE_CONTACTS)) {
         HILOG_ERROR("Permission denied!");
