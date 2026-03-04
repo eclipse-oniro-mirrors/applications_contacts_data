@@ -130,7 +130,7 @@ ohos_shared_library("contact") {
     "libphonenumber:geocoding",
     "protobuf:protobuf_lite",
     "protobuf:protobuf",
-    "protobuf:protoc_lib",
+  # "protobuf:protoc_lib",
     "samgr:samgr_proxy",
   ]
 
