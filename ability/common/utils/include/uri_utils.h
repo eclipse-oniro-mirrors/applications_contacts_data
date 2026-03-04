@@ -31,7 +31,6 @@ public:
     std::vector<std::string> split(const std::string &str, const std::string &split);
     std::map<std::string, std::string> getQueryParameter(OHOS::Uri &uri);
     int UriParse(OHOS::Uri &uri, std::map<std::string, int> &keyMap);
-    void GetFileTypeAndFileName(const OHOS::Uri &uri, std::string &openFileType, std::string &fileName);
 };
 } // namespace Contacts
 } // namespace OHOS

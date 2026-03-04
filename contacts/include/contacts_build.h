@@ -42,25 +42,23 @@ public:
     ~ContactsBuild();
     void GetContactDataByObject(napi_env env, napi_value object, Contacts &contacts);
     int GetInt(napi_env env, napi_value id);
-    void GetContactData(napi_env env, ExecuteHelper *executeHelper);
+    void GetContactData(napi_env env, napi_value object, std::vector<DataShare::DataShareValuesBucket> &valueContact,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     std::string NapiGetValueString(napi_env env, napi_value value);
     ContactAttributes GetContactAttributes(napi_env env, napi_value object);
     Holder GetHolder(napi_env env, napi_value object);
     void BuildValueContactDataByType(
-        Contacts &contacts, int typeId, ExecuteHelper *executeHelper);
-    static std::map<int, int> phoneTypeIdMap_;
-    static std::map<int, int> imTypeIdMap_;
-    static std::map<int, int> commonTypeIdMap_;
-    int MapLabelId(int typeId, int labelId);
+        Contacts &contacts, int typeId, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
+
 private:
     void TypeSwitchSplit(int typeId, Contacts &contacts,
-        ExecuteHelper *executeHelper);
+        std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     napi_value GetArrayByKey(napi_env env, napi_value valueObject, std::string key);
     napi_value GetObjectByKey(napi_env env, napi_value object, std::string key);
     std::string GetStringValueByKey(napi_env env, napi_value valueObject, std::string key);
     int GetIntValueByKey(napi_env env, napi_value valueObject, std::string key);
     Name GetName(napi_env env, napi_value object);
-    Portrait GetPortrait(napi_env env, napi_value object);
+    Portrait GetUri(napi_env env, napi_value object);
     std::vector<Email> GetEmails(napi_env env, napi_value object);
     std::vector<Event> GetEvent(napi_env env, napi_value object);
     std::vector<Group> GetGroup(napi_env env, napi_value object);
@@ -93,8 +91,6 @@ private:
     void GetValuesBucketNote(Contacts &contacts, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
     void GetValuesBucketOrganization(Contacts &contacts,
         std::vector<DataShare::DataShareValuesBucket> &valueContactData);
-    Media::ImageType ParseImageType(napi_env env, napi_value value);
-    void BuildExecuteHelperPortrait(const Contacts &contact, ExecuteHelper *executeHelper);
 };
 } // namespace ContactsApi
 } // namespace OHOS

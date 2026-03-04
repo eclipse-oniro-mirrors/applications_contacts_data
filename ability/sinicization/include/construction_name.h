@@ -33,8 +33,6 @@ public:
     std::string disPlayName_;
     std::string photoFirstName_;
     static std::string local;
-    // 排序关键字
-    std::string sortKey;
     ConstructionName GetConstructionName(std::string &chineseCharacter, ConstructionName &constructionName);
     ConstructionName GetPhotoFirstName(ConstructionName &constructionName);
 };

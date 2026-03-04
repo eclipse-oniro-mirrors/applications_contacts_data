@@ -19,11 +19,9 @@
 #include "contacts_build.h"
 #include "contacts_napi_object.h"
 #include "napi_base_context.h"
-#include "contacts_control.h"
 
 namespace OHOS {
 namespace ContactsApi {
-const int32_t SLEEP_TIME = 100;
 void Init(napi_env env, napi_value exports);
 napi_value DeclareContactConst(napi_env env, napi_value exports);
 napi_value DeclareEmailConst(napi_env env, napi_value exports);
@@ -34,11 +32,9 @@ napi_value DeclarePostalAddressConst(napi_env env, napi_value exports);
 napi_value DeclareRelationConst(napi_env env, napi_value exports);
 napi_value DeclareSipAddressConst(napi_env env, napi_value exports);
 napi_value DeclareAttributeConst(napi_env env, napi_value exports);
-napi_value ContactsPickerSelect(napi_env env, napi_callback_info info);
 napi_value AddContact(napi_env env, napi_callback_info info);
 napi_value DeleteContact(napi_env env, napi_callback_info info);
 napi_value UpdateContact(napi_env env, napi_callback_info info);
-napi_value QueryContactsCount(napi_env env, napi_callback_info info);
 napi_value QueryContact(napi_env env, napi_callback_info info);
 napi_value QueryContacts(napi_env env, napi_callback_info info);
 napi_value QueryContactsByEmail(napi_env env, napi_callback_info info);
@@ -55,7 +51,6 @@ void ExecuteDone(napi_env env, napi_status status, void *data);
 void ExecuteSyncDone(napi_env env, napi_status status, void *data);
 void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &errorCode);
 void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
-void HandleQueryContactCountResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result);
 int GetRawIdByResultSet(const std::shared_ptr<DataShare::DataShareResultSet> &resultSet);
 napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper);
@@ -63,7 +58,6 @@ void LocalExecuteSplit(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteAddContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteDeleteContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContact(napi_env env, ExecuteHelper *executeHelper);
-void LocalExecuteQueryContactCount(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContactsOrKey(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryContactsByData(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteQueryGroup(napi_env env, ExecuteHelper *executeHelper);
@@ -87,19 +81,15 @@ DataShare::DataSharePredicates BuildQueryContactPredicates(
     napi_env env, std::string key, napi_value hold, napi_value attr);
 DataShare::DataSharePredicates BuildUpdateContactPredicates(napi_env env, napi_value contacts, napi_value attr);
 DataShare::DataSharePredicates BuildQueryContactData(napi_env env, napi_value &contactsObject,
-    napi_value &attrObject, ExecuteHelper *executeHelper);
+    napi_value &attrObject, std::vector<DataShare::DataShareValuesBucket> &valueContactData);
 std::vector<std::string> BuildUpdateContactColumns();
 DataShare::DataSharePredicates BuildUpdateContactConvertParams(
     napi_env env, napi_value &contacts, napi_value &attr, ExecuteHelper &executeHelper);
 DataShare::DataSharePredicates BuildQueryContactsPredicates(napi_env env, napi_value hold, napi_value attr);
-DataShare::DataSharePredicates BuildQueryContactCountPredicates();
 DataShare::DataSharePredicates BuildQueryContactsByEmailPredicates(
     napi_env env, std::string email, napi_value hold, napi_value attr);
 DataShare::DataSharePredicates BuildQueryContactsByPhoneNumberPredicates(
     napi_env env, std::string phoneNumber, napi_value hold, napi_value attr);
-std::string GetE164FormatPhoneNumber(std::string &phoneNumber);
-std::string FormatPhoneNumber(const std::string &number, const std::string &country);
-std::string GetCountryCode();
 DataShare::DataSharePredicates BuildQueryGroupsPredicates(napi_env env, napi_value hold);
 DataShare::DataSharePredicates BuildQueryKeyPredicates(napi_env env, int id, napi_value hold);
 DataShare::DataSharePredicates BuildQueryMyCardPredicates(napi_env env, napi_value attr);
@@ -111,11 +101,6 @@ void ObjectInit(napi_env env, napi_value object, napi_value &hold, napi_value &a
 void ObjectInitId(napi_env env, napi_value object, napi_value &id);
 void ObjectInitString(napi_env env, napi_value object, napi_value &key);
 int GetType(napi_env env, napi_value value);
-int InsertContactPortrait(ExecuteHelper *executeHelper, ContactsControl &contactsControl, int rawContactId);
-std::string QueryContactIdByRawContactId(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
-  ContactsControl &contactsControl, int rawContactId);
-int HandleConverPortraitFailed(ExecuteHelper *executeHelper, ContactsControl &contactsControl, int rawContactId,
-    const std::string &contactId, int errorCode);
 } // namespace ContactsApi
 } // namespace OHOS
 

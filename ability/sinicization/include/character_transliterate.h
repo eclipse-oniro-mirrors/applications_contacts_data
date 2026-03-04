@@ -19,11 +19,17 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <unicode/unistr.h>
-#include <unicode/translit.h>
 
 namespace OHOS {
 namespace Contacts {
+struct ChineseTable {
+    // The first letter of Pinyin
+    std::string initials;
+    // Pinyin
+    std::string nameFullFight_;
+    std::string chineseCharacters_;
+};
+
 struct Container {
     // The container of first letter
     std::vector<std::vector<std::wstring>> initialsContainer_;
@@ -35,11 +41,8 @@ class CharacterTransliterate {
 public:
     CharacterTransliterate();
     ~CharacterTransliterate();
+    static ChineseTable chineseTable_[];
     bool IsChineseCharacter(wchar_t chineseCharacter);
-    std::wstring getSortKey(std::wstring displayName);
-
-    void transferByTranslite(icu::Transliterator* transliterator, std::string &sourcestr, std::string &targetstr);
-
     Container GetContainer(std::wstring wChinese);
     std::wstring Join(std::vector<std::vector<std::wstring>> strVector, std::wstring split);
     void GetCommonPronunciation(
@@ -49,13 +52,7 @@ public:
     std::string WstringToString(std::wstring str);
 private:
     static std::map<std::string, std::string> multiPronunciationMap;
-
-    icu::Transliterator* transliteratorLationToAscii;
-    icu::Transliterator* transliteratorHanziToPinyin;
-
     std::string getMultiPronunciation(std::string chineseCharacter);
-    void handleChineseSortKey(std::wstring &childwChineseCharacter, std::wstring &sortKey);
-    void handleExtendedLatin(std::wstring &childwChineseCharacter, std::wstring &sameTypeStr);
 };
 } // namespace Contacts
 } // namespace OHOS
