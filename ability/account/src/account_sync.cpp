@@ -39,10 +39,7 @@ std::shared_ptr<ContactsAccount> g_contactsAccount = nullptr;
 std::shared_ptr<AccountSync> AccountSync::GetInstance()
 {
     if (instance_ == nullptr) {
-        std::unique_lock<std::mutex> lock(g_mtx);
-        if (instance_ == nullptr) {
-            instance_.reset(new AccountSync());
-        }
+        instance_.reset(new AccountSync());
     }
     return instance_;
 }

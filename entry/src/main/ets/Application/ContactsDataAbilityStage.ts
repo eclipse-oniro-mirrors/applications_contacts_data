@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,21 +13,17 @@
  * limitations under the License.
  */
 
-#ifndef CONTACTSDATAABILITY_CONTACT_PATH_H
-#define CONTACTSDATAABILITY_CONTACT_PATH_H
+import AbilityStage from '@ohos.app.ability.AbilityStage';
+import LogUtils from '../common/utils/LogUtils';
 
-#include <string>
+const TAG = 'ContactsDataAbilityStage';
 
-namespace OHOS {
-namespace Contacts {
-class ContactsPath {
-public:
-    ContactsPath();
-    ~ContactsPath();
-    static std::string RDB_PATH;
-    static std::string RDB_EL1_PATH;
-    static std::string RDB_BACKUP_PATH;
-};
-} // namespace Contacts
-} // namespace OHOS
-#endif // CONTACTSDATAABILITY_CONTACT_PATH_H
+export default class ContactsDataAbilityStage extends AbilityStage {
+  onCreate(): void {
+    LogUtils.i(TAG, 'onCreate');
+  }
+
+  onDestroy(): void {
+    LogUtils.i(TAG, 'onDestroy');
+  }
+}

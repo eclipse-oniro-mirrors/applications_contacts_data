@@ -20,9 +20,6 @@
 
 namespace OHOS {
 namespace Contacts {
-namespace {
-std::mutex g_mtx;
-}
 std::shared_ptr<VoiceMailDataBase> VoiceMailDataBase::voiceMailDataBase_ = nullptr;
 std::shared_ptr<OHOS::NativeRdb::RdbStore> VoiceMailDataBase::store_ = nullptr;
 
@@ -33,12 +30,9 @@ VoiceMailDataBase::VoiceMailDataBase()
 
 std::shared_ptr<VoiceMailDataBase> VoiceMailDataBase::GetInstance()
 {
-    if (voiceMailDataBase_ == nullptr || store_ == nullptr) {
-        std::unique_lock<std::mutex> lock(g_mtx);
-        if (voiceMailDataBase_ == nullptr || store_ == nullptr) {
-            voiceMailDataBase_.reset(new VoiceMailDataBase());
-            return voiceMailDataBase_;
-        }
+    if (voiceMailDataBase_ == nullptr) {
+        voiceMailDataBase_.reset(new VoiceMailDataBase());
+        return voiceMailDataBase_;
     }
     return voiceMailDataBase_;
 }
@@ -50,7 +44,7 @@ int64_t VoiceMailDataBase::InsertVoiceMail(std::string tableName, OHOS::NativeRd
         HILOG_ERROR("VoiceMailDataBase Insert store_ is nullptr");
         return RDB_OBJECT_EMPTY;
     }
-    CallLogDataBase::GetInstance()->QueryContactsByInsertCalls(insertValues, tableName);
+    CallLogDataBase::GetInstance()->QueryContactsByInsertCalls(insertValues);
     int ret = store_->Insert(outRowId, tableName, insertValues);
     if (ret != OHOS::NativeRdb::E_OK) {
         HILOG_ERROR("VoiceMailDataBase InsertVoiceMail ret :%{public}d", ret);
@@ -68,14 +62,14 @@ int VoiceMailDataBase::UpdateVoiceMail(
         return RDB_OBJECT_EMPTY;
     }
     if (values.HasColumn(CallLogColumns::PHONE_NUMBER)) {
-        CallLogDataBase::GetInstance()->QueryContactsByInsertCalls(values, CallsTableName::VOICEMAIL);
+        CallLogDataBase::GetInstance()->QueryContactsByInsertCalls(values);
     }
     int ret = store_->Update(changedRows, values, rdbPredicates);
     if (ret != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("VoiceMailDataBase Update ret :%{public}d, ts = %{public}lld", ret, (long long) time(NULL));
+        HILOG_ERROR("VoiceMailDataBase Update ret :%{public}d", ret);
         return RDB_EXECUTE_FAIL;
     }
-    return changedRows;
+    return ret;
 }
 
 int VoiceMailDataBase::DeleteVoiceMail(OHOS::NativeRdb::RdbPredicates &rdbPredicates)

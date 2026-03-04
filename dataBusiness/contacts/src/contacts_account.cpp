@@ -15,7 +15,6 @@
 
 #include "contacts_account.h"
 
-#include <mutex>
 #include "common.h"
 #include "contacts_columns.h"
 #include "hilog_wrapper.h"
@@ -23,15 +22,11 @@
 namespace OHOS {
 namespace Contacts {
 std::shared_ptr<ContactsAccount> ContactsAccount::instance_ = nullptr;
-std::mutex c_Mutex;
 
 std::shared_ptr<ContactsAccount> ContactsAccount::GetInstance()
 {
     if (instance_ == nullptr) {
-        std::unique_lock<std::mutex> lock(c_Mutex);
-        if (instance_ == nullptr) {
-            instance_.reset(new ContactsAccount());
-        }
+        instance_.reset(new ContactsAccount());
     }
     return instance_;
 }
@@ -66,7 +61,7 @@ int64_t ContactsAccount::Insert(
         return RDB_OBJECT_EMPTY;
     }
     int ret = store_->Insert(outRowId, ContactTableName::ACCOUNT, values);
-    HILOG_INFO(" ContactsAccount insert ret :%{public}d, ts = %{public}lld", ret, (long long) time(NULL));
+    HILOG_INFO(" ContactsAccount insert ret :%{public}d", ret);
     return outRowId;
 };
 
@@ -76,7 +71,7 @@ void ContactsAccount::PrepopulateCommonAccountTypes(std::shared_ptr<OHOS::Native
     if (typeResult == RDB_EXECUTE_FAIL) {
         Insert(rdbStore, AccountData::ACCOUNT_NAME, AccountData::ACCOUNT_TYPE);
     } else {
-        HILOG_INFO("ContactsAccount account is exist, ts = %{public}lld", (long long) time(NULL));
+        HILOG_INFO("ContactsAccount account is exist");
     }
 }
 
@@ -84,14 +79,8 @@ int ContactsAccount::LookupAccountTypeId(
     std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, std::string accountName, std::string accountType)
 {
     std::shared_ptr<OHOS::NativeRdb::RdbStore> &store_ = rdbStore;
-    if (store_ == nullptr) {
-        HILOG_ERROR("LookupAccountTypeId store_ is nullptr");
-        return RDB_OBJECT_EMPTY;
-    }
-    std::string sqlBuilder = "SELECT ";
-    sqlBuilder.append(AccountColumns::ID)
-        .append(" FROM ")
-        .append(ContactTableName::ACCOUNT)
+    std::string sqlBuilder = "SELECT * FROM ";
+    sqlBuilder.append(ContactTableName::ACCOUNT)
         .append(" WHERE ")
         .append(AccountColumns::ACCOUNT_NAME)
         .append(" = ")
@@ -105,16 +94,8 @@ int ContactsAccount::LookupAccountTypeId(
         .append(accountType)
         .append("'");
     std::vector<std::string> selectionArgs;
-    auto resultSet = store_->QueryByStep(sqlBuilder, {}, false);
-    if (resultSet == nullptr) {
-        HILOG_ERROR("LookupAccountTypeId QuerySqlResult is null");
-        return RDB_EXECUTE_FAIL;
-    }
+    auto resultSet = store_->QuerySql(sqlBuilder, selectionArgs);
     int ret = resultSet->GoToFirstRow();
-    if (ret == OHOS::NativeRdb::E_SQLITE_CORRUPT) {
-        ret = rdbStore->Restore("contacts.db.bak");
-        HILOG_ERROR("LookupAccountTypeId Insert Restore retCode= %{public}d", ret);
-    }
     if (ret != OHOS::NativeRdb::E_OK) {
         resultSet->Close();
         return RDB_EXECUTE_FAIL;
@@ -147,10 +128,6 @@ std::vector<AccountDataCollection> ContactsAccount::GetAccountFromLocal(
         .append(ContactTableName::ACCOUNT);
     std::vector<std::string> selectArgs;
     auto result = store_->QuerySql(buildQuery, selectArgs);
-    if (result == nullptr) {
-        HILOG_ERROR("GetAccountFromLocal QuerySqlResult is null");
-        return values;
-    }
     int resultSetNum = result->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
         std::string accountName;
@@ -201,10 +178,6 @@ int ContactsAccount::GetNotExistAccount(
         selectArgs.push_back(collection.GetcAccountType());
         selectArgs.push_back(collection.GetcDataCollection());
         auto result = store_->QuerySql(buildSql, selectArgs);
-        if (result == nullptr) {
-            HILOG_ERROR("GetNotExistAccount QuerySqlResult is null");
-            return RDB_OBJECT_EMPTY;
-        }
         int resultSetNum = result->GoToFirstRow();
         int reValue = RDB_EXECUTE_FAIL;
         while (resultSetNum == OHOS::NativeRdb::E_OK) {
