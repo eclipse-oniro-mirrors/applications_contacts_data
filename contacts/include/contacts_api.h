@@ -125,8 +125,8 @@ DataShare::DataSharePredicates BuildIsLocalContactPredicates(napi_env env, napi_
 DataShare::DataSharePredicates BuildIsMyCardPredicates(napi_env env, napi_value id);
 DataShare::DataSharePredicates BuildDeleteContactDataPredicates(napi_env env, napi_value attr);
 DataShare::DataSharePredicates BuildDeleteContactPredicates(napi_env env, ExecuteHelper &executeHelper);
-bool parseQueryCallLogParams(napi_env env, ExecuteHelper &executeHelper, HasMatchedCallLogParam &param);
-bool buildQueryCallLogPredicates(napi_env env, ExecuteHelper &executeHelper, DataShare::DataSharePredicates &predicates);
+bool ParseQueryCallLogParams(napi_env env, ExecuteHelper *executeHelper, HasMatchedCallLogParam &param);
+bool BuildQueryCallLogPredicates(napi_env env, ExecuteHelper *executeHelper, DataShare::DataSharePredicates &predicate);
 void ObjectInit(napi_env env, napi_value object, napi_value &hold, napi_value &attr, napi_value &contacts);
 void ObjectInitId(napi_env env, napi_value object, napi_value &id);
 void ObjectInitString(napi_env env, napi_value object, napi_value &key);

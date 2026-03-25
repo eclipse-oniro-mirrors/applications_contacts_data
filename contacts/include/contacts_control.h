@@ -70,8 +70,7 @@ public:
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
     int QueryCallLogCount(
-        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
-        const DataShare::DataSharePredicates &predicates);
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, const DataShare::DataSharePredicates &predicates);
     std::string QueryAppGroupDir(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper);
     int OpenFileByDataShare(const std::string &fileName,
     const std::shared_ptr<DataShare::DataShareHelper> &dataShareHelper);
