@@ -436,7 +436,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
     DataShare::DatashareBusinessError &businessError)
 {
     if (!(Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::READ_CALL_LOG) ||
-        Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::CHECK_CALL_LOG))) {
+            Telephony::TelephonyPermission::CheckPermission(Telephony::Permission::CHECK_CALL_LOG))) {
         HILOG_ERROR("Permission denied!");
         return nullptr;
     }

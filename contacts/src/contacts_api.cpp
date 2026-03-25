@@ -676,7 +676,7 @@ bool ParseQueryCallLogParams(napi_env env, ExecuteHelper *executeHelper, HasMatc
     return true;
 }
 
-bool BuildQueryCallLogPredicates(napi_env env, ExecuteHelper &executeHelper)
+bool BuildQueryCallLogPredicates(napi_env env, ExecuteHelper *executeHelper)
 {
     HILOG_INFO("BuildQueryCallLogPredicates start");
     if (executeHelper->resultData != SUCCESS) {
@@ -1457,7 +1457,7 @@ void LocalExecuteHasMatchedCallLog(napi_env env, ExecuteHelper *executeHelper)
         return;
     }
     ContactsControl contactsControl;
-    int queryCallLogCountRet = 
+    int queryCallLogCountRet =
         contactsControl.QueryCallLogCount(executeHelper->dataShareHelper, executeHelper->predicates);
     executeHelper->resultData = queryCallLogCountRet > 0 ? 1 : queryCallLogCountRet;
     HILOG_INFO("LocalExecuteHasMatchedCallLog end");
@@ -2161,7 +2161,7 @@ napi_value HasMatchedCallLog(napi_env env, napi_callback_info info)
     executeHelper->resultData = SUCCESS;
     ContactsTelephonyPermission permission;
     if (!(permission.CheckPermission(ContactsApi::Permission::READ_CALL_LOG) ||
-        permission.CheckPermission(ContactsApi::Permission::CHECK_CALL_LOG))) {
+            permission.CheckPermission(ContactsApi::Permission::CHECK_CALL_LOG))) {
         HILOG_ERROR("HasMatchedCallLog Permission denied!");
         executeHelper->resultData = RDB_PERMISSION_ERROR;
     }
@@ -2175,7 +2175,7 @@ napi_value HasMatchedCallLog(napi_env env, napi_callback_info info)
             break;
         case ARGS_FOUR:
             if (!ContactsNapiUtils::MatchParameters(
-                env, argv, { napi_object, napi_string, napi_number, napi_number })) {
+                env, argv, { napi_object, napi_string, napi_number, napi_number})) {
                 HILOG_ERROR("HasMatchedCallLog argc is 4 and param is invalid");
                 executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
             }
@@ -2188,7 +2188,6 @@ napi_value HasMatchedCallLog(napi_env env, napi_callback_info info)
     result = Scheduling(env, info, executeHelper, HAS_MATCHED_CALL_LOG);
     return result;
 }
-
 
 napi_value ContactsPickerSaveExist(napi_env env, napi_callback_info info)
 {

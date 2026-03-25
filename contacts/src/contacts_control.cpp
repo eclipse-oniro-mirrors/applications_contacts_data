@@ -225,7 +225,7 @@ int ContactsControl::QueryCallLogCount(
     }
     HILOG_WARN("QueryCallLogCount query call log count: %{private}d", callLogCount);
     resultSet->Close();
-    HILOG_INFO("QueryCallLogCount end");  
+    HILOG_INFO("QueryCallLogCount end");
     return callLogCount;
 }
 
