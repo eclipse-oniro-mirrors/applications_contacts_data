@@ -1035,6 +1035,16 @@ int ContactsBuild::GetInt(napi_env env, napi_value id)
     return value;
 }
 
+int ContactsBuild::GetInt64(napi_env env, napi_value id, int64_t &out)
+{
+    if (id == nullptr) {
+        HILOG_ERROR("GetInt64 id is nullptr");
+        return ERROR;
+    }
+    napi_get_value_int64(env, id, &out);
+    return SUCCESS;
+}
+
 std::string ContactsBuild::GetContactIdStr(napi_env env, napi_value id)
 {
     double value = 0;

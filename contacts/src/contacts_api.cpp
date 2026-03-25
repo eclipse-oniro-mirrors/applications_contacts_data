@@ -65,6 +65,8 @@ const std::vector<int> needGroupVec = {
     QUERY_CONTACTS_BY_PHONE_NUMBER,
     QUERY_MY_CARD
 };
+constexpr int64_t WITH_IN_TIME_MAX = 6 * 3600;
+constexpr int CARRIER_CALL_FEATURES_LIMIT = 1000;
 
 /**
  * @brief Initialize NAPI object
@@ -641,6 +643,76 @@ DataShare::DataSharePredicates BuildQueryMyCardPredicates(napi_env env, napi_val
     return predicates;
 }
 
+bool parseQueryCallLogParams(napi_env env, ExecuteHelper &executeHelper, HasMatchedCallLogParam &param)
+{
+    HILOG_INFO("ParseQueryCallLogParams start, argc: %{public}d", executeHelper->argc);
+    ContactsBuild contactBuild;
+    param.phoneNumber = contactBuild.NapiGetValueString(env, executeHelper->argv[ARGS_ZERO]);
+    param.formatPhoneNumber = GetEl64FormatPhoneNumber(param.phoneNumber);
+    if (param.phoneNumber.empty() && param.formatPhoneNumber.empty()) {
+        HILOG_ERROR("ParseQueryCallLogParams phoneNumber is empty");
+        return false;
+    }
+    int64_t minDuration = 0;
+    auto ret = contactsBuild.GetInt64(env, executeHelper->argv[ARGS_ONE], minDuration);
+    if (ret != SUCCESS) {
+        HILOG_ERROR("ParseQueryCallLogParams get minDuration failed");
+        return false;
+    }
+    param.minDuration = std::max(minDuration, static_cast<int64_t>(0));
+    if (executeHelper->argc == ARGS_THREE) {
+        int64_t withIntime = 0;
+        auto ret = contactsBuild.GetInt64(env, executeHelper->argv[ARGS_TWO], withInTime);
+        if (ret != SUCCESS) {
+            HILOG_ERROR("ParseQueryCallLogParams get withInTime failed");
+        }
+        param.withInTime = std::min(std::max(withInTime, static_cast<int64_t>(0), WITH_IN_MAX));
+    }
+    if (param.withInTime == -1) {
+        param.withInTime = WITH_IN_TIME_MAX;
+    }
+    HILOG_INFO("ParseQueryCallLogParams end");
+    return true;
+}
+
+bool buildQueryCallLogPredicates(napi_env env, ExecuteHelper &executeHelper)
+{
+    HILOG_INFO("buildQueryCallLogPredicates start");
+    if (executeHelper->resultData != SUCCESS) {
+        HILOG_ERROR("buildQueryCallLogPredicates, has last error");
+        return false;
+    }
+    HasMatchedCallLogParam param{};
+    auto isParamValid = parseQueryCallLogParams(env, executeHelper, param);
+    if (!isParamValid) {
+        HILOG_ERROR("buildQueryCallLogPredicates, parseQueryCallLogParams is invalid");
+        executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
+        return false;
+    }
+    auto now = std::chrono::system_clock::now();
+    auto timestamp = std::chrono::system_clock::to_time_t(now);
+    DataShare::DataSharePredicates predicate;
+    predicate.BeginWrap();
+    if (!param.phoneNumber.empty()) {
+        predicate.EqualTo("phone_number", param.phoneNumber);
+    }
+    if (!param.phoneNumber.empty() && !param.formatPhoneNumber.empty()) {
+        predicate.Or();
+    }
+    if (!param.formatPhoneNumber.empty()) {
+        predicate.EqualTo("format_phone_number", param.formatPhoneNumber);
+    }
+    predicate.EndWrap();
+    predicate.GreaterThanOrEqualTo("talk_duration", param.minDuration);
+    predicate.GreaterThanOrEqualTo("begin_time", param.withInTime);
+    predicate.LessThanOrEqualTo("end_time", timestamp);
+    predicate.LessThanOrEqualTo("features", CARRIER_CALL_FEATURES_LIMIT);
+    executeHelper->predicates = predicate;
+    HILOG_INFO("buildQueryCallLogPredicates end");
+    return true;
+}
+
+
 DataShare::DataSharePredicates BuildQueryContactData(napi_env env, napi_value &contactObject, napi_value &attrObject,
     ExecuteHelper *executeHelper)
 {
@@ -759,7 +831,7 @@ void ExecuteDone(napi_env env, napi_status status, void *data)
     napi_deferred deferred = executeHelper->deferred;
     // 处理结果
     HandleExecuteResult(env, executeHelper, result);
-    if (executeHelper->abilityContext != nullptr) {
+    if (executeHelper->abilityContext != nullptr || executeHelper->actionCode == HAS_MATCHED_CALL_LOG) {
         HILOG_INFO("executeHelper->abilityContext != nullptr");
         // 如果有错误，根据错误信息return，否则根据result返回
         napi_value errorCode = nullptr;
@@ -883,6 +955,7 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
                 result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
             }
             break;
+        case HAS_MATCHED_CALL_LOG:
         case ADD_CONTACTS: {
             HandleAddContactsErrorCode(env, executeHelper, result);
             break;
@@ -910,6 +983,9 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
         case IS_LOCAL_CONTACT:
         case IS_MY_CARD:
             napi_get_boolean(env, executeHelper->resultData != 0, &result);
+            break;
+        case HAS_MATCHED_CALL_LOG:
+            napi_get_boolean(env, executeHelper->resultData > 0, &result);
             break;
         case QUERY_CONTACT:
         case QUERY_MY_CARD:
@@ -1372,6 +1448,19 @@ void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper)
     resultSet->Close();
 }
 
+void LocalExecuteHasMatchedCallLog(napi_env env, ExecuteHelper *executeHelper)
+{
+    HILOG_INFO("LocalExecuteHasMatchedCallLog start");
+    if (executeHelper->resultData != SUCCESS) {
+        HILOG_ERROR("LocalExecuteHasMatchedCallLog, has last error");
+        return;
+    }
+    ContactsControl contactsControl;
+    int queryCallLogCountRet = contactsControl.QueryCallCount(executeHelper->dataShareHelper, executeHelper->predicates);
+    executeHelper->resultData = queryCallLogCountRet > 0 ? 1 : QueryCallLogCountRet;
+    HILOG_INFO("LocalExecuteHasMatchedCallLog end");
+}
+
 void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
 {
     if (executeHelper->dataShareHelper == nullptr) {
@@ -1394,6 +1483,9 @@ void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
             break;
         case UPDATE_CONTACT:
             LocalExecuteUpdateContact(env, executeHelper);
+            break;
+        case HAS_MATCHED_CALL_LOG:
+            LocalExecuteHasMatchedCallLog(env, executeHelper);
             break;
         default:
             LocalExecuteSplit(env, executeHelper);
@@ -1565,6 +1657,9 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
         case QUERY_KEY:
             VerificationParameterId(env, id, executeHelper, hold);
             executeHelper->predicates = BuildQueryKeyPredicates(env, id, hold);
+            break;
+        case HAS_MATCHED_CALL_LOG:
+            buildQueryCallLogPredicates(env, executeHelper);
             break;
         default:
             executeHelper->predicates = ConvertParamsSwitchSplit(executeHelper->actionCode, env, key, hold,
@@ -2044,6 +2139,54 @@ napi_value ContactsPickerSave(napi_env env, napi_callback_info info)
     return ContactsNapiUtils::NapiCreateAsyncWork(env, asyncContext, "contactsPickerSave",
         StartContactsPickerExecute, StartSaveContactsPickerAsyncCallbackComplete);
 }
+
+napi_value HasMatchedCallLog(napi_env env, napi_callback_info info)
+{
+    HILOG_INFO("HasMatchedCallLog start")
+    size_t argc = MAX_PARAMS;
+    napi_value argv[MAX_PARAMS] = {0};
+    napi_value thisVar = nullptr;
+    void data;
+    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+
+    napi_value result = nullptr;
+    ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
+    if (executeHelper == nullptr) {
+        napi_create_int64(env, ERROR, &result);
+        HILOG_ERROR("HasMatchedCallLog executeHelper is null");
+        return result;
+    }
+    executeHelper->resultData = SUCCESS;
+    ContactsTelePhonyPermission permission;
+    if (!(permission.CheckPermission(ContactsApi::Permission::READ_CALL_LOG) || 
+        permission.CheckPermission(ContactsApi::Permission::CHECK_CALL_LOG))) {
+        HILOG_ERROR("HasMatchedCallLog Permission denied");
+        executeHelper->resultData = RDB_PERMISSION_ERROR;
+    }
+    HILOG_WARN("HasMatchedCallLog argc: %{public}zu", argc);
+    switch (argc)  {
+        case ARGS_THREE:
+            if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_string, napi_number })) {
+                HILOG_ERROR("HasMatchedCallLog argc is 3 and param is invalid");
+                executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
+            }
+            break;
+        case ARGS_FOUR:
+            if (!ContactsNapiUtils::MatchParameters(
+                env, argv, { napi_object, napi_string, napi_number, napi_number })) {
+                HILOG_ERROR("HasMatchedCallLog argc is 4 and param is invalid");
+                executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
+            }
+            break;
+        default:
+            HILOG_ERROR("HasMatchedCallLog invalid number of parameters");
+            executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
+            break;
+    }
+    result = Scheduling(env, info, executeHelper, HAS_MATCHED_CALL_LOG);
+    return result;
+}
+
 
 napi_value ContactsPickerSaveExist(napi_env env, napi_callback_info info)
 {
@@ -3143,7 +3286,8 @@ void Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("isLocalContact", OHOS::ContactsApi::IsLocalContact),
         DECLARE_NAPI_FUNCTION("startContactsPicker", OHOS::ContactsApi::ContactsPickerSelect),
         DECLARE_NAPI_FUNCTION("startSaveContactsPicker", OHOS::ContactsApi::ContactsPickerSave),
-        DECLARE_NAPI_FUNCTION("startSaveExistContactsPicker", OHOS::ContactsApi::ContactsPickerSaveExist)
+        DECLARE_NAPI_FUNCTION("startSaveExistContactsPicker", OHOS::ContactsApi::ContactsPickerSaveExist),
+        DECLARE_NAPI_FUNCTION("hasMatchedCallLog", OHOS::ContactsApi::HasMatchedCallLog),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     // Declare class const initialization

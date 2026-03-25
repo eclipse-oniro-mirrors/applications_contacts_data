@@ -42,6 +42,7 @@ public:
     ~ContactsBuild();
     void GetContactDataByObject(napi_env env, napi_value object, Contacts &contacts);
     int GetInt(napi_env env, napi_value id);
+    int GetInt64(napi_env env, napi_value id, int64_t &out);
     std::string GetContactIdStr(napi_env env, napi_value id);
     void GetContactData(napi_env env, ExecuteHelper *executeHelper);
     void GetContactsByObject(napi_env env, ExecuteHelper *executeHelper, std::vector<Contacts> &contacts);

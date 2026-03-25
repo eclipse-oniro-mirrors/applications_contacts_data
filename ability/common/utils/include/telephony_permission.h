@@ -24,6 +24,7 @@ namespace Telephony {
 namespace Permission {
 static constexpr const char *WRITE_CALL_LOG = "ohos.permission.WRITE_CALL_LOG";
 static constexpr const char *READ_CALL_LOG = "ohos.permission.READ_CALL_LOG";
+static constexpr const char *CHECK_CALL_LOG = "ohos.permission.CHECK_CALL_LOG";
 static constexpr const char *WRITE_CONTACTS = "ohos.permission.WRITE_CONTACTS";
 static constexpr const char *READ_CONTACTS = "ohos.permission.READ_CONTACTS";
 static constexpr const char *OHOS_PERMISSION_MANAGE_VOICEMAIL = "ohos.permission.MANAGE_VOICEMAIL";
