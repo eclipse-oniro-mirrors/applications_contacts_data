@@ -29,6 +29,7 @@
 #include "result_set.h"
 
 #include "contacts_napi_object.h"
+#include "contacts_napi_common.h"
 
 namespace OHOS {
 namespace ContactsApi {
@@ -68,6 +69,8 @@ public:
     std::shared_ptr<DataShare::DataShareResultSet> HolderQuery(
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
+    int QueryCallLogCount(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, const DataShare::DataSharePredicates &predicates);
     std::string QueryAppGroupDir(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper);
     int OpenFileByDataShare(const std::string &fileName,
     const std::shared_ptr<DataShare::DataShareHelper> &dataShareHelper);

@@ -414,6 +414,7 @@ export default {
   updateContact: contact.updateContact,
   isLocalContact: contact.isLocalContact,
   isMyCard: contact.isMyCard,
+  hasMatchedCallLog: contact.hasMatchedCallLog,
 
   Contact: contact.Contact,
   ContactAttributes: contact.ContactAttributes,

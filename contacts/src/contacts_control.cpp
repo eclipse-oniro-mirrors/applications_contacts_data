@@ -196,6 +196,39 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::MyCardQuery(
     return resultSet;
 }
 
+int ContactsControl::QueryCallLogCount(
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, const DataShare::DataSharePredicates &predicates)
+{
+    HILOG_INFO("QueryCallLogCount start");
+    if (dataShareHelper == nullptr) {
+        HILOG_ERROR("QueryCallLogCount query dataShareHelper is nullptr");
+        return ERROR;
+    }
+    OHOS::Uri uri("datashare:///com.ohos.calllogability/calls/calllog");
+    std::vector<std::string> columns{"COUNT(*)"};
+    auto resultSet = dataShareHelper->Query(uri, predicates, columns);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("QueryCallLogCount query result is nullptr");
+        return ERROR;
+    }
+    if (resultSet->GoToFirstRow() != 0) {
+        HILOG_ERROR("QueryCallLogCount query result is empty");
+        resultSet->Close();
+        return ERROR;
+    }
+    int callLogCount = 0;
+    auto ret = resultSet->GetInt(0, callLogCount);
+    if (ret != SUCCESS) {
+        HILOG_ERROR("QueryCallLogCount get callLogCount failed");
+        resultSet->Close();
+        return ERROR;
+    }
+    HILOG_WARN("QueryCallLogCount query call log count: %{private}d", callLogCount);
+    resultSet->Close();
+    HILOG_INFO("QueryCallLogCount end");
+    return callLogCount;
+}
+
 int ContactsControl::OpenFileByDataShare(const std::string &fileName,
     const std::shared_ptr<DataShare::DataShareHelper> &dataShareHelper)
 {

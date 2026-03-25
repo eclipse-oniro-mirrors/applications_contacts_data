@@ -24,6 +24,14 @@
 namespace OHOS {
 namespace ContactsApi {
 const int32_t SLEEP_TIME = 100;
+
+struct HasMatchedCallLogParam {
+    std::string phoneNumber;
+    std::string formatPhoneNumber;
+    int minDuration = 0;
+    int withInTime = -1;
+};
+
 void Init(napi_env env, napi_value exports);
 napi_value DeclareContactConst(napi_env env, napi_value exports);
 napi_value DeclareEmailConst(napi_env env, napi_value exports);
@@ -50,6 +58,7 @@ napi_value QueryKey(napi_env env, napi_callback_info info);
 napi_value QueryMyCard(napi_env env, napi_callback_info info);
 napi_value IsMyCard(napi_env env, napi_callback_info info);
 napi_value IsLocalContact(napi_env env, napi_callback_info info);
+napi_value HasMatchedCallLog(napi_env env, napi_callback_info info);
 void Execute(napi_env env, void *data);
 void ExecuteAsync(napi_env env, void *data);
 void ExecuteDone(napi_env env, napi_status status, void *data);
@@ -80,6 +89,7 @@ void LocalExecuteQueryMyCard(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteIsLocalContact(napi_env env, ExecuteHelper *executeHelper);
 void LocalExecuteIsMyCard(napi_env env, ExecuteHelper *executeHelper);
+void LocalExecuteHasMatchedCallLog(napi_env env, ExecuteHelper *executeHelper);
 napi_value Scheduling(napi_env env, napi_callback_info info, ExecuteHelper *executeHelper, int actionCode);
 void VerificationParameterId(napi_env env, napi_value id, ExecuteHelper *executeHelper, napi_value hold);
 void VerificationParameterHolderId(napi_env env, ExecuteHelper *executeHelper, napi_value hold);
@@ -115,6 +125,8 @@ DataShare::DataSharePredicates BuildIsLocalContactPredicates(napi_env env, napi_
 DataShare::DataSharePredicates BuildIsMyCardPredicates(napi_env env, napi_value id);
 DataShare::DataSharePredicates BuildDeleteContactDataPredicates(napi_env env, napi_value attr);
 DataShare::DataSharePredicates BuildDeleteContactPredicates(napi_env env, ExecuteHelper &executeHelper);
+bool ParseQueryCallLogParams(napi_env env, ExecuteHelper *executeHelper, HasMatchedCallLogParam &param);
+bool BuildQueryCallLogPredicates(napi_env env, ExecuteHelper *executeHelper, DataShare::DataSharePredicates &predicate);
 void ObjectInit(napi_env env, napi_value object, napi_value &hold, napi_value &attr, napi_value &contacts);
 void ObjectInitId(napi_env env, napi_value object, napi_value &id);
 void ObjectInitString(napi_env env, napi_value object, napi_value &key);
