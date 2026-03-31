@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2025-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,7 +39,7 @@ namespace AbilityRuntime {
 namespace {
 std::mutex g_mutex;
 }
-std::shared_ptr<Contacts::CallLogDataBase> CallLogAbility::callLogDataBase_ = nullptr;
+std::shared_ptr<Contacts::CallLogDataBase> CallLogCheckAbility::callLogDataBase_ = nullptr;
 std::map<std::string, int> CallLogCheckAbility::uriValueMap_ = {
     {"/com.ohos.calllogcheckability/calls/calllog", Contacts::CALLLOG}
 };
@@ -118,11 +118,12 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogCheckAbility::Query(const 
     g_mutex.unlock();
     int resultCount;
     sharedPtrResult->GetRowCount(resultCount);
-    HILOG_WARN("CallLogCheckAbility ====>Query end, resultCount = %{public}d, ts = %{public}ld", resultCount, time(NULL));
+    HILOG_INFO("CallLogCheckAbility ====>Query end, resultCount = %{public}d, ts = %{public}ld", 
+        resultCount, time(NULL));
     return sharedPtrResult;
 }
 
-void CallLogAbility::OnStart(const Want &want)
+void CallLogCheckAbility::OnStart(const Want &want)
 {
     HILOG_INFO("CallLogCheckAbility OnStart begin, ts = %{public}ld", time(NULL));
     Extension::OnStart(want);
@@ -146,7 +147,7 @@ int CallLogAbility::UriParse(Uri &uri)
  * 添加查询非隐私记录的信息条件
  * @param rdbPredicates
  */
-void CallLogAbility::AddQueryNotPrivacyCondition(OHOS::NativeRdb::RdbPredicates &rdbPredicates)
+void CallLogCheckAbility::AddQueryNotPrivacyCondition(OHOS::NativeRdb::RdbPredicates &rdbPredicates)
 {
     std::string whereSql = rdbPredicates.GetWhereClause();
     if (whereSql.find(Contacts::CallLogColumns::PRIVACY_TAG) == std::string::npos) {

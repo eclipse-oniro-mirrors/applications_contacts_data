@@ -95,6 +95,7 @@ std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetCallLogCheckA
         std::lock_guard<std::mutex> lock(callogMutex_);
         if (callLogCheckAbility_ == nullptr) {
             callLogCheckAbility_ = std::make_shared<CallLogCheckAbility>();
+        }
     }
     return callLogCheckAbility_;
 }
@@ -121,7 +122,7 @@ std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetOwner(const U
     if (path.find("com.ohos.voicemailability") != std::string::npos) {
         return GetVoiceMailAbility();
     }
-    if (path.find("com.ohos.calllogCheckability") != std::string::npos) {
+    if (path.find("com.ohos.calllogcheckability") != std::string::npos) {
         return GetCallLogCheckAbility();
     }
     return nullptr;

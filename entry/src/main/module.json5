@@ -93,7 +93,7 @@
         "description": "dataability_description",
         "type": "dataShare",
         "uri": "datashare://com.ohos.calllogcheckability",
-        "visible": true
+        "exported": true
       },
       {
         "name": "com.ohos.contactsdataability.HandleContactEventsServiceAbility",

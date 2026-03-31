@@ -205,7 +205,7 @@ int ContactsControl::QueryCallLogCount(
         return ERROR;
     }
     ContactsTelephonyPermission permission;
-    OHOS:Uri uri("");
+    OHOS::Uri uri("");
     if (permission.CheckPermission(ContactsApi::Permission::READ_CALL_LOG)) {
         uri = OHOS::Uri("datashare:///com.ohos.calllogability/calls/calllog");
     } else if (permission.CheckPermission(ContactsApi::Permission::CHECK_CALL_LOG)) {
@@ -214,7 +214,6 @@ int ContactsControl::QueryCallLogCount(
         HILOG_ERROR("QueryCallLogCount query permission denied");
         return RDB_PERMISSION_ERROR;
     }
-    OHOS::Uri uri("datashare:///com.ohos.calllogability/calls/calllog");
     std::vector<std::string> columns{"COUNT(*)"};
     auto resultSet = dataShareHelper->Query(uri, predicates, columns);
     if (resultSet == nullptr) {
