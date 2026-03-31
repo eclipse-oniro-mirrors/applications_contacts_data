@@ -118,7 +118,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogCheckAbility::Query(const 
     g_mutex.unlock();
     int resultCount;
     sharedPtrResult->GetRowCount(resultCount);
-    HILOG_INFO("CallLogCheckAbility ====>Query end, resultCount = %{public}d, ts = %{public}ld", 
+    HILOG_INFO("CallLogCheckAbility ====>Query end, resultCount = %{public}d, ts = %{public}ld",
         resultCount, time(NULL));
     return sharedPtrResult;
 }

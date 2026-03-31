@@ -231,7 +231,7 @@ bool GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
             executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), 
                 CALL_LOG_CHECK_URI);
         } else {
-            executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(), 
+            executeHelper->dataShareHelper = DataShare::DataShareHelper::Creator(context->GetToken(),
                 CONTACTS_DATA_URI);
         }
     }
