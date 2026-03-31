@@ -107,6 +107,7 @@ ohos_shared_library("contactsdataability") {
     "ability/sinicization/src/character_transliterate.cpp",
     "ability/sinicization/src/construction_name.cpp",
     "dataBusiness/calllog/src/calllog_ability.cpp",
+    "dataBusiness/calllog/src/calllogcheck_ability.cpp",
     "dataBusiness/calllog/src/calllog_database.cpp",
     "dataBusiness/calllog/src/calllog_manager.cpp",
     "dataBusiness/contacts/src/contacts.cpp",

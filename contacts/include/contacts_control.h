@@ -27,6 +27,7 @@
 #include "rdb_predicates.h"
 #include "rdb_store.h"
 #include "result_set.h"
+#include "contacts_telephony_permission.h"
 
 #include "contacts_napi_object.h"
 #include "contacts_napi_common.h"

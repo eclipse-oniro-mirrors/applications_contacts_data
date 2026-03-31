@@ -87,6 +87,15 @@
         "visible": true
       },
       {
+        "name": "CallLogCheckAbility",
+        "srcEntry": "./ets/DataShareExtAbility/DataShareExtAbility.ts",
+        "readPermission": "ohos.permission.CHECK_CALL_LOG",
+        "description": "dataability_description",
+        "type": "dataShare",
+        "uri": "datashare://com.ohos.calllogcheckability",
+        "visible": true
+      },
+      {
         "name": "com.ohos.contactsdataability.HandleContactEventsServiceAbility",
         "icon": "$media:ic_contact_full_icon",
         "description": "service",

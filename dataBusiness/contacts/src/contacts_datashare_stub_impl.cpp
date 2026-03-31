@@ -14,6 +14,7 @@
  */
 
 #include "calllog_ability.h"
+#include "calllogcheck_ability.h"
 #include "common.h"
 #include "contacts_datashare_stub_impl.h"
 #include "dataobs_mgr_client.h"
@@ -61,6 +62,12 @@ void ContactsDataShareStubImpl::SetCallLogAbility(std::shared_ptr<DataShareExtAb
     callLogAbility_ = extension;
 }
 
+void ContactsDataShareStubImpl::SetCallLogCheckAbility(std::shared_ptr<DataShareExtAbility> extension)
+{
+    std::lock_guard<std::mutex> lock(callogMutex_);
+    callLogCheckAbility_ = extension;
+}
+
 void ContactsDataShareStubImpl::SetVoiceMailAbility(std::shared_ptr<DataShareExtAbility> extension)
 {
     std::lock_guard<std::mutex> lock(voiceMailMutex_);
@@ -80,6 +87,16 @@ std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetCallLogAbilit
         callLogAbility_.reset(CallLogAbility::Create());
     }
     return callLogAbility_;
+}
+
+std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetCallLogCheckAbility()
+{
+    if (callLogCheckAbility_ == nullptr) {
+        std::lock_guard<std::mutex> lock(callogMutex_);
+        if (callLogCheckAbility_ == nullptr) {
+            callLogCheckAbility_ = std::make_shared<CallLogCheckAbility>();
+    }
+    return callLogCheckAbility_;
 }
 
 std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetVoiceMailAbility()
@@ -103,6 +120,9 @@ std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetOwner(const U
     }
     if (path.find("com.ohos.voicemailability") != std::string::npos) {
         return GetVoiceMailAbility();
+    }
+    if (path.find("com.ohos.calllogCheckability") != std::string::npos) {
+        return GetCallLogCheckAbility();
     }
     return nullptr;
 }

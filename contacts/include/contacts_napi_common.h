@@ -105,6 +105,7 @@ constexpr int ARGS_THREE = 3;
 constexpr int ARGS_FOUR = 4;
 constexpr int ARGS_FIVE = 5;
 inline const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
+inline const std::string CALL_LOG_CHECK_URI = "datashare:///com.ohos.calllogcheckability";
 
 struct ExecuteHelper {
     ExecuteHelper()
