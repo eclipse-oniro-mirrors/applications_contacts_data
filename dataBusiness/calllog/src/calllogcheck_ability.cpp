@@ -136,7 +136,7 @@ void CallLogCheckAbility::OnStart(const Want &want)
     }
 }
 
-int CallLogAbility::UriParse(Uri &uri)
+int CallLogCheckAbility::UriParse(Uri &uri)
 {
     Contacts::UriUtils uriUtils;
     int parseCode = uriUtils.UriParse(uri, uriValueMap_);
