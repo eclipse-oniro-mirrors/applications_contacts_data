@@ -25,7 +25,6 @@
 #include "datashare_ext_ability_context.h"
 #include "datashare_predicates.h"
 #include "file_utils.h"
-#include "log_utils.h"
 #include "predicates_convert.h"
 #include "rdb_predicates.h"
 #include "rdb_utils.h"
