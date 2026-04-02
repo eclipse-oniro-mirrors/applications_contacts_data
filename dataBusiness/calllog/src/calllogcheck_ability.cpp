@@ -53,7 +53,7 @@ CallLogCheckAbility::~CallLogCheckAbility()
 
 sptr<IRemoteObject> CallLogCheckAbility::OnConnect(const AAFwk::Want &want)
 {
-    HILOG_INFO("CallLogCheckAbility OnConnect begin, ts = %{public}ld", time(NULL));
+    HILOG_INFO("CallLogCheckAbility OnConnect begin, ts = %{public}lld", (long long) time(NULL));
     Extension::OnConnect(want);
     sptr<DataShare::ContactsDataShareStubImpl> remoteObject =
         new (std::nothrow) DataShare::ContactsDataShareStubImpl();
@@ -62,7 +62,7 @@ sptr<IRemoteObject> CallLogCheckAbility::OnConnect(const AAFwk::Want &want)
         return nullptr;
     }
     remoteObject->SetCallLogCheckAbility(std::static_pointer_cast<CallLogCheckAbility>(shared_from_this()));
-    HILOG_INFO("CallLogCheckAbility OnConnect end, ts = %{public}ld", time(NULL));
+    HILOG_INFO("CallLogCheckAbility OnConnect end, ts = %{public}lld", (long long) time(NULL));
     Contacts::CallLogDataBase::GetInstance();
     return remoteObject->AsObject();
 }
@@ -84,7 +84,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogCheckAbility::Query(const 
         HILOG_ERROR("Permission denied!");
         return nullptr;
     }
-    HILOG_INFO("CallLogCheckAbility ====>Query start, ts = %{public}ld", time(NULL));
+    HILOG_INFO("CallLogCheckAbility ====>Query start, ts = %{public}lld", (long long) time(NULL));
     g_mutex.lock();
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
@@ -117,14 +117,14 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogCheckAbility::Query(const 
     g_mutex.unlock();
     int resultCount;
     sharedPtrResult->GetRowCount(resultCount);
-    HILOG_INFO("CallLogCheckAbility ====>Query end, resultCount = %{public}d, ts = %{public}ld",
-        resultCount, time(NULL));
+    HILOG_INFO("CallLogCheckAbility ====>Query end, resultCount = %{public}d, ts = %{public}lld",
+        resultCount, (long long) time(NULL));
     return sharedPtrResult;
 }
 
 void CallLogCheckAbility::OnStart(const Want &want)
 {
-    HILOG_INFO("CallLogCheckAbility OnStart begin, ts = %{public}ld", time(NULL));
+    HILOG_INFO("CallLogCheckAbility OnStart begin, ts = %{public}lld", (long long) time(NULL));
     Extension::OnStart(want);
     auto context = AbilityRuntime::Context::GetApplicationContext();
     if (context != nullptr) {
@@ -150,7 +150,7 @@ void CallLogCheckAbility::AddQueryNotPrivacyCondition(OHOS::NativeRdb::RdbPredic
 {
     std::string whereSql = rdbPredicates.GetWhereClause();
     if (whereSql.find(Contacts::CallLogColumns::PRIVACY_TAG) == std::string::npos) {
-        HILOG_INFO("query calllog, not has privacy_tag conditoin, add condition, ts = %{public}ld", time(NULL));
+        HILOG_INFO("query calllog, not has privacy_tag conditoin, add condition, ts = %{public}lld", (long long) time(NULL));
         // 不存在是否隐私记录条件，需要设置为非隐私
         rdbPredicates.And();
         rdbPredicates.NotEqualTo(
