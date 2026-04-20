@@ -136,6 +136,16 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::MyCardQuery(
     std::shared_ptr<DataShare::DataShareResultSet> resultSet;
     OHOS::Uri uriProfileContact("datashare:///com.ohos.contactsdataability/profile/contact_data");
     resultSet = dataShareHelper->Query(uriProfileContact, predicates, columns);
+    int rowCount = 0;
+    resultSet->GetRowCount(rowCount);
+    if (rowCount > 0) {
+        HILOG_INFO("ContactsControl::MyCardQuery profile");
+        return resultSet;
+    }
+    OHOS::Uri uriContactsContactData("datashare:///com.ohos.contactsdataability/contacts/contact_data");
+    predicates.EqualTo("primary_contact", "1");
+    resultSet = dataShareHelper->Query(uriContactsContactData, predicates, columns);
+    HILOG_INFO("ContactsControl::MyCardQuery contacts");
     return resultSet;
 }
 } // namespace ContactsApi

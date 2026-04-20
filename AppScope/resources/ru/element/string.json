@@ -1,0 +1,11 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"Хранилище контактов",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

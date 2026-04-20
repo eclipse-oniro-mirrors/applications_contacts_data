@@ -1,0 +1,11 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"Almacenamiento de contactos",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

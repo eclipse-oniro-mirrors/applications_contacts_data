@@ -31,57 +31,6 @@ CandidateStatus::~CandidateStatus()
 {
 }
 
-/**
- * @brief Query operation for merging candidates
- *
- * @param store Conditions for query operation
- * @param rawId Contacts's raw_contact_id to query
- *
- * @return Collection of canddidate contacts with the same raw_contact_id
- */
-Candidate CandidateStatus::QueryAllForMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> store, int rawId)
-{
-    Candidate candidate;
-    std::shared_ptr<ContactsDataBase> contactsDataBase = ContactsDataBase::GetInstance();
-    int nameType = contactsDataBase->GetTypeId(ContentTypeData::NAME);
-    int phoneType = contactsDataBase->GetTypeId(ContentTypeData::PHONE);
-    MergeUtils mergeUtils;
-    std::set<std::string> names = mergeUtils.QueryRawContactByType(store, rawId, nameType);
-    // query other name with the raw_contact_id
-    std::vector<int> nameIds = mergeUtils.QueryByDataName(rawId, names, store);
-    // query current phone
-    std::set<std::string> phones = mergeUtils.QueryRawContactByType(store, rawId, phoneType);
-    std::set<int> autoIds;
-    std::set<int> manualIds;
-    unsigned int size = nameIds.size();
-    for (unsigned int i = 0; i < size; i++) {
-        if (!IsNeedMerge(store, nameIds[i]) || !IsMergeStatus(store, nameIds[i])) {
-            continue;
-        }
-        std::set<std::string> otherPhones = mergeUtils.QueryRawContactByType(store, nameIds[i], phoneType);
-        if (phones.empty() && otherPhones.empty()) {
-            autoIds.insert(nameIds[i]);
-        }
-        if (phones.empty() || otherPhones.empty()) {
-            manualIds.insert(nameIds[i]);
-        }
-        if (mergeUtils.SetEqual(phones, otherPhones)) {
-            autoIds.insert(nameIds[i]);
-        } else {
-            manualIds.insert(nameIds[i]);
-        }
-    }
-    candidate.autoIds_ = autoIds;
-    candidate.manualIds_ = manualIds;
-    AddMergedStatus(candidate);
-    HILOG_INFO("QueryAllForMerge mode is : %{public}d ", candidate.mergeMode_);
-    candidate.autoIds_.insert(rawId);
-    candidate.manualIds_.insert(rawId);
-    HILOG_INFO("QueryAllForMerge size is : %{public}zu ", candidate.autoIds_.size());
-    HILOG_INFO("QueryAllForMerge candidate.manualIds_ is : %{public}zu ", candidate.manualIds_.size());
-    return candidate;
-}
-
 void CandidateStatus::AddMergedStatus(Candidate &candidate)
 {
     if (!candidate.autoIds_.empty()) {
@@ -112,6 +61,10 @@ bool CandidateStatus::IsNeedMerge(std::shared_ptr<OHOS::NativeRdb::RdbStore> sto
         .append(" = ")
         .append(std::to_string(rawId));
     auto isNeedMergeSet = store->QuerySql(isNeedMergeSql);
+    if (isNeedMergeSet == nullptr) {
+        HILOG_ERROR("IsNeedMerge QuerySqlResult is null");
+        return false;
+    }
     bool isNeedMerge = false;
     int resultSetNum = isNeedMergeSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -147,6 +100,10 @@ bool CandidateStatus::IsMergeStatus(std::shared_ptr<OHOS::NativeRdb::RdbStore> s
         .append(" = ")
         .append(std::to_string(rawId));
     auto MergeSwitchSet = store->QuerySql(isMergeSwitchSql);
+    if (MergeSwitchSet == nullptr) {
+        HILOG_ERROR("IsMergeStatus QuerySqlResult is null");
+        return false;
+    }
     bool isMergeSwitch = false;
     int resultSetNum = MergeSwitchSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {
@@ -182,6 +139,10 @@ bool CandidateStatus::IsMerged(std::shared_ptr<OHOS::NativeRdb::RdbStore> store,
         .append(" = ")
         .append(std::to_string(rawId));
     auto isNeedMergeSet = store->QuerySql(isNeedMergeSql);
+    if (isNeedMergeSet == nullptr) {
+        HILOG_ERROR("IsMerged QuerySqlResult is null");
+        return false;
+    }
     bool mergeMode = false;
     int resultSetNum = isNeedMergeSet->GoToFirstRow();
     while (resultSetNum == OHOS::NativeRdb::E_OK) {

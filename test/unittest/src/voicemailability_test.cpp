@@ -961,7 +961,7 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Insert_test_2000, testing::ext
     std::string phoneNumber = randomNumberUtils.Generating(number);
     voicemailValues.Put("phone_numbers", phoneNumber);
     int64_t voicemailId = voicemailAbility.Insert(uriVoicemail, voicemailValues);
-    HILOG_INFO("abnormal_voicemail_Insert_test_2000: voicemailId = %{public}ld", voicemailId);
+    HILOG_INFO("abnormal_voicemail_Insert_test_2000: voicemailId = %{public}ld", (long) voicemailId);
     EXPECT_EQ(voicemailId, -1);
 
     OHOS::DataShare::DataSharePredicates predicates;
@@ -995,7 +995,7 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Insert_test_2100, testing::ext
     std::string phoneNumber = randomNumberUtils.Generating(number);
     voicemailValues.Put("phone_number", phoneNumber);
     int64_t voicemailId = voicemailAbility.Insert(errorUriVoicemails, voicemailValues);
-    HILOG_INFO("abnormal_voicemail_Insert_test_2100: voicemailId = %{public}ld", voicemailId);
+    HILOG_INFO("abnormal_voicemail_Insert_test_2100: voicemailId = %{public}ld", (long) voicemailId);
     EXPECT_EQ(voicemailId, -1);
 
     OHOS::DataShare::DataSharePredicates predicates;
@@ -1023,7 +1023,7 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2200, testing::ext
 {
     HILOG_INFO("--- abnormal_voicemail_Update_test_2200 is starting! ---");
     int64_t voicemailId = VoicemailStatusInsert("123456", 1);
-    HILOG_INFO("abnormal_voicemail_Update_test_2200: voicemailId = %{public}ld", voicemailId);
+    HILOG_INFO("abnormal_voicemail_Update_test_2200: voicemailId = %{public}ld", (long) voicemailId);
     EXPECT_GT(voicemailId, 0);
 
     OHOS::DataShare::DataShareValuesBucket updateValues;
@@ -1138,7 +1138,7 @@ HWTEST_F(VoicemailAbilityTest, abnormal_voicemail_Update_test_2500, testing::ext
 {
     HILOG_INFO("--- abnormal_voicemail_Update_test_2500 is starting! ---");
     int64_t voicemailId = VoicemailStatusInsert("123456", 1);
-    HILOG_INFO("abnormal_voicemail_Update_test_2500: voicemailId = %{public}ld", voicemailId);
+    HILOG_INFO("abnormal_voicemail_Update_test_2500: voicemailId = %{public}ld", (long) voicemailId);
     EXPECT_GT(voicemailId, 0);
 
     OHOS::DataShare::DataShareValuesBucket updateValues;

@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"تخزين جهات الاتصال",
+            "attr":{
+                "priority":"translate"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"يُستخدم هذا الإذن لمزامنة تواريخ ميلاد جهات الاتصال.",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

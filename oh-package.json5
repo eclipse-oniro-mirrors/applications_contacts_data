@@ -1,0 +1,13 @@
+{
+  "license": "",
+  "devDependencies": {
+    //"@ohos/hypium": "1.0.17-rc2"
+  },
+  "author": "",
+  "name": "contactsdataservice",
+  "description": "database for contacts",
+  "main": "",
+  "version": "1.0.0",
+  "dependencies": {},
+  "modelVersion": "5.0.0",
+}

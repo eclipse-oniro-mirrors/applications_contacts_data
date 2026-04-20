@@ -53,9 +53,8 @@ bool ContactsTelephonyPermission::CheckPermission(const std::string &permissionN
 
     auto callerToken = IPCSkeleton::GetCallingTokenID();
     auto callerPid = IPCSkeleton::GetCallingPid();
-    auto ts = static_cast<long long>(time(NULL));
     HILOG_INFO("contactsCheckPermission,get callerPid = %{public}d,permission = %{public}s,ts = %{public}lld",
-        callerPid, permissionName.c_str(), ts);
+        callerPid, permissionName.c_str(), (long long) time(NULL));
     auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
     int result = PermissionState::PERMISSION_DENIED;
     if (tokenType == ATokenTypeEnum::TOKEN_NATIVE) {
