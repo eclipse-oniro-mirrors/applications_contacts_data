@@ -28,8 +28,8 @@ const int32_t SLEEP_TIME = 100;
 struct HasMatchedCallLogParam {
     std::string phoneNumber;
     std::string formatPhoneNumber;
-    int minDuration = 0;
-    int withInTime = -1;
+    int64_t minDuration = 0;
+    int64_t withInTime = -1;
 };
 
 void Init(napi_env env, napi_value exports);

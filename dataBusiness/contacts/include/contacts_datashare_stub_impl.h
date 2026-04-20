@@ -71,6 +71,7 @@ private:
     std::mutex contactsMutex_;
     std::mutex callogMutex_;
     std::mutex voiceMailMutex_;
+    std::mutex callogCheckMutex_;
 };
 } // namespace DataShare
 } // namespace OHOS
