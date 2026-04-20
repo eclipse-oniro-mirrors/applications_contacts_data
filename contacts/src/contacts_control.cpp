@@ -204,7 +204,16 @@ int ContactsControl::QueryCallLogCount(
         HILOG_ERROR("QueryCallLogCount query dataShareHelper is nullptr");
         return ERROR;
     }
-    OHOS::Uri uri("datashare:///com.ohos.calllogability/calls/calllog");
+    ContactsTelephonyPermission permission;
+    OHOS::Uri uri("");
+    if (permission.CheckPermission(ContactsApi::Permission::READ_CALL_LOG)) {
+        uri = OHOS::Uri("datashare:///com.ohos.calllogability/calls/calllog");
+    } else if (permission.CheckPermission(ContactsApi::Permission::CHECK_CALL_LOG)) {
+        uri = OHOS::Uri("datashare:///com.ohos.calllogcheckability/calls/calllog");
+    } else {
+        HILOG_ERROR("QueryCallLogCount query permission denied");
+        return RDB_PERMISSION_ERROR;
+    }
     std::vector<std::string> columns{"COUNT(*)"};
     auto resultSet = dataShareHelper->Query(uri, predicates, columns);
     if (resultSet == nullptr) {

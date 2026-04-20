@@ -49,6 +49,7 @@ public:
 
     void SetContactsDataAbility(std::shared_ptr<DataShareExtAbility> extension);
     void SetCallLogAbility(std::shared_ptr<DataShareExtAbility> extension);
+    void SetCallLogCheckAbility(std::shared_ptr<DataShareExtAbility> extension);
     void SetVoiceMailAbility(std::shared_ptr<DataShareExtAbility> extension);
     bool GetBundleNameByUid(int32_t uid, std::string &bundleName);
     static std::string bundleName_;
@@ -57,6 +58,7 @@ private:
     std::shared_ptr<DataShareExtAbility> GetOwner(const Uri &uri);
     std::shared_ptr<DataShareExtAbility> GetContactsDataAbility();
     std::shared_ptr<DataShareExtAbility> GetCallLogAbility();
+    std::shared_ptr<DataShareExtAbility> GetCallLogCheckAbility();
     std::shared_ptr<DataShareExtAbility> GetVoiceMailAbility();
     int addFailedDeleteFile(const std::string &fileName);
     bool TryDeleteFile(const Uri &uri);
@@ -65,9 +67,11 @@ private:
     std::shared_ptr<DataShareExtAbility> contactsDataAbility_ = nullptr;
     std::shared_ptr<DataShareExtAbility> callLogAbility_ = nullptr;
     std::shared_ptr<DataShareExtAbility> voiceMailAbility_ = nullptr;
+    std::shared_ptr<DataShareExtAbility> callLogCheckAbility_ = nullptr;
     std::mutex contactsMutex_;
     std::mutex callogMutex_;
     std::mutex voiceMailMutex_;
+    std::mutex callogCheckMutex_;
 };
 } // namespace DataShare
 } // namespace OHOS
