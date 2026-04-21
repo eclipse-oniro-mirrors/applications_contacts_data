@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,8 @@
 #define CONTACTS_FFI_H
 
 #include "cj_common_ffi.h"
+#include "contacts_picker_ffi.h"
+#include "portrait_ffi.h"
 
 extern "C" {
     FFI_EXPORT int64_t FfiOHOSContactAddContact(int64_t contextId, OHOS::ContactsFfi::RawContact* rawContact,
@@ -34,6 +36,13 @@ extern "C" {
                                                                             int32_t *errCode);
     FFI_EXPORT OHOS::ContactsFfi::GroupsData* FfiOHOSContactQueryGroups(int64_t contextId, int64_t predicatesId,
                                                                         int32_t *errCode);
+    FFI_EXPORT OHOS::ContactsFfi::CPickerResult* FfiOHOSContactSelectContacts(
+        int64_t contextId,
+        OHOS::ContactsFfi::CContactSelectionOptions* options,
+        int32_t* errCode);
+    FFI_EXPORT void FfiOHOSContactFreePickerResult(OHOS::ContactsFfi::CPickerResult* result);
+    FFI_EXPORT int32_t FfiOHOSContactInsertPortrait(int64_t contextId, int64_t rawContactId,
+        OHOS::ContactsFfi::CPortrait* portrait, bool isAddType);
 }
 
 #endif // CONTACTS_FFI_H
