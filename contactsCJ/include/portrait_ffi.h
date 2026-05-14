@@ -17,6 +17,10 @@
 #define PORTRAIT_FFI_H
 
 #include <cstdint>
+#include <string>
+#include <memory>
+#include "datashare_helper.h"
+#include "contacts_control.h"
 
 namespace OHOS {
 namespace ContactsFfi {
@@ -26,6 +30,22 @@ struct CPortrait {
     char* uri = nullptr;
     bool hasPhoto = false;
     int64_t photoId = 0;
+};
+
+struct PortraitContext {
+    ContactsControl& contactsControl;
+    std::shared_ptr<DataShare::DataShareHelper>& dataShareHelper;
+};
+
+struct ContactIdentity {
+    std::string contactId;
+    int64_t rawContactId = 0;
+    std::string fileName;
+};
+
+struct ImageSize {
+    int32_t height = 0;
+    int32_t width = 0;
 };
 
 int32_t CJInsertPortrait(int64_t contextId, int64_t rawContactId, CPortrait* portrait,

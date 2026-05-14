@@ -52,25 +52,19 @@ static std::shared_ptr<DataShareHelper> GetDsHelper(int64_t contextId)
     return DataShareHelper::Creator(context->GetToken(), CONTACTS_DATA_URI);
 }
 
-static std::string QueryContactId(int64_t contextId, int rawContactId)
+static std::string QueryContactId(std::shared_ptr<DataShareHelper>& dataShareHelper, int rawContactId)
 {
-    auto dataShareHelper = GetDsHelper(contextId);
-    if (dataShareHelper == nullptr) {
-        return "";
-    }
     ContactsControl contactsControl;
     std::vector<std::string> columns;
     columns.push_back("contact_id");
     auto resultSet = contactsControl.QueryContactByRawContactId(dataShareHelper, columns, rawContactId);
     if (resultSet == nullptr) {
-        dataShareHelper->Release();
         return "";
     }
     int rowCount = 0;
     int ret = resultSet->GetRowCount(rowCount);
     if (ret != 0 || rowCount == 0 || resultSet->GoToFirstRow() != 0) {
         resultSet->Close();
-        dataShareHelper->Release();
         return "";
     }
     std::string contactId;
@@ -78,7 +72,6 @@ static std::string QueryContactId(int64_t contextId, int rawContactId)
     resultSet->GetColumnIndex("contact_id", columnIndex);
     resultSet->GetString(columnIndex, contactId);
     resultSet->Close();
-    dataShareHelper->Release();
     return contactId;
 }
 
@@ -141,18 +134,15 @@ static void HandleInsertFailed(ContactsControl& contactsControl,
     DataSharePredicates predicates;
     predicates.EqualTo("id", rawContactId);
     contactsControl.HandleAddFailed(dataShareHelper, predicates, fileName);
-    dataShareHelper->Release();
 }
 
 static std::shared_ptr<PixelMap> GetValidPixelMap(
     int64_t photoId,
-    std::shared_ptr<DataShareHelper>& dataShareHelper,
     int32_t* errCode)
 {
     auto pixelMapImpl = FFIData::GetData<PixelMapImpl>(photoId);
     if (pixelMapImpl == nullptr) {
         HILOG_ERROR("GetValidPixelMap pixelMapImpl is null");
-        dataShareHelper->Release();
         *errCode = ERROR;
         return nullptr;
     }
@@ -160,51 +150,45 @@ static std::shared_ptr<PixelMap> GetValidPixelMap(
     std::shared_ptr<PixelMap> pixelMap = pixelMapImpl->GetRealPixelMap();
     if (pixelMap == nullptr) {
         HILOG_ERROR("GetValidPixelMap pixelMap is null");
-        dataShareHelper->Release();
         *errCode = ERROR;
         return nullptr;
     }
     return pixelMap;
 }
 
-static int SavePortraitData(ContactsControl& contactsControl, std::shared_ptr<DataShareHelper>& dataShareHelper,
-    const std::string& contactId, int64_t rawContactId, const std::string& fileName,
-    int32_t srcHeight, int32_t srcWidth, CPortrait* portrait, bool isAddType)
+static int SavePortraitData(PortraitContext ctx, ContactIdentity identity, ImageSize imageSize,
+    CPortrait* portrait, bool isAddType)
 {
     DataShareValuesBucket valuesBucket;
-    valuesBucket.Put("PortraitFileName", fileName);
-    valuesBucket.Put("contactId", contactId);
-    valuesBucket.Put("rawContactId", std::to_string(rawContactId));
-    valuesBucket.Put("srcHeight", srcHeight);
-    valuesBucket.Put("srcWidth", srcWidth);
+    valuesBucket.Put("PortraitFileName", identity.fileName);
+    valuesBucket.Put("contactId", identity.contactId);
+    valuesBucket.Put("rawContactId", std::to_string(identity.rawContactId));
+    valuesBucket.Put("srcHeight", imageSize.height);
+    valuesBucket.Put("srcWidth", imageSize.width);
     bool isUriPortrait = portrait->hasUri && portrait->uri != nullptr && strlen(portrait->uri) > 0;
     int addPortraitType = isAddType ? (isUriPortrait ? 1 : 2) : 3;
     valuesBucket.Put("addPortraitType", addPortraitType);
 
     std::vector<DataShareValuesBucket> valueContactData;
     valueContactData.push_back(valuesBucket);
-    int code = contactsControl.ContactDataInsert(dataShareHelper, valueContactData);
-    dataShareHelper->Release();
-    return code;
+    return ctx.contactsControl.ContactDataInsert(ctx.dataShareHelper, valueContactData);
 }
 
-static int OpenAndSavePortrait(ContactsControl& contactsControl, std::shared_ptr<DataShareHelper>& dataShareHelper,
-    const std::string& contactId, int64_t rawContactId, std::shared_ptr<PixelMap>& pixelMap,
-    int32_t& srcHeight, int32_t& srcWidth)
+static int OpenAndSavePortrait(PortraitContext ctx, ContactIdentity identity,
+    std::shared_ptr<PixelMap>& pixelMap, ImageSize& imageSize)
 {
-    std::string fileName = contactId + "_" + std::to_string(rawContactId) + ".jpg";
-    int fd = contactsControl.OpenFileByDataShare(fileName, dataShareHelper);
+    int fd = ctx.contactsControl.OpenFileByDataShare(identity.fileName, ctx.dataShareHelper);
     if (fd == OPEN_FILE_FAILED || fd == PERMISSION_ERROR) {
         HILOG_ERROR("OpenAndSavePortrait OpenFileByDataShare failed");
-        HandleInsertFailed(contactsControl, dataShareHelper, rawContactId, fileName);
+        HandleInsertFailed(ctx.contactsControl, ctx.dataShareHelper, identity.rawContactId, identity.fileName);
         return fd;
     }
 
-    GetPixelMapSize(pixelMap, srcHeight, srcWidth);
+    GetPixelMapSize(pixelMap, imageSize.height, imageSize.width);
     int result = SavePixelMapToFile(pixelMap, fd);
     close(fd);
     if (result != ERR_OK) {
-        HandleInsertFailed(contactsControl, dataShareHelper, rawContactId, fileName);
+        HandleInsertFailed(ctx.contactsControl, ctx.dataShareHelper, identity.rawContactId, identity.fileName);
         return result;
     }
     return ERR_OK;
@@ -225,12 +209,13 @@ int32_t CJInsertPortrait(int64_t contextId, int64_t rawContactId, CPortrait* por
         return PERMISSION_ERROR;
     }
 
-    std::shared_ptr<PixelMap> pixelMap = GetValidPixelMap(portrait->photoId, dataShareHelper, &errCode);
+    std::shared_ptr<PixelMap> pixelMap = GetValidPixelMap(portrait->photoId, &errCode);
     if (pixelMap == nullptr) {
+        dataShareHelper->Release();
         return errCode;
     }
 
-    std::string contactId = QueryContactId(contextId, rawContactId);
+    std::string contactId = QueryContactId(dataShareHelper, rawContactId);
     if (contactId.empty()) {
         HILOG_ERROR("CJInsertPortrait contactId is empty");
         dataShareHelper->Release();
@@ -238,17 +223,21 @@ int32_t CJInsertPortrait(int64_t contextId, int64_t rawContactId, CPortrait* por
     }
 
     ContactsControl contactsControl;
-    int32_t srcHeight = 0;
-    int32_t srcWidth = 0;
-    int result = OpenAndSavePortrait(contactsControl, dataShareHelper, contactId, rawContactId,
-        pixelMap, srcHeight, srcWidth);
+    PortraitContext ctx = {contactsControl, dataShareHelper};
+    ContactIdentity identity;
+    identity.contactId = contactId;
+    identity.rawContactId = rawContactId;
+    identity.fileName = contactId + "_" + std::to_string(rawContactId) + ".jpg";
+    ImageSize imageSize;
+    int result = OpenAndSavePortrait(ctx, identity, pixelMap, imageSize);
     if (result != ERR_OK) {
+        dataShareHelper->Release();
         return result;
     }
 
-    std::string fileName = contactId + "_" + std::to_string(rawContactId) + ".jpg";
-    return SavePortraitData(contactsControl, dataShareHelper, contactId, rawContactId, fileName,
-        srcHeight, srcWidth, portrait, isAddType);
+    result = SavePortraitData(ctx, identity, imageSize, portrait, isAddType);
+    dataShareHelper->Release();
+    return result;
 }
 
 } // namespace ContactsFfi

@@ -420,19 +420,17 @@ void addResultSetAsValuesBucket(std::vector<ValuesBucket> &contactData,
 }
 
 // returns false when mem allocation failed
-bool allocateDataForContact(ContactsData* allContacts, int contactIndex, int contactId, std::string searchKey,
-                            std::vector<ValuesBucket> contactDataVector, int32_t *errCode)
+bool allocateDataForContact(ContactsData* allContacts, int contactIndex, ContactInfo contactInfo, int32_t *errCode)
 {
     int bucketIndex = 0;
-    // consider passing contactId as integer value
-    ValuesBucket idBucket = singleStringAsValueBucket("id", std::to_string(contactId), errCode);
+    ValuesBucket idBucket = singleStringAsValueBucket("id", std::to_string(contactInfo.contactId), errCode);
     if (*errCode != SUCCESS) {
         free(allContacts->contactsData[contactIndex].data);
         allContacts->contactsData[contactIndex].bucketCount = 0;
         allContacts->contactsData[contactIndex].data = nullptr;
         return false;
     }
-    ValuesBucket searchKeyBucket = singleStringAsValueBucket("key", searchKey, errCode);
+    ValuesBucket searchKeyBucket = singleStringAsValueBucket("key", contactInfo.searchKey, errCode);
     if (*errCode != SUCCESS) {
         idBucket.freeContent();
         free(allContacts->contactsData[contactIndex].data);
@@ -447,8 +445,8 @@ bool allocateDataForContact(ContactsData* allContacts, int contactIndex, int con
     bucketIndex++;
 
     // copy bucket pointers from vector
-    for (std::vector<ValuesBucket>::size_type i = 0; i < contactDataVector.size(); i++, bucketIndex++) {
-        copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, contactDataVector[i]);
+    for (std::vector<ValuesBucket>::size_type i = 0; i < contactInfo.contactDataVector.size(); i++, bucketIndex++) {
+        copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, contactInfo.contactDataVector[i]);
     }
 
     return true;
@@ -466,8 +464,7 @@ void releaseRresultSetMapBuckets(std::map<int, std::vector<ValuesBucket>> result
     }
 }
 
-ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> &resultSetMap,
-                                     std::map<int, std::string> &quickSearchMap, int32_t *errCode)
+ContactsData* allocContactsDataHeader(size_t totalContacts, int32_t *errCode)
 {
     ContactsData* allContacts = (struct ContactsData*) malloc(sizeof(struct ContactsData));
     if (allContacts == nullptr) {
@@ -476,7 +473,6 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> &r
         return nullptr;
     }
 
-    size_t totalContacts = resultSetMap.size();
     if (totalContacts == 0 || totalContacts > MAX_CONTACTS) {
         free(allContacts);
         return nullptr;
@@ -490,29 +486,48 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> &r
         return nullptr;
     }
     allContacts->contactsCount = totalContacts;
+    return allContacts;
+}
+
+void allocSingleContact(ContactsData* allContacts, int contactIndex,
+                        std::pair<const int, std::vector<ValuesBucket>> &entry,
+                        std::map<int, std::string> &quickSearchMap, int32_t *errCode)
+{
+    if (*errCode != SUCCESS) {
+        allContacts->contactsData[contactIndex].bucketCount = 0;
+        allContacts->contactsData[contactIndex].data = nullptr;
+        return;
+    }
+    int contactId = entry.first;
+    std::vector<ValuesBucket> contactDataVector = entry.second;
+    std::string searchKey = quickSearchMap.find(contactId)->second;
+    size_t totalBuckets = 2 + contactDataVector.size();
+    allContacts->contactsData[contactIndex].bucketCount = totalBuckets;
+    allContacts->contactsData[contactIndex].data =
+        (struct ValuesBucket*) malloc(totalBuckets * sizeof(struct ValuesBucket));
+    if (allContacts->contactsData[contactIndex].data == nullptr) {
+        *errCode = ERROR;
+        return;
+    }
+
+    ContactInfo contactInfo;
+    contactInfo.contactId = contactId;
+    contactInfo.searchKey = searchKey;
+    contactInfo.contactDataVector = contactDataVector;
+    allocateDataForContact(allContacts, contactIndex, contactInfo, errCode);
+}
+
+ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> &resultSetMap,
+                                     std::map<int, std::string> &quickSearchMap, int32_t *errCode)
+{
+    ContactsData* allContacts = allocContactsDataHeader(resultSetMap.size(), errCode);
+    if (allContacts == nullptr) {
+        return nullptr;
+    }
 
     int contactIndex = 0;
-    std::map<int, std::vector<ValuesBucket>>::iterator it;
-    for (it = resultSetMap.begin(); it != resultSetMap.end(); it++, contactIndex++) {
-        int contactId = it->first;
-        std::vector<ValuesBucket> contactDataVector = it->second;
-        std::string searchKey = quickSearchMap.find(contactId)->second;
-
-        if (*errCode != SUCCESS) {
-            allContacts->contactsData[contactIndex].bucketCount = 0;
-            allContacts->contactsData[contactIndex].data = nullptr;
-            continue;
-        }
-        size_t totalBuckets = 2 + contactDataVector.size(); // 2 more for contactId and searchKey buckets
-        allContacts->contactsData[contactIndex].bucketCount = totalBuckets;
-        allContacts->contactsData[contactIndex].data =
-            (struct ValuesBucket*) malloc(totalBuckets * sizeof(struct ValuesBucket));
-        if (allContacts->contactsData[contactIndex].data == nullptr) {
-            *errCode = ERROR;
-            continue;
-        }
-
-        allocateDataForContact(allContacts, contactIndex, contactId, searchKey, contactDataVector, errCode);
+    for (auto it = resultSetMap.begin(); it != resultSetMap.end(); it++, contactIndex++) {
+        allocSingleContact(allContacts, contactIndex, *it, quickSearchMap, errCode);
     }
 
     if (*errCode == SUCCESS) {
@@ -521,7 +536,6 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> &r
 
     allContacts->freeContent();
     free(allContacts);
-    allContacts = nullptr;
     releaseRresultSetMapBuckets(resultSetMap);
 
     return nullptr;

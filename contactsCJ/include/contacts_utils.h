@@ -110,6 +110,11 @@ using ContactData = Buckets;
 using GroupsData = Buckets;
 using HoldersData = Buckets;
 
+struct ContactInfo {
+    int contactId = 0;
+    std::string searchKey;
+    std::vector<ValuesBucket> contactDataVector;
+};
 
 struct ContactsData {
     ContactData* contactsData = nullptr;
