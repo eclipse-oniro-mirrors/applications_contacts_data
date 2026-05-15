@@ -500,7 +500,15 @@ void allocSingleContact(ContactsData* allContacts, int contactIndex,
     }
     int contactId = entry.first;
     std::vector<ValuesBucket> contactDataVector = entry.second;
-    std::string searchKey = quickSearchMap.find(contactId)->second;
+    auto searchIt = quickSearchMap.find(contactId);
+    if (searchIt == quickSearchMap.end()) {
+        HILOG_ERROR("ContactUtils::allocSingleContact quickSearchKey not found for contactId %{public}d", contactId);
+        *errCode = ERROR;
+        allContacts->contactsData[contactIndex].bucketCount = 0;
+        allContacts->contactsData[contactIndex].data = nullptr;
+        return;
+    }
+    std::string searchKey = searchIt->second;
     size_t totalBuckets = 2 + contactDataVector.size();
     allContacts->contactsData[contactIndex].bucketCount = totalBuckets;
     allContacts->contactsData[contactIndex].data =
