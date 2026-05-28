@@ -661,6 +661,13 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
     HILOG_INFO("contactApi ExecuteSyncDone start===>");
     if (status != napi_ok) {
         HILOG_ERROR("ExecuteSyncDone status is not ok===>");
+        if (data != nullptr) {
+            ExecuteHelper *executeHelper = reinterpret_cast<ExecuteHelper *>(data);
+            if (executeHelper->callBack != nullptr) {
+                napi_delete_reference(env, executeHelper->callBack);
+                executeHelper->callBack = nullptr;
+            }
+        }
         return;
     }
     if (data != nullptr) {
@@ -689,6 +696,10 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         napi_typeof(env, callBack, &valuetype);
         if (valuetype != napi_function) {
             HILOG_ERROR("contactApi params not is function");
+            if (executeHelper->callBack != nullptr) {
+                napi_delete_reference(env, executeHelper->callBack);
+                executeHelper->callBack = nullptr;
+            }
             return;
         }
         napi_call_function(env, global, callBack, RESULT_DATA_SIZE, resultData, &result);
@@ -709,6 +720,10 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         if (executeHelper->dataShareHelper != nullptr) {
             executeHelper->dataShareHelper->Release();
             executeHelper->dataShareHelper = nullptr;
+        }
+        if (executeHelper->callBack != nullptr) {
+            napi_delete_reference(env, executeHelper->callBack);
+            executeHelper->callBack = nullptr;
         }
         delete executeHelper;
         executeHelper = nullptr;
