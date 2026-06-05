@@ -18,60 +18,44 @@ import hilog from '@ohos.hilog';
 import { Hypium } from '@ohos/hypium';
 import testsuite from '../test/List.test';
 import window from '@ohos.window';
-import type Want from '@ohos.app.ability.Want';
+import Want from '@ohos.app.ability.Want';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 
-const TAG: string = 'TestAbility';
-const DOMAIN: number = 0x0000;
-
 export default class TestAbility extends UIAbility {
-  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    hilog.info(DOMAIN, TAG, '%{public}s', 'TestAbility onCreate');
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onCreate');
+    let abilityDelegator: AbilityDelegatorRegistry.AbilityDelegator;
+    abilityDelegator = AbilityDelegatorRegistry.getAbilityDelegator();
+    let abilityDelegatorArguments: AbilityDelegatorRegistry.AbilityDelegatorArgs;
+    abilityDelegatorArguments = AbilityDelegatorRegistry.getArguments();
+    hilog.info(0x0000, 'testTag', '%{public}s', 'start run testcase!!');
+    Hypium.hypiumTest(abilityDelegator, abilityDelegatorArguments, testsuite);
+  }
 
-    // 获取 AbilityDelegator 和 Arguments
-    const abilityDelegator: AbilityDelegatorRegistry.AbilityDelegator = AbilityDelegatorRegistry.getAbilityDelegator();
-    const abilityDelegatorArguments: AbilityDelegatorRegistry.AbilityDelegatorArgs = AbilityDelegatorRegistry.getArguments();
+  onDestroy() {
+    hilog.info(0x0000, 'testTags', '%{public}s', 'TestAbility onDestroy.');
+  }
 
-    hilog.info(DOMAIN, TAG, '%{public}s', 'start run test suite');
-
-    // 执行测试套件
-    if (abilityDelegator && abilityDelegatorArguments) {
-      try {
-        // 假设 Hypium 需要根据 delegator 或 arguments 进行初始化或运行
-        // 具体调用方式取决于 Hypium 框架的具体 API 定义
-        Hypium.start(abilityDelegator, testsuite);
-      } catch (error) {
-        hilog.error(DOMAIN, TAG, 'Failed to start test suite: %{public}s', String(error));
+  onWindowStageCreate(windowStage: window.WindowStage) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onWindowStageCreate');
+    windowStage.loadContent('testability/pages/Index', (err, data) => {
+      if (err.code) {
+        hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: ', err?.message);
+        return;
       }
-    } else {
-      hilog.warn(DOMAIN, TAG, 'AbilityDelegator or Arguments is null');
-    }
+      hilog.info(0x0000, 'testTag', 'Succeeded in loading the content.');
+    });
   }
 
-  onDestroy(): void {
-    hilog.info(DOMAIN, TAG, '%{public}s', 'TestAbility onDestroy');
+  onWindowStageDestroy() {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onWindowStageDestroy');
   }
 
-  onWindowStageCreate(windowStage: window.WindowStage): void {
-    hilog.info(DOMAIN, TAG, '%{public}s', 'TestAbility onWindowStageCreate');
-    
-    // 如果是UI测试，可能需要加载特定的测试页面；如果是纯逻辑测试，可能无需加载UI
-    // windowStage.loadContent('pages/TestPage').then(() => {
-    //   hilog.info(DOMAIN, TAG, 'Load content success');
-    // }).catch((err) => {
-    //   hilog.error(DOMAIN, TAG, 'Load content failed: %{public}s', JSON.stringify(err));
-    // });
+  onForeground() {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onForeground');
   }
 
-  onWindowStageDestroy(): void {
-    hilog.info(DOMAIN, TAG, '%{public}s', 'TestAbility onWindowStageDestroy');
-  }
-
-  onForeground(): void {
-    hilog.info(DOMAIN, TAG, '%{public}s', 'TestAbility onForeground');
-  }
-
-  onBackground(): void {
-    hilog.info(DOMAIN, TAG, '%{public}s', 'TestAbility onBackground');
+  onBackground() {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onBackground.');
   }
 }
