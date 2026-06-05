@@ -2163,6 +2163,69 @@ napi_value ContactsPickerSave(napi_env env, napi_callback_info info)
         StartContactsPickerExecute, StartSaveContactsPickerAsyncCallbackComplete);
 }
 
+/**
+ * @brief Import contacts picker
+ * 
+ * @param env Environment Variable
+ * @param info Callback Infomation
+ * 
+ * @return The result returned by import contacts picker
+ */
+napi_value ContactsPickerImport(napi_env env, napi_callback_info info)
+{
+    HILOG_WARN("[ContactsPicker] ContactsPickerImport start");
+    size_t argc = MAX_PARAMS;
+    napi_value argv[MAX_PARAMS] = {0};
+    napi_value thisVar = nullptr;
+    napi_value result = nullptr;
+    void *data;
+    // 获取JS接口传入的参数
+    napi_get_cb_info(env, info, &argc, &(argv[0]), &thisVar, &data);
+    bool isStageMode = false;
+    OHOS::AbilityRuntime::IsStageContext(env, argv[0], isStageMode);
+    if (isStageMode) {
+        napi_value errorCode = ContactsNapiUtils::CreateError(env, INVALID_PARAMETER);
+        switch (argc) {
+            case ARGS_TWO:
+                if (!ContactsNapiUtils::MatchParameters(env, argv, { napi_object, napi_object })) {
+                    napi_throw(env, errorCode);
+                }
+                break;
+            default:
+                napi_throw(env, errorCode);
+                break;
+        }
+    }
+    napi_value result = nullptr;
+    
+    result = argv[1];
+    HILOG_INFO("[ContactsPicker] SetChildActionCodeAndConvertParams, ");
+
+    // init request of Want，构建 want 请求
+    OHOS::AAFwk::Want request;
+    AppExecFwk::UnwrapWant(env, argv[1], request);
+    request.SetElementName(CONTACT_PACKAGE_NAME, CONTACT_UI_EXT_ABILITY_NAME); // 设置包名 和 ability name
+    std::string targetType = CONTACT_UI_EXT_TYPE;
+    std::string targetUrl = "ImportContactsPage";
+    request.SetParam(UI_EXT_TYPE, targetType);
+    request.SetParam(UI_EXT_TARGETURL, targetUrl);
+    
+    // init request Context，第一个参数是Context，解析参数，转成AbilityContext或者UIExtensionContext
+    auto asyncContext = std::make_unique<OHOS::ContactsApi::BaseContext>();
+    asyncContext->env = env;
+    if (!ParseAbilityContextReq(env, argv[0],
+        asyncContext->context, asyncContext->uiExtensionContext)) {
+        HILOG_ERROR("[ContactsPicker] ParseAbilityContextReq failed");
+        return result;
+    }
+    NAPI_CALL(env, ContactsNapiUtils::GetParamCallback(env, asyncContext, argc, argv)); // 解析Promise对象，用于返回JS结果
+    // start UIExtension Ability，启动UIExtensionAbility
+    StartUIExtensionAbility(request, asyncContext);
+    HILOG_INFO("[ContactsPicker] ContactsPickerImport end");
+    return ContactsNapiUtils::NapiCreateAsyncWork(env, asyncContext, "ContactsPickerImport",
+        StartContactsPickerExecute, StartSaveContactsPickerAsyncCallbackComplete);
+}
+
 napi_value HasMatchedCallLog(napi_env env, napi_callback_info info)
 {
     HILOG_INFO("HasMatchedCallLog start");
@@ -2962,6 +3025,8 @@ napi_value DeclareContactConst(napi_env env, napi_value exports)
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_STATIC_PROPERTY("INVALID_CONTACT_ID",
             ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Contacts::INVALID_CONTACT_ID))),
+        DECLARE_NAPI_STATIC_PROPERTY("USER_NOT_SELECT_CONTACT_ID",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Contacts::USER_NOT_SELECT_CONTACT_ID))),    
     };
     napi_value result = nullptr;
     napi_define_class(env, "Contact", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
@@ -3309,6 +3374,7 @@ void Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("startContactsPicker", OHOS::ContactsApi::ContactsPickerSelect),
         DECLARE_NAPI_FUNCTION("startSaveContactsPicker", OHOS::ContactsApi::ContactsPickerSave),
         DECLARE_NAPI_FUNCTION("startSaveExistContactsPicker", OHOS::ContactsApi::ContactsPickerSaveExist),
+        DECLARE_NAPI_FUNCTION("startImportContactsPicker", OHOS::ContactsApi::ContactsPickerImport),
         DECLARE_NAPI_FUNCTION("hasMatchedCallLog", OHOS::ContactsApi::HasMatchedCallLog)
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
