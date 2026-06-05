@@ -49,7 +49,7 @@ const PICKER_RESULTCODE_CANCEL = 1;
 
 const ERROR_MSG_INVALID_PARAM = 'Parameter error. Possible causes: Mandatory parameters are left unspecified';
 const ERROR_MSG_SELECT_INVALID_PARAM = 'Parameter error. Possible causes: Parameter verification failed';
-const ERROR_MSG_INVALID_PARAMETER = 'Invalid parameter value';
+const ERROR_MSG_INVALID_PARAMETER = 'Invalid parameter value.';
 const ERROR_MSG_DEVICE_NOTFOUD = 'The specified SystemCapability name was not found.';
 const ERROR_MSG_SYSTEM = 'General error.';
 const ERROR_MSG_QUERY_VALUE_FAILED = 'Failed to get value from contacts data.';
@@ -58,8 +58,8 @@ const ERROR_MSG_USER_CANCE = 'User cancel.';
 const ERROR_MSG_OVER_LIMIT = 'The number of contacts exceeds the limit.';
 
 const pushErrMap = new Map();
-pushErrMap.set(ERROR_CODE_INVALID_PARAM, ERROR_MSG_INVALID_PARAMETER);
-pushErrMap.set(ERROR_INVALID_PARAMETER, ERROR_MSG_INVALID_PARAM);
+pushErrMap.set(ERROR_CODE_INVALID_PARAM, ERROR_MSG_INVALID_PARAM);
+pushErrMap.set(ERROR_INVALID_PARAMETER, ERROR_MSG_INVALID_PARAMETER);
 pushErrMap.set(ERROR_CODE_DEVICE_NOTFOUD, ERROR_MSG_DEVICE_NOTFOUD);
 pushErrMap.set(ERROR_SYSTEM, ERROR_MSG_SYSTEM);
 pushErrMap.set(ERROR_QUERY_VALUE_FAILED, ERROR_MSG_QUERY_VALUE_FAILED);
@@ -255,7 +255,7 @@ function parseImportContactsPickerOption(args) {
   console.log('[picker] parseImportContactsPickerOption');
   let config = {
     parameters: {
-      'tagetUrl': 'ImportContactsPage',
+      'targetUrl': 'ImportContactsPage',
       'isContactsPicker': true,
       'isContactMultiSelect': true
     },
@@ -274,7 +274,7 @@ function parseImportContactsPickerOption(args) {
 
 /**
  * 校验导入联系人参数
- * @throw ERROR_CODE_DEVICE_NOTFOUD/ERROR_INVALID_PARAMETER/ERROR_OVER_LIMIT
+ * @throws ERROR_CODE_DEVICE_NOTFOUD/ERROR_INVALID_PARAMETER/ERROR_OVER_LIMIT
  */
 function validateImportContactsArgs(args) {
   let currentDevice = getDeviceType();
@@ -282,16 +282,16 @@ function validateImportContactsArgs(args) {
     console.error('[picker] device not found');
     throw new BusinessError(ERROR_CODE_DEVICE_NOTFOUD, ERROR_MSG_DEVICE_NOTFOUD);
   }
-  if (arguments.length !== ARGUMENTS_LEN_TWO) {
-    console.error('[picker] importContactViaUI Parameter error');
+  if (args.length !== ARGUMENTS_LEN_TWO) {
+    console.error('[picker] importContactsViaUI Parameter error');
     throw new BusinessError(ERROR_INVALID_PARAMETER, ERROR_MSG_INVALID_PARAMETER);
   }
-  if (!Array.isArray(args[1] || args[1].length < IMPORT_CONTACTS_MIN_COUNT)) {
-    console.error('[picker] importContactViaUI contacts is not array or empty array');
+  if (!Array.isArray(args[1]) || args[1].length < IMPORT_CONTACTS_MIN_COUNT) {
+    console.error('[picker] importContactsViaUI contacts is not array or empty array');
     throw new BusinessError(ERROR_INVALID_PARAMETER, ERROR_MSG_INVALID_PARAMETER);
   }
   if (args[1].length > IMPORT_CONTACTS_MAX_COUNT) {
-    console.error('[picker] importContactViaUI contacts count over limit:' + args[1].length);
+    console.error('[picker] importContactsViaUI contacts count over limit:' + args[1].length);
     throw new BusinessError(ERROR_OVER_LIMIT, ERROR_MSG_OVER_LIMIT);
   }
   // 校验每个联系的属性是否合法
@@ -299,7 +299,7 @@ function validateImportContactsArgs(args) {
     let keyArr = Object.keys(args[1][i]);
     keyArr.forEach(item => {
       if (!contactKeyArr.has(item)) {
-        console.error(`[picker] importContactViaUI, property: ${item} not exist`);
+        console.error(`[picker] importContactsViaUI, property: ${item} not exist`);
         throw new BusinessError(ERROR_INVALID_PARAMETER, ERROR_MSG_INVALID_PARAMETER);
       }
     });
@@ -318,7 +318,7 @@ function parseImportResult(pickerData, inputLength) {
   try {
     selectedArray = JSON.parse(pickerData);
   } catch (error) {
-    console.error('[picker] importContactViaUI JSON.parse Error: ${error}');
+    console.error(`[picker] importContactsViaUI JSON.parse Error: ${error}`);
     throw new BusinessError(ERROR_SYSTEM, ERROR_MSG_SYSTEM);
   }
   let fullResult = new Array(inputLength).fill(USER_NOT_SELECT_CONTACT_ID);
@@ -336,26 +336,26 @@ function parseImportResult(pickerData, inputLength) {
 
 /**
  * 处理导入结果
- * @throw ERROR_USER_CANNEL/ERROR_SYSTEM
+ * @throw ERROR_USER_CANCEL/ERROR_SYSTEM
  */
 function handleImportResult(result, args) {
   if (result.resultCode === PICKER_RESULTCODE_SUCCESS) {
     return parseImportResult(result.pickerData, args[1].length);
   }
   if (result.resultCode === PICKER_RESULTCODE_CANCEL) {
-    console.error('[picker] importContactViaUI Error: user cancel');
+    console.error('[picker] importContactsViaUI Error: user cancel');
     throw new BusinessError(ERROR_USER_CANCEL, ERROR_MSG_USER_CANCE);
   }
-  console.error('[picker] importContactViaUI Error: system');
+  console.error('[picker] importContactsViaUI Error: system');
   throw new BusinessError(ERROR_SYSTEM, ERROR_MSG_SYSTEM);
 }
 
 /**
- * 导入联系人picker
+ * picker导入联系人
  * @throw ERROR_SYSTEM 
  */
-async function importContactViaUI(...args) {
-  console.log('[picker] importContactViaUI START');
+async function importContactsViaUI(...args) {
+  console.log('[picker] importContactsViaUI START');
   validateImportContactsArgs(args);
   const config = parseImportContactsPickerOption(args);
   let result;
@@ -363,14 +363,14 @@ async function importContactViaUI(...args) {
     let context = getContext(this);
     result = await startContactsPicker(context, config, 'import');
   } catch (error) {
-    console.error('[picker] importContactViaUI error: ' + error);
+    console.error('[picker] importContactsViaUI error: ' + error);
     throw new BusinessError(ERROR_SYSTEM, ERROR_MSG_SYSTEM);
   }
   if (!result) {
-    console.error(`[picker] Error importContactViaUI`);
+    console.error(`[picker] Error importContactsViaUI`);
     throw new BusinessError(ERROR_SYSTEM, ERROR_MSG_SYSTEM);
   }
-  console.warn(`[picker] importContactViaUI resultCode : ${result.resultCode}`);
+  console.warn(`[picker] importContactsViaUI resultCode : ${result.resultCode}`);
   return handleImportResult(result, args);
 }
 

@@ -2166,9 +2166,8 @@ napi_value ContactsPickerSave(napi_env env, napi_callback_info info)
 /**
  * @brief Import contacts picker
  * 
- * @param env Environment Variable
- * @param info Callback Infomation
- * 
+ * @param env Environment Variables
+ * @param info Callback Information
  * @return The result returned by import contacts picker
  */
 napi_value ContactsPickerImport(napi_env env, napi_callback_info info)
@@ -2196,11 +2195,7 @@ napi_value ContactsPickerImport(napi_env env, napi_callback_info info)
                 break;
         }
     }
-    napi_value result = nullptr;
     
-    result = argv[1];
-    HILOG_INFO("[ContactsPicker] SetChildActionCodeAndConvertParams, ");
-
     // init request of Want，构建 want 请求
     OHOS::AAFwk::Want request;
     AppExecFwk::UnwrapWant(env, argv[1], request);
@@ -2223,7 +2218,7 @@ napi_value ContactsPickerImport(napi_env env, napi_callback_info info)
     StartUIExtensionAbility(request, asyncContext);
     HILOG_INFO("[ContactsPicker] ContactsPickerImport end");
     return ContactsNapiUtils::NapiCreateAsyncWork(env, asyncContext, "ContactsPickerImport",
-        StartContactsPickerExecute, StartSaveContactsPickerAsyncCallbackComplete);
+        StartContactsPickerExecute, StartContactsPickerAsyncCallbackComplete);
 }
 
 napi_value HasMatchedCallLog(napi_env env, napi_callback_info info)
@@ -3026,7 +3021,7 @@ napi_value DeclareContactConst(napi_env env, napi_value exports)
         DECLARE_NAPI_STATIC_PROPERTY("INVALID_CONTACT_ID",
             ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Contacts::INVALID_CONTACT_ID))),
         DECLARE_NAPI_STATIC_PROPERTY("USER_NOT_SELECT_CONTACT_ID",
-            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Contacts::USER_NOT_SELECT_CONTACT_ID))),    
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(Contacts::USER_NOT_SELECT_CONTACT_ID))),   
     };
     napi_value result = nullptr;
     napi_define_class(env, "Contact", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
