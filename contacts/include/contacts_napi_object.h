@@ -933,6 +933,11 @@ public:
     static const int INVALID_CONTACT_ID = -1;
 
     /**
+     * Indicates the contact ID when user has not selected this contact.
+     */
+    static const int USER_NOT_SELECT_CONTACT_ID = -2;
+
+    /**
      * Indicates the contact ID.
      */
     int id;

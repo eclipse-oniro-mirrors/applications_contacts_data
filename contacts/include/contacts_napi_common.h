@@ -41,6 +41,7 @@ constexpr int PERMISSION_ERROR = 201;
 constexpr int PARAMETER_ERROR = 401;
 constexpr int CONTACT_GENERAL_ERROR = 16700001;
 constexpr int INVALID_PARAMETER = 16700002;
+constexpr int ERROR_OVER_LIMIT = 16700004;
 
 constexpr int NAPI_GET_STRING_SIZE = 256;
 constexpr int REQUEST_PARAMS_COUNT_ONE = 1;

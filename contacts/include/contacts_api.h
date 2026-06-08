@@ -43,6 +43,7 @@ napi_value DeclareRelationConst(napi_env env, napi_value exports);
 napi_value DeclareSipAddressConst(napi_env env, napi_value exports);
 napi_value DeclareAttributeConst(napi_env env, napi_value exports);
 napi_value ContactsPickerSelect(napi_env env, napi_callback_info info);
+napi_value ContactsPickerImport(napi_env env, napi_callback_info info);
 napi_value AddContact(napi_env env, napi_callback_info info);
 napi_value AddContacts(napi_env env, napi_callback_info info);
 napi_value DeleteContact(napi_env env, napi_callback_info info);
