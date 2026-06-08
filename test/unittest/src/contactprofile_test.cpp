@@ -387,7 +387,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_100, testing::ext::TestS
     HILOG_INFO("--- contactProfile_Insert_test_100 is starting! ---");
     OHOS::DataShare::DataShareValuesBucket values;
     int64_t rawContactId = RawContactInsert("liming", values);
-    HILOG_INFO("contactProfile_Insert_test_100 : rawContactId = %{public}ld", rawContactId);
+    HILOG_INFO("contactProfile_Insert_test_100 : rawContactId = %{public}ld", (long) rawContactId);
     EXPECT_GT(rawContactId, 0);
 
     OHOS::DataShare::DataSharePredicates predicates;
@@ -410,7 +410,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_200, testing::ext::TestS
     HILOG_INFO("--- contactProfile_Insert_test_200 is starting! ---");
     OHOS::DataShare::DataShareValuesBucket values;
     int64_t rawContactIdOne = RawContactInsert("xiaoqian", values);
-    HILOG_INFO("contactProfile_Insert_test_200 : rawContactIdOne = %{public}ld", rawContactIdOne);
+    HILOG_INFO("contactProfile_Insert_test_200 : rawContactIdOne = %{public}ld", (long) rawContactIdOne);
     EXPECT_GT(rawContactIdOne, 0);
     OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(rawContactIdOne));
@@ -419,13 +419,13 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_200, testing::ext::TestS
     values.Clear();
 
     int64_t rawContactIdTwo = RawContactInsert("xiaowang", values);
-    HILOG_INFO("contactProfile_Insert_test_200 : rawContactIdTwo = %{public}ld", rawContactIdTwo);
+    HILOG_INFO("contactProfile_Insert_test_200 : rawContactIdTwo = %{public}ld", (long) rawContactIdTwo);
     EXPECT_GT(rawContactIdTwo, 0);
     predicates.EqualTo("id", std::to_string(rawContactIdTwo));
     QueryAndExpectResult(rawContacts, predicates, values, "contactProfile_Insert_test_200");
 
     int64_t rawContactIdThree = RawContactInsert("xiaozhou", values);
-    HILOG_INFO("contactProfile_Insert_test_200 : rawContactIdThree = %{public}ld", rawContactIdThree);
+    HILOG_INFO("contactProfile_Insert_test_200 : rawContactIdThree = %{public}ld", (long) rawContactIdThree);
     EXPECT_GT(rawContactIdThree, 0);
     OHOS::DataShare::DataSharePredicates predicates2;
     predicates2.EqualTo("id", std::to_string(rawContactIdThree));
@@ -485,7 +485,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_400, testing::ext::TestS
     vectorValue.push_back("Test");
     vectorValue.push_back("liming||lm");
     int64_t rawContactId = RawContactExpandInsert(vectorValue, 1, values);
-    HILOG_INFO("contactProfile_Insert_test_400 : rawContactId = %{public}ld", rawContactId);
+    HILOG_INFO("contactProfile_Insert_test_400 : rawContactId = %{public}ld", (long) rawContactId);
     EXPECT_GT(rawContactId, 0);
 
     OHOS::DataShare::DataSharePredicates predicates;
@@ -510,11 +510,11 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_500, testing::ext::TestS
     std::string contactData = ContactTabName::CONTACT_DATA;
     OHOS::DataShare::DataShareValuesBucket rawContactValues;
     int64_t rawContactId = RawContactInsert("ligang", rawContactValues);
-    HILOG_INFO("contactProfile_Insert_test_500 : rawContactId = %{public}ld", rawContactId);
+    HILOG_INFO("contactProfile_Insert_test_500 : rawContactId = %{public}ld", (long) rawContactId);
     EXPECT_GT(rawContactId, 0);
     OHOS::DataShare::DataShareValuesBucket values;
     int64_t contactDataIdOne = ContactDataInsert(rawContactId, "name", "ligang", "", values);
-    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdOne = %{public}ld", contactDataIdOne);
+    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdOne = %{public}ld", (long) contactDataIdOne);
     EXPECT_GT(contactDataIdOne, 0);
     OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(contactDataIdOne));
@@ -522,15 +522,15 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_500, testing::ext::TestS
     values.Clear();
 
     int64_t contactDataIdTwo = ContactDataInsert(rawContactId, "organization", "tiantianxaingshang", "Test", values);
-    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdTwo = %{public}ld", contactDataIdTwo);
+    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdTwo = %{public}ld", (long) contactDataIdTwo);
     EXPECT_GT(contactDataIdTwo, 0);
     OHOS::DataShare::DataSharePredicates predicates2;
     predicates2.EqualTo("id", std::to_string(contactDataIdTwo));
     QueryAndExpectResult(contactData, predicates2, values, "contactProfile_Insert_test_500");
     values.Clear();
 
-    int64_t contactDataIdThree = ContactDataInsert(rawContactId, "email", "8523@163.com", "", values);
-    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdThree = %{public}ld", contactDataIdThree);
+    int64_t contactDataIdThree = ContactDataInsert(rawContactId, "email", "8523@email", "", values);
+    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdThree = %{public}ld", (long) contactDataIdThree);
     EXPECT_GT(contactDataIdThree, 0);
     OHOS::DataShare::DataSharePredicates predicates3;
     predicates3.EqualTo("id", std::to_string(contactDataIdThree));
@@ -538,7 +538,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_500, testing::ext::TestS
     values.Clear();
 
     int64_t contactDataIdFour = ContactDataInsert(rawContactId, "phone", "188520314", "", values);
-    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdFour = %{public}ld", contactDataIdFour);
+    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdFour = %{public}ld", (long) contactDataIdFour);
     EXPECT_GT(contactDataIdFour, 0);
     OHOS::DataShare::DataSharePredicates predicates4;
     predicates4.EqualTo("id", std::to_string(contactDataIdFour));
@@ -546,7 +546,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_500, testing::ext::TestS
     values.Clear();
 
     int64_t contactDataIdFive = ContactDataInsert(rawContactId, "nickname", "xiaogang", "", values);
-    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdFive = %{public}ld", contactDataIdFive);
+    HILOG_INFO("contactProfile_Insert_test_500 : contactDataIdFive = %{public}ld", (long) contactDataIdFive);
     EXPECT_GT(contactDataIdFive, 0);
     OHOS::DataShare::DataSharePredicates predicates5;
     predicates5.EqualTo("id", std::to_string(contactDataIdFive));
@@ -570,12 +570,12 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_600, testing::ext::TestS
     std::string contactData = ContactTabName::CONTACT_DATA;
     OHOS::DataShare::DataShareValuesBucket values;
     int64_t rawContactId = RawContactInsert("chengshao", values);
-    HILOG_INFO("contactProfile_Insert_test_600 : rawContactId = %{public}ld", rawContactId);
+    HILOG_INFO("contactProfile_Insert_test_600 : rawContactId = %{public}ld", (long) rawContactId);
     EXPECT_GT(rawContactId, 0);
     values.Clear();
 
     int64_t contactDataIdOne = ContactDataInsert(rawContactId, "postal_address", "NanJingCity", "", values);
-    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdOne = %{public}ld", contactDataIdOne);
+    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdOne = %{public}ld", (long) contactDataIdOne);
     EXPECT_GT(contactDataIdOne, 0);
     OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(contactDataIdOne));
@@ -583,7 +583,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_600, testing::ext::TestS
     values.Clear();
 
     int64_t contactDataIdTwo = ContactDataInsert(rawContactId, "group_membership", "1", "", values);
-    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdTwo = %{public}ld", contactDataIdTwo);
+    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdTwo = %{public}ld", (long) contactDataIdTwo);
     EXPECT_GT(contactDataIdTwo, 0);
     OHOS::DataShare::DataSharePredicates predicates2;
     predicates2.EqualTo("id", std::to_string(contactDataIdTwo));
@@ -591,22 +591,22 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_600, testing::ext::TestS
     values.Clear();
 
     int64_t contactDataIdThree = ContactDataInsert(rawContactId, "note", "dalao", "", values);
-    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdThree = %{public}ld", contactDataIdThree);
+    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdThree = %{public}ld", (long) contactDataIdThree);
     OHOS::DataShare::DataSharePredicates predicates3;
     predicates3.EqualTo("id", std::to_string(contactDataIdThree));
     QueryAndExpectResult(contactData, predicates3, values, "contactProfile_Insert_test_600");
     values.Clear();
 
     int64_t contactDataIdFour = ContactDataInsert(rawContactId, "im", "aaaa", "", values);
-    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdFour = %{public}ld", contactDataIdFour);
+    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdFour = %{public}ld", (long) contactDataIdFour);
     EXPECT_GT(contactDataIdFour, 0);
     OHOS::DataShare::DataSharePredicates predicates4;
     predicates4.EqualTo("id", std::to_string(contactDataIdFour));
     QueryAndExpectResult(contactData, predicates4, values, "contactProfile_Insert_test_600");
     values.Clear();
 
-    int64_t contactDataIdFive = ContactDataInsert(rawContactId, "website", "www.48236.com", "", values);
-    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdFive = %{public}ld", contactDataIdFive);
+    int64_t contactDataIdFive = ContactDataInsert(rawContactId, "website", "www.email", "", values);
+    HILOG_INFO("contactProfile_Insert_test_600 : contactDataIdFive = %{public}ld", (long) contactDataIdFive);
     EXPECT_GT(contactDataIdFive, 0);
     OHOS::DataShare::DataSharePredicates predicates5;
     predicates5.EqualTo("id", std::to_string(contactDataIdFive));
@@ -630,12 +630,12 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_700, testing::ext::TestS
     std::string contactData = ContactTabName::CONTACT_DATA;
     OHOS::DataShare::DataShareValuesBucket values;
     int64_t rawContactId = RawContactInsert("yanshao", values);
-    HILOG_INFO("contactProfile_Insert_test_700 : rawContactId = %{public}ld", rawContactId);
+    HILOG_INFO("contactProfile_Insert_test_700 : rawContactId = %{public}ld", (long) rawContactId);
     EXPECT_GT(rawContactId, 0);
     values.Clear();
 
     int64_t contactDataIdOne = ContactDataInsert(rawContactId, "contactProfile_event", "19960229", "", values);
-    HILOG_INFO("contactProfile_Insert_test_700 : contactDataIdOne = %{public}ld", contactDataIdOne);
+    HILOG_INFO("contactProfile_Insert_test_700 : contactDataIdOne = %{public}ld", (long) contactDataIdOne);
     EXPECT_GT(contactDataIdOne, 0);
     OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(contactDataIdOne));
@@ -643,7 +643,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_700, testing::ext::TestS
     values.Clear();
 
     int64_t contactDataIdTwo = ContactDataInsert(rawContactId, "relation", "Secretary", "", values);
-    HILOG_INFO("contactProfile_Insert_test_700 : contactDataIdTwo = %{public}ld", contactDataIdTwo);
+    HILOG_INFO("contactProfile_Insert_test_700 : contactDataIdTwo = %{public}ld", (long) contactDataIdTwo);
     EXPECT_GT(contactDataIdTwo, 0);
     OHOS::DataShare::DataSharePredicates predicates2;
     predicates2.EqualTo("id", std::to_string(contactDataIdTwo));
@@ -651,7 +651,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_700, testing::ext::TestS
     values.Clear();
 
     int64_t contactDataIdThree = ContactDataInsert(rawContactId, "contactProfile_misc", "1314", "", values);
-    HILOG_INFO("contactProfile_Insert_test_700 : contactDataIdThree = %{public}ld", contactDataIdThree);
+    HILOG_INFO("contactProfile_Insert_test_700 : contactDataIdThree = %{public}ld", (long) contactDataIdThree);
     EXPECT_GT(contactDataIdThree, 0);
     OHOS::DataShare::DataSharePredicates predicates3;
     predicates3.EqualTo("id", std::to_string(contactDataIdThree));
@@ -740,12 +740,12 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_900, testing::ext::TestS
     values.Clear();
 
     rawContactId = RawContactInsert("lihong", values);
-    HILOG_INFO("contactProfile_Insert_test_900 : rawContactId = %{public}ld", rawContactId);
+    HILOG_INFO("contactProfile_Insert_test_900 : rawContactId = %{public}ld", (long) rawContactId);
     EXPECT_GT(rawContactId, 0);
     values.Clear();
 
     int64_t contactDataIdThree = ContactDataInsert(rawContactId, "name", "lihong", "", values);
-    HILOG_INFO("contactProfile_Insert_test_900 : contactDataIdThree = %{public}ld", contactDataIdThree);
+    HILOG_INFO("contactProfile_Insert_test_900 : contactDataIdThree = %{public}ld", (long) contactDataIdThree);
     EXPECT_GT(contactDataIdThree, 0);
     OHOS::DataShare::DataSharePredicates predicates3;
     predicates3.EqualTo("id", std::to_string(contactDataIdThree));
@@ -753,7 +753,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Insert_test_900, testing::ext::TestS
     values.Clear();
 
     int64_t contactDataIdFour = ContactDataInsert(rawContactId, "organization", "tiantianxaingshang", "Test", values);
-    HILOG_INFO("contactProfile_Insert_test_900 : contactDataIdFour = %{public}ld", contactDataIdFour);
+    HILOG_INFO("contactProfile_Insert_test_900 : contactDataIdFour = %{public}ld", (long) contactDataIdFour);
     EXPECT_GT(contactDataIdFour, 0);
     OHOS::DataShare::DataSharePredicates predicates4;
     predicates4.EqualTo("id", std::to_string(contactDataIdFour));
@@ -819,7 +819,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Update_test_1100, testing::ext::Test
     vectorValue.push_back("Test");
     vectorValue.push_back("zhangming||zm");
     int64_t rawContactId = RawContactExpandInsert(vectorValue, 1, values);
-    HILOG_INFO("contactProfile_Update_test_1100 : rawContactId = %{public}ld", rawContactId);
+    HILOG_INFO("contactProfile_Update_test_1100 : rawContactId = %{public}ld", (long) rawContactId);
     EXPECT_GT(rawContactId, 0);
 
     OHOS::DataShare::DataShareValuesBucket updateValues;
@@ -965,7 +965,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Update_test_1400, testing::ext::Test
     EXPECT_GT(contactDataIdTwo, 0);
 
     OHOS::DataShare::DataShareValuesBucket valuesThree;
-    int64_t contactDataIdThree = ContactDataInsert(rawContactId, "email", "8523@163.com", "", valuesThree);
+    int64_t contactDataIdThree = ContactDataInsert(rawContactId, "email", "8523@email", "", valuesThree);
     EXPECT_GT(contactDataIdThree, 0);
 
     OHOS::DataShare::DataShareValuesBucket updateValues;
@@ -987,7 +987,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Update_test_1400, testing::ext::Test
     QueryAndExpectResult(contactData, predicates2, updateValues, "contactProfile_Update_test_1400");
 
     updateValues.Clear();
-    updateValues.Put("detail_info", "1220369@qq.com");
+    updateValues.Put("detail_info", "1220369@email");
     OHOS::DataShare::DataSharePredicates predicates3;
     predicates3.EqualTo("id", std::to_string(contactDataIdThree));
     updateCode = ContactUpdate(contactData, updateValues, predicates3);
@@ -1128,7 +1128,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Update_test_1700, testing::ext::Test
     EXPECT_GT(rawContactId, 0);
 
     OHOS::DataShare::DataShareValuesBucket contactValuesOne;
-    int64_t contactDataIdOne = ContactDataInsert(rawContactId, "website", "www.aaa.com", "", contactValuesOne);
+    int64_t contactDataIdOne = ContactDataInsert(rawContactId, "website", "website", "", contactValuesOne);
     EXPECT_GT(contactDataIdOne, 0);
 
     OHOS::DataShare::DataShareValuesBucket contactValuesTwo;
@@ -1140,7 +1140,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Update_test_1700, testing::ext::Test
     EXPECT_GT(contactDataIdThree, 0);
 
     OHOS::DataShare::DataShareValuesBucket updateValues;
-    updateValues.Put("detail_info", "www.bbb.com");
+    updateValues.Put("detail_info", "www");
     OHOS::DataShare::DataSharePredicates predicates;
     predicates.EqualTo("id", std::to_string(contactDataIdOne));
     std::string contactData = ContactTabName::CONTACT_DATA;
@@ -1500,7 +1500,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Update_test_2500, testing::ext::Test
     vectorValue.push_back("Test");
     vectorValue.push_back("abiao||ab");
     int64_t rawContactIdThree = RawContactExpandInsert(vectorValue, 1, values);
-    HILOG_INFO("contactProfile_Update_test_2500 : rawContactIdThree = %{public}ld", rawContactIdThree);
+    HILOG_INFO("contactProfile_Update_test_2500 : rawContactIdThree = %{public}ld", (long) rawContactIdThree);
     EXPECT_GT(rawContactIdThree, 0);
 
     OHOS::DataShare::DataShareValuesBucket updateValues;
@@ -1890,12 +1890,12 @@ HWTEST_F(ContactProfileTest, contactProfile_Delete_test_3600, testing::ext::Test
     HILOG_INFO("--- contactProfile_Delete_test_3600 is starting! ---");
     OHOS::DataShare::DataShareValuesBucket groupValues;
     int64_t groupIdOne = GroupsInsert("Test", groupValues);
-    HILOG_INFO("contactProfile_Delete_test_3600: groupIdOne = %{public}ld", groupIdOne);
+    HILOG_INFO("contactProfile_Delete_test_3600: groupIdOne = %{public}ld", (long) groupIdOne);
     EXPECT_GT(groupIdOne, 0);
 
     groupValues.Clear();
     int64_t groupIdTwo = GroupsInsert("Developer", groupValues);
-    HILOG_INFO("contactProfile_Delete_test_3600: groupIdTwo = %{public}ld", groupIdTwo);
+    HILOG_INFO("contactProfile_Delete_test_3600: groupIdTwo = %{public}ld", (long) groupIdTwo);
     EXPECT_GT(groupIdTwo, 0);
     OHOS::DataShare::DataShareValuesBucket rawContactValues;
     int64_t rawContactIdOne = RawContactInsert("xiaoli", rawContactValues);
@@ -2387,11 +2387,11 @@ HWTEST_F(ContactProfileTest, contactProfile_Query_test_4700, testing::ext::TestS
     EXPECT_GT(rawContactIdTwo, 0);
 
     OHOS::DataShare::DataShareValuesBucket contactValues;
-    int64_t contactDataId = ContactDataInsert(rawContactIdOne, "email", "166@163.com", "", contactValues);
+    int64_t contactDataId = ContactDataInsert(rawContactIdOne, "email", "166@email", "", contactValues);
     EXPECT_GT(contactDataId, 0);
 
     OHOS::DataShare::DataShareValuesBucket contactValuesTwo;
-    contactDataId = ContactDataInsert(rawContactIdTwo, "email", "199@163.com", "", contactValuesTwo);
+    contactDataId = ContactDataInsert(rawContactIdTwo, "email", "199@email", "", contactValuesTwo);
     EXPECT_GT(contactDataId, 0);
 
     std::vector<std::string> columns;
@@ -2459,7 +2459,7 @@ HWTEST_F(ContactProfileTest, contactProfile_Delete_test_4900, testing::ext::Test
     HILOG_INFO("--- contactProfile_Delete_test_4900 is starting! ---");
     OHOS::DataShare::DataShareValuesBucket rawContactValues;
     int64_t rawContactId = RawContactInsert("xiaoli", rawContactValues);
-    HILOG_INFO("rawContactId= %{public}ld", rawContactId);
+    HILOG_INFO("rawContactId= %{public}ld", (long) rawContactId);
     EXPECT_GT(rawContactId, 0);
 
     OHOS::DataShare::DataSharePredicates predicates;
@@ -2757,7 +2757,7 @@ std::vector<OHOS::DataShare::DataShareValuesBucket> ContactProfileTest::GetBatch
     OHOS::DataShare::DataShareValuesBucket contactDataValuesThree;
     contactDataValuesThree.Put("raw_contact_id", rawContactId);
     contactDataValuesThree.Put("content_type", "email");
-    contactDataValuesThree.Put("detail_info", "199632@163.com");
+    contactDataValuesThree.Put("detail_info", "199632@email");
     OHOS::DataShare::DataShareValuesBucket contactDataValuesFour;
     contactDataValuesFour.Put("raw_contact_id", rawContactId);
     contactDataValuesFour.Put("content_type", "phone");
@@ -3040,7 +3040,7 @@ HWTEST_F(ContactProfileTest, abnormal_contactProfile_Insert_test_6100, testing::
     OHOS::DataShare::DataShareValuesBucket rawContactValues;
     rawContactValues.Put("display_names", "liming");
     int64_t rawontactId = contactsDataAbility.Insert(uriRawContact, rawContactValues);
-    HILOG_INFO("abnormal_contactProfile_Insert_test_6100 : rawontactId = %{public}ld", rawontactId);
+    HILOG_INFO("abnormal_contactProfile_Insert_test_6100 : rawontactId = %{public}ld", (long) rawontactId);
     EXPECT_EQ(rawontactId, -1);
 
     rawContactValues.Clear();
@@ -3137,7 +3137,7 @@ HWTEST_F(ContactProfileTest, abnormal_contactProfile_Update_test_6400, testing::
     OHOS::Uri errorUri(ProfileUri::ERROR_URI);
     OHOS::DataShare::DataShareValuesBucket rawContactValues;
     int64_t rawContactId = RawContactInsert("zhangming", rawContactValues);
-    HILOG_INFO("abnormal_contactProfile_Update_test_6400 : rawContactId = %{public}ld", rawContactId);
+    HILOG_INFO("abnormal_contactProfile_Update_test_6400 : rawContactId = %{public}ld", (long) rawContactId);
     EXPECT_GT(rawContactId, 0);
 
     OHOS::DataShare::DataShareValuesBucket updateValues;

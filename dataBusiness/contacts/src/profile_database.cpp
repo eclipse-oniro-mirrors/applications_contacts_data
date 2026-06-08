@@ -19,9 +19,11 @@
 #include <mutex>
 #include <unistd.h>
 
+#include "calllog_common.h"
 #include "common.h"
 #include "contacts_account.h"
 #include "contacts_columns.h"
+#include "contacts_common.h"
 #include "contacts_type.h"
 #include "hilog_wrapper.h"
 
@@ -37,18 +39,21 @@ std::mutex g_mtx;
 ProfileDatabase::ProfileDatabase()
 {
     int errCode = OHOS::NativeRdb::E_OK;
-    g_databaseName = ContactsPath::RDB_PATH + "profile.db";
+    int getDataBasePathErrCode = OHOS::NativeRdb::E_OK;
+    g_databaseName = OHOS::NativeRdb::RdbSqlUtils::GetDefaultDatabasePath(
+        ContactsPath::RDB_PATH, "profile.db", getDataBasePathErrCode);
     OHOS::NativeRdb::RdbStoreConfig config(g_databaseName);
-    HILOG_INFO("ProfileDatabase g_databaseName :%{public}s", g_databaseName.c_str());
+    HILOG_INFO("ProfileDatabase ts = %{public}lld", (long long) time(NULL));
     SqliteOpenHelperProfileCallback sqliteOpenHelperCallback;
-    store_ = OHOS::NativeRdb::RdbHelper::GetRdbStore(config, DATABASE_OPEN_VERSION, sqliteOpenHelperCallback, errCode);
+    store_ = OHOS::NativeRdb::RdbHelper::GetRdbStore(
+        config, DATABASE_CONTACTS_OPEN_VERSION, sqliteOpenHelperCallback, errCode);
     if (errCode != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("ProfileDatabase errCode :%{public}d", errCode);
+        HILOG_ERROR("ProfileDatabase errCode :%{public}d, ts = %{public}lld", errCode, (long long) time(NULL));
     } else {
-        HILOG_INFO("ProfileDatabase errCode :%{public}d", errCode);
+        HILOG_INFO("ProfileDatabase errCode :%{public}d, ts = %{public}lld", errCode, (long long) time(NULL));
     }
     if (errCode != OHOS::NativeRdb::E_OK) {
-        HILOG_ERROR("ProfileDatabase rebase open error :%{public}d", errCode);
+        HILOG_ERROR("ProfileDatabase rebase open error :%{public}d, ts = %{public}lld", errCode, (long long) time(NULL));
         return;
     }
     std::shared_ptr<ContactsAccount> contactsAccount = ContactsAccount::GetInstance();
@@ -59,7 +64,7 @@ ProfileDatabase::ProfileDatabase()
 
 std::shared_ptr<ProfileDatabase> ProfileDatabase::GetInstance()
 {
-    if (profileDatabase_ == nullptr) {
+    if (profileDatabase_ == nullptr || store_ == nullptr) {
         g_mtx.lock();
         profileDatabase_.reset(new ProfileDatabase());
         g_mtx.unlock();
@@ -71,7 +76,7 @@ void ProfileDatabase::DestroyInstanceAndRestore(std::string restorePath)
 {
     g_mtx.lock();
     if (access(restorePath.c_str(), F_OK) != 0) {
-        HILOG_ERROR("Restore file %{private}s does not exist", restorePath.c_str());
+        HILOG_ERROR("Restore file %{private}s does not exist, ts = %{public}lld", restorePath.c_str(), (long long) time(NULL));
         g_mtx.unlock();
         return;
     }
@@ -94,10 +99,12 @@ bool ProfileDatabase::Restore(std::string restorePath)
 
 int SqliteOpenHelperProfileCallback::OnCreate(OHOS::NativeRdb::RdbStore &store)
 {
+    HILOG_WARN("ProfileDatabase OnCreate profile db.");
     store.ExecuteSql(CREATE_CONTACT);
     store.ExecuteSql(CREATE_CONTACT_INDEX);
     store.ExecuteSql(CREATE_RAW_CONTACT);
     store.ExecuteSql(CREATE_RAW_CONTACT_INDEX);
+    store.ExecuteSql(CREATE_RAW_CONTACT_INDEX_SORT);
     store.ExecuteSql(CREATE_CONTACT_DATA);
     store.ExecuteSql(CREATE_CONTACT_INDEX_DATA1);
     store.ExecuteSql(CREATE_CONTACT_INDEX_DATA2);
@@ -116,9 +123,9 @@ int SqliteOpenHelperProfileCallback::OnCreate(OHOS::NativeRdb::RdbStore &store)
     store.ExecuteSql(CREATE_VIEW_CONTACT_DATA);
     store.ExecuteSql(CREATE_VIEW_RAW_CONTACT);
     store.ExecuteSql(CREATE_VIEW_CONTACT);
+    store.ExecuteSql(CREATE_VIEW_CONTACT_LOCATION);
     store.ExecuteSql(CREATE_VIEW_GROUPS);
     store.ExecuteSql(CREATE_VIEW_DELETED);
-    store.ExecuteSql(INSERT_DELETE_RAW_CONTACT);
     store.ExecuteSql(UPDATE_RAW_CONTACT_VERSION);
     store.ExecuteSql(UPDATE_CONTACT_DATA_VERSION);
     store.ExecuteSql(INSERT_CONTACT_QUICK_SEARCH);
@@ -133,7 +140,7 @@ int SqliteOpenHelperProfileCallback::OnCreate(OHOS::NativeRdb::RdbStore &store)
 
 int SqliteOpenHelperProfileCallback::OnUpgrade(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion)
 {
-    HILOG_INFO("OnUpgrade oldVersion is %{public}d , newVersion is %{public}d", oldVersion, newVersion);
+    HILOG_INFO("ProfileDatabase OnUpgrade oldVersion is %{public}d , newVersion is %{public}d", oldVersion, newVersion);
     if (oldVersion < newVersion && newVersion == DATABASE_NEW_VERSION) {
         store.ExecuteSql("ALTER TABLE database_backup_task ADD COLUMN sync TEXT");
     }
@@ -174,8 +181,9 @@ void SqliteOpenHelperProfileCallback::UpgradeToV2(OHOS::NativeRdb::RdbStore &sto
 
 int SqliteOpenHelperProfileCallback::OnDowngrade(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion)
 {
-    HILOG_INFO("OnDowngrade oldVersion is %{public}d , newVersion is %{public}d", oldVersion, newVersion);
-    if (oldVersion > newVersion && newVersion == DATABASE_OPEN_VERSION) {
+    HILOG_INFO("ProfileDatabase OnDowngrade oldVersion is %{public}d , newVersion is %{public}d",
+        oldVersion, newVersion);
+    if (oldVersion > newVersion && newVersion == DATABASE_CONTACTS_OPEN_VERSION) {
         store.ExecuteSql(
             "CREATE TABLE IF NOT EXISTS database_backup (id INTEGER PRIMARY KEY AUTOINCREMENT, backup_time "
             "TEXT, backup_path TEXT, remarks TEXT)");

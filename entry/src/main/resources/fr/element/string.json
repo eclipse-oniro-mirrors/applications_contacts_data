@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"Stockage des contacts",
+            "attr":{
+                "priority":"translate"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"Ceci est utilisé pour synchroniser les anniversaires des contacts.",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

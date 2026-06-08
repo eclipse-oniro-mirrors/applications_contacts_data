@@ -1,0 +1,11 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"주소록 저장소",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

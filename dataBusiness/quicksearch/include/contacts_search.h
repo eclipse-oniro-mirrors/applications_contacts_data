@@ -31,6 +31,8 @@ public:
         OHOS::NativeRdb::ValuesBucket searchContactValues);
     int UpdateSearchContact(int rawContactId, std::string type, std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore,
         OHOS::NativeRdb::ValuesBucket linkDataDataValues);
+    static int64_t BatchInsert(std::shared_ptr<OHOS::NativeRdb::RdbStore> &rdbStore,
+        std::vector<OHOS::NativeRdb::ValuesBucket> &rawContactValues, int64_t &outChangeRows);
 };
 } // namespace Contacts
 } // namespace OHOS

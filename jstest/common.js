@@ -837,7 +837,7 @@ export default {
     let contactDataValuesThree = {
       'raw_contact_id': rawContactId,
       'content_type': 'email',
-      'detail_info': '15844@163.com'
+      'detail_info': '15844@email'
     };
     let contactDataValuesFour = {
       'raw_contact_id': rawContactId,

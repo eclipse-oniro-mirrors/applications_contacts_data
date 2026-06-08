@@ -34,6 +34,7 @@ public:
     sptr<IRemoteObject> OnConnect(const AAFwk::Want &want) override;
     virtual int Insert(const Uri &uri, const DataShare::DataShareValuesBucket &value) override;
     virtual int BatchInsert(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values) override;
+    virtual int BatchInsertByMigrate(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values);
     virtual void OnStart(const Want &want) override;
     virtual int Update(const Uri &uri, const DataShare::DataSharePredicates &predicates,
         const DataShare::DataShareValuesBucket &value) override;
@@ -46,10 +47,14 @@ private:
     static std::shared_ptr<Contacts::CallLogDataBase> callLogDataBase_;
     static std::map<std::string, int> uriValueMap_;
     int UriParse(Uri &uri);
+    std::string UriParseBatchParam(Uri &uri);
     int InsertExecute(const Uri &uri, const OHOS::NativeRdb::ValuesBucket &value);
     void DataBaseNotifyChange(int code, Uri uri);
     bool IsBeginTransactionOK(int code, std::mutex &mutex);
     bool IsCommitOk(int code, std::mutex &mutex);
+    void CheckNotifyCallLogChange(OHOS::NativeRdb::ValuesBucket &valuesBucket);
+    int BatchInsertSplit(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values);
+    void AddQueryNotPrivacyCondition(OHOS::NativeRdb::RdbPredicates &rdbPredicates);
 };
 } // namespace AbilityRuntime
 } // namespace OHOS

@@ -23,12 +23,14 @@ please copy it to your project root dir and modify it refer to OpenHarmony/tools
         <licensefile></licensefile>
         <policylist>
             <policy name="projectPolicy" desc="">
+                <policyitem type="copyright" name="Huawei Technologies Co" path=".*" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc=""/>
             </policy>
         </policylist>
         <filefilterlist>
             <filefilter name="defaultFilter" desc="Files not to check">
             </filefilter>
             <filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
+                <filteritem type="filename" name="publicity.xml" desc="The JSON format does not support comments."/>
                 <filteritem type="filename" name="*.cfg" desc="The JSON format does not support comments."/>
             </filefilter>
             <filefilter name="copyrightPolicyFilter" desc="Filters for copyright header policies">
