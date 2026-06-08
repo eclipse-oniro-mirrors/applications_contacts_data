@@ -303,6 +303,8 @@ function validateImportContactsArgs(args) {
         throw new BusinessError(ERROR_INVALID_PARAMETER, ERROR_MSG_INVALID_PARAMETER);
       }
     });
+    // 设置id，应用侧用于排序
+    args[1][i].id = i + 1; 
   }
 }
 
