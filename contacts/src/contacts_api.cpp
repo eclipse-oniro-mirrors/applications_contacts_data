@@ -16,6 +16,7 @@
 #include "contacts_api.h"
 
 #include <mutex>
+#include <set>
 
 #include "datashare_predicates.h"
 #include "rdb_errno.h"
@@ -45,6 +46,9 @@
 #include "image_packer.h"
 #include "file_uri.h"
 #include "kit_pixel_map_util.h"
+#include "../../ability/common/include/contacts_columns.h"
+#include "kit_bundle_mgr_helper.h"
+#include "app_mgr_client.h"
 
 using i18n::phonenumbers::PhoneNumberUtil;
 
@@ -940,6 +944,17 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
     HILOG_INFO("contactApi ExecuteSyncDone done===>");
 }
 
+void HandleQueryContactCountExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
+{
+    if (executeHelper->resultData == RDB_PARAMETER_ERROR || executeHelper->resultData == ERROR) {
+        result = ContactsNapiUtils::CreateError(env, RDB_PARAMETER_ERROR);
+    } else if (executeHelper->resultData == VERIFICATION_PARAMETER_ERROR) {
+        result = ContactsNapiUtils::CreateErrorByVerification(env, INVALID_PARAMETER);
+    } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
+        result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
+    }
+}
+
 void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
 {
     HILOG_INFO("HandleExecuteErrorCode, actionCode = %{public}d", executeHelper->actionCode);
@@ -960,28 +975,41 @@ void HandleExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_val
         case QUERY_GROUPS:
         case QUERY_HOLDERS:
         case QUERY_CONTACT_COUNT:
-            // 参数错误
-            HILOG_INFO("HandleExecuteErrorCode resultData");
-            if (executeHelper->resultData == RDB_PARAMETER_ERROR || executeHelper->resultData == ERROR) {
-                HILOG_ERROR("handleExecuteErrorCode handle param error: %{public}d", executeHelper->resultData);
-                result = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
-            } else if (executeHelper->resultData == VERIFICATION_PARAMETER_ERROR) {
-                HILOG_ERROR("parameter verification failed");
-                if (executeHelper->actionCode == ADD_CONTACTS) {
-                    result = ContactsNapiUtils::CreateErrorByVerification(env, INVALID_PARAMETER);
-                } else {
-                    result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
-                }
-            } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
-                HILOG_ERROR("permission error");
-                result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
-            }
+            HandleQueryContactCountExecuteErrorCode(env, executeHelper, result);
             break;
         case HAS_MATCHED_CALL_LOG:
         case ADD_CONTACTS: {
             HandleAddContactsErrorCode(env, executeHelper, result);
             break;
         }
+        case SYNC_CONTACTS:
+        case QUERY_CONTACT_SYNC_INFO: {
+            HandleSyncContactsErrorCode(env, executeHelper, result);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void HandleOtherExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
+{
+    ResultConvert resultConvert;
+    switch (executeHelper->actionCode) {
+        case QUERY_CONTACTS:
+        case QUERY_CONTACTS_BY_EMAIL:
+        case QUERY_CONTACTS_BY_PHONE_NUMBER:
+            result = resultConvert.ResultSetToObject(env, executeHelper->resultSet, executeHelper->grantUri);
+            break;
+        case QUERY_GROUPS:
+            result = resultConvert.ResultSetToGroup(env, executeHelper->resultSet);
+            break;
+        case QUERY_HOLDERS:
+            result = resultConvert.ResultSetToHolder(env, executeHelper->resultSet);
+            break;
+        case QUERY_CONTACT_COUNT:
+            HandleQueryContactCountResult(env, executeHelper, result);
+            break;
         default:
             break;
     }
@@ -1020,22 +1048,34 @@ void HandleExecuteResult(napi_env env, ExecuteHelper *executeHelper, napi_value 
                 }
             }
             break;
-        case QUERY_CONTACTS:
-        case QUERY_CONTACTS_BY_EMAIL:
-        case QUERY_CONTACTS_BY_PHONE_NUMBER:
-            result = resultConvert.ResultSetToObject(env, executeHelper->resultSet, executeHelper->grantUri);
+        case SYNC_CONTACTS:
+            HandleSyncContactsResult(env, executeHelper, result);
             break;
-        case QUERY_GROUPS:
-            result = resultConvert.ResultSetToGroup(env, executeHelper->resultSet);
-            break;
-        case QUERY_HOLDERS:
-            result = resultConvert.ResultSetToHolder(env, executeHelper->resultSet);
-            break;
-        case QUERY_CONTACT_COUNT:
-            HandleQueryContactCountResult(env, executeHelper, result);
+        case QUERY_CONTACT_SYNC_INFO:
+            HandleQueryContactSyncInfoResult(env, executeHelper, result);
             break;
         default:
+            HandleOtherExecuteResult(env, executeHelper, result);
             break;
+    }
+}
+
+void HandleSyncContactsErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
+{
+    if (executeHelper->resultData == VERIFICATION_PARAMETER_ERROR || executeHelper->resultData == INVALID_PARAMETER) {
+        result = ContactsNapiUtils::CreateErrorByVerification(env, INVALID_PARAMETER);
+    } else if (executeHelper->resultData == PERMISSION_ERROR) {
+        result = ContactsNapiUtils::CreateError(env, INVALID_PARAMETER);
+    } else if (executeHelper->resultData == ERROR_OVER_LIMIT) {
+        result = ContactsNapiUtils::CreateError(env, ERROR_OVER_LIMIT);
+    } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
+        result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
+    } else if (executeHelper->resultData == ERROR_BACKGROUND_CALL) {
+        result = ContactsNapiUtils::CreateError(env, ERROR_BACKGROUND_CALL);
+    } else if (executeHelper->resultData == ERROR_USER_CANCEL) {
+        result = ContactsNapiUtils::CreateError(env, ERROR_USER_CANCEL);
+    } else if (executeHelper->resultData == CONTACT_GENERAL_ERROR) {
+        result = ContactsNapiUtils::CreateError(env, CONTACT_GENERAL_ERROR);
     }
 }
 
@@ -1201,9 +1241,48 @@ void BatchInsertPortrait(const std::vector<DataShare::ExecResult> &results, Exec
     }
 }
 
+static void ProcessSyncInsertContacts(napi_env env, ExecuteHelper *executeHelper)
+{
+    if (executeHelper->dataShareHelper == nullptr) {
+        return;
+    }
+    ContactsControl contactsControl;
+    executeHelper->resultData = DataShare::ExecErrorCode::EXEC_SUCCESS;
+    size_t operationSize = 0;
+    std::vector<DataShare::ExecResult> results;
+    for (auto &statements : executeHelper->operationStatements) {
+        DataShare::ExecResultSet batchInsertResult;
+        contactsControl.ContactBatchInsert(executeHelper->dataShareHelper, statements, batchInsertResult);
+        HandleContactBatchInsertResult(batchInsertResult, statements, executeHelper);
+        operationSize += statements.size();
+        statements.clear();
+    }
+    executeHelper->operationStatements.clear();
+    int failedCount = executeHelper->resultData;
+    if (failedCount < 0) {
+        failedCount = 0;
+        executeHelper->resultData = failedCount;
+    }
+    if (static_cast<size_t>(failedCount) == operationSize) {
+        executeHelper->resultData = DataShare::ExecErrorCode::EXEC_FAILED;
+    } else if (failedCount > 0) {
+        executeHelper->resultData = DataShare::ExecErrorCode::EXEC_PARTIAL_SUCCESS;
+    }
+}
+
+void ProcessInsertContactsWithLimit(napi_env env, ExecuteHelper *executeHelper)
+{
+    if (executeHelper->syncCount > MAX_CONTACTS_PER_BATCH) {
+        executeHelper->resultData = ERROR_OVER_LIMIT;
+        return;
+    }
+    ProcessSyncInsertContacts(env, executeHelper);
+}
+
 void HandleContactBatchInsertResult(const DataShare::ExecResultSet &execResultSet,
     const std::vector<DataShare::OperationStatement> &statements, ExecuteHelper *executeHelper)
 {
+    int failedCount = 0;
     for (size_t i = 0; i < statements.size(); ++i) {
         if (statements[i].HasBackReference()) {
             continue;
@@ -1211,8 +1290,11 @@ void HandleContactBatchInsertResult(const DataShare::ExecResultSet &execResultSe
         auto &execResult = execResultSet.results[i];
         executeHelper->operationResultData.emplace_back(std::atoi(execResult.message.c_str()));
         if (execResult.code != DataShare::ExecErrorCode::EXEC_SUCCESS) {
-            executeHelper->resultData++;
+            failedCount++;
         }
+    }
+    if (executeHelper->resultData >= 0) {
+        executeHelper->resultData = failedCount;
     }
 }
 
@@ -1510,6 +1592,12 @@ void LocalExecute(napi_env env, ExecuteHelper *executeHelper)
         case HAS_MATCHED_CALL_LOG:
             LocalExecuteHasMatchedCallLog(env, executeHelper);
             break;
+        case SYNC_CONTACTS:
+            LocalExecuteSyncContacts(env, executeHelper);
+            break;
+        case QUERY_CONTACT_SYNC_INFO:
+            LocalExecuteQueryContactSyncInfo(env, executeHelper);
+            break;
         default:
             LocalExecuteSplit(env, executeHelper);
             HILOG_INFO("LocalExecute case error===>");
@@ -1591,6 +1679,11 @@ napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper)
         napi_get_null(env, &result);
     } else {
         napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &workName);
+        if (executeHelper->deferred == nullptr) {
+            napi_create_promise(env, &(executeHelper->deferred), &result);
+        } else {
+            napi_get_undefined(env, &result);
+        }
         napi_create_promise(env, &(executeHelper->deferred), &result);
         napi_create_async_work(env, nullptr, workName, Execute, ExecuteDone,
             reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
@@ -1641,6 +1734,45 @@ DataShare::DataSharePredicates ConvertParamsSwitchSplit(int code, napi_env env, 
     return predicates;
 }
 
+void SetOtherChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelper)
+{
+    napi_value id = nullptr;
+    napi_value key = nullptr;
+    napi_value hold = nullptr;
+    napi_value attr = nullptr;
+    napi_value contact = nullptr;
+    unsigned int size = executeHelper->argc;
+    for (unsigned int i = 0; i < size; i++) {
+        ObjectInitId(env, executeHelper->argv[i], id);
+        ObjectInitString(env, executeHelper->argv[i], key);
+        ObjectInit(env, executeHelper->argv[i], hold, attr, contact);
+    }
+    switch (executeHelper->actionCode) {
+        case UPDATE_CONTACT:
+            executeHelper->predicates = BuildUpdateContactConvertParams(env, contact, attr, executeHelper);
+            break;
+        case IS_LOCAL_CONTACT:
+            VerificationParameterId(env, id, executeHelper, hold);
+            executeHelper->predicates = BuildIsLocalContactPredicates(env, id);
+            break;
+        case IS_MY_CARD:
+            VerificationParameterId(env, id, executeHelper, hold);
+            executeHelper->predicates = BuildIsMyCardPredicates(env, id);
+            break;
+        case QUERY_KEY:
+            VerificationParameterId(env, id, executeHelper, hold);
+            executeHelper->predicates = BuildQueryKeyPredicates(env, id, hold);
+            break;
+        case HAS_MATCHED_CALL_LOG:
+            BuildQueryCallLogPredicates(env, executeHelper);
+            break;
+        default:
+            executeHelper->predicates = ConvertParamsSwitchSplit(executeHelper->actionCode, env, key, hold,
+                attr, executeHelper);
+            break;
+    }
+}
+
 void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelper)
 {
     napi_value id = nullptr;
@@ -1666,27 +1798,14 @@ void SetChildActionCodeAndConvertParams(napi_env env, ExecuteHelper *executeHelp
         case DELETE_CONTACT:
             executeHelper->predicates = BuildDeleteContactPredicates(env, executeHelper);
             break;
-        case UPDATE_CONTACT:
-            executeHelper->predicates = BuildUpdateContactConvertParams(env, contact, attr, executeHelper);
+        case QUERY_CONTACT_SYNC_INFO:
             break;
-        case IS_LOCAL_CONTACT:
-            VerificationParameterId(env, id, executeHelper, hold);
-            executeHelper->predicates = BuildIsLocalContactPredicates(env, id);
-            break;
-        case IS_MY_CARD:
-            VerificationParameterId(env, id, executeHelper, hold);
-            executeHelper->predicates = BuildIsMyCardPredicates(env, id);
-            break;
-        case QUERY_KEY:
-            VerificationParameterId(env, id, executeHelper, hold);
-            executeHelper->predicates = BuildQueryKeyPredicates(env, id, hold);
-            break;
-        case HAS_MATCHED_CALL_LOG:
-            BuildQueryCallLogPredicates(env, executeHelper);
+        case SYNC_CONTACTS:
+            contactsBuild.BuildSyncContactOperationStatements(env, executeHelper);
+            BuildSyncContactsConvertParams(env, executeHelper);
             break;
         default:
-            executeHelper->predicates = ConvertParamsSwitchSplit(executeHelper->actionCode, env, key, hold,
-                attr, executeHelper);
+            SetOtherChildActionCodeAndConvertParams(env, executeHelper);
             break;
     }
 }
@@ -3347,6 +3466,22 @@ napi_value DeclareFilterTypeConst(napi_env env, napi_value exports)
     return exports;
 }
 
+napi_value DeclareModeConst(napi_env env, napi_value exports)
+{
+    // FilterType
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_STATIC_PROPERTY("MODE_INCREMENTAL",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(MODE_INCREMENTAL))),
+        DECLARE_NAPI_STATIC_PROPERTY("DEFAULT_SELECT",
+            ContactsNapiUtils::ToInt32Value(env, static_cast<int32_t>(MODE_CLOUD_BASED))),
+    };
+    napi_value result = nullptr;
+    napi_define_class(env, "ContactsSyncMode", NAPI_AUTO_LENGTH, ContactsNapiUtils::CreateClassConstructor, nullptr,
+        sizeof(desc) / sizeof(*desc), desc, &result);
+    napi_set_named_property(env, exports, "ContactsSyncMode", result);
+    return exports;
+}
+
 void Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor exportFuncs[] = {
@@ -3369,7 +3504,9 @@ void Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("startSaveContactsPicker", OHOS::ContactsApi::ContactsPickerSave),
         DECLARE_NAPI_FUNCTION("startSaveExistContactsPicker", OHOS::ContactsApi::ContactsPickerSaveExist),
         DECLARE_NAPI_FUNCTION("startImportContactsPicker", OHOS::ContactsApi::ContactsPickerImport),
-        DECLARE_NAPI_FUNCTION("hasMatchedCallLog", OHOS::ContactsApi::HasMatchedCallLog)
+        DECLARE_NAPI_FUNCTION("hasMatchedCallLog", OHOS::ContactsApi::HasMatchedCallLog),
+        DECLARE_NAPI_FUNCTION("syncContacts", OHOS::ContactsApi::SyncContacts),
+        DECLARE_NAPI_FUNCTION("queryContactSyncInfo", OHOS::ContactsApi::QueryContactSyncInfo),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     // Declare class const initialization

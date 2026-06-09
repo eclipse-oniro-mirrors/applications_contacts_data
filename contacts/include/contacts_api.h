@@ -20,6 +20,8 @@
 #include "contacts_napi_object.h"
 #include "napi_base_context.h"
 #include "contacts_control.h"
+#include "contacts_sync_api.h"
+#include "contacts_sync_operations.h"
 
 namespace OHOS {
 namespace ContactsApi {
@@ -138,6 +140,8 @@ std::string QueryContactIdByRawContactId(std::shared_ptr<DataShare::DataShareHel
     ContactsControl &contactsControl, int rawContactId);
 int HandleConverPortraitFailed(ExecuteHelper *executeHelper, ContactsControl &contactsControl, int rawContactId,
     const std::string &contactId, int errorCode);
+bool isForegroundCheck(napi_env env, ExecuteHelper *executeHelper);
+void ProcessInsertContactsWithLimit(napi_env env, ExecuteHelper *executeHelper);
 } // namespace ContactsApi
 } // namespace OHOS
 

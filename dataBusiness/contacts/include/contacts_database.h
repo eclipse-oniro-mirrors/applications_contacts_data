@@ -154,6 +154,13 @@ public:
     void UpdateDirtyToOne();
     void UpdateContactTimeStamp();
     int SetFullSearchSwitch(bool switchStatus);
+    bool IsSyncConfirmed(int syncId);
+    int InsertKitContactsSyncInfo(const OHOS::NativeRdb::ValuesBucket &values);
+    int UpdateKitContactsSyncInfo(const std::string &bundleName, int syncId,
+        int currentBatch, int totalBatches, int userConfirmReuslt);
+    std::shared_ptr<OHOS::NativeRdb::ResultSet> QueryKitContactsSyncInfo(const std::string &bundleName, int syncId);
+    int DeleteKitContactsSyncInfo(OHOS::NativeRdb::RdbPredicates &rabPredicates);
+    int DeleteAllLocalContacts();
     std::shared_ptr<OHOS::NativeRdb::ResultSet> QueryContactCloneFlag();
     int UpdateContactedStautsByPhoneNum(const OHOS::NativeRdb::ValueObject &phoneNum);
     int UpdateContactedStautsById(int contactDataId);
@@ -442,6 +449,7 @@ private:
     int UpgradeToV40(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion);
     int UpgradeToV41(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion);
     int UpgradeToV42(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion);
+    int UpgradeToV43(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion);
     void UpgradeUnderV10(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion);
     void UpgradeUnderV20(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion);
     int UpgradeUnderV30(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion);

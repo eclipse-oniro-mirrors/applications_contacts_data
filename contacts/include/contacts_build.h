@@ -36,6 +36,38 @@
 
 namespace OHOS {
 namespace ContactsApi {
+
+struct ExecuteHelper;
+struct SyncStatementContext {
+    std::string rawContactUri;
+    std::string contactDataUri;
+    DataShare::DataSharePredicates predicate;
+    size_t *rawContactIndex;
+    size_t *statementIndex;
+    std::vector<DataShare::OperationStatement> *statements;
+    ExecuteHelper *executeHelper;
+    SyncStatementContext(
+        const std::string &rawUri,
+        const std::string &dataUri,
+        const DataShare::DataSharePredicates &pred,
+        size_t *rawIdx,
+        size_t *stmIndx,
+        std::vector<DataShare::OperationStatement> *stmts,
+        ExecuteHelper *helper = nullptr)
+        : rawContactUri(rawUri),
+          contactDataUri(dataUri),
+          predicate(pred),
+          rawContactIndex(rawIdx),
+          statementIndex(stmIndx),
+          statements(stmts),
+          executeHelper(helper)
+    {}
+    SyncStatementContext(const SyncStatementContext &) = delete;
+    SyncStatementContext &operator=(const SyncStatementContext &) = delete;
+    SyncStatementContext(SyncStatementContext &&) = delete;
+    SyncStatementContext &operator=(SyncStatementContext &&) = delete;
+};
+
 class ContactsBuild {
 public:
     ContactsBuild();
@@ -46,7 +78,24 @@ public:
     std::string GetContactIdStr(napi_env env, napi_value id);
     void GetContactData(napi_env env, ExecuteHelper *executeHelper);
     void GetContactsByObject(napi_env env, ExecuteHelper *executeHelper, std::vector<Contacts> &contacts);
+    void GetSyncContactsByObject(napi_env env, ExecuteHelper *executeHelper, std::vector<Contacts> &contacts);
     void BuildOperationStatements(napi_env env, ExecuteHelper *executeHelper);
+    void BuildSyncContactOperationStatements(napi_env env, ExecuteHelper *executeHelper);
+    void BuildSyncCloudBasedDeleteStatements(ExecuteHelper *executeHelper,
+        std::vector<DataShare::OperationStatement> &statemnets, size_t &rawContactIndex);
+    void BuildSyncContactBatchStatements(napi_env env, ExecuteHelper *executeHelper,
+        std::vector<DataShare::DataShareValuesBucket> &valueContacts,
+        std::vector<DataShare::DataShareValuesBucket> &valueContactDatas,
+        const Contacts &contact, size_t &rawContactIndex,
+        std::vector<DataShare::OperationStatement> &statements);
+    void BuildUpdateContactStatements(const Contacts &contact,
+        const std::vector<DataShare::DataShareValuesBucket> &valueContact,
+        const std::vector<DataShare::DataShareValuesBucket> &valueContactDatas,
+        SyncStatementContext &ctx);
+    void BuildInsertContactStatements(const Contacts &contact,
+        const std::vector<DataShare::DataShareValuesBucket> &valueContact,
+        const std::vector<DataShare::DataShareValuesBucket> &valueContactDatas,
+        SyncStatementContext &ctx);
     std::string NapiGetValueString(napi_env env, napi_value value);
     ContactAttributes GetContactAttributes(napi_env env, napi_value object);
     Holder GetHolder(napi_env env, napi_value object);

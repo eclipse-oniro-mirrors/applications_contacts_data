@@ -640,6 +640,21 @@ constexpr const char *CREATE_POSTER =
     "[update_time] INTEGER, "
     "[extra_info] TEXT)";
 
+// kit_contacts_sync_info table creation statement
+constexpr const char *CREATE_KIT_CONTACTS_SYNC_INFO =
+    "CREATE TABLE IF NOT EXISTS [kit_contacts_sync_info] ( "
+    "[id] INTEGER PRIMARY KEY AUTOINCREMENT, "
+    "[bundle_name] TEXT, "
+    "[sync_mode] INTEGER, "
+    "[sync_id] INTEGER, "
+    "[first_sync_time] INTEGER, "
+    "[last_sync_time] INTEGER, "
+    "[user_confirm_result] INTEGER, "
+    "[current_batch] INTEGER, "
+    "[completed_batches] TEXT, "
+    "[total_batches] INTEGER, "
+    "[insert_status] INTEGER DEFAULT 0)";
+
 const std::map<std::string, const char *> CONTACT_TABLES = {
     {ContactTableName::ACCOUNT, CREATE_ACCOUNT},
     {ContactTableName::CONTACT, CREATE_CONTACT},
@@ -660,6 +675,7 @@ const std::map<std::string, const char *> CONTACT_TABLES = {
     {ContactTableName::CLOUD_CONTACT_BLOCKLIST, CREATE_CLOUD_CONTACT_BLOCKLIST},
     {ContactTableName::PRIVACY_CONTACTS_BACKUP, CREATE_PRIVACY_CONTACTS_BACKUP},
     {ContactTableName::POSTER, CREATE_POSTER},
+    {ContactTableName::KIT_CONTACTS_SYNC_INFO, CREATE_KIT_CONTACTS_SYNC_INFO},
 };
 
 const std::map<std::string, const char *> CONTACT_VIEWS = {

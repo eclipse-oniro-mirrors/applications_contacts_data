@@ -21,6 +21,8 @@
 #include "contacts_napi_common.h"
 #include "ui_extension_context.h"
 #include "hilog_wrapper_api.h"
+#include "mutex"
+#include "condition_variable"
 
 #define CHECK_STATUS_RET(cond, message)                             \
     do {                                                            \
@@ -214,6 +216,36 @@ private:
     OHOS::ContactsApi::BaseContext* baseContext;
     OHOS::ContactsApi::PickerCallBack* pickerCallBack_;
     Ace::UIContent* uiContent;
+};
+
+struct SyncDialogCallback {
+    bool ready = false;
+    int32_t confirmResult = 0;
+    napi_deferred deferred = nullptr;
+    napi_env env = nullptr;
+    std::mutex mutex;
+    std::condition_variable cv;
+};
+
+struct SyncDialogContext {
+    SyncDialogCallback* callback = nullptr;
+    ExecuteHelper* helper = nullptr;
+};
+
+class SyncModalCallback {
+public:
+    SyncModalCallback(Ace::UIContent* uiContent, SyncDialogCallback* syncCallback);
+    void OnRelease(int32_t releaseCode);
+    void OnResultForModal(int32_t resultCode, const OHOS::AAFwk::Want& result);
+    void OnReceive(const OHOS::AAFwk::WantParams &request);
+    void OnError(int32_t code, const std::string &name, const std::string &message);
+    void OnDestory();
+    void SetSessionId(int32_t sessionId);
+    SyncDialogCallback* GetSyncCallBack() { return syncCallback_; }
+private:
+    int32_t sessionId_ = 0;
+    SyncDialogCallback* syncCallback_ = nullptr;
+    Ace::UIContent* uiContent_ = nullptr;
 };
 
 } // namespace ContactsApi

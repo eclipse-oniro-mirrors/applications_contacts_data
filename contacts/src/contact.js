@@ -555,6 +555,8 @@ export default {
   importContactsViaUI: importContactsViaUI,
   addContact: contact.addContact,
   addContacts: contact.addContacts,
+  syncContacts: contact.syncContacts,
+  queryContactSyncInfo: contact.queryContactSyncInfo,
   deleteContact: contact.deleteContact,
   queryContactsCount: contact.queryContactsCount,
   queryContact: contact.queryContact,
@@ -591,4 +593,5 @@ export default {
   FilterCondition: contact.FilterCondition,
   DataField: contact.DataField,
   FilterType: contact.FilterType,
+  ContactSyncMode: contact.ContactSyncMode,
 };

@@ -301,5 +301,70 @@ void ModalUICallback::OnDestroy()
     HILOG_INFO("OnDestroy enter.");
 }
 
+SyncModalCallback::SyncModalCallback(Ace::UIContent* uiContent, SyncDialogCallback* syncCallback)
+{
+    this->uiContent_ = uiContent;
+    this->syncCallback_ = syncCallback;
+}
+
+void SyncModalCallback::SetSessionId(int32_t sessionId)
+{
+    this->sessionId_ = sessionId;
+}
+
+void SyncModalCallback::OnRelease(int32_t releaseCode)
+{
+    if (this->uiContent_ != nullptr) {
+        this->uiContent_->CloseModalUIExtension(this->sessionId_);
+    }
+    if (this->syncCallback_ != nullptr) {
+        std::lock_guard<std::mutex> lock(this->syncCallback_->mutex);
+        if (this->syncCallback_->confirmResult == CONFIRM_RESULT_NO) {
+            this->syncCallback_->confirmResult = CONFIRM_RESULT_CANCELLED;
+        }
+        this->syncCallback_->ready = true;
+        this->syncCallback_->cv.notify_one();
+    }
+}
+
+void SyncModalCallback::OnError(int32_t code, const std::string &name, const std::string &message)
+{
+    if (this->syncCallback_ != nullptr && !this->syncCallback_->ready) {
+        if (this->uiContent_ != nullptr) {
+            this->uiContent_->CloseModalUIExtension(this->sessionId_);
+        }
+        {
+            std::lock_guard<std::mutex> lock(this->syncCallback_->mutex);
+            this->syncCallback_->ready = true;
+            this->syncCallback_->confirmResult = CONFIRM_RESULT_CANCELLED;
+            this->syncCallback_->cv.notify_one();
+        }
+    }
+}
+
+void SyncModalCallback::OnResultForModal(int32_t resultCode, const OHOS::AAFwk::Want &result)
+{
+    if (this->uiContent_ != nullptr) {
+        this->uiContent_->CloseModalUIExtension(this->sessionId_);
+    }
+}
+
+void SyncModalCallback::OnReceive(const OHOS::AAFwk::WantParams &request)
+{
+    if (this->syncCallback_ != nullptr) {
+        int32_t confirmResult = request.GetIntParam("confirmResult", CONFIRM_RESULT_NO);
+        {
+            std::lock_guard<std::mutex> lock(this->syncCallback_->mutex);
+            this->syncCallback_->ready = true;
+            this->syncCallback_->confirmResult = confirmResult;
+            this->syncCallback_->cv.notify_one();
+        }
+    }
+}
+
+void SyncModalCallback::OnDestory()
+{
+}
+
 } // namespace ContactsApi
 } // namespace OHOS
