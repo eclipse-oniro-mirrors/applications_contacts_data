@@ -27,6 +27,7 @@ public:
     ~ContactsStringUtils();
     static std::string &Trim(std::string &str);
     static std::vector<std::string> SplitStr(std::string str, std::string spSymbol);
+    static std::string MaskPhoneForLog(std::string &str);
 };
 } // namespace Contacts
 } // namespace OHOS

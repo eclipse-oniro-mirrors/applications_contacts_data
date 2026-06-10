@@ -1,0 +1,10 @@
+{
+  "devDependencies": {},
+  "name": "contacts_data_ability",
+  "description": "data ability hap",
+  "main": "",
+  "version": "1.0.0",
+  "dependencies": {
+    "libcontactsdataability.so": "file:./../dataBusiness/calllog/src/types/libcontactsdataability"
+  }
+}

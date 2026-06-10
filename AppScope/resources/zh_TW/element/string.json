@@ -1,0 +1,11 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"聯絡人儲存",
+            "attr":{
+                "priority":"LT"
+            }
+        }
+    ]
+}

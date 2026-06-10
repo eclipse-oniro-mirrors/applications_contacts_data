@@ -1,0 +1,11 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"Stockage des contacts",
+            "attr":{
+                "priority":"translate"
+            }
+        }
+    ]
+}

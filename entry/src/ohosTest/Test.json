@@ -1,0 +1,35 @@
+{
+  "driver": {
+    "type": "OHJSUnitTest",
+    "test-timeout": "300000",
+    "bundle-name": "com.ohos.contacts",
+    "module-name": "entry_test",
+    "shell-timeout": "600000",
+    "testcase-timeout": 7000,
+    "compile-mode": "esmodule",
+    "coverage": true,
+    "package-tool-path": "D:\\Local\\coverage\\node_modules\\@ohos\\coverage"
+  },
+  "kits": [
+    {
+      "type": "ShellKit",
+      "run-command": [
+        "mount -o remount,rw /"
+      ]
+    },
+    {
+      "push": "Contacts.hap->/system/app/Contacts/Contacts.hap",
+      "type": "PushKit",
+      "post-push": [
+        "reboot"
+      ]
+    },
+    {
+      "test-file-name": [
+        "ContactsTest.hap"
+      ],
+      "type": "AppInstallKit",
+      "cleanup-apps": true
+    }
+  ]
+}

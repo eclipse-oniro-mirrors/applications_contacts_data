@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"འབྲེལ་གཏུག་མི་སྣ་ཉར་གསོག་",
+            "attr":{
+                "priority":"LT"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"འབྲེལ་གཏུག་མི་སྣའི་སྐྱེས་སྐར་ལོ་ཐོར་གོམ་མཉམ་བྱ་བར་བེད་སྤྱོད་བྱ།",
+            "attr":{
+                "priority":"LT"
+            }
+        }
+    ]
+}

@@ -30,39 +30,22 @@ void ContactsCommonEvent::OnReceiveEvent(const OHOS::EventFwk::CommonEventData &
     HILOG_INFO("ContactsCommonEvent::OnReceiveEvent msgCode = %{public}d", msgCode);
 }
 
-bool ContactsCommonEvent::PublishContactEvent(
-    const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData)
+bool ContactsCommonEvent::PublishContactEvent(const OHOS::AAFwk::Want &want, int eventCode,
+    const std::string &eventData, const std::string &permission, bool order = true)
 {
     OHOS::EventFwk::CommonEventData data;
     data.SetWant(want);
     data.SetCode(eventCode);
     data.SetData(eventData);
     OHOS::EventFwk::CommonEventPublishInfo publishInfo;
-    publishInfo.SetOrdered(true);
+    publishInfo.SetOrdered(order);
+    std::vector<std::string> permissions;
+    permissions.emplace_back(permission);
+    publishInfo.SetSubscriberPermissions(permissions);
     bool publishResult = OHOS::EventFwk::CommonEventManager::PublishCommonEvent(data, publishInfo, nullptr);
-    HILOG_INFO("PublishContactEvent end publishResult = %{public}d", publishResult);
+    HILOG_INFO("PublishContactEvent end publishResult = %{public}d, eventCode = %{public}d, ts = %{public}lld",
+        publishResult, eventCode, (long long) time(NULL));
     return publishResult;
-}
-
-void ContactsCommonEvent::UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber)
-{
-    if (subscriber != nullptr) {
-        bool subscribeResult = OHOS::EventFwk::CommonEventManager::UnSubscribeCommonEvent(subscriber);
-        subscriber = nullptr;
-        HILOG_INFO("UnregisterSubscriber contacts end###subscribeResult = %{public}d", subscribeResult);
-    }
-}
-
-void ContactsCommonEvent::RegisterSubscriber()
-{
-    OHOS::EventFwk::MatchingSkills matchingSkills;
-    matchingSkills.AddEvent(CONTACT_EVENT);
-    matchingSkills.AddEvent(CALL_LOG_EVENT);
-    matchingSkills.AddEvent(VOICEMAIL_EVENT);
-    OHOS::EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
-    subscriber = std::make_shared<ContactsCommonEvent>(subscriberInfo);
-    bool subscribeResult = OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber);
-    HILOG_INFO("RegisterSubscriber contacts end###subscribeResult = %{public}d", subscribeResult);
 }
 
 void ContactsCommonEvent::SendContactChange(int actionCode)
@@ -72,7 +55,16 @@ void ContactsCommonEvent::SendContactChange(int actionCode)
     want.SetParam("contactsActionCode", actionCode);
     want.SetAction(CONTACT_EVENT);
     std::string eventData("ContactChange");
-    PublishContactEvent(want, eventCode, eventData);
+    std::string permission("ohos.permission.READ_CONTACTS");
+    PublishContactEvent(want, eventCode, eventData, permission);
+}
+
+void ContactsCommonEvent::SendPosterEvent(int eventCode, const std::string& eventData)
+{
+    OHOS::AAFwk::Want want;
+    want.SetAction(POSTER_EVENT);
+    std::string permission("ohos.permission.WRITE_CONTACTS");
+    PublishContactEvent(want, eventCode, eventData, permission, false);
 }
 
 void ContactsCommonEvent::SendCallLogChange(int actionCode)
@@ -82,7 +74,8 @@ void ContactsCommonEvent::SendCallLogChange(int actionCode)
     want.SetParam("contactsActionCode", actionCode);
     want.SetAction(CALL_LOG_EVENT);
     std::string eventData("CallLogChange");
-    PublishContactEvent(want, eventCode, eventData);
+    std::string permission("ohos.permission.READ_CALL_LOG");
+    PublishContactEvent(want, eventCode, eventData, permission);
 }
 
 void ContactsCommonEvent::SendVoiceMailChange(int actionCode)
@@ -92,7 +85,8 @@ void ContactsCommonEvent::SendVoiceMailChange(int actionCode)
     want.SetParam("contactsActionCode", actionCode);
     want.SetAction(VOICEMAIL_EVENT);
     std::string eventData("voicemailChange");
-    PublishContactEvent(want, eventCode, eventData);
+    std::string permission("ohos.permission.MANAGE_VOICEMAIL");
+    PublishContactEvent(want, eventCode, eventData, permission);
 }
 } // namespace Contacts
 } // namespace OHOS

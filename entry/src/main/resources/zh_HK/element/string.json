@@ -1,0 +1,18 @@
+{
+    "string":[
+        {
+            "name":"app_name",
+            "value":"聯絡人儲存裝置",
+            "attr":{
+                "priority":"LT"
+            }
+        },
+        {
+            "name":"contact_birthday_synchronization",
+            "value":"用以將聯絡人生日同步至日曆",
+            "attr":{
+                "priority":"LT"
+            }
+        }
+    ]
+}

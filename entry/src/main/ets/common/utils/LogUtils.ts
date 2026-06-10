@@ -25,12 +25,29 @@ export class LogUtils {
     console.info('[ContactsData:]' + TAG + ':' + msg);
   }
 
+  empty(tag: string, msg: string): void {
+    
+  }
+
   w(TAG, msg): void {
     console.warn('[ContactsData:]' + TAG + ':' + msg);
   }
 
   e(TAG, msg): void {
     console.error('[ContactsData:]' + TAG + ':' + msg);
+  }
+
+  logWithoutPhone(tag: string, msg: string): void {
+    if (msg && msg.toString) {
+      try {
+        console.warn('[ContactsData:]' + tag + ':' +
+            msg.toString().replace(/[\r\n]/g, '')
+                .replace(/([\d|\s]{7,20})/g, //有的号码中间有空格
+                    (phone) => new Array(phone.length).fill('*').join('')));
+      } catch (e) {
+        console.error('[ContactsData:] logWithoutPhone err:' + e.message);
+      }
+    }
   }
 }
 

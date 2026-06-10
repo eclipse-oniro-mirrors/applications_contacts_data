@@ -17,6 +17,7 @@
 #include "contacts.h"
 #include "contacts_ffi.h"
 #include "datashare_values_bucket.h"
+#include "hilog_wrapper_api.h"
 
 using namespace OHOS;
 using namespace OHOS::ContactsFfi;
@@ -81,6 +82,42 @@ extern "C" {
     ContactsFfi::GroupsData* FfiOHOSContactQueryGroups(int64_t contextId, int64_t predicatesId, int32_t *errCode)
     {
         return Contacts::CJqueryGroups(contextId, predicatesId, errCode);
+    }
+
+    ContactsFfi::CPickerResult* FfiOHOSContactSelectContacts(
+        int64_t contextId,
+        ContactsFfi::CContactSelectionOptions* options,
+        int32_t* errCode)
+    {
+        if (errCode == nullptr) {
+            HILOG_ERROR("FfiOHOSContactSelectContacts errCode is null");
+            return nullptr;
+        }
+        if (options == nullptr) {
+            HILOG_ERROR("FfiOHOSContactSelectContacts options is null");
+            *errCode = ERROR;
+            return nullptr;
+        }
+        return ContactsFfi::CJSelectContacts(contextId, options, errCode);
+    }
+
+    void FfiOHOSContactFreePickerResult(ContactsFfi::CPickerResult* result)
+    {
+        if (result == nullptr) {
+            HILOG_ERROR("FfiOHOSContactFreePickerResult result is null");
+            return;
+        }
+        ContactsFfi::CJFreePickerResult(result);
+    }
+
+    int32_t FfiOHOSContactInsertPortrait(int64_t contextId, int64_t rawContactId,
+        OHOS::ContactsFfi::CPortrait* portrait, bool isAddType)
+    {
+        if (portrait == nullptr) {
+            HILOG_ERROR("FfiOHOSContactInsertPortrait portrait is null");
+            return ERROR;
+        }
+        return OHOS::ContactsFfi::CJInsertPortrait(contextId, rawContactId, portrait, isAddType);
     }
 }
 

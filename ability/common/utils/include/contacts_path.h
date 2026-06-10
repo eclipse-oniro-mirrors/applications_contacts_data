@@ -26,7 +26,11 @@ public:
     ~ContactsPath();
     static std::string RDB_PATH;
     static std::string RDB_EL1_PATH;
+    static std::string RDB_EL5_PATH;
     static std::string RDB_BACKUP_PATH;
+    static std::string DOUBLE_DB_FILE_PATH;
+    static std::string RDB_DOUBLE_DB_PATH;
+    static std::string DOUBLE_DB_NAME;
 };
 } // namespace Contacts
 } // namespace OHOS

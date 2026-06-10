@@ -27,8 +27,10 @@
 #include "rdb_predicates.h"
 #include "rdb_store.h"
 #include "result_set.h"
+#include "contacts_telephony_permission.h"
 
 #include "contacts_napi_object.h"
+#include "contacts_napi_common.h"
 
 namespace OHOS {
 namespace ContactsApi {
@@ -40,6 +42,8 @@ public:
         DataShare::DataShareValuesBucket rawContactValues);
     int ContactDataInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
         std::vector<DataShare::DataShareValuesBucket> contactsDataValues);
+    int ContactBatchInsert(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
+        const std::vector<DataShare::OperationStatement> &statements, DataShare::ExecResultSet &result);
     int RawContactUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
         DataShare::DataShareValuesBucket updateValues, DataShare::DataSharePredicates predicates);
     int ContactDataUpdate(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper,
@@ -51,6 +55,9 @@ public:
     std::shared_ptr<DataShare::DataShareResultSet> ContactQuery(
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
+    std::shared_ptr<DataShare::DataShareResultSet> ContactCountQuery(
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
+    DataShare::DataSharePredicates predicates);
     std::shared_ptr<DataShare::DataShareResultSet> ContactDataQuery(
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
@@ -63,6 +70,16 @@ public:
     std::shared_ptr<DataShare::DataShareResultSet> HolderQuery(
         std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> columns,
         DataShare::DataSharePredicates predicates);
+    int QueryCallLogCount(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, const DataShare::DataSharePredicates &predicates);
+    std::string QueryAppGroupDir(std::shared_ptr<DataShare::DataShareHelper> dataShareHelper);
+    int OpenFileByDataShare(const std::string &fileName,
+    const std::shared_ptr<DataShare::DataShareHelper> &dataShareHelper);
+    std::shared_ptr<DataShare::DataShareResultSet> QueryContactByRawContactId(
+        std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> &columns,
+        int rawContactId);
+    int HandleAddFailed(const std::shared_ptr<DataShare::DataShareHelper> &dataShareHelper,
+        const DataShare::DataSharePredicates &predicates, const std::string &fileName);
 };
 } // namespace ContactsApi
 } // namespace OHOS

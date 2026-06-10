@@ -319,7 +319,7 @@ describe('ContactsTest', function() {
         var contactDataValues1 = {
             "raw_contact_id" : rawContactId,
             "content_type" : "email",
-            "detail_info" : "166@163.com"
+            "detail_info" : "166@email"
         };
         try {
             var contactDataId1 = await dataShareHelper.insert(contactDataUri, contactDataValues1);
@@ -328,7 +328,7 @@ describe('ContactsTest', function() {
             expect(contactDataId1 > 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId1.toString());
-            map.set("detail_info", "166@163.com");
+            map.set("detail_info", "166@email");
             await contactsQuery(map, "contact_insert_test_500_1", contactDataUri);
         } catch (error) {
             console.info("logMessage contact_insert_test_500: contact_data email insert error = " + error);
@@ -934,7 +934,7 @@ describe('ContactsTest', function() {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
             "content_type" : "email",
-            "detail_info" : "166@163.com"
+            "detail_info" : "166@email"
         };
         try {
             var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
@@ -948,7 +948,7 @@ describe('ContactsTest', function() {
 
     async function dataEmailUpdate(dataShareHelper, rawContactId)
     {
-        var updateValues = {"detail_info" : "199@163.com"};
+        var updateValues = {"detail_info" : "199@email"};
         let condition = new dataShare.DataSharePredicates();
         condition.equalTo("raw_contact_id", rawContactId.toString());
         try {
@@ -958,7 +958,7 @@ describe('ContactsTest', function() {
             expect(updateCode == 0).assertTrue();
             var map = new Map();
             map.set("id", contactDataId.toString());
-            map.set("detail_info", "199@163.com");
+            map.set("detail_info", "199@email");
             await contactsQuery(map, "contact_update_test_1600", contactDataUri);
         } catch (error) {
             console.info('logMessage contact_update_test_1600: update error = ' + error);
@@ -2303,7 +2303,7 @@ describe('ContactsTest', function() {
         var contactDataValues = {
             "raw_contact_id" : rawContactId,
             "content_type" : "email",
-            "detail_info" : "16658@163.com"
+            "detail_info" : "16658@email"
         };
         try {
             var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
@@ -2331,7 +2331,7 @@ describe('ContactsTest', function() {
                     console.info('logMessage contact_query_test_4000: raw_contact_id = ' + resultSet.getString(1));
                     expect(resultSet.getString(1) == rawContactId.toString()).assertTrue();
                     console.info('logMessage contact_query_test_4000: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "16658@163.com").assertTrue();
+                    expect(resultSet.getString(array_two) == "16658@email").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -3485,7 +3485,7 @@ describe('ContactsTest', function() {
             var contactDataValues = {
                 "raw_contact_id" : rawContactId,
                 "content_type" : "email",
-                "detail_info" : "1564@163.com"
+                "detail_info" : "1564@email"
             };
             try {
                 var contactDataId = await dataShareHelper.insert(contactDataUri, contactDataValues);
@@ -3517,7 +3517,7 @@ describe('ContactsTest', function() {
                     console.info('logMessage contact_fuzzyquery_test_900: raw_contact_id = ' + resultSet.getString(1));
                     expect(resultSet.getString(1) == rawContactId.toString()).assertTrue();
                     console.info('logMessage contact_fuzzyquery_test_900: detail_info = ' + resultSet.getString(array_two));
-                    expect(resultSet.getString(array_two) == "1564@163.com").assertTrue();
+                    expect(resultSet.getString(array_two) == "1564@email").assertTrue();
                 } while (resultSet.goToNextRow());
             }
             resultSet.close();
@@ -4138,7 +4138,6 @@ describe('ContactsTest', function() {
                 interrupted : true,
             } ],
                 (error, data) => {
-                    console.info("logMessage contact_delete_test_5500: executeBatch data = " + JSON.stringify(data));
                     console.info("logMessage contact_delete_test_5500: data_3 = " + data);
                     console.info("logMessage contact_delete_test_5500:  data_1= " + data[0].count);
                     expect(data[0].count == 0).assertTrue();
@@ -4184,7 +4183,6 @@ describe('ContactsTest', function() {
                 interrupted : true,
             } ],
                 (error, data) => {
-                    console.info("logMessage contact_update_test_5600: executeBatch data = " + JSON.stringify(data));
                     console.info("logMessage contact_update_test_5600: data_3 = " + data);
                     console.info("logMessage contact_update_test_5600: data_1= " + data[0].count);
                     expect(data[0].count == 0).assertTrue();
