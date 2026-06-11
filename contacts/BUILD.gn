@@ -79,6 +79,8 @@ ohos_shared_library("contact") {
   ]
   sources = [
     "src/contacts_api.cpp",
+    "src/contacts_sync_api.cpp",
+    "src/contacts_sync_operations.cpp",
     "src/contacts_build.cpp",
     "src/contacts_control.cpp",
     "src/contacts_napi_utils.cpp",
@@ -86,6 +88,8 @@ ohos_shared_library("contact") {
     "src/native_module.cpp",
     "src/result_convert.cpp",
     "src/contacts_telephony_permission.cpp",
+    "src/kit_bundle_mgr_helper.cpp",
+    "src/sync_json_helper.cpp",
   ]
 
   public_configs = [ ":contactsapi_public_config" ]
@@ -107,10 +111,13 @@ ohos_shared_library("contact") {
     "ability_runtime:ability_context_native",
     "ability_runtime:abilitykit_native",
     "ability_runtime:app_context",
+    "ability_runtime:app_manager",
     "ability_runtime:extensionkit_native",
     "ability_runtime:napi_base_context",
     "ability_runtime:napi_common",
     "ability_runtime:ui_extension",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "app_file_service:fileuri_native",
     "protobuf:protobuf_lite",
     "c_utils:utils",

@@ -6263,6 +6263,12 @@ int SqliteOpenHelperContactCallback::UpgradeUnderV45(OHOS::NativeRdb::RdbStore &
             return result;
         }
     }
+    if (oldVersion < DATABASE_VERSION_43 && newVersion >= DATABASE_VERSION_43) {
+        result = UpgradeToV43(store, oldVersion, newVersion);
+        if (result != OHOS::NativeRdb::E_OK) {
+            return result;
+        }
+    }
     return result;
 }
 
@@ -7439,6 +7445,35 @@ int SqliteOpenHelperContactCallback::UpgradeToV42(OHOS::NativeRdb::RdbStore &sto
     return result;
 }
 
+int SqliteOpenHelperContactCallback::UpgradeToV43(OHOS::NativeRdb::RdbStore &store, int oldVersion, int newVersion)
+{
+    HILOG_WARN("UpgradeToV7001 oldVersion is %{public}d , newVersion is %{public}d", oldVersion, newVersion);
+    if (oldVersion >= newVersion) {
+        return OHOS::NativeRdb::E_OK;
+    }
+
+    int result = BeginTransaction(store);
+    if (result != OHOS::NativeRdb::E_OK) {
+        HILOG_ERROR("UpgradeToV7001 BeginTransaction failed, ret:%{public}d", result);
+        return result;
+    }
+
+    result = store.ExecuteSql(CREATE_KIT_CONTACTS_SYNC_INFO);
+    if (result != OHOS::NativeRdb::E_OK) {
+        HILOG_ERROR("UpgradeToV7001 create kit_contacts_sync_info table failed, result is %{public}d", result);
+        RollBack(store);
+        return result;
+    }
+
+    result = Commit(store);
+    if (result != OHOS::NativeRdb::E_OK) {
+        HILOG_ERROR("UpgradeToV7001 Commit failed, ret:%{public}d", result);
+        RollBack(store);
+    }
+    HILOG_INFO("UpgradeToV7001 upgrade completed, result is %{public}d", result);
+    return result;
+}
+
 bool SqliteOpenHelperContactCallback::ExecuteAndCheck(OHOS::NativeRdb::RdbStore &store, const std::string &sql)
 {
     int result = store.ExecuteSql(sql);
@@ -8139,6 +8174,192 @@ std::vector<OHOS::NativeRdb::ValueObject> ContactsDataBase::GetUuidsWithAssetsSy
     resultSet->Close();
     HILOG_INFO("GetUuidsWithAssetsSynced end, uuids size:%{public}ld.", (long) uuids.size());
     return uuids;
+}
+
+int ContactsDataBase::InsertKitContactsSyncInfo(const OHOS::NativeRdb::ValuesBucket &values)
+{
+    if (store_ == nullptr) {
+        HILOG_ERROR("ContactsDataBase InsertKitContactsSyncInfo store_ is null");
+        return RDB_OBJECT_EMPTY;
+    }
+    int64_t insertId = 0;
+    int result = store_->Insert(insertId, ContactTableName::KIT_CONTACTS_SYNC_INFO, values);
+    return result;
+}
+
+int ContactsDataBase::DeleteKitContactsSyncInfo(OHOS::NativeRdb::RdbPredicates &rdbPredicates)
+{
+    if (store_ == nullptr) {
+        HILOG_ERROR("ContactsDataBase InsertKitContactsSyncInfo store_ is null");
+        return RDB_OBJECT_EMPTY;
+    }
+    int deletedRows = 0;
+    int result = store_->Delete(deletedRows, rdbPredicates);
+    if (result != OHOS::NativeRdb::E_OK) {
+        return RDB_EXECUTE_FAIL;
+    }
+    return result;
+}
+
+static void QueryLocalContactsForDeletion(
+    std::shared_ptr<OHOS::NativeRdb::RdbStore> &store,
+    std::vector<int> &rawContactIds, std::vector<int> &contactIds,
+    std::string &callingBundleName, std::vector<OHOS::NativeRdb::ValuesBucket> &deleteRecords)
+{
+    std::string querysql = "SELECT rc.id, rc.contact_id, rc.display_name FORM raw_contact rc "
+        "LEFT JOIN account a ON rc.account_id = a.id "
+        "WHERE (a.account_type = 'com.ohos.contacts' OR a.account_type IS NULL OR a.id is NULL) "
+        "AND rc.is_deleted = 0";
+    auto resultSet = store->QuerySql(querysql);
+    if (resultSet == nullptr) {
+        return;
+    }
+    std::chrono::microseconds deleteMills =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+    int resultSetNum = resultSet->GoToFirstRow();
+    int idIndex = 0;
+    resultSet->GetColumnIndex(RawContactColumns::ID, idIndex);
+    int contactIdIndex = 0;
+    resultSet->GetColumnIndex(RawContactColumns::CONTACT_ID, contactIdIndex);
+    int disPlayNameIndex = 0;
+    resultSet->GetColumnIndex(RawContactColumns::DISPLAY_NAME, disPlayNameIndex);
+    while (resultSetNum == OHOS::NativeRdb::E_OK) {
+        int rawContactId = 0;
+        int contactId = 0;
+        std::string displayName;
+        resultSet->GetInt(idIndex, rawContactId);
+        resultSet->GetInt(contactIdIndex, contactId);
+        resultSet->GetString(disPlayNameIndex, displayName);
+        OHOS::NativeRdb::ValuesBucket deleteRecord;
+        deleteRecord.PutInt(DeleteRawContactColumns::RAW_CONTACT_ID, rawContactId);
+        deleteRecord.PutString(DeleteRawContactColumns::BACKUP_DATA, "");
+        deleteRecord.PutString(DeleteRawContactColumns::DISPLAY_NAME, displayName);
+        deleteRecord.PutInt(DeleteRawContactColumns::CONTACT_ID, contactId);
+        deleteRecord.PutInt(DeleteRawContactColumns::IS_DELETED, 0);
+        deleteRecord.PutDouble(DeleteRawContactColumns::DELETE_TIME, deleteMills.count());
+        deleteRecord.PutString(DeleteRawContactColumns::DELETE_SOURCE, callingBundleName);
+        rawContactIds.push_back(rawContactId);
+        contactIds.push_back(contactId);
+        deleteRecords.push_back(deleteRecord);
+        resultSetNum = resultSet->GoToNextRow();
+    }
+    resultSet->Close();
+}
+
+static int InsertDeletedRawContactRecords(
+    std::shared_ptr<OHOS::NativeRdb::RdbStore> &store,
+    const std::vector<int> &rawContactIds, const std::vector<int> &contactIds,
+    const std::string &callingBundleName, const std::vector<OHOS::NativeRdb::ValuesBucket> &deleteRecords)
+{
+    if (rawContactIds.empty()) {
+        return OHOS::NativeRdb::E_OK;
+    }
+    // Build deleted_raw_contact records
+    int64_t outDataRowId;
+    int ret = store->BatchInsert(outDataRowId, ContactTableName::DELETE_RAW_CONTACT, deleteRecords);
+    if (ret != OHOS::NativeRdb::E_OK) {
+        HILOG_ERROR("InsertDeletedRawContactRecords BatchInsert failed:%{public}d", ret);
+        return RDB_EXECUTE_FAIL;
+    }
+    return OHOS::NativeRdb::E_OK;
+}
+
+static int ClearContactFormIds(std::shared_ptr<OHOS::NativeRdb::RdbStore> &store,
+    const std::vector<int> &contactIds)
+{
+    if (contactIds.empty()) {
+        return OHOS::NativeRdb::E_OK;
+    }
+    std::string sql = "UPDATE contact SET form_id = NULL WHERE id IN (";
+    for (size_t i = 0; i < contactIds.size(); ++i) {
+        sql += std::to_string(contactIds[i]);
+        if (i < contactIds.size() - 1) {
+            sql += ",";
+        }
+    }
+    sql += ")";
+    int ret = store->ExecuteSql(sql);
+    if (ret != OHOS::NativeRdb::E_OK) {
+        HILOG_ERROR("ClearContactFormIds failed:%{public}d", ret);
+    }
+    return ret;
+}
+
+static int MarkRawContactsDeleted(std::shared_ptr<OHOS::NativeRdb::RdbStore> &store,
+    const std::vector<int> &rawContactIds)
+{
+    if (rawContactIds.empty()) {
+        return OHOS::NativeRdb::E_OK;
+    }
+    std::string updateSql = "UPDATE raw_contact SET is_deleted = 1, dirty = 1 WHERE id IN (";
+    for (size_t i = 0; i < rawContactIds.size(); ++i) {
+        updateSql += std::to_string(rawContactIds[i]);
+        if (i < rawContactIds.size() - 1) {
+            updateSql += ",";
+        }
+    }
+    updateSql += ")";
+    int ret = store->ExecuteSql(updateSql);
+    if (ret != OHOS::NativeRdb::E_OK) {
+        HILOG_ERROR("MarkRawContactsDeleted failed:%{public}d", ret);
+    }
+    return ret;
+}
+
+int ContactsDataBase::DeleteAllLocalContacts()
+{
+    HILOG_INFO("ContactsDataBase DeleteAllLocalContacts");
+    if (store_ == nullptr) {
+        HILOG_ERROR("ContactsDataBase DeleteAllLocalContacts store_ is nullptr");
+        return RDB_OBJECT_EMPTY;
+    }
+
+    std::vector<int> rawContactIds;
+    std::vector<int> contactIds;
+    std::vector<OHOS::NativeRdb::ValuesBucket> deleteRecords;
+    std::string callingBundleName = getCallingBundleName();
+    QueryLocalContactsForDeletion(store_, rawContactIds, contactIds, callingBundleName, deleteRecords);
+    if (rawContactIds.empty()) {
+        HILOG_INFO("DeleteAllLocalContacts: no local contacts to delete");
+        return OHOS::NativeRdb::E_OK;
+    }
+    std::string calendarEventIds;
+    QueryCalendarIds(rawContactIds, calendarEventIds);
+    int ret = this->BeginTransaction();
+    if (ret != OHOS::NativeRdb::E_OK) {
+        return ret;
+    }
+    ret = InsertDeletedRawContactRecords(store_, rawContactIds, contactIds, callingBundleName, deleteRecords);
+    if (ret != OHOS::NativeRdb::E_OK) {
+        this->RollBack();
+        return RDB_EXECUTE_FAIL;
+    }
+    ret = MarkRawContactsDeleted(store_, rawContactIds);
+    if (ret != OHOS::NativeRdb::E_OK) {
+        this->RollBack();
+        return RDB_EXECUTE_FAIL;
+    }
+    ret = ClearContactFormIds(store_, contactIds);
+    if (ret != OHOS::NativeRdb::E_OK) {
+        this->RollBack();
+        return RDB_EXECUTE_FAIL;
+    }
+    ret = this->Commit();
+    if (ret != OHOS::NativeRdb::E_OK) {
+        this->RollBack();
+        return ret;
+    }
+    // Delete calendar birthday events for deleted contacts
+    if (calendarEventIds.length() > 0) {
+        calendarEventIds = calendarEventIds.substr(0, calendarEventIds.length() - 1);
+        contactsConnectAbility_ = OHOS::Contacts::ContactConnectAbility::GetInstance();
+        contactsConnectAbility_->ConnectEventsHandleAbility(CONTACTS_BIRTHDAY_DELETE, calendarEventIds, "");
+    }
+    // 刷新通话记录
+    MergeUpdateTask(store_, rawContactIds, true, true);
+    
+    HILOG_INFO("DeleteAllLocalContacts success, deleted %{public}zu contacts", rawContactIds.size());
+    return OHOS::NativeRdb::E_OK;
 }
 
 void ContactsDataBase::SyncContactsWithoutSpace()

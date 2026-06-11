@@ -63,8 +63,15 @@ public:
         DataShare::DatashareBusinessError &businessError) override;
     int ExecuteBatch(
         const std::vector<DataShare::OperationStatement> &statements, DataShare::ExecResultSet &result) override;
+    int ExecuteBatchInner(const DataShare::OperationStatement &statements,
+        DataShare::ExecResultSet &result,
+        int32_t index, std::map<int32_t, int32_t> &operationResultMap, std::set<std::string> &addFailedRawContacts);
     int ProcessExecuteBatchInsert(ExecuteBatchStatement &executeBatchStatement,
         std::map<int32_t, int32_t> &operationResultMap, std::set<std::string> &addFailedRawContacts,
+        DataShare::ExecResultSet &result);
+    int ProcessExecuteBatchUpdate(ExecuteBatchStatement &executeBatchStatement,
+        DataShare::ExecResultSet &result);
+    int ProcessExecuteBatchDelete(ExecuteBatchStatement &executeBatchStatement,
         DataShare::ExecResultSet &result);
     Contacts::ProcessBackReferenceResult ProcessBackReference(const DataShare::OperationStatement &statement,
         const std::map<int32_t, int32_t> &operationResultMap, OHOS::NativeRdb::ValuesBucket &valuesBucket);
@@ -89,6 +96,9 @@ private:
     static std::shared_ptr<Contacts::ContactConnectAbility> contactsConnectAbility_;
     static std::map<std::string, int> uriValueMap_;
     int InsertExecute(int &code, const OHOS::NativeRdb::ValuesBucket &value, std::string isSync);
+    int InsertSyncContactsAlert(const OHOS::NativeRdb::ValuesBucket &value);
+    int InsertSyncContactsConfirm(const OHOS::NativeRdb::ValuesBucket &value);
+    int InsertRawContactData(const OHOS::NativeRdb::ValuesBucket &value);
     std::string UriParseParam(Uri &uri);
     std::string UriParseBatchParam(Uri &uri);
     std::string UriParseHandleTypeParam(Uri &uri);

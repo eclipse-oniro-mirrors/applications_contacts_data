@@ -43,6 +43,12 @@
 #include "privacy_contacts_manager.h"
 #include "pixel_map_util.h"
 #include <fcntl.h>
+#include "ability_manager_client.h"
+#include "element_name.h"
+#include "want.h"
+#include "string_wrapper.h"
+#include "int_wrapper.h"
+#include "os_account_manager.h"
 
 namespace OHOS {
 namespace AbilityRuntime {
@@ -130,6 +136,8 @@ std::map<std::string, int> ContactsDataAbility::uriValueMap_ = {
     {"/com.ohos.contactsdataability/contacts/download_posters", Contacts::CONTACTS_DOWNLOAD_POSTERS},
     // 添加头像失败时删除异常数据
     {"/com.ohos.contactsdataability/contacts/add_failed_delete", Contacts::CONTACTS_ADD_FAILED_DELETE},
+    {"/com.ohos.contactsdataability/contacts/kit_contacts_sync_info", Contacts::KIT_CONTACTS_SYNC_INFO},
+    {"/com.ohos.contactsdataability/contacts/delete_all_contacts", Contacts::DELETE_ALL_CONTACTS},
 };
 // LCOV_EXCL_START
 ContactsDataAbility* ContactsDataAbility::Create()
@@ -352,6 +360,9 @@ int ContactsDataAbility::InsertExecute(int &code, const OHOS::NativeRdb::ValuesB
         case Contacts::CONTACTS_POSTER:
             // add poster
             rowId = contactDataBase_->InsertPoster(Contacts::ContactTableName::POSTER, value);
+            break;
+        case Contacts::KIT_CONTACTS_SYNC_INFO:
+            rowId = contactDataBase_->InsertKitContactsSyncInfo(value);
             break;
         default:
             rowId = Contacts::OPERATION_ERROR;
@@ -1028,6 +1039,12 @@ void ContactsDataAbility::UpdateExecute(int &retCode, int code, const OHOS::Nati
                 predicatesConvert.ConvertPredicates(Contacts::ContactTableName::POSTER, dataSharePredicates);
             retCode = contactDataBase_->Update(value, rdbPredicates);
             break;
+        case Contacts::KIT_CONTACTS_SYNC_INFO:
+            rdbPredicates =
+                predicatesConvert.ConvertPredicates(
+                    Contacts::ContactTableName::KIT_CONTACTS_SYNC_INFO, dataSharePredicates);
+            retCode = contactDataBase_->Update(value, rdbPredicates);
+            break;
         default:
             SwitchUpdate(retCode, code, value, dataSharePredicates);
             break;
@@ -1192,6 +1209,16 @@ void ContactsDataAbility::DeleteExecute(
                 predicatesConvert.ConvertPredicates(Contacts::ContactTableName::POSTER, dataSharePredicates);
             retCode = contactDataBase_->DeletePoster(rdbPredicates);
             break;
+        case Contacts::KIT_CONTACTS_SYNC_INFO:
+            rdbPredicates =
+                predicatesConvert.ConvertPredicates(
+                    Contacts::ContactTableName::KIT_CONTACTS_SYNC_INFO, dataSharePredicates);
+            retCode = contactDataBase_->DeleteKitContactsSyncInfo(rdbPredicates);
+            break;
+        case Contacts::DELETE_ALL_CONTACTS: {
+            retCode = contactDataBase_->DeleteAllLocalContacts();
+            break;
+        }
         default:
             DeleteExecuteSwitchSplit(retCode, code, dataSharePredicates, isSync, handleType);
             break;
@@ -1391,6 +1418,12 @@ bool ContactsDataAbility::QueryExecute(std::shared_ptr<OHOS::NativeRdb::ResultSe
                 result = contactDataBase_->DownLoadPosters(columnsTemp[0]);
             }
             break;
+        case Contacts::KIT_CONTACTS_SYNC_INFO:
+            rdbPredicates =
+                predicatesConvert.ConvertPredicates(
+                    Contacts::ContactTableName::KIT_CONTACTS_SYNC_INFO, dataSharePredicates);
+            result = contactDataBase_->Query(rdbPredicates, columnsTemp);
+            break;
         default:
             isUriMatch = QueryExecuteSwitchSplit(result, dataSharePredicates, columnsTemp, parseCode, uri);
             break;
@@ -1418,11 +1451,11 @@ int ContactsDataAbility::ExecuteBatch(
     int32_t index = -1;
     for (const auto &statement: statements) {
         index++;
-        DataShare::ExecResult execResult{
-            statement.operationType, DataShare::ExecErrorCode::EXEC_SUCCESS, std::to_string(-1)};
-        ExecuteBatchStatement executeBatchStatement{index, statement, execResult};
-        ProcessExecuteBatchInsert(executeBatchStatement, operationResultMap, addFailedRawContacts, result);
-        result.results.emplace_back(executeBatchStatement.execResult);
+        int executeResult = ExecuteBatchInner(statement, result, index, operationResultMap, addFailedRawContacts);
+        if (executeResult == Contacts::OPERATION_ERROR) {
+            contactDataBase_->RollBack();
+            return Contacts::RDB_EXECUTE_FAIL;
+        }
     }
     int commitRet = contactDataBase_->Commit();
     if (!IsCommitOK(commitRet, g_mutex)) {
@@ -1436,6 +1469,26 @@ int ContactsDataAbility::ExecuteBatch(
     }
     HILOG_WARN("ExecuteBatch end");
     return Contacts::RDB_EXECUTE_OK;
+}
+
+int ContactsDataAbility::ExecuteBatchInner(const DataShare::OperationStatement &statement,
+    DataShare::ExecResultSet &result, int32_t index, std::map<int32_t, int32_t> &operationResultMap,
+    std::set<std::string> &addFailedRawContacts)
+{
+    int executeResult = -1;
+    DataShare::ExecResult execResult{
+        statement.operationType, DataShare::ExecErrorCode::EXEC_SUCCESS, std::to_string(-1)};
+    ExecuteBatchStatement executeBatchStatement{index, statement, execResult};
+    if (statement.operationType == DataShare::Operation::INSERT) {
+        executeResult = ProcessExecuteBatchInsert(executeBatchStatement, operationResultMap, addFailedRawContacts,
+            result);
+    } else if (statement.operationType == DataShare::Operation::UPDATE) {
+        executeResult = ProcessExecuteBatchUpdate(executeBatchStatement, result);
+    } else if (statement.operationType == DataShare::Operation::DELETE) {
+        executeResult = ProcessExecuteBatchDelete(executeBatchStatement, result);
+    }
+    result.results.emplace_back(executeBatchStatement.execResult);
+    return executeResult;
 }
 
 int ContactsDataAbility::ProcessExecuteBatchInsert(ExecuteBatchStatement &executeBatchStatement,
@@ -1485,6 +1538,47 @@ int ContactsDataAbility::ProcessExecuteBatchInsert(ExecuteBatchStatement &execut
             result.results[i].message = std::to_string(insertResult);
         }
     }
+    return Contacts::OPERATION_ERROR;
+}
+
+int ContactsDataAbility::ProcessExecuteBatchUpdate(ExecuteBatchStatement &executeBatchStatement,
+    DataShare::ExecResultSet &result)
+{
+    auto &statement = executeBatchStatement.statement;
+    auto &execResult = executeBatchStatement.execResult;
+    OHOS::Uri uriTemp(statement.uri);
+    int code = UriParseAndSwitch(uriTemp);
+    OHOS::NativeRdb::ValuesBucket valuesBucket =
+    RdbDataShareAdapter::RdbUtils::ToValuesBucket(statement.valuesBucket);
+    int retCode = Contacts::OPERATION_OK;
+    std::string isSyncFromCloud = UriParseParam(uriTemp);
+    UpdateExecute(retCode, code, valuesBucket, statement.predicates, isSyncFromCloud);
+    if (retCode >= 0) {
+        execResult.message = std::to_string(retCode);
+        return retCode;
+    }
+    HILOG_ERROR("ExecuteBatch UpdateExecute error, code=%{public}d", retCode);
+    execResult.code = DataShare::ExecErrorCode::EXEC_FAILED;
+    return Contacts::OPERATION_ERROR;
+}
+
+int ContactsDataAbility::ProcessExecuteBatchDelete(ExecuteBatchStatement &executeBatchStatement,
+    DataShare::ExecResultSet &result)
+{
+    auto &statement = executeBatchStatement.statement;
+    auto &execResult = executeBatchStatement.execResult;
+    OHOS::Uri uriTemp(statement.uri);
+    int code = UriParseAndSwitch(uriTemp);
+    int retCode = Contacts::OPERATION_OK;
+    std::string handleType = "";
+    std::string isSyncFromCloud = UriParseParam(uriTemp);
+    DeleteExecute(retCode, code, statement.predicates, isSyncFromCloud, handleType);
+    if (retCode >= 0) {
+        execResult.message = std::to_string(retCode);
+        return retCode;
+    }
+    HILOG_ERROR("ExecuteBatch DeleteExecute error, code=%{public}d", retCode);
+    execResult.code = DataShare::ExecErrorCode::EXEC_FAILED;
     return Contacts::OPERATION_ERROR;
 }
 
@@ -1732,5 +1826,6 @@ void ContactsDataAbility::DataBaseNotifyChange(int code, Uri uri, std::string is
     }
     contactDataBase_->UpdateContactTimeStamp();
 }
+
 } // namespace AbilityRuntime
 } // namespace OHOS

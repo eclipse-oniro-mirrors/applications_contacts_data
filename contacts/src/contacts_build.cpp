@@ -19,8 +19,11 @@
 
 #include "image_packer.h"
 #include "kit_pixel_map_util.h"
+#include "sync_json_helper.h"
 
 constexpr size_t EXECUTE_BATCH_COUNT = 400;
+constexpr int CONTACTS_INDEX_FA = 3;
+constexpr int CONTACTS_INDEX_NOT_FA = 2;
 
 namespace OHOS {
 namespace ContactsApi {
@@ -178,6 +181,157 @@ void ContactsBuild::BuildOperationStatements(napi_env env, ExecuteHelper *execut
     }
     HILOG_WARN("[BuildOperationStatements] end, operationStatements size: %{public}zu",
         executeHelper->operationStatements.size());
+}
+
+void ContactsBuild::GetSyncContactsByObject(napi_env env, ExecuteHelper *executeHelper,
+    std::vector<Contacts> &contacts)
+{
+    int contactsIndex = 0;
+    bool isFA = (executeHelper->abilityContext == nullptr);
+    if (executeHelper->actionCode == SYNC_CONTACTS) {
+        contactsIndex = isFA ? CONTACTS_INDEX_FA : CONTACTS_INDEX_NOT_FA;
+    }
+    bool isArray = false;
+    if (executeHelper->argv[contactsIndex] == nullptr) {
+        executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
+        return;
+    }
+    napi_is_array(env, executeHelper->argv[contactsIndex], &isArray);
+    if (!isArray) {
+        executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
+        return;
+    }
+    uint32_t size = 0;
+    napi_get_array_length(env, executeHelper->argv[contactsIndex], &size);
+    for (uint32_t i = 0; i< size; i++) {
+        napi_value contactObject;
+        napi_status status = napi_get_element(env, executeHelper->argv[contactsIndex], i, &contactObject);
+        if (status != napi_ok) {
+            executeHelper->resultData = VERIFICATION_PARAMETER_ERROR;
+            return;
+        }
+        Contacts contact;
+        GetContactDataByObject(env, contactObject, contact);
+        contacts.emplace_back(contact);
+    }
+}
+
+void ContactsBuild::BuildUpdateContactStatements(const Contacts &contact,
+    const std::vector<DataShare::DataShareValuesBucket> &valueContacts,
+    const std::vector<DataShare::DataShareValuesBucket> &valueContactDatas,
+    SyncStatementContext &ctx)
+{
+    if (valueContacts.empty() || valueContactDatas.empty()) {
+        return;
+    }
+    DataShare::BackReference emptyBackRef;
+    for (const auto &valueContact : valueContacts) {
+        DataShare::DataSharePredicates updatePred;
+        updatePred.EqualTo("id", contact.id);
+        DataShare::OperationStatement updateStmt{
+            DataShare::Operation::UPDATE, ctx.rawContactUri, updatePred, valueContact, emptyBackRef};
+        ctx.statements->emplace_back(updateStmt);
+        (*ctx.statementIndex)++;
+    }
+    DataShare::DataSharePredicates deletePred;
+    deletePred.EqualTo("raw_contact_id", contact.id);
+    DataShare::DataShareValuesBucket emptyValue;
+    DataShare::OperationStatement deleteStmt{
+        DataShare::Operation::DELETE, ctx.rawContactUri, deletePred, emptyValue, emptyBackRef};
+    ctx.statements->emplace_back(deleteStmt);
+    (*ctx.statementIndex)++;
+    for (auto valueContactData : valueContactDatas) {
+        valueContactData.Put("raw_contact_id", contact.id);
+        DataShare::OperationStatement insertDataStmt{
+        DataShare::Operation::DELETE, ctx.rawContactUri, deletePred, emptyValue, emptyBackRef};
+        ctx.statements->emplace_back(insertDataStmt);
+        (*ctx.statementIndex)++;
+    }
+}
+
+void ContactsBuild::BuildInsertContactStatements(const Contacts &contact,
+    const std::vector<DataShare::DataShareValuesBucket> &valueContacts,
+    const std::vector<DataShare::DataShareValuesBucket> &valueContactDatas,
+    SyncStatementContext &ctx)
+{
+    size_t rawContactStartIndex = *ctx.statementIndex;
+    for (const auto &valueContact : valueContacts) {
+        if (valueContact.IsEmpty() && valueContactDatas.empty()) {
+            continue;
+        }
+        DataShare::BackReference backReference;
+        DataShare::OperationStatement contactStatemnet{
+        DataShare::Operation::INSERT, ctx.rawContactUri, ctx.predicate, valueContact, backReference};
+        ctx.statements->emplace_back(contactStatemnet);
+        (*ctx.statementIndex)++;
+    }
+
+    for (const auto &valueContactData : valueContactDatas) {
+        DataShare::BackReference backReference("raw_contact_id", rawContactStartIndex);
+        DataShare::OperationStatement contactDataStatemnet{
+        DataShare::Operation::INSERT, ctx.rawContactUri, ctx.predicate, valueContactData, backReference};
+        ctx.statements->emplace_back(contactDataStatemnet);
+        (*ctx.statementIndex)++;
+    }
+
+    *ctx.rawContactIndex += (valueContacts.size() + valueContactDatas.size());
+    if (contact.portrait.isNeedHandlePhoto && ctx.executeHelper != nullptr) {
+        ctx.executeHelper->portraits.emplace(*ctx.statementIndex, contact.portrait);
+    }
+}
+
+void ContactsBuild::BuildSyncCloudBasedDeleteStatements(ExecuteHelper *executeHelper,
+    std::vector<DataShare::OperationStatement> &statements, size_t &rawContactIndex)
+{
+    if (!executeHelper->isFirstSync || executeHelper->syncMode != MODE_CLOUD_BASED) {
+        return;
+    }
+    DataShare::DataSharePredicates deletePredicates;
+    DataShare::DataShareValuesBucket emptyValues;
+    std::string deleteAllUri = "datashare:///com.ohos.contactsdataability/contacts/delete_all_contacts";
+    DataShare::BackReference emptyBackRef;
+    DataShare::OperationStatement deleteStmt{
+        DataShare::Operation::DELETE, deleteAllUri, deletePredicates, emptyValues, emptyBackRef };
+    statements.emplace_back(deleteStmt);
+}
+
+void ContactsBuild::BuildSyncContactBatchStatements(napi_env env, ExecuteHelper *executeHelper,
+    std::vector<DataShare::DataShareValuesBucket> &valueContacts,
+    std::vector<DataShare::DataShareValuesBucket> &valueContactDatas,
+    const Contacts &contact, size_t &rawContactIndex, std::vector<DataShare::OperationStatement> &statements)
+{
+    DataShare::DataSharePredicates predicate;
+    std::string contactDataUri = "datashare:///com.ohos.contactsdataability/contacts/contact_data";
+    std::string rawContactUri = "datashare:///com.ohos.contactsdataability/contacts/raw_contact";
+    size_t statementIndex = statements.size();
+    SyncStatementContext ctx(rawContactUri, contactDataUri, predicate,
+        &rawContactIndex, &statementIndex, &statements, executeHelper);
+    if (executeHelper->syncMode == MODE_INCREMENTAL && contact.id > 0) {
+        BuildUpdateContactStatements(contact, valueContacts, valueContactDatas, ctx);
+        return;
+    }
+    BuildInsertContactStatements(contact, valueContacts, valueContactDatas, ctx);
+}
+
+void ContactsBuild::BuildSyncContactOperationStatements(napi_env env, ExecuteHelper *executeHelper)
+{
+    std::vector<Contacts> contacts;
+    GetSyncContactsByObject(env, executeHelper, contacts);
+    size_t rawContactIndex = 0;
+    std::vector<DataShare::OperationStatement> statements;
+    BuildSyncCloudBasedDeleteStatements(executeHelper, statements, rawContactIndex);
+    for (auto &contact :contacts) {
+        std::vector<DataShare::DataShareValuesBucket> valueContacts;
+        BuildValueContact(contact, valueContacts);
+        std::vector<DataShare::DataShareValuesBucket> valueContactDatas;
+        BuildValueContactData(contact, valueContactDatas);
+        BuildSyncContactBatchStatements(env, executeHelper, valueContacts, valueContactDatas,
+            contact, rawContactIndex, statements);
+    }
+    if (!statements.empty()) {
+        executeHelper->operationStatements.emplace_back(statements);
+    }
+    executeHelper->syncCount = static_cast<int>(contacts.size());
 }
 
 void ContactsBuild::BuildExecuteHelperPortrait(const Contacts &contact, ExecuteHelper *executeHelper)

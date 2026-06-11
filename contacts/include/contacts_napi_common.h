@@ -30,6 +30,11 @@
 
 namespace OHOS {
 namespace ContactsApi {
+inline const std::string JS_ERR_CONTACTS_LIMIT = "The number of contacts exceeds the limit.";
+inline const std::string JS_ERROR_BACKGROUND_CALL = "Background usage is prohibited.";
+inline const std::string JS_ERROR_USER_CANCEL = "User canceled.";
+inline const std::string JS_ERROR_CONTACT_GENERAL_ERROR = "General error.";
+
 constexpr int MAX_PARAMS = 10;
 constexpr int ERROR = -1;
 constexpr int SUCCESS = 0;
@@ -41,7 +46,9 @@ constexpr int PERMISSION_ERROR = 201;
 constexpr int PARAMETER_ERROR = 401;
 constexpr int CONTACT_GENERAL_ERROR = 16700001;
 constexpr int INVALID_PARAMETER = 16700002;
+constexpr int ERROR_BACKGROUND_CALL = 16700003;
 constexpr int ERROR_OVER_LIMIT = 16700004;
+constexpr int ERROR_USER_CANCEL = 16700103;
 
 constexpr int NAPI_GET_STRING_SIZE = 256;
 constexpr int REQUEST_PARAMS_COUNT_ONE = 1;
@@ -61,6 +68,8 @@ constexpr int TYPE_CONTACT = 4;
 // Execute action code
 constexpr int ADD_CONTACT = 1001;
 constexpr int ADD_CONTACTS = 1002;
+constexpr int SYNC_CONTACTS = 1003;
+constexpr int QUERY_CONTACT_SYNC_INFO = 1004;
 constexpr int DELETE_CONTACT = 2001;
 constexpr int UPDATE_CONTACT = 3001;
 
@@ -79,6 +88,20 @@ constexpr int IS_MY_CARD = 5009;
 
 constexpr int SELECT_CONTACT = 6001;
 constexpr int HAS_MATCHED_CALL_LOG = 7001;
+
+constexpr int RDB_BACKGROUND_ERROR = -5;
+constexpr int RDB_LIMIT_ERROR = -6;
+
+constexpr int CONFIRM_RESULT_NO = 0;
+constexpr int CONFIRM_RESULT_YES = 1;
+constexpr int CONFIRM_RESULT_CANCELLED = 2;
+constexpr int CONFIRM_RESULT_NOT_SET = -1;
+constexpr int BATCH_INSERT_SUCCESS = 1;
+constexpr int BATCH_INSERT_FAILED = 2;
+
+constexpr int MODE_INCREMENTAL = 1;
+constexpr int MODE_CLOUD_BASED = 2;
+constexpr int MAX_CONTACTS_PER_BATCH = 400;
 
 // contactsData type
 constexpr int EMAIL = 1;
@@ -105,6 +128,7 @@ constexpr int ARGS_TWO = 2;
 constexpr int ARGS_THREE = 3;
 constexpr int ARGS_FOUR = 4;
 constexpr int ARGS_FIVE = 5;
+constexpr int ARGS_SIX = 6;
 inline const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
 inline const std::string CALL_LOG_CHECK_URI = "datashare:///com.ohos.calllogcheckability";
 
@@ -112,7 +136,8 @@ struct ExecuteHelper {
     ExecuteHelper()
         : work(nullptr), deferred(nullptr), sync(NAPI_CALL_TYPE_PROMISE),
           argc(0), abilityContext(nullptr), actionCode(-1), callBack(nullptr),
-          childActionCode(0), promise(nullptr), resultData(-1), resultSet(nullptr) {}
+          childActionCode(0), promise(nullptr), resultData(-1), resultSet(nullptr), errMsg(""),
+          syncMode(0), confirmResult(CONFIRM_RESULT_NOT_SET), syncCount(0) {}
     napi_async_work work;
     napi_deferred deferred;
     int sync;
@@ -146,8 +171,21 @@ struct ExecuteHelper {
     std::shared_ptr<DataShare::DataShareResultSet> resultSet;
     std::string grantUri;
     Portrait portrait;
+    std::string errMsg;
     std::map<size_t, Portrait> portraits;
     bool isNeedHandlePhoto = false;
+    bool isFirstSync = false;
+    int syncMode;
+    int confirmResult;
+    int syncId;
+    int currentBatch;
+    int totalBatches;
+
+    std::string callerBundleName;
+    std::string callerAppName;
+    std::vector<std::pair<int, std::vector<DataShare::DataShareValuesBucket>>> contactsToUpdate;
+    std::map<int, std::vector<DataShare::DataShareValuesBucket>> contactDataToUpdate;
+    int syncCount;
 };
 } // namespace ContactsApi
 } // namespace OHOS

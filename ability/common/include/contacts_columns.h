@@ -43,6 +43,7 @@ public:
     static constexpr const char *HW_ACCOUNT = "hw_account";
     static constexpr const char *PRIVACY_CONTACTS_BACKUP = "privacy_contacts_backup";
     static constexpr const char *POSTER = "poster";
+    static constexpr const char *KIT_CONTACTS_SYNC_INFO = "kit_contacts_sync_info";
 };
 
 class CallLogColumns {
@@ -446,6 +447,21 @@ public:
     static constexpr const char *ACCOUNT_ID = "account_id";
     static constexpr const char *PHONE_NUMBER = "phone_number";
     static constexpr const char *EMAIL = "email";
+};
+class KitContactsSyncInfoColumns {
+public:
+    ~KitContactsSyncInfoColumns();
+    static constexpr const char *ID = "id";
+    static constexpr const char *BUNDLE_NAME = "bundle_name";
+    static constexpr const char *SYNC_MODE = "sync_mode";
+    static constexpr const char *SYNC_ID = "sync_id";
+    static constexpr const char *FIRST_SYNC_TIME = "first_sync_time";
+    static constexpr const char *LAST_SYNC_TIME = "last_sync_time";
+    static constexpr const char *USER_CONFIRM_RESULT = "user_confirm_result";
+    static constexpr const char *CURRENT_BATCH = "current_batch";
+    static constexpr const char *COMPLETED_BATCHES = "completed_batches";
+    static constexpr const char *TOTAL_BATCHES = "total_batches";
+    static constexpr const char *INSERT_STATUS = "insert_status";
 };
 
 constexpr const char *RAW_CONTACT_ADD_PRIMARY_CONTACT =
