@@ -13,21 +13,25 @@
  * limitations under the License.
  */
 
-#ifndef CONTACTSDATAABILITY_CONTACT_PATH_H
-#define CONTACTSDATAABILITY_CONTACT_PATH_H
+#ifndef ACCOUNT_EVENT_MANAGER_H
+#define ACCOUNT_EVENT_MANAGER_H
 
 #include <string>
 
 namespace OHOS {
 namespace Contacts {
-class ContactsPath {
+class AccountEventManager {
 public:
-    ContactsPath();
-    ~ContactsPath();
-    static std::string RDB_PATH;
-    static std::string RDB_EL1_PATH;
-    static std::string RDB_BACKUP_PATH;
+    static std::shared_ptr<AccountEventManager> GetInstance();
+    ~AccountEventManager();
+    void PublishEvent(std::string data);
+    void SubscriberAccountEvent();
+
+private:
+    static std::shared_ptr<AccountEventManager> instance_;
+    const static std::string EVENT;
+    AccountEventManager();
 };
 } // namespace Contacts
 } // namespace OHOS
-#endif // CONTACTSDATAABILITY_CONTACT_PATH_H
+#endif // ACCOUNT_EVENT_MANAGER_H

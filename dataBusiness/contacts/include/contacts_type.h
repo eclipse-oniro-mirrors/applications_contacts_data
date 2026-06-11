@@ -29,10 +29,8 @@ public:
     ~ContactsType();
     int64_t Insert(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, std::string typeValue, int typeId);
     int LookupTypeId(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, std::string typeValue);
-    // 根据typeValue查询typeId；没有的话，insert typeValue，返回insert记录的typeId
-    int64_t LookupTypeIdOrInsertTypeValue(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, std::string typeValue);
     void PrepopulateCommonTypes(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore);
-    void GetTypeText(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, int typeId, std::string &typeText);
+    std::string GetTypeText(std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore, int typeId);
 };
 } // namespace Contacts
 } // namespace OHOS
