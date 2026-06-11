@@ -35,6 +35,7 @@ const PHONE_NUM_LEN_FIFTEEN = 15;
 describe('VoicemailTest', function () {
   console.log('----------VoicemailTest is starting!----------');
 
+
   async function voicemailQuery(map, tag) {
     let dataShareHelper = dataShare.createDataShareHelper(URI_VOICEMAIL);
     console.info(tag + ':calllogInsertQuery start ! dataShareHelper = ' + dataShareHelper);
@@ -904,6 +905,7 @@ describe('VoicemailTest', function () {
           }
         ],
         (error, data) => {
+          console.info('logMessage voiceMail_delete_test_2000: executeBatch data = ' + JSON.stringify(data));
           console.info('logMessage voiceMail_delete_test_2000: data_3 = ' + data);
           console.info('logMessage voiceMail_delete_test_2000:  data_1= ' + data[0].count);
           expect(data[0].count === 0).assertTrue();
@@ -955,6 +957,7 @@ describe('VoicemailTest', function () {
           }
         ],
         (error, data) => {
+          console.info('logMessage voiceMail_update_test_2100: executeBatch data = ' + JSON.stringify(data));
           console.info('logMessage voiceMail_update_test_2100: data_3 = ' + data);
           console.info('logMessage voiceMail_update_test_2100:  data_1= ' + data[0].count);
           expect(data[0].count === 0).assertTrue();

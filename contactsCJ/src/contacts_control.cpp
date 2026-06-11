@@ -136,58 +136,7 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::MyCardQuery(
     std::shared_ptr<DataShare::DataShareResultSet> resultSet;
     OHOS::Uri uriProfileContact("datashare:///com.ohos.contactsdataability/profile/contact_data");
     resultSet = dataShareHelper->Query(uriProfileContact, predicates, columns);
-    int rowCount = 0;
-    resultSet->GetRowCount(rowCount);
-    if (rowCount > 0) {
-        HILOG_INFO("ContactsControl::MyCardQuery profile");
-        return resultSet;
-    }
-    OHOS::Uri uriContactsContactData("datashare:///com.ohos.contactsdataability/contacts/contact_data");
-    predicates.EqualTo("primary_contact", "1");
-    resultSet = dataShareHelper->Query(uriContactsContactData, predicates, columns);
-    HILOG_INFO("ContactsControl::MyCardQuery contacts");
     return resultSet;
-}
-
-std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::QueryContactByRawContactId(
-    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper, std::vector<std::string> &columns,
-    int rawContactId)
-{
-    HILOG_INFO("ContactsControl::QueryContactByRawContactId is start");
-    std::shared_ptr<DataShare::DataShareResultSet> resultSet;
-    OHOS::Uri uriContact("datashare:///com.ohos.contactsdataability/contacts/raw_contact");
-    DataShare::DataSharePredicates predicates;
-    predicates.EqualTo("id", rawContactId);
-    resultSet = dataShareHelper->Query(uriContact, predicates, columns);
-    return resultSet;
-}
-
-int ContactsControl::OpenFileByDataShare(const std::string &fileName,
-    const std::shared_ptr<DataShare::DataShareHelper> &dataShareHelper)
-{
-    OHOS::Uri uri("datashare:///com.ohos.contactsdataability/savePhoto/" + fileName);
-    int result = -1;
-    result = dataShareHelper->OpenFile(uri, "rw");
-    HILOG_INFO("ContactsControl::OpenFile result %{public}d", result);
-    return result;
-}
-
-int ContactsControl::HandleAddFailed(const std::shared_ptr<DataShare::DataShareHelper> &dataShareHelper,
-    const DataShare::DataSharePredicates &predicates, const std::string &fileName)
-{
-    if (dataShareHelper == nullptr) {
-        HILOG_INFO("ContactsControl::HandleAddFailed dataShareHelper is nullptr");
-        return -1;
-    }
-    int code = 0;
-    OHOS::Uri uriDeleteFile("datashare:///com.ohos.contactsdataability/addFailedDeleteFile/" + fileName);
-    DataShare::DataSharePredicates emptyPredicates;
-    int fileDeleteCode = dataShareHelper->Delete(uriDeleteFile, emptyPredicates);
-    HILOG_INFO("ContactsControl::HandleAddFailed delete file code %{public}d", fileDeleteCode);
-    OHOS::Uri uriDeleteContact("datashare:///com.ohos.contactsdataability/contacts/add_failed_delete");
-    code = dataShareHelper->Delete(uriDeleteContact, predicates);
-    HILOG_INFO("ContactsControl::HandleAddFailed delete contact code %{public}d", code);
-    return code;
 }
 } // namespace ContactsApi
 } // namespace OHOS
