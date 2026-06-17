@@ -78,6 +78,7 @@
 #include "phone_number_utils.h"
 #include "hi_audit.h"
 #include "poster_call_adapter.h"
+#include "contacts_search.h"
 
 #ifdef ABILITY_CUST_SUPPORT
 #include "dlfcn.h"
@@ -1176,6 +1177,16 @@ int64_t ContactsDataBase::InsertRawContact(std::string table, OHOS::NativeRdb::V
     HILOG_WARN("insertRawContact succeed,rawId:%{public}lld,contactId:%{public}lld", (long long) outRawContactId, (long long) contactId);
     // 新增成功，异步上报联系人列表数量；通过js上报
     contactsConnectAbility_->ConnectAbility("", "", "", "", "localChangeReport", "insert;" + getCallingBundleName());
+    
+    // Search insterted contact data
+    ContactsSearch contactsSearch;
+    int64_t searchContactId = 0;
+    int rowSearchContactRet =
+        contactsSearch.Insert(store_, contactId, outRawContactId, rawContactValues, searchContactId);
+    if (rowSearchContactRet != OHOS::NativeRdb::E_OK) {
+        HILOG_ERROR("InsertRawContact insertSearchContact failed:%{public}d", rowSearchContactRet);
+        return RDB_EXECUTE_FAIL;
+    }
     return outRawContactId;
 }
 
