@@ -22,6 +22,7 @@
 #include "contacts.h"
 #include "contacts_columns.h"
 #include "contacts_database.h"
+#include "contacts_search.h"
 #include "contacts_type.h"
 #include "hilog_wrapper.h"
 #include "raw_contacts.h"
@@ -112,6 +113,7 @@ int ContactsUpdateHelper::UpdateName(OHOS::NativeRdb::ValuesBucket linkDataDataV
     std::string type, std::shared_ptr<OHOS::NativeRdb::RdbStore> rdbStore)
 {
     OHOS::NativeRdb::ValuesBucket rawContactValues = GetUpdateDisPlayNameValuesBucket(linkDataDataValues, isDelete);
+    OHOS::NativeRdb::ValuesBucket searchContactValues = GetUpdateSearchNameValuesBucket(linkDataDataValues, isDelete);
     std::string disPlayName;
     OHOS::NativeRdb::ValueObject typeValue;
     rawContactValues.GetObject(RawContactColumns::DISPLAY_NAME, typeValue);
@@ -119,6 +121,19 @@ int ContactsUpdateHelper::UpdateName(OHOS::NativeRdb::ValuesBucket linkDataDataV
     if (!disPlayName.empty()) {
         ConstructionName name;
         name.GetConstructionName(disPlayName, name);
+        std::string searchName;
+        searchName.append(disPlayName);
+        if (!name.nameFullFight_.empty()) {
+            searchName.append("||");
+            searchName.append(name.nameFullFight_);
+        }
+        if (!name.initials_.empty()) {
+            searchName.append("||");
+            searchName.append(name.initials_);
+        }
+        if (!searchName.empty()) {
+            searchContactValues.PutString(SearchContactColumns::SEARCH_NAME, searchName);
+        }
         rawContactValues.PutString(RawContactColumns::PHOTO_FIRST_NAME, name.photoFirstName_);
         if (!name.sortFirstLetter_.empty()) {
             // add sort and sort_first_letter
@@ -131,6 +146,16 @@ int ContactsUpdateHelper::UpdateName(OHOS::NativeRdb::ValuesBucket linkDataDataV
         }
     }
     int ret = UpdateNameResult(rawContactValues, rawContactId, type, rdbStore);
+    if (searchContactValues.Size() > 0) {
+        // update SearchContact name
+        ContactsSearch contactsSearch;
+        ret = contactsSearch.UpdateSearchContact(rawContactId, type, rdbStore, searchContactValues);
+        if (ret != OHOS::NativeRdb::E_OK) {
+            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateSearchContact failed type:%{public}s", type.c_str());
+            HILOG_ERROR("ContactsUpdateHelper UpdateDisplay UpdateSearchContact failed:%{public}d", ret);
+            return ret;
+        }
+    }
     return ret;
 }
 
