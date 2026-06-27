@@ -629,6 +629,7 @@ void ResultConvert::ConvertGroup(
         napi_value detailInfoValue = GetResultValue(env, detailInfoKey, resultSet);
         napi_value napiDetailInfoKey = CreateNapiStringValue(env, "groupId");
         napi_set_property(env, objectElement, napiDetailInfoKey, detailInfoValue);
+        napi_set_element(env, emailArray, count, objectElement);
         napi_value napiElementKey;
         napi_create_string_utf8(env, groups.c_str(), NAPI_AUTO_LENGTH, &napiElementKey);
         napi_set_property(env, napiObject, napiElementKey, emailArray);
