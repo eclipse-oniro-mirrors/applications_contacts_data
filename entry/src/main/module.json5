@@ -23,6 +23,10 @@
       {
         "name": "action.settings.app.can_not_disable",
         "value": "true"
+      },
+      {
+        "name": "ohos.ability.loadNativeLibrary",
+        "value": "true"
       }
     ],
     "deliveryWithInstall": true,
@@ -129,10 +133,7 @@
       },
       {
         "name": "ohos.permission.GET_BUNDLE_INFO"
-      },
-      {
-        "name": "ohos.permission.LOAD_NATIVE_LIBRARY"
-      },      
+      },    
       {
         "name": "ohos.permission.READ_CLOUD_SYNC_CONFIG"
       },
