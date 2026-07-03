@@ -133,7 +133,7 @@
       },
       {
         "name": "ohos.permission.GET_BUNDLE_INFO"
-      },    
+      },
       {
         "name": "ohos.permission.READ_CLOUD_SYNC_CONFIG"
       },
