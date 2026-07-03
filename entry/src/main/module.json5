@@ -23,6 +23,10 @@
       {
         "name": "action.settings.app.can_not_disable",
         "value": "true"
+      },
+      {
+        "name": "ohos.ability.loadNativeLibraryForApplication",
+        "value": "true"
       }
     ],
     "deliveryWithInstall": true,
