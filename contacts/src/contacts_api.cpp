@@ -1507,7 +1507,7 @@ void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper)
             return;
         }
     }
-    if (resultCode >= 0) {
+    if (resultCode >= 0 && size > 0) {
         resultCode = contactsControl.ContactDataInsert(
             executeHelper->dataShareHelper, executeHelper->valueContactData);
     }
