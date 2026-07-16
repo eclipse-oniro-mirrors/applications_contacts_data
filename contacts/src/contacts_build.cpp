@@ -805,9 +805,11 @@ void ContactsBuild::GetValuesBucketNote(Contacts &contact,
 void ContactsBuild::GetValuesBucketOrganization(
     Contacts &contact, std::vector<DataShare::DataShareValuesBucket> &valueContactData)
 {
-    if (!contact.organization.name.empty()) {
+    if (!contact.organization.name.empty() || !contact.organization.title.empty()) {
         DataShare::DataShareValuesBucket valuesBucketData;
-        valuesBucketData.Put("detail_info", contact.organization.name);
+        if (!contact.organization.name.empty()) {
+            valuesBucketData.Put("detail_info", contact.organization.name);
+        }
         if (!contact.organization.title.empty()) {
             valuesBucketData.Put("position", contact.organization.title);
         }
