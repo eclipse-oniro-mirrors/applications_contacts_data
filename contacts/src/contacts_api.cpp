@@ -947,8 +947,13 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
 void HandleQueryContactCountExecuteErrorCode(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
 {
     if (executeHelper->resultData == RDB_PARAMETER_ERROR || executeHelper->resultData == ERROR) {
-        result = ContactsNapiUtils::CreateError(env, RDB_PARAMETER_ERROR);
+        result = ContactsNapiUtils::CreateError(env, PARAMETER_ERROR);
     } else if (executeHelper->resultData == VERIFICATION_PARAMETER_ERROR) {
+        if (executeHelper->actionCode == ADD_CONTACTS) {
+            result = ContactsNapiUtils::CreateErrorByVerification(env, INVALID_PARAMETER);
+        } else {
+            result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
+        }
         result = ContactsNapiUtils::CreateErrorByVerification(env, INVALID_PARAMETER);
     } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
         result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
