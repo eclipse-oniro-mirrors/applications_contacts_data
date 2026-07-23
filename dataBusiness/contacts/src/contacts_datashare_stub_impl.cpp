@@ -58,13 +58,13 @@ void ContactsDataShareStubImpl::SetContactsDataAbility(std::shared_ptr<DataShare
 
 void ContactsDataShareStubImpl::SetCallLogAbility(std::shared_ptr<DataShareExtAbility> extension)
 {
-    std::lock_guard<std::mutex> lock(callogCheckMutex_);
+    std::lock_guard<std::mutex> lock(callogMutex_);
     callLogAbility_ = extension;
 }
 
 void ContactsDataShareStubImpl::SetCallLogCheckAbility(std::shared_ptr<DataShareExtAbility> extension)
 {
-    std::lock_guard<std::mutex> lock(callogMutex_);
+    std::lock_guard<std::mutex> lock(callogCheckMutex_);
     callLogCheckAbility_ = extension;
 }
 
@@ -91,11 +91,9 @@ std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetCallLogAbilit
 
 std::shared_ptr<DataShareExtAbility> ContactsDataShareStubImpl::GetCallLogCheckAbility()
 {
+    std::lock_guard<std::mutex> lock(callogCheckMutex_);
     if (callLogCheckAbility_ == nullptr) {
-        std::lock_guard<std::mutex> lock(callogCheckMutex_);
-        if (callLogCheckAbility_ == nullptr) {
-            callLogCheckAbility_ = std::make_shared<CallLogCheckAbility>();
-        }
+        callLogCheckAbility_ = std::make_shared<CallLogCheckAbility>();
     }
     return callLogCheckAbility_;
 }

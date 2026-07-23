@@ -1176,8 +1176,14 @@ int64_t ContactsDataBase::InsertRawContact(std::string table, OHOS::NativeRdb::V
     }
     HILOG_WARN("insertRawContact succeed,rawId:%{public}lld,contactId:%{public}lld", (long long) outRawContactId, (long long) contactId);
     // 新增成功，异步上报联系人列表数量；通过js上报
-    contactsConnectAbility_->ConnectAbility("", "", "", "", "localChangeReport", "insert;" + getCallingBundleName());
-    
+    if (contactsConnectAbility_ == nullptr) {
+        contactsConnectAbility_ = OHOS::Contacts::ContactConnectAbility::GetInstance();
+    }
+    if (contactsConnectAbility_ != nullptr) {
+        contactsConnectAbility_->ConnectAbility("", "", "", "", "localChangeReport",
+            "insert;" + getCallingBundleName());
+    }
+
     // Search insterted contact data
     ContactsSearch contactsSearch;
     int64_t searchContactId = 0;
@@ -8217,7 +8223,7 @@ static void QueryLocalContactsForDeletion(
     std::vector<int> &rawContactIds, std::vector<int> &contactIds,
     std::string &callingBundleName, std::vector<OHOS::NativeRdb::ValuesBucket> &deleteRecords)
 {
-    std::string querysql = "SELECT rc.id, rc.contact_id, rc.display_name FORM raw_contact rc "
+    std::string querysql = "SELECT rc.id, rc.contact_id, rc.display_name FROM raw_contact rc "
         "LEFT JOIN account a ON rc.account_id = a.id "
         "WHERE (a.account_type = 'com.ohos.contacts' OR a.account_type IS NULL OR a.id is NULL) "
         "AND rc.is_deleted = 0";
@@ -8225,7 +8231,7 @@ static void QueryLocalContactsForDeletion(
     if (resultSet == nullptr) {
         return;
     }
-    std::chrono::microseconds deleteMills =
+    std::chrono::milliseconds deleteMills =
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
     int resultSetNum = resultSet->GoToFirstRow();
     int idIndex = 0;

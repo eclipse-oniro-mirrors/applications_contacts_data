@@ -227,7 +227,11 @@ void LocalExecuteQueryContactSyncInfo(napi_env env, ExecuteHelper *executeHelper
     HILOG_INFO("LocalExecuteQueryContactSyncInfo start");
     ContactsControl contactsControl;
     std::string bundleName;
-    ContactBundleMgrHelper::GetBundleNameForSelf(bundleName);
+    if (!ContactBundleMgrHelper::GetBundleNameForSelf(bundleName)) {
+        HILOG_ERROR("LocalExecuteQueryContactSyncInfo GetBundleNameForSelf failed");
+        executeHelper->resultData = -1;
+        return;
+    }
 
     DataShare::DataSharePredicates predicates;
     predicates.EqualTo("bundle_name", bundleName);
@@ -375,6 +379,10 @@ static void BuildContactSyncInfoFromRow(napi_env env, ExecuteHelper *executeHelp
 void HandleQueryContactSyncInfoResult(napi_env env, ExecuteHelper *executeHelper, napi_value &result)
 {
     napi_create_array(env, &result);
+    if (executeHelper == nullptr) {
+        HILOG_INFO("HandleQueryContactSyncInfoResult executeHelper is nullptr");
+        return;
+    }
     if (executeHelper->resultSet == nullptr) {
         HILOG_INFO("HandleQueryContactSyncInfoResult no result, return empty array");
         return;
@@ -387,6 +395,7 @@ void HandleQueryContactSyncInfoResult(napi_env env, ExecuteHelper *executeHelper
     SyncInfoColumnIndices idx = GetSyncInfoColumnIndices(executeHelper->resultSet);
     if (idx.colMode < 0 || idx.colSyncId < 0 || idx.colBundleName < 0) {
         HILOG_WARN("HandleQueryContactSyncInfoResult some required columns not found");
+        return;
     }
 
     uint32_t arrayIndex = 0;

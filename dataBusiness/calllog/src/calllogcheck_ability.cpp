@@ -85,7 +85,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogCheckAbility::Query(const 
         return nullptr;
     }
     HILOG_INFO("CallLogCheckAbility ====>Query start");
-    g_mutex.lock();
+    std::lock_guard<std::mutex> lock(g_mutex);
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
     std::shared_ptr<OHOS::NativeRdb::ResultSet> result;
@@ -108,13 +108,15 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogCheckAbility::Query(const 
             break;
     }
     if (!isUriMatch) {
-        g_mutex.unlock();
+        return nullptr;
+    }
+    if (result == nullptr) {
+        HILOG_ERROR("CallLogCheckAbility query result is nullptr");
         return nullptr;
     }
     auto queryResultSet = RdbDataShareAdapter::RdbUtils::ToResultSetBridge(result);
     std::shared_ptr<DataShare::DataShareResultSet> sharedPtrResult =
         std::make_shared<DataShare::DataShareResultSet>(queryResultSet);
-    g_mutex.unlock();
     int resultCount;
     sharedPtrResult->GetRowCount(resultCount);
     HILOG_INFO("CallLogCheckAbility ====>Query end, resultCount = %{public}d",

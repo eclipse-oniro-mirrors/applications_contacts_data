@@ -197,15 +197,18 @@ bool GetDataShareHelper(napi_env env, napi_callback_info info, ExecuteHelper *ex
     } else {
         if (status != napi_ok) {
             HILOG_ERROR("GetDataShareHelper napi_get_global != napi_ok");
+            return false;
         }
         napi_value globalThis;
         status = napi_get_named_property(env, global, "globalThis", &globalThis);
         if (status != napi_ok) {
             HILOG_ERROR("GetDataShareHelper napi_get_globalThis != napi_ok");
+            return false;
         }
         status = napi_get_named_property(env, globalThis, "abilityContext", &abilityContext);
         if (status != napi_ok) {
             HILOG_ERROR("GetDataShareHelper napi_get_abilityContext != napi_ok");
+            return false;
         }
         status = OHOS::AbilityRuntime::IsStageContext(env, abilityContext, isStageMode);
     }
@@ -872,10 +875,19 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         HILOG_ERROR("ExecuteSyncDone status is not ok===>");
         if (data != nullptr) {
             ExecuteHelper *executeHelper = reinterpret_cast<ExecuteHelper *>(data);
+            if (executeHelper->work != nullptr) {
+                napi_delete_async_work(env, executeHelper->work);
+                executeHelper->work = nullptr;
+            }
             if (executeHelper->callBack != nullptr) {
                 napi_delete_reference(env, executeHelper->callBack);
                 executeHelper->callBack = nullptr;
             }
+            if (executeHelper->dataShareHelper != nullptr) {
+                executeHelper->dataShareHelper->Release();
+                executeHelper->dataShareHelper = nullptr;
+            }
+            delete executeHelper;
         }
         return;
     }
@@ -909,10 +921,20 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
         napi_typeof(env, callBack, &valuetype);
         if (valuetype != napi_function) {
             HILOG_ERROR("contactApi params not is function");
+            if (executeHelper->work != nullptr) {
+                napi_delete_async_work(env, executeHelper->work);
+                executeHelper->work = nullptr;
+            }
             if (executeHelper->callBack != nullptr) {
                 napi_delete_reference(env, executeHelper->callBack);
                 executeHelper->callBack = nullptr;
             }
+            if (executeHelper->dataShareHelper != nullptr) {
+                executeHelper->dataShareHelper->Release();
+                executeHelper->dataShareHelper = nullptr;
+            }
+            delete executeHelper;
+            
             return;
         }
         napi_call_function(env, global, callBack, RESULT_DATA_SIZE, resultData, &result);
@@ -925,10 +947,10 @@ void ExecuteSyncDone(napi_env env, napi_status status, void *data)
             std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
         }
         if (executeHelper->valueContact.capacity() != 0) {
-            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
+            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueContact);
         }
         if (executeHelper->valueContactData.capacity() != 0) {
-            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueUpdateContact);
+            std::vector<DataShare::DataShareValuesBucket>().swap(executeHelper->valueContactData);
         }
         if (executeHelper->dataShareHelper != nullptr) {
             executeHelper->dataShareHelper->Release();
@@ -1491,8 +1513,8 @@ void LocalExecuteUpdateContact(napi_env env, ExecuteHelper *executeHelper)
     std::shared_ptr<DataShare::DataShareResultSet> resultSet = contactsControl.ContactDataQuery(
         executeHelper->dataShareHelper, executeHelper->columns, executeHelper->predicates);
     int rawId = GetRawIdByResultSet(resultSet);
-    if (rawId == 0) {
-        HILOG_ERROR("LocalExecuteUpdateContact contact rawId equals 0");
+    if (rawId <= 0) {
+        HILOG_ERROR("LocalExecuteUpdateContact contact rawId is invalid %{public}d", rawId);
         executeHelper->resultData = ERROR;
         return;
     }
@@ -1689,7 +1711,6 @@ napi_value CreateAsyncWork(napi_env env, ExecuteHelper *executeHelper)
         } else {
             napi_get_undefined(env, &result);
         }
-        napi_create_promise(env, &(executeHelper->deferred), &result);
         napi_create_async_work(env, nullptr, workName, Execute, ExecuteDone,
             reinterpret_cast<void *>(executeHelper), &(executeHelper->work));
     }

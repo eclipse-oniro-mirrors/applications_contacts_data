@@ -108,18 +108,13 @@ std::string CallLogAbility::UriParseBatchParam(Uri &uri)
  * @brief CallLogAbility BeginTransaction emptiness problems
  *
  * @param code the return number of BeginTransaction
- * @param mutex transmission parameter : lock
  *
  * @return BeginTransaction emptiness true or false
  */
-bool CallLogAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
+bool CallLogAbility::IsBeginTransactionOK(int code)
 {
-    bool ret = mutex.try_lock();
     if (code != 0) {
         HILOG_ERROR("IsBeginTransactionOK failed");
-        if (ret) {
-            mutex.unlock();
-        }
         return false;
     }
     return true;
@@ -129,18 +124,13 @@ bool CallLogAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
  * @brief CallLogAbility Commit emptiness problems
  *
  * @param code the return number of Commit
- * @param mutex transmission parameter : lock
  *
  * @return Commit emptiness true or false
  */
-bool CallLogAbility::IsCommitOk(int code, std::mutex &mutex)
+bool CallLogAbility::IsCommitOk(int code)
 {
-    bool ret = mutex.try_lock();
     if (code != 0) {
         HILOG_ERROR("IsCommitOk failed");
-        if (ret) {
-            mutex.unlock();
-        }
         return false;
     }
     return true;
@@ -219,7 +209,7 @@ int CallLogAbility::InsertExecute(const Uri &uri, const OHOS::NativeRdb::ValuesB
 int CallLogAbility::BatchInsertSplit(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values)
 {
     int ret = callLogDataBase_->BeginTransaction();
-    if (!IsBeginTransactionOK(ret, g_mutex)) {
+    if (!IsBeginTransactionOK(ret)) {
         g_mutex.unlock();
         HILOG_ERROR("BatchInsertSplit BeginTransaction failed");
         return Contacts::RDB_EXECUTE_FAIL;
@@ -242,7 +232,7 @@ int CallLogAbility::BatchInsertSplit(const Uri &uri, const std::vector<DataShare
         if (count % Contacts::BATCH_INSERT_COUNT == 0) {
             int markRet = callLogDataBase_->Commit();
             int beginRet = callLogDataBase_->BeginTransaction();
-            if (!IsCommitOk(markRet, g_mutex) || !IsBeginTransactionOK(beginRet, g_mutex)) {
+            if (!IsCommitOk(markRet) || !IsBeginTransactionOK(beginRet)) {
                 callLogDataBase_->RollBack();
                 g_mutex.unlock();
                 retCode = Contacts::RDB_EXECUTE_FAIL;
@@ -251,7 +241,7 @@ int CallLogAbility::BatchInsertSplit(const Uri &uri, const std::vector<DataShare
         }
     }
     int markRet = callLogDataBase_->Commit();
-    if (!IsCommitOk(markRet, g_mutex)) {
+    if (!IsCommitOk(markRet)) {
         callLogDataBase_->RollBack();
         g_mutex.unlock();
         HILOG_ERROR("BatchInsertSplit RDB_EXECUTE_FAIL");
@@ -440,7 +430,7 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
         return nullptr;
     }
     HILOG_INFO("CallLogAbility ====>Query start, ts = %{public}lld", (long long) time(NULL));
-    g_mutex.lock();
+    std::lock_guard<std::mutex> lock(g_mutex);
     callLogDataBase_ = Contacts::CallLogDataBase::GetInstance();
     Contacts::PredicatesConvert predicatesConvert;
     std::shared_ptr<OHOS::NativeRdb::ResultSet> result;
@@ -463,13 +453,15 @@ std::shared_ptr<DataShare::DataShareResultSet> CallLogAbility::Query(const Uri &
             break;
     }
     if (!isUriMatch) {
-        g_mutex.unlock();
+        return nullptr;
+    }
+    if (result == nullptr) {
+        HILOG_ERROR("CallLogAbility Query result is nullptr");
         return nullptr;
     }
     auto queryResultSet = RdbDataShareAdapter::RdbUtils::ToResultSetBridge(result);
     std::shared_ptr<DataShare::DataShareResultSet> sharedPtrResult =
         std::make_shared<DataShare::DataShareResultSet>(queryResultSet);
-    g_mutex.unlock();
     int resultCount;
     sharedPtrResult->GetRowCount(resultCount);
     HILOG_WARN("CallLogAbility ====>Query end, resultCount = %{public}d, ts = %{public}lld", resultCount, (long long) time(NULL));
