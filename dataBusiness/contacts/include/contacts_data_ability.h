@@ -126,8 +126,8 @@ private:
     void DataBaseNotifyChange(int code, Uri uri);
     void DataBaseNotifyChange(int code, Uri uri, std::string isSync);
     void HandleHwRelationData(const std::vector<DataShare::DataShareValuesBucket> &values);
-    bool IsBeginTransactionOK(int code, std::mutex &mutex);
-    bool IsCommitOK(int code, std::mutex &mutex);
+    bool IsBeginTransactionOK(int code);
+    bool IsCommitOK(int code);
     int BackUp();
     int Recover(int &code);
     void generateDisplayNameBucket(std::vector<DataShare::DataShareValuesBucket> &values);

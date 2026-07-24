@@ -137,7 +137,8 @@ struct ExecuteHelper {
         : work(nullptr), deferred(nullptr), sync(NAPI_CALL_TYPE_PROMISE),
           argc(0), abilityContext(nullptr), actionCode(-1), callBack(nullptr),
           childActionCode(0), promise(nullptr), resultData(-1), resultSet(nullptr), errMsg(""),
-          syncMode(0), confirmResult(CONFIRM_RESULT_NOT_SET), syncCount(0) {}
+          syncMode(0), confirmResult(CONFIRM_RESULT_NOT_SET), syncId(0),
+          currentBatch(0), totalBatches(0), syncCount(0) {}
     napi_async_work work;
     napi_deferred deferred;
     int sync;

@@ -133,6 +133,10 @@ struct SyncCallParams {
  */
 static void DetectSyncCallType(napi_env env, ExecuteHelper *executeHelper, napi_value lastArg)
 {
+    if (lastArg == nullptr) {
+        executeHelper->sync = NAPI_CALL_TYPE_PROMISE;
+        return;
+    }
     napi_valuetype valuetype = napi_undefined;
     napi_typeof(env, lastArg, &valuetype);
     executeHelper->sync = (valuetype == napi_function) ? NAPI_CALL_TYPE_CALLBACK : NAPI_CALL_TYPE_PROMISE;
@@ -164,7 +168,11 @@ static void InitFirstBatchSyncContext(napi_env env, napi_callback_info info,
 {
     GetDataShareHelper(env, info, executeHelper);
     CopySyncParamsToHelper(executeHelper, params);
-    DetectSyncCallType(env, executeHelper, params.argv[params.argc - 1]);
+    if (params.argc > 0) {
+        DetectSyncCallType(env, executeHelper, params.argv[params.argc - 1]);
+    } else {
+        executeHelper->sync = NAPI_CALL_TYPE_PROMISE;
+    }
     executeHelper->isFirstSync = true;
     SetChildActionCodeAndConvertParams(env, executeHelper);
 }
@@ -202,6 +210,7 @@ static bool CheckIsExistSyncConfirmation(ExecuteHelper *executeHelper)
     }
     int rowCount = 0;
     checkResult->GetRowCount(rowCount);
+    checkResult->Close();
     HILOG_INFO("CheckIsExistSyncConfirmation rowCount=%{public}d", rowCount);
     return rowCount != 0;
 }
@@ -322,12 +331,18 @@ napi_value SyncContacts(napi_env env, napi_callback_info info)
     if (isStageMode && !ValidateSyncContactsParams(env, argc, argv)) {
         return result;
     }
+    if (!isStageMode && argc == 0) {
+        HILOG_ERROR("syncContacts FA mode argc is 0");
+        napi_throw(env, ContactsNapiUtils::CreateError(env, INVALID_PARAMETER));
+        return result;
+    }
     ExecuteHelper *executeHelper = new (std::nothrow) ExecuteHelper();
     executeHelper->actionCode = SYNC_CONTACTS;
     if (executeHelper == nullptr) {
         napi_create_int64(env, ERROR, &result);
         return result;
     }
+    executeHelper->actionCode = SYNC_CONTACTS;
 
     ParseSyncContactsParams(env, executeHelper, argc, argv, isStageMode);
     HILOG_INFO("SyncContacts mode=%{public}d, syncId=%{public}d, batch=%{public}d/%{public}d",
@@ -335,7 +350,10 @@ napi_value SyncContacts(napi_env env, napi_callback_info info)
     if (!IsCurAppForeground()) {
         return RejectSyncWithError(env, executeHelper, ERROR_BACKGROUND_CALL);
     }
-    ContactBundleMgrHelper::GetBundleNameForSelf(executeHelper->callerBundleName);
+    if (!ContactBundleMgrHelper::GetBundleNameForSelf(executeHelper->callerBundleName)) {
+        HILOG_ERROR("syncContacts GetBundleNameForSelf failed");
+        return RejectSyncWithError(env, executeHelper, CONTACT_GENERAL_ERROR);
+    }
     GetDataShareHelper(env, info, executeHelper);
     if (!CheckIsExistSyncConfirmation(executeHelper)) {
 #ifdef CONTACT_API_METRICS_ENABLE
@@ -406,7 +424,7 @@ static void SyncDialogExecute(napi_env env, void *data)
 
     std::unique_lock<std::mutex> lock(syncCtx->callback->mutex);
     syncCtx->callback->cv.wait(lock, [syncCtx]() {
-        return syncCtx->callback->ready;
+        return syncCtx->callback->ready.load();
     });
 
     HILOG_INFO("SyncDialogExecute dialog closed, confirmResult=%{public}d", syncCtx->callback->confirmResult);
@@ -437,9 +455,8 @@ static void HandleSyncDialogCancelled(napi_env env, SyncDialogContext *syncCtx)
     afterExecuteSyncContacts(env, syncCtx->helper, false);
     napi_value error = ContactsNapiUtils::CreateError(env, ERROR_USER_CANCEL);
     napi_reject_deferred(env, syncCtx->callback->deferred, error);
-    // Do NOT delete syncCtx->helper here. The async work created by TriggerSyncConfirmDialog
-    // holds a pointer to executeHelper, and ExecuteDone will delete it when the async work
-    // completes. Deleting here would cause a double-free / use-after-free.
+    delete syncCtx->helper;
+    syncCtx->helper = nullptr;
 }
 
 
@@ -448,15 +465,24 @@ static void HandleSyncDialogCancelled(napi_env env, SyncDialogContext *syncCtx)
  */
 static void SyncDialogComplete(napi_env env, napi_status status, void *data)
 {
+    if (data == nullptr) {
+        HILOG_ERROR("SyncDialogComplete data is nullptr");
+        return;
+    }
     auto *syncCtx = static_cast<SyncDialogContext *>(data);
+    if (syncCtx->callback == nullptr) {
+        HILOG_ERROR("SyncDialogComplete callback is nullptr");
+        delete syncCtx;
+        return;
+    }
     HILOG_INFO("SyncDialogComplete confirmResult=%{public}d", syncCtx->callback->confirmResult);
 
     if (syncCtx->callback->confirmResult == CONFIRM_RESULT_YES) {
         HandleSyncDialogConfirmed(env, syncCtx);
+        delete syncCtx;
         return;
     }
     HandleSyncDialogCancelled(env, syncCtx);
-    delete syncCtx->callback;
     delete syncCtx;
 }
 
@@ -564,8 +590,8 @@ void TriggerSyncConfirmDialog(napi_env env, ExecuteHelper *executeHelper, napi_d
     if (uiContent == nullptr) {
         return;
     }
-
-    auto *syncDialogCallback = new (std::nothrow) SyncDialogCallback();
+    
+    auto syncDialogCallback = std::make_shared<SyncDialogCallback>();
     if (syncDialogCallback == nullptr) {
         HILOG_ERROR("TriggerSyncConfirmDialog failed to allocate SyncDialogCallback");
         RejectSyncDialogError(env, executeHelper, deferred);
@@ -581,7 +607,6 @@ void TriggerSyncConfirmDialog(napi_env env, ExecuteHelper *executeHelper, napi_d
     auto *syncCtx = new (std::nothrow) SyncDialogContext();
     if (syncCtx == nullptr) {
         HILOG_ERROR("TriggerSyncConfirmDialog failed to allocate SyncDialogContext");
-        delete syncDialogCallback;
         RejectSyncDialogError(env, executeHelper, deferred);
         return;
     }
@@ -592,11 +617,24 @@ void TriggerSyncConfirmDialog(napi_env env, ExecuteHelper *executeHelper, napi_d
     napi_create_string_latin1(env, "SyncContactsDialog", NAPI_AUTO_LENGTH, &workName);
 
     napi_async_work work = nullptr;
-    napi_create_async_work(env, nullptr, workName, SyncDialogExecute, SyncDialogComplete,
+    napi_status createStatus = napi_create_async_work(env, nullptr, workName, SyncDialogExecute, SyncDialogComplete,
         reinterpret_cast<void *>(syncCtx), &work);
+    if (createStatus != napi_ok || work == nullptr) {
+        HILOG_ERROR("TriggerSyncConfirmDialog napi_create_async_work failed");
+        delete syncCtx;
+        RejectSyncDialogError(env, executeHelper, deferred);
+        return;
+    }
 
     executeHelper->work = work;
-    napi_queue_async_work(env, work);
+    napi_status queueStatus = napi_queue_async_work(env, work);
+    if (queueStatus != napi_ok || work == nullptr) {
+        HILOG_ERROR("TriggerSyncConfirmDialog napi_queue_async_work failed");
+        napi_delete_async_work(env, work);
+        delete syncCtx;
+        RejectSyncDialogError(env, executeHelper, deferred);
+        return;
+    }
     HILOG_INFO("TriggerSyncConfirmDialog async work queued");
 }
 

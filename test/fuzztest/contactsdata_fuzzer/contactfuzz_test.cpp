@@ -163,22 +163,18 @@ void ContactsDataAbilityCreate(const uint8_t *data, size_t size)
 
 void ContactsDataAbilityIsCommitOK(const uint8_t *data, size_t size)
 {
-    std::mutex mutex;
     std::string str(reinterpret_cast<const char *>(data), size);
     int code = str.length();
-    contactsDataAbility.IsCommitOK(code, mutex);
-    std::mutex mutex1;
-    contactsDataAbility.IsCommitOK(0, mutex1);
+    contactsDataAbility.IsCommitOK(code);
+    contactsDataAbility.IsCommitOK(0);
 }
 
 void ContactsDataAbilityIsBeginTransactionOK(const uint8_t *data, size_t size)
 {
-    std::mutex mutex;
     std::string str(reinterpret_cast<const char *>(data), size);
     int code = str.length();
-    contactsDataAbility.IsBeginTransactionOK(code, mutex);
-    std::mutex mutex1;
-    contactsDataAbility.IsBeginTransactionOK(0, mutex1);
+    contactsDataAbility.IsBeginTransactionOK(code);
+    contactsDataAbility.IsBeginTransactionOK(0);
 }
 
 void ContactsDataAbilityInsertExecute(const uint8_t *data, size_t size)

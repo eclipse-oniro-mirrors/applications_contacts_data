@@ -50,8 +50,8 @@ private:
     std::string UriParseBatchParam(Uri &uri);
     int InsertExecute(const Uri &uri, const OHOS::NativeRdb::ValuesBucket &value);
     void DataBaseNotifyChange(int code, Uri uri);
-    bool IsBeginTransactionOK(int code, std::mutex &mutex);
-    bool IsCommitOk(int code, std::mutex &mutex);
+    bool IsBeginTransactionOK(int code);
+    bool IsCommitOk(int code);
     void CheckNotifyCallLogChange(OHOS::NativeRdb::ValuesBucket &valuesBucket);
     int BatchInsertSplit(const Uri &uri, const std::vector<DataShare::DataShareValuesBucket> &values);
     void AddQueryNotPrivacyCondition(OHOS::NativeRdb::RdbPredicates &rdbPredicates);

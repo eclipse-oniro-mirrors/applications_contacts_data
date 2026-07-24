@@ -241,9 +241,10 @@ void ContactsBuild::BuildUpdateContactStatements(const Contacts &contact,
     ctx.statements->emplace_back(deleteStmt);
     (*ctx.statementIndex)++;
     for (auto valueContactData : valueContactDatas) {
+        DataShare::DataSharePredicates insertPred;
         valueContactData.Put("raw_contact_id", contact.id);
         DataShare::OperationStatement insertDataStmt{
-        DataShare::Operation::DELETE, ctx.rawContactUri, deletePred, emptyValue, emptyBackRef};
+        DataShare::Operation::DELETE, ctx.contactDataUri, insertPred, valueContactData, emptyBackRef};
         ctx.statements->emplace_back(insertDataStmt);
         (*ctx.statementIndex)++;
     }
@@ -283,6 +284,9 @@ void ContactsBuild::BuildInsertContactStatements(const Contacts &contact,
 void ContactsBuild::BuildSyncCloudBasedDeleteStatements(ExecuteHelper *executeHelper,
     std::vector<DataShare::OperationStatement> &statements, size_t &rawContactIndex)
 {
+    if (executeHelper == nullptr) {
+        return;
+    }
     if (!executeHelper->isFirstSync || executeHelper->syncMode != MODE_CLOUD_BASED) {
         return;
     }
@@ -1197,7 +1201,11 @@ int ContactsBuild::GetInt64(napi_env env, napi_value id, int64_t &out)
         HILOG_ERROR("GetInt64 id is nullptr");
         return ERROR;
     }
-    napi_get_value_int64(env, id, &out);
+    napi_status status = napi_get_value_int64(env, id, &out);
+    if (status != napi_ok) {
+        HILOG_ERROR("GetInt64 napi_get_value_int64 failed");
+        return ERROR;
+    }
     return SUCCESS;
 }
 

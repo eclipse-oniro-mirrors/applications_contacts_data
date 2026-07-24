@@ -206,14 +206,10 @@ void ContactsDataAbility::OnStart(const Want &want)
  *
  * @return True if BeginTransaction is empty; flase otherwise
  */
-bool ContactsDataAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
+bool ContactsDataAbility::IsBeginTransactionOK(int code)
 {
-    bool ret = mutex.try_lock();
     if (code != 0) {
         HILOG_ERROR("IsBeginTransactionOK failed");
-        if (ret) {
-            mutex.unlock();
-        }
         return false;
     }
     return true;
@@ -227,14 +223,10 @@ bool ContactsDataAbility::IsBeginTransactionOK(int code, std::mutex &mutex)
  *
  * @return True if ContactsDataAbility Commit is empty; flase otherwise
  */
-bool ContactsDataAbility::IsCommitOK(int code, std::mutex &mutex)
+bool ContactsDataAbility::IsCommitOK(int code)
 {
-    bool ret = mutex.try_lock();
     if (code != 0) {
         HILOG_ERROR("IsCommitOK failed");
-        if (ret) {
-            mutex.unlock();
-        }
         return false;
     }
     return true;
@@ -281,7 +273,7 @@ int ContactsDataAbility::Insert(const Uri &uri, const DataShare::DataShareValues
     std::string isSyncFromCloud = UriParseParam(uriTemp);
     int code = UriParseAndSwitch(uriTemp);
     int ret = contactDataBase_->BeginTransaction();
-    if (!IsBeginTransactionOK(ret, g_mutex)) {
+    if (!IsBeginTransactionOK(ret)) {
         HILOG_ERROR("ContactsDataAbility Insert IsBeginTransactionOK error");
         g_mutex.unlock();
         return Contacts::RDB_EXECUTE_FAIL;
@@ -294,7 +286,7 @@ int ContactsDataAbility::Insert(const Uri &uri, const DataShare::DataShareValues
         return Contacts::OPERATION_ERROR;
     }
     ret = contactDataBase_->Commit();
-    if (!IsCommitOK(ret, g_mutex)) {
+    if (!IsCommitOK(ret)) {
         HILOG_ERROR("ContactsDataAbility Insert IsCommitOK error");
         contactDataBase_->RollBack();
         g_mutex.unlock();
@@ -706,7 +698,7 @@ int ContactsDataAbility::batchInsertHandleOneByOne(const Uri &uri, std::string i
 {
     unsigned int size = valuesHandle.size();
     int ret = contactDataBase_->BeginTransaction();
-    if (!IsBeginTransactionOK(ret, g_mutex)) {
+    if (!IsBeginTransactionOK(ret)) {
         return Contacts::RDB_EXECUTE_FAIL;
     }
 // LCOV_EXCL_START
@@ -720,7 +712,7 @@ int ContactsDataAbility::batchInsertHandleOneByOne(const Uri &uri, std::string i
         }
     }
     int markRet = contactDataBase_->Commit();
-    if (!IsCommitOK(markRet, g_mutex)) {
+    if (!IsCommitOK(markRet)) {
         HILOG_ERROR("batchInsertHandleOneByOne IsCommitOK error!");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -1444,7 +1436,7 @@ int ContactsDataAbility::ExecuteBatch(
     std::lock_guard<std::mutex> lock(g_mutex);
     contactDataBase_ = Contacts::ContactsDataBase::GetInstance();
     int ret = contactDataBase_->BeginTransaction();
-    if (!IsBeginTransactionOK(ret, g_mutex)) {
+    if (!IsBeginTransactionOK(ret)) {
         HILOG_ERROR("ExecuteBatch IsBeginTransactionOK error");
         return Contacts::RDB_EXECUTE_FAIL;
     }
@@ -1458,7 +1450,7 @@ int ContactsDataAbility::ExecuteBatch(
         }
     }
     int commitRet = contactDataBase_->Commit();
-    if (!IsCommitOK(commitRet, g_mutex)) {
+    if (!IsCommitOK(commitRet)) {
         HILOG_ERROR("ExecuteBatch IsCommitOK error");
         contactDataBase_->RollBack();
         return Contacts::RDB_EXECUTE_FAIL;
@@ -1550,6 +1542,13 @@ int ContactsDataAbility::ProcessExecuteBatchUpdate(ExecuteBatchStatement &execut
     int code = UriParseAndSwitch(uriTemp);
     OHOS::NativeRdb::ValuesBucket valuesBucket =
     RdbDataShareAdapter::RdbUtils::ToValuesBucket(statement.valuesBucket);
+    Contacts::SqlAnalyzer sqlAnalyzer;
+    bool isOk = sqlAnalyzer.CheckValuesBucket(valuesBucket);
+    if (!isOk) {
+        HILOG_ERROR("ProcessExecuteBatchUpdate checkValueBucket error");
+        execResult.code = DataShare::ExecErrorCode::EXEC_FAILED;
+        return Contacts::OPERATION_ERROR;
+    }
     int retCode = Contacts::OPERATION_OK;
     std::string isSyncFromCloud = UriParseParam(uriTemp);
     UpdateExecute(retCode, code, valuesBucket, statement.predicates, isSyncFromCloud);
@@ -1570,7 +1569,7 @@ int ContactsDataAbility::ProcessExecuteBatchDelete(ExecuteBatchStatement &execut
     OHOS::Uri uriTemp(statement.uri);
     int code = UriParseAndSwitch(uriTemp);
     int retCode = Contacts::OPERATION_OK;
-    std::string handleType = "";
+    std::string handleType = UriParseHandleTypeParam(uriTemp);
     std::string isSyncFromCloud = UriParseParam(uriTemp);
     DeleteExecute(retCode, code, statement.predicates, isSyncFromCloud, handleType);
     if (retCode >= 0) {
