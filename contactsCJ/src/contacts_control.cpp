@@ -136,6 +136,10 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::MyCardQuery(
     std::shared_ptr<DataShare::DataShareResultSet> resultSet;
     OHOS::Uri uriProfileContact("datashare:///com.ohos.contactsdataability/profile/contact_data");
     resultSet = dataShareHelper->Query(uriProfileContact, predicates, columns);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("ContactsControl::MyCardQuery profile query resultSet is nullptr");
+        return nullptr;
+    }
     int rowCount = 0;
     resultSet->GetRowCount(rowCount);
     if (rowCount > 0) {
@@ -145,6 +149,10 @@ std::shared_ptr<DataShare::DataShareResultSet> ContactsControl::MyCardQuery(
     OHOS::Uri uriContactsContactData("datashare:///com.ohos.contactsdataability/contacts/contact_data");
     predicates.EqualTo("primary_contact", "1");
     resultSet = dataShareHelper->Query(uriContactsContactData, predicates, columns);
+    if (resultSet == nullptr) {
+        HILOG_ERROR("ContactsControl::MyCardQuery contacts query resultSet is nullptr");
+        return nullptr;
+    }
     HILOG_INFO("ContactsControl::MyCardQuery contacts");
     return resultSet;
 }

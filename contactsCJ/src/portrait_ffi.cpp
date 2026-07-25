@@ -23,6 +23,7 @@
 #include "pixel_map_impl.h"
 #include "image_packer.h"
 #include <unistd.h>
+#include <climits>
 
 using namespace OHOS;
 using namespace OHOS::AbilityRuntime;
@@ -35,6 +36,9 @@ namespace OHOS {
 namespace ContactsFfi {
 
 constexpr int OPEN_FILE_FAILED = -1;
+// ContactsDataShareStubImpl::OpenFile returns -2 on permission denial (see NAPI
+// contacts_api.cpp:1328 which checks fd == RDB_PERMISSION_ERROR).
+constexpr int RDB_PERMISSION_ERROR = -2;
 constexpr int ERR_OK = 0;
 constexpr uint8_t IMAGE_QUALITY = 90;
 constexpr uint32_t IMAGE_NUMBER_HINT = 1;
@@ -69,8 +73,16 @@ static std::string QueryContactId(std::shared_ptr<DataShareHelper>& dataShareHel
     }
     std::string contactId;
     int columnIndex = 0;
-    resultSet->GetColumnIndex("contact_id", columnIndex);
-    resultSet->GetString(columnIndex, contactId);
+    if (resultSet->GetColumnIndex("contact_id", columnIndex) != 0) {
+        HILOG_ERROR("QueryContactId GetColumnIndex failed for contact_id");
+        resultSet->Close();
+        return "";
+    }
+    if (resultSet->GetString(columnIndex, contactId) != 0) {
+        HILOG_ERROR("QueryContactId GetString failed for contact_id");
+        resultSet->Close();
+        return "";
+    }
     resultSet->Close();
     return contactId;
 }
@@ -80,7 +92,9 @@ static int SavePixelMapToFile(const std::shared_ptr<PixelMap>& pixelMap, int fd)
     if (pixelMap == nullptr) {
         return -1;
     }
-    ImageInfo info;
+    // Value-initialize so info.size is zeroed when GetImageInfo does not fill it; the API returns
+    // void and cannot be checked. scale() also returns void.
+    ImageInfo info{};
     pixelMap->GetImageInfo(info);
     int32_t height = (info.size.height != 0) ? info.size.height : 100;
     int32_t width = (info.size.width != 0) ? info.size.width : 100;
@@ -122,7 +136,9 @@ static void GetPixelMapSize(const std::shared_ptr<PixelMap>& pixelMap, int32_t &
         width = 0;
         return;
     }
-    ImageInfo info;
+    // Value-initialize so height/width are 0 even if GetImageInfo fails to fill them; the API
+    // returns void so the return value cannot be checked.
+    ImageInfo info{};
     pixelMap->GetImageInfo(info);
     height = info.size.height;
     width = info.size.width;
@@ -178,8 +194,8 @@ static int OpenAndSavePortrait(PortraitContext ctx, ContactIdentity identity,
     std::shared_ptr<PixelMap>& pixelMap, ImageSize& imageSize)
 {
     int fd = ctx.contactsControl.OpenFileByDataShare(identity.fileName, ctx.dataShareHelper);
-    if (fd == OPEN_FILE_FAILED || fd == PERMISSION_ERROR) {
-        HILOG_ERROR("OpenAndSavePortrait OpenFileByDataShare failed");
+    if (fd == OPEN_FILE_FAILED || fd == PERMISSION_ERROR || fd == RDB_PERMISSION_ERROR) {
+        HILOG_ERROR("OpenAndSavePortrait OpenFileByDataShare failed, fd: %{public}d", fd);
         HandleInsertFailed(ctx.contactsControl, ctx.dataShareHelper, identity.rawContactId, identity.fileName);
         return fd;
     }
@@ -194,6 +210,41 @@ static int OpenAndSavePortrait(PortraitContext ctx, ContactIdentity identity,
     return ERR_OK;
 }
 
+// contactId is queried from the DB and spliced into a file URI (savePhoto/<fileName>); reject
+// path separators and ".." so a malicious/odd contact_id cannot traverse the filesystem.
+static bool IsValidContactId(const std::string& contactId)
+{
+    if (contactId.empty()) {
+        return false;
+    }
+    if (contactId.find('/') != std::string::npos || contactId.find('\\') != std::string::npos) {
+        return false;
+    }
+    if (contactId.find("..") != std::string::npos) {
+        return false;
+    }
+    return true;
+}
+
+// Writes the pixel map to the portrait file and persists the portrait row; releases the helper.
+// ContactIdentity (contactId/rawContactId/fileName) is built by the caller to keep the
+// parameter count at 5.
+static int32_t FinalizePortraitSave(const ContactIdentity& identity, CPortrait* portrait, bool isAddType,
+    std::shared_ptr<DataShareHelper>& dataShareHelper, std::shared_ptr<PixelMap>& pixelMap)
+{
+    ContactsControl contactsControl;
+    PortraitContext ctx = {contactsControl, dataShareHelper};
+    ImageSize imageSize;
+    int result = OpenAndSavePortrait(ctx, identity, pixelMap, imageSize);
+    if (result != ERR_OK) {
+        dataShareHelper->Release();
+        return result;
+    }
+    result = SavePortraitData(ctx, identity, imageSize, portrait, isAddType);
+    dataShareHelper->Release();
+    return result;
+}
+
 int32_t CJInsertPortrait(int64_t contextId, int64_t rawContactId, CPortrait* portrait,
     bool isAddType)
 {
@@ -201,6 +252,13 @@ int32_t CJInsertPortrait(int64_t contextId, int64_t rawContactId, CPortrait* por
     if (portrait == nullptr || !portrait->hasPhoto) {
         HILOG_ERROR("CJInsertPortrait portrait is null or has no photo");
         return ERROR;
+    }
+    // rawContactId is int64_t but QueryContactId/QueryContactByRawContactId take int; guard the
+    // implicit narrowing so a value beyond INT_MAX is not silently truncated to another contact.
+    if (rawContactId < 0 || rawContactId > INT_MAX) {
+        HILOG_ERROR("CJInsertPortrait rawContactId out of int range: %{public}lld",
+            static_cast<long long>(rawContactId));
+        return PARAMETER_ERROR;
     }
 
     auto dataShareHelper = GetDsHelper(contextId);
@@ -221,23 +279,17 @@ int32_t CJInsertPortrait(int64_t contextId, int64_t rawContactId, CPortrait* por
         dataShareHelper->Release();
         return OPEN_FILE_FAILED;
     }
+    if (!IsValidContactId(contactId)) {
+        HILOG_ERROR("CJInsertPortrait contactId contains invalid path characters");
+        dataShareHelper->Release();
+        return PARAMETER_ERROR;
+    }
 
-    ContactsControl contactsControl;
-    PortraitContext ctx = {contactsControl, dataShareHelper};
     ContactIdentity identity;
     identity.contactId = contactId;
     identity.rawContactId = rawContactId;
     identity.fileName = contactId + "_" + std::to_string(rawContactId) + ".jpg";
-    ImageSize imageSize;
-    int result = OpenAndSavePortrait(ctx, identity, pixelMap, imageSize);
-    if (result != ERR_OK) {
-        dataShareHelper->Release();
-        return result;
-    }
-
-    result = SavePortraitData(ctx, identity, imageSize, portrait, isAddType);
-    dataShareHelper->Release();
-    return result;
+    return FinalizePortraitSave(identity, portrait, isAddType, dataShareHelper, pixelMap);
 }
 
 } // namespace ContactsFfi

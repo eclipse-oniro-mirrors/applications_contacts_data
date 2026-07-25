@@ -28,6 +28,7 @@ namespace OHOS {
 namespace ContactsFfi {
 
 constexpr int MAX_CONTACTS = 1024 * 1024;
+constexpr int MAX_GROUPS_HOLDERS = 1024 * 1024;
 
 const std::string CONTACTS_DATA_URI = "datashare:///com.ohos.contactsdataability";
 
