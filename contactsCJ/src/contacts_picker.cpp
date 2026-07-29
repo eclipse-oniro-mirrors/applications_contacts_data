@@ -72,7 +72,10 @@ struct PickerCallBack {
 
 struct ContactsPickerContext {
     std::shared_ptr<PickerCallBack> pickerCallBack;
-    int32_t errCode = SUCCESS;
+    // errCode is written by the OnError callback thread and read by the CJSelectContacts caller
+    // thread; keep it atomic to avoid the data race the other PickerCallBack fields are protected
+    // against.
+    std::atomic<int32_t> errCode{SUCCESS};
     int32_t sessionId = INVALID_SESSION_ID;
 };
 
@@ -93,7 +96,16 @@ static std::string SplicePickerData(std::string *pickerData, int32_t dataIndex)
 {
     std::stringstream splicePickerData;
     splicePickerData << "[";
-    for (int32_t i = 0; i < (dataIndex + 1); ++i) {
+    // Clamp the loop bound: dataIndex comes from untrusted IPC and may exceed PICKER_MAX even
+    // though OnReceive now bounds-checks; this prevents an out-of-bounds read of pickerData[].
+    int32_t upperBound = dataIndex + 1;
+    if (upperBound < 0) {
+        upperBound = 0;
+    }
+    if (upperBound > PICKER_MAX) {
+        upperBound = PICKER_MAX;
+    }
+    for (int32_t i = 0; i < upperBound; ++i) {
         std::string currentData;
         if (pickerData[i].length() > OFFSET_TWO) {
             currentData = pickerData[i].substr(1, pickerData[i].length() - OFFSET_TWO);
@@ -122,8 +134,16 @@ public:
     void OnRelease(int32_t releaseCode)
     {
         HILOG_INFO("[ContactsPickerFFI] OnRelease, releaseCode: %{public}d", releaseCode);
-        if (pickerContext_ != nullptr && pickerContext_->pickerCallBack != nullptr) {
-            uiContent_->CloseModalUIExtension(sessionId_);
+        if (pickerContext_ == nullptr || pickerContext_->pickerCallBack == nullptr) {
+            return;
+        }
+        // Guard against the same double-close race as OnError, and guard uiContent_ against the
+        // ability/UIContent lifecycle ending before this async callback fires.
+        std::lock_guard<std::mutex> lock(pickerContext_->pickerCallBack->pickerDataMutex);
+        if (!pickerContext_->pickerCallBack->ready.load()) {
+            if (uiContent_ != nullptr) {
+                uiContent_->CloseModalUIExtension(sessionId_);
+            }
             pickerContext_->pickerCallBack->ready.store(true);
         }
     }
@@ -146,18 +166,27 @@ public:
             HILOG_ERROR("[ContactsPickerFFI] pickerContext or pickerCallBack is null");
             return;
         }
-        
+
         int32_t tempIndex = request.GetIntParam("index", -1);
-        int32_t currentDataIndex = pickerContext_->pickerCallBack->dataIndex.load();
-        pickerContext_->pickerCallBack->dataIndex.store((currentDataIndex < tempIndex) ? tempIndex : currentDataIndex);
-        pickerContext_->pickerCallBack->total.store(request.GetIntParam("total", -1));
-        
-        if (tempIndex <= (PICKER_MAX - 1) && tempIndex >= 0) {
-            std::string data = request.GetStringParam("pickerData");
-            std::lock_guard<std::mutex> lock(pickerContext_->pickerCallBack->pickerDataMutex);
-            pickerContext_->pickerCallBack->pickerData[tempIndex] = data;
+        // Drop out-of-range index from untrusted IPC before it can drive an out-of-bounds read in
+        // SplicePickerData. PICKER_MAX is the fixed size of pickerData[].
+        if (tempIndex < 0 || tempIndex >= PICKER_MAX) {
+            HILOG_ERROR("[ContactsPickerFFI] OnReceive tempIndex out of range: %{public}d", tempIndex);
+            return;
         }
-        
+        // Atomic read-modify-write so concurrent OnReceive callbacks do not lose the max update.
+        int32_t currentDataIndex = pickerContext_->pickerCallBack->dataIndex.load();
+        while (tempIndex > currentDataIndex) {
+            if (pickerContext_->pickerCallBack->dataIndex.compare_exchange_weak(currentDataIndex, tempIndex)) {
+                break;
+            }
+        }
+        pickerContext_->pickerCallBack->total.store(request.GetIntParam("total", -1));
+
+        std::string data = request.GetStringParam("pickerData");
+        std::lock_guard<std::mutex> lock(pickerContext_->pickerCallBack->pickerDataMutex);
+        pickerContext_->pickerCallBack->pickerData[tempIndex] = data;
+
         HILOG_INFO("[ContactsPickerFFI] total: %{public}d, dataIndex: %{public}d",
             pickerContext_->pickerCallBack->total.load(), pickerContext_->pickerCallBack->dataIndex.load());
     }
@@ -166,12 +195,18 @@ public:
     {
         HILOG_ERROR("[ContactsPickerFFI] OnError, code: %{public}d, name: %{public}s, message: %{public}s",
             code, name.c_str(), message.c_str());
-        if (pickerContext_ != nullptr && pickerContext_->pickerCallBack != nullptr) {
-            if (!pickerContext_->pickerCallBack->ready.load()) {
-                pickerContext_->errCode = ERROR;
+        if (pickerContext_ == nullptr || pickerContext_->pickerCallBack == nullptr) {
+            return;
+        }
+        // Protect the check-assign-close critical section so OnError/OnRelease/OnResultForModal
+        // cannot concurrently pass the !ready gate and double-close the modal UI.
+        std::lock_guard<std::mutex> lock(pickerContext_->pickerCallBack->pickerDataMutex);
+        if (!pickerContext_->pickerCallBack->ready.load()) {
+            pickerContext_->errCode.store(ERROR);
+            if (uiContent_ != nullptr) {
                 uiContent_->CloseModalUIExtension(sessionId_);
-                pickerContext_->pickerCallBack->ready.store(true);
             }
+            pickerContext_->pickerCallBack->ready.store(true);
         }
     }
     
@@ -201,24 +236,30 @@ static Ace::UIContent* ValidatePickerContext(int64_t contextId, std::shared_ptr<
     auto context = FFIData::GetData<CJAbilityContext>(contextId);
     if (context == nullptr) {
         HILOG_ERROR("[ContactsPickerFFI] context is null");
-        pickerContext->errCode = ERROR;
-        pickerContext->pickerCallBack->ready.store(true);
+        pickerContext->errCode.store(ERROR);
+        if (pickerContext->pickerCallBack != nullptr) {
+            pickerContext->pickerCallBack->ready.store(true);
+        }
         return nullptr;
     }
-    
+
     auto abilityContext = context->GetAbilityContext();
     if (abilityContext == nullptr) {
         HILOG_ERROR("[ContactsPickerFFI] abilityContext is null");
-        pickerContext->errCode = ERROR;
-        pickerContext->pickerCallBack->ready.store(true);
+        pickerContext->errCode.store(ERROR);
+        if (pickerContext->pickerCallBack != nullptr) {
+            pickerContext->pickerCallBack->ready.store(true);
+        }
         return nullptr;
     }
 
     auto uiContent = abilityContext->GetUIContent();
     if (uiContent == nullptr) {
         HILOG_ERROR("[ContactsPickerFFI] UIContent is nullptr");
-        pickerContext->errCode = ERROR;
-        pickerContext->pickerCallBack->ready.store(true);
+        pickerContext->errCode.store(ERROR);
+        if (pickerContext->pickerCallBack != nullptr) {
+            pickerContext->pickerCallBack->ready.store(true);
+        }
         return nullptr;
     }
     return uiContent;
@@ -233,29 +274,39 @@ static void SetupBasicWantParams(Want& request)
     request.SetParam(UI_EXT_ISMULTISELECT, false);
 }
 
-static void SetupFilterParams(Want& request, const CContactSelectionOptions* options)
+static void SetupFilterParams(Want& request, const CContactSelectionOptions* options,
+    std::shared_ptr<ContactsPickerContext> pickerContext)
 {
     if (!options->hasFilter || options->filterJson == nullptr) {
         return;
     }
-    
+
     std::string filterJsonStr(options->filterJson);
     HILOG_INFO("[ContactsPickerFFI] filterJson length: %{public}zu", filterJsonStr.length());
-    
+
     if (!filterJsonStr.empty() && nlohmann::json::accept(filterJsonStr)) {
-        nlohmann::json filterJson = nlohmann::json::parse(filterJsonStr);
-        AAFwk::WantParams filterWp;
-        from_json(filterJson, filterWp);
-        HILOG_INFO("[ContactsPickerFFI] filterWp parsed successfully");
-        
-        AAFwk::WantParams currentParams = request.GetParams();
-        currentParams.SetParam("filter", AAFwk::WantParamWrapper::Box(filterWp));
-        request.SetParams(currentParams);
-        HILOG_INFO("[ContactsPickerFFI] filter set to Want");
+        // filterJson crosses the FFI boundary and is untrusted; built with -fno-exceptions,
+        // so try/catch is forbidden. Use the noexcept parse variant and pre-validate the JSON
+        // type before from_json (which itself uses is_xxx() guards, not exceptions).
+        nlohmann::json filterJson = nlohmann::json::parse(filterJsonStr, nullptr, false);
+        if (filterJson.is_discarded() || !filterJson.is_object()) {
+            HILOG_ERROR("[ContactsPickerFFI] filterJson is not a JSON object");
+            pickerContext->errCode.store(PARAMETER_ERROR);
+        } else {
+            AAFwk::WantParams filterWp;
+            from_json(filterJson, filterWp);
+            HILOG_INFO("[ContactsPickerFFI] filterWp parsed successfully");
+
+            AAFwk::WantParams currentParams = request.GetParams();
+            currentParams.SetParam("filter", AAFwk::WantParamWrapper::Box(filterWp));
+            request.SetParams(currentParams);
+            HILOG_INFO("[ContactsPickerFFI] filter set to Want");
+        }
     } else {
         HILOG_ERROR("[ContactsPickerFFI] filterJson is empty or invalid JSON");
+        pickerContext->errCode.store(PARAMETER_ERROR);
     }
-    
+
     if (options->displayType != nullptr) {
         std::string displayTypeStr(options->displayType);
         if (!displayTypeStr.empty()) {
@@ -271,12 +322,15 @@ static bool SetupMaxSelectableParam(Want& request, const CContactSelectionOption
     if (!options->hasMaxSelectable) {
         return true;
     }
-    
+
     int32_t maxSelectable = options->maxSelectable;
     if (maxSelectable < MAX_SELECTABLE_MIN || maxSelectable > MAX_SELECTABLE_MAX) {
         HILOG_ERROR("[ContactsPickerFFI] maxSelectable out of range: %{public}d", maxSelectable);
-        pickerContext->errCode = ERROR;
-        pickerContext->pickerCallBack->ready.store(true);
+        pickerContext->errCode.store(ERROR);
+        // pickerCallBack is created later in StartUIExtensionAbilityForPicker, so guard the deref.
+        if (pickerContext->pickerCallBack != nullptr) {
+            pickerContext->pickerCallBack->ready.store(true);
+        }
         return false;
     }
     request.SetParam("selectLimit", maxSelectable);
@@ -289,18 +343,18 @@ static void SetupOptionsParams(Want& request, const CContactSelectionOptions* op
     if (options == nullptr) {
         return;
     }
-    
+
     if (options->hasIsMultiSelect) {
         request.SetParam(UI_EXT_ISMULTISELECT, options->isMultiSelect);
         std::string pageFlag = options->isMultiSelect ? "page_flag_multi_choose" : "page_flag_single_choose";
         request.SetParam("pageFlag", pageFlag);
     }
-    
+
     if (!SetupMaxSelectableParam(request, options, pickerContext)) {
         return;
     }
-    
-    SetupFilterParams(request, options);
+
+    SetupFilterParams(request, options, pickerContext);
 }
 
 static void StartUIExtensionAbilityForPicker(
@@ -318,14 +372,14 @@ static void StartUIExtensionAbilityForPicker(
     Want request;
     SetupBasicWantParams(request);
     SetupOptionsParams(request, options, pickerContext);
-    if (pickerContext->errCode != SUCCESS) {
+    if (pickerContext->errCode.load() != SUCCESS) {
         return;
     }
-    
+
     request.SetParam("isContactsPicker", true);
-    
+
     pickerContext->pickerCallBack = std::make_shared<PickerCallBack>();
-    
+
     auto callback = std::make_shared<ModalUICallbackForPicker>(uiContent, pickerContext);
     OHOS::Ace::ModalUIExtensionCallbacks extensionCallbacks = {
         std::bind(&ModalUICallbackForPicker::OnRelease, callback, std::placeholders::_1),
@@ -334,20 +388,22 @@ static void StartUIExtensionAbilityForPicker(
         std::bind(&ModalUICallbackForPicker::OnError, callback, std::placeholders::_1, std::placeholders::_2,
             std::placeholders::_3),
     };
-    
+
     OHOS::Ace::ModalUIExtensionConfig config;
     config.isProhibitBack = true;
-    
+
     int32_t sessionId = uiContent->CreateModalUIExtension(request, extensionCallbacks, config);
     if (sessionId == INVALID_SESSION_ID) {
         HILOG_ERROR("[ContactsPickerFFI] CreateModalUIExtension failed, sessionId is invalid");
-        pickerContext->errCode = ERROR;
-        pickerContext->pickerCallBack->ready.store(true);
+        pickerContext->errCode.store(ERROR);
+        if (pickerContext->pickerCallBack != nullptr) {
+            pickerContext->pickerCallBack->ready.store(true);
+        }
         return;
     }
     callback->SetSessionId(sessionId);
     pickerContext->sessionId = sessionId;
-    
+
     HILOG_INFO("[ContactsPickerFFI] StartUIExtensionAbilityForPicker end, sessionId: %{public}d", sessionId);
 }
 
@@ -355,43 +411,25 @@ static CPickerResult* CreateEmptyPickerResult(int32_t resultCode)
 {
     CPickerResult* result = new CPickerResult();
     result->pickerData = StringToCharPtr("[]");
+    if (result->pickerData == nullptr) {
+        // OOM: leave pickerData null; the error resultCode already signals failure to the
+        // consumer, which must not dereference pickerData. CJFreePickerResult null-checks free.
+        HILOG_ERROR("[ContactsPickerFFI] CreateEmptyPickerResult StringToCharPtr failed");
+    }
     result->total = 0;
     result->resultCode = resultCode;
     return result;
 }
 
-CPickerResult* CJSelectContacts(int64_t contextId, CContactSelectionOptions* options, int32_t* errCode)
+// Builds the CPickerResult to return across the FFI boundary from the picker callback state.
+// On StringToCharPtr failure (OOM) sets *errCode and returns an empty error result instead of a
+// result whose pickerData is nullptr (the consumer must not dereference a null pickerData).
+static CPickerResult* BuildPickerResult(std::shared_ptr<ContactsPickerContext> pickerContext, int32_t* errCode)
 {
-    HILOG_INFO("[ContactsPickerFFI] CJSelectContacts begin");
-    
-    *errCode = SUCCESS;
-    
-    auto pickerContext = std::make_shared<ContactsPickerContext>();
-    pickerContext->pickerCallBack = std::make_shared<PickerCallBack>();
-    
-    StartUIExtensionAbilityForPicker(contextId, options, pickerContext);
-    
-    if (pickerContext->errCode != SUCCESS) {
-        *errCode = pickerContext->errCode;
-        return CreateEmptyPickerResult(-1);
-    }
-    
-    int elapsedMs = 0;
-    while (!pickerContext->pickerCallBack->ready.load() && elapsedMs < PICKER_TIMEOUT_MS) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
-        elapsedMs += SLEEP_TIME;
-    }
-    
-    if (!pickerContext->pickerCallBack->ready.load()) {
-        HILOG_ERROR("[ContactsPickerFFI] Picker timeout after %{public}d ms", elapsedMs);
-        *errCode = ERROR;
-        return CreateEmptyPickerResult(-1);
-    }
-    
     CPickerResult* result = new CPickerResult();
     result->resultCode = pickerContext->pickerCallBack->resultCode.load();
     result->total = pickerContext->pickerCallBack->total.load();
-    
+
     if (pickerContext->pickerCallBack->resultCode.load() != 0) {
         HILOG_INFO("[ContactsPickerFFI] resultCode: %{public}d", pickerContext->pickerCallBack->resultCode.load());
         result->pickerData = StringToCharPtr("[]");
@@ -400,13 +438,50 @@ CPickerResult* CJSelectContacts(int64_t contextId, CContactSelectionOptions* opt
         std::string pickerDataStr;
         {
             std::lock_guard<std::mutex> lock(pickerContext->pickerCallBack->pickerDataMutex);
-            pickerDataStr = SplicePickerData(
-                pickerContext->pickerCallBack->pickerData,
+            pickerDataStr = SplicePickerData(pickerContext->pickerCallBack->pickerData,
                 pickerContext->pickerCallBack->dataIndex.load());
         }
         result->pickerData = StringToCharPtr(pickerDataStr);
     }
-    
+    if (result->pickerData == nullptr) {
+        HILOG_ERROR("[ContactsPickerFFI] BuildPickerResult StringToCharPtr failed");
+        delete result;
+        *errCode = ERROR;
+        return CreateEmptyPickerResult(-1);
+    }
+    return result;
+}
+
+CPickerResult* CJSelectContacts(int64_t contextId, CContactSelectionOptions* options, int32_t* errCode)
+{
+    HILOG_INFO("[ContactsPickerFFI] CJSelectContacts begin");
+
+    *errCode = SUCCESS;
+
+    auto pickerContext = std::make_shared<ContactsPickerContext>();
+    // pickerCallBack is created inside StartUIExtensionAbilityForPicker once option/context
+    // validation passes; creating it here would be a redundant double-allocation (overwritten
+    // there) and would mask the nullptr guards in ValidatePickerContext/SetupMaxSelectableParam.
+    StartUIExtensionAbilityForPicker(contextId, options, pickerContext);
+
+    if (pickerContext->errCode.load() != SUCCESS) {
+        *errCode = pickerContext->errCode.load();
+        return CreateEmptyPickerResult(-1);
+    }
+
+    int elapsedMs = 0;
+    while (!pickerContext->pickerCallBack->ready.load() && elapsedMs < PICKER_TIMEOUT_MS) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
+        elapsedMs += SLEEP_TIME;
+    }
+
+    if (!pickerContext->pickerCallBack->ready.load()) {
+        HILOG_ERROR("[ContactsPickerFFI] Picker timeout after %{public}d ms", elapsedMs);
+        *errCode = ERROR;
+        return CreateEmptyPickerResult(-1);
+    }
+
+    CPickerResult* result = BuildPickerResult(pickerContext, errCode);
     HILOG_INFO("[ContactsPickerFFI] CJSelectContacts end, total: %{public}d", result->total);
     return result;
 }

@@ -31,20 +31,19 @@ bool allocBucket(ValuesBucket* b, size_t total, int32_t *errCode)
     }
     if (total > 0) {
         b->size = total;
-        b->key = (char**) malloc(total * sizeof(char*));
+        // calloc zeroes memory so that freeContent() is safe on partially filled buckets:
+        // key[i]==nullptr and value[i].tag==TYPE_NULL/value[i].string==nullptr by default.
+        b->key = (char**) calloc(total, sizeof(char*));
         if (b->key == nullptr) {
             *errCode = ERROR;
             b->freeContent(); // actually. there is nothing to free, just set size to 0
             return false;
         }
-        b->value = (struct CValueType*) malloc(total * sizeof(struct CValueType));
+        b->value = (struct CValueType*) calloc(total, sizeof(struct CValueType));
         if (b->value == nullptr) {
             *errCode = ERROR;
             b->freeContent();
             return false;
-        } else {
-            b->value->tag = static_cast<int>(DataType::TYPE_NULL);
-            b->value->string = nullptr;
         }
     }
     return true;
@@ -104,11 +103,75 @@ std::vector<ValuesBucket>& GetResultMapValue(std::map<int, std::vector<ValuesBuc
     return it->second;
 }
 
-void copyBucket(ValuesBucket* dst, int dstIdx, ValuesBucket &src)
+// Allocates a NUL-terminated deep copy of srcStr via malloc + memcpy_s. Returns nullptr
+// for a nullptr input (no error). On malloc/memcpy_s failure frees the partial buffer,
+// sets *errCode = ERROR (if non-null), and returns nullptr; callers detect failure by
+// observing a nullptr result for a non-null input.
+static char* dupCString(const char* srcStr, int32_t *errCode)
 {
-    dst[dstIdx].key = src.key;
-    dst[dstIdx].value = src.value;
+    if (srcStr == nullptr) {
+        return nullptr;
+    }
+    size_t len = strlen(srcStr) + 1;
+    char* dst = static_cast<char*>(malloc(len));
+    if (dst == nullptr || memcpy_s(dst, len, srcStr, len) != 0) {
+        free(dst);
+        HILOG_ERROR("dupCString failed to copy string of length %{public}llu",
+            static_cast<unsigned long long>(len));
+        if (errCode != nullptr) {
+            *errCode = ERROR;
+        }
+        return nullptr;
+    }
+    return dst;
+}
+
+void copyBucket(ValuesBucket* dst, int dstIdx, ValuesBucket &src, int32_t *errCode)
+{
+    // Deep copy: dst owns its own key/value arrays so that freeing dst and src never
+    // double-frees the same heap memory (e.g. allocCollectedContacts error path used to
+    // free the shared pointers via both allContacts->freeContent() and releaseRresultSetMapBuckets).
+    // On any allocation/copy failure sets *errCode = ERROR and returns early; the dst slot is
+    // left in a freeContent()-safe state (calloc-zeroed arrays, nullptr for the calloc-fail case)
+    // so callers can release the partial copy via dst[dstIdx].freeContent().
     dst[dstIdx].size = src.size;
+    if (src.size == 0) {
+        dst[dstIdx].key = nullptr;
+        dst[dstIdx].value = nullptr;
+        return;
+    }
+    dst[dstIdx].key = static_cast<char**>(calloc(src.size, sizeof(char*)));
+    dst[dstIdx].value = static_cast<struct CValueType*>(calloc(src.size, sizeof(struct CValueType)));
+    if (dst[dstIdx].key == nullptr || dst[dstIdx].value == nullptr) {
+        free(dst[dstIdx].key);
+        dst[dstIdx].key = nullptr;
+        free(dst[dstIdx].value);
+        dst[dstIdx].value = nullptr;
+        dst[dstIdx].size = 0;
+        if (errCode != nullptr) {
+            *errCode = ERROR;
+        }
+        return;
+    }
+    for (uint64_t i = 0; i < src.size; i++) {
+        if (src.key[i] != nullptr) {
+            dst[dstIdx].key[i] = dupCString(src.key[i], errCode);
+            if (dst[dstIdx].key[i] == nullptr) {
+                return;
+            }
+        }
+        dst[dstIdx].value[i].tag = src.value[i].tag;
+        dst[dstIdx].value[i].integer = src.value[i].integer;
+        dst[dstIdx].value[i].dou = src.value[i].dou;
+        dst[dstIdx].value[i].boolean = src.value[i].boolean;
+        if (src.value[i].tag == static_cast<int>(DataShareValueObjectType::TYPE_STRING) &&
+            src.value[i].string != nullptr) {
+            dst[dstIdx].value[i].string = dupCString(src.value[i].string, errCode);
+            if (dst[dstIdx].value[i].string == nullptr) {
+                return;
+            }
+        }
+    }
 }
 
 char* TransformFromString(std::string &str, int32_t* errCode)
@@ -159,25 +222,44 @@ ValuesBucket singleStringAsValueBucket(std::string contentType, std::string valu
 }
 
 void PutResultValue(std::vector<KeyWithValueType> &bucket, std::string contentStoreKey,
-                    std::shared_ptr<DataShareResultSet> &resultSet, std::string contentLoadKey)
+                    std::shared_ptr<DataShareResultSet> &resultSet, std::string contentLoadKey,
+                    int32_t *errCode)
 {
     int columnIndex = 0;
-    resultSet->GetColumnIndex(contentLoadKey, columnIndex);
-    DataType columnType;
-    resultSet->GetDataType(columnIndex, columnType);
+    if (resultSet->GetColumnIndex(contentLoadKey, columnIndex) != 0) {
+        HILOG_ERROR("PutResultValue GetColumnIndex failed for key %{public}s", contentLoadKey.c_str());
+        return;
+    }
+    DataType columnType = DataType::TYPE_NULL;
+    if (resultSet->GetDataType(columnIndex, columnType) != 0) {
+        HILOG_ERROR("PutResultValue GetDataType failed for key %{public}s", contentLoadKey.c_str());
+        return;
+    }
 
     // NULL and BLOB are ignored here
     if (columnType == DataType::TYPE_STRING) {
         std::string stringValue;
-        resultSet->GetString(columnIndex, stringValue);
+        if (resultSet->GetString(columnIndex, stringValue) != 0) {
+            HILOG_ERROR("PutResultValue GetString failed for key %{public}s", contentLoadKey.c_str());
+            *errCode = ERROR;
+            return;
+        }
         bucket.push_back(KeyWithValueType(contentStoreKey, stringValue));
     } else if (columnType == DataType::TYPE_INTEGER) {
         int intValue = 0;
-        resultSet->GetInt(columnIndex, intValue);
-        bucket.push_back(KeyWithValueType(contentStoreKey, (int64_t) intValue));
+        if (resultSet->GetInt(columnIndex, intValue) != 0) {
+            HILOG_ERROR("PutResultValue GetInt failed for key %{public}s", contentLoadKey.c_str());
+            *errCode = ERROR;
+            return;
+        }
+        bucket.push_back(KeyWithValueType(contentStoreKey, static_cast<int64_t>(intValue)));
     } else if (columnType == DataType::TYPE_FLOAT) {
         double doubleValue = 0;
-        resultSet->GetDouble(columnIndex, doubleValue);
+        if (resultSet->GetDouble(columnIndex, doubleValue) != 0) {
+            HILOG_ERROR("PutResultValue GetDouble failed for key %{public}s", contentLoadKey.c_str());
+            *errCode = ERROR;
+            return;
+        }
         bucket.push_back(KeyWithValueType(contentStoreKey, doubleValue));
     } else if (columnType != DataType::TYPE_NULL) { // TYPE_NULL is just ignored
         HILOG_ERROR("PutResultValue unsupported columnType for key %{public}s is %{public}d",
@@ -186,9 +268,10 @@ void PutResultValue(std::vector<KeyWithValueType> &bucket, std::string contentSt
 }
 
 void PutResultValue(std::vector<KeyWithValueType> &bucket,
-                    std::shared_ptr<DataShareResultSet> &resultSet, std::string contentKey)
+                    std::shared_ptr<DataShareResultSet> &resultSet, std::string contentKey,
+                    int32_t *errCode)
 {
-    PutResultValue(bucket, contentKey, resultSet, contentKey);
+    PutResultValue(bucket, contentKey, resultSet, contentKey, errCode);
 }
 
 /**
@@ -198,10 +281,10 @@ ValuesBucket resultSetAsEmail(std::shared_ptr<DataShareResultSet> &resultSet, in
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "email"));
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "alias_detail_info");
-    PutResultValue(bucketData, resultSet, "custom_data");
-    PutResultValue(bucketData, resultSet, "extend7");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "alias_detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "custom_data", errCode);
+    PutResultValue(bucketData, resultSet, "extend7", errCode);
     return allocBucketData(bucketData, errCode);
 }
 
@@ -212,15 +295,15 @@ ValuesBucket resultSetAsName(std::shared_ptr<DataShareResultSet> &resultSet, int
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "name"));
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "alpha_name");
-    PutResultValue(bucketData, resultSet, "other_lan_last_name");
-    PutResultValue(bucketData, resultSet, "other_lan_first_name");
-    PutResultValue(bucketData, resultSet, "family_name");
-    PutResultValue(bucketData, resultSet, "middle_name_phonetic");
-    PutResultValue(bucketData, resultSet, "given_name");
-    PutResultValue(bucketData, resultSet, "given_name_phonetic");
-    PutResultValue(bucketData, resultSet, "phonetic_name");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "alpha_name", errCode);
+    PutResultValue(bucketData, resultSet, "other_lan_last_name", errCode);
+    PutResultValue(bucketData, resultSet, "other_lan_first_name", errCode);
+    PutResultValue(bucketData, resultSet, "family_name", errCode);
+    PutResultValue(bucketData, resultSet, "middle_name_phonetic", errCode);
+    PutResultValue(bucketData, resultSet, "given_name", errCode);
+    PutResultValue(bucketData, resultSet, "given_name_phonetic", errCode);
+    PutResultValue(bucketData, resultSet, "phonetic_name", errCode);
     return allocBucketData(bucketData, errCode);
 }
 
@@ -231,7 +314,7 @@ ValuesBucket resultSetAsPortrait(std::shared_ptr<DataShareResultSet> &resultSet,
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "photo"));
-    PutResultValue(bucketData, resultSet, "detail_info");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
     return allocBucketData(bucketData, errCode);
 }
 
@@ -243,9 +326,9 @@ ValuesBucket resultSetAsEvent(std::shared_ptr<DataShareResultSet> &resultSet, in
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "contact_event"));
 
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "custom_data");
-    PutResultValue(bucketData, resultSet, "extend7");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "custom_data", errCode);
+    PutResultValue(bucketData, resultSet, "extend7", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -257,8 +340,8 @@ ValuesBucket resultSetAsGroup(std::shared_ptr<DataShareResultSet> &resultSet, in
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "group_membership"));
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "group_name");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "group_name", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -270,9 +353,9 @@ ValuesBucket resultSetAsImAddress(std::shared_ptr<DataShareResultSet> &resultSet
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "im"));
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "custom_data");
-    PutResultValue(bucketData, resultSet, "extend7");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "custom_data", errCode);
+    PutResultValue(bucketData, resultSet, "extend7", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -284,9 +367,9 @@ ValuesBucket resultSetAsPhone(std::shared_ptr<DataShareResultSet> &resultSet, in
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "phone"));
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "custom_data");
-    PutResultValue(bucketData, resultSet, "extend7");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "custom_data", errCode);
+    PutResultValue(bucketData, resultSet, "extend7", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -298,16 +381,16 @@ ValuesBucket resultSetAsPostAddress(std::shared_ptr<DataShareResultSet> &resultS
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "postal_address"));
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "neighborhood");
-    PutResultValue(bucketData, resultSet, "pobox");
-    PutResultValue(bucketData, resultSet, "postcode");
-    PutResultValue(bucketData, resultSet, "region");
-    PutResultValue(bucketData, resultSet, "street");
-    PutResultValue(bucketData, resultSet, "city");
-    PutResultValue(bucketData, resultSet, "country");
-    PutResultValue(bucketData, resultSet, "custom_data");
-    PutResultValue(bucketData, resultSet, "extend7");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "neighborhood", errCode);
+    PutResultValue(bucketData, resultSet, "pobox", errCode);
+    PutResultValue(bucketData, resultSet, "postcode", errCode);
+    PutResultValue(bucketData, resultSet, "region", errCode);
+    PutResultValue(bucketData, resultSet, "street", errCode);
+    PutResultValue(bucketData, resultSet, "city", errCode);
+    PutResultValue(bucketData, resultSet, "country", errCode);
+    PutResultValue(bucketData, resultSet, "custom_data", errCode);
+    PutResultValue(bucketData, resultSet, "extend7", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -319,9 +402,9 @@ ValuesBucket resultSetAsRelation(std::shared_ptr<DataShareResultSet> &resultSet,
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "relation"));
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "custom_data");
-    PutResultValue(bucketData, resultSet, "extend7");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "custom_data", errCode);
+    PutResultValue(bucketData, resultSet, "extend7", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -333,9 +416,9 @@ ValuesBucket resultSetAsSipAddress(std::shared_ptr<DataShareResultSet> &resultSe
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "sip_address"));
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "custom_data");
-    PutResultValue(bucketData, resultSet, "extend7");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "custom_data", errCode);
+    PutResultValue(bucketData, resultSet, "extend7", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -347,7 +430,7 @@ ValuesBucket resultSetAsWebsite(std::shared_ptr<DataShareResultSet> &resultSet, 
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "website"));
-    PutResultValue(bucketData, resultSet, "detail_info");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -359,7 +442,7 @@ ValuesBucket resultSetAsNickname(std::shared_ptr<DataShareResultSet> &resultSet,
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "nickname"));
-    PutResultValue(bucketData, resultSet, "detail_info");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -371,7 +454,7 @@ ValuesBucket resultSetAsNote(std::shared_ptr<DataShareResultSet> &resultSet, int
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "note"));
-    PutResultValue(bucketData, resultSet, "detail_info");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -383,8 +466,8 @@ ValuesBucket resultSetAsOrganization(std::shared_ptr<DataShareResultSet> &result
 {
     std::vector<KeyWithValueType> bucketData;
     bucketData.push_back(KeyWithValueType("content_type", "organization"));
-    PutResultValue(bucketData, resultSet, "detail_info");
-    PutResultValue(bucketData, resultSet, "position");
+    PutResultValue(bucketData, resultSet, "detail_info", errCode);
+    PutResultValue(bucketData, resultSet, "position", errCode);
 
     return allocBucketData(bucketData, errCode);
 }
@@ -398,8 +481,14 @@ void addResultSetAsValuesBucket(std::vector<ValuesBucket> &contactData,
     int typeIdValue = 0;
     std::string typeId = "type_id";
     int columnIndexType = 0;
-    resultSet->GetColumnIndex(typeId, columnIndexType);
-    resultSet->GetInt(columnIndexType, typeIdValue);
+    if (resultSet->GetColumnIndex(typeId, columnIndexType) != 0) {
+        HILOG_ERROR("addResultSetAsValuesBucket GetColumnIndex failed for type_id");
+        return;
+    }
+    if (resultSet->GetInt(columnIndexType, typeIdValue) != 0) {
+        HILOG_ERROR("addResultSetAsValuesBucket GetInt failed for type_id");
+        return;
+    }
     switch (typeIdValue) {
         case EMAIL:            contactData.push_back(resultSetAsEmail(resultSet, errCode)); return;
         case NAME:             contactData.push_back(resultSetAsName(resultSet, errCode)); return;
@@ -417,6 +506,23 @@ void addResultSetAsValuesBucket(std::vector<ValuesBucket> &contactData,
         case ORGANIZATION:     contactData.push_back(resultSetAsOrganization(resultSet, errCode)); return;
         default:               return;
     }
+}
+
+// Releases dst slots [0..failIdx] of one ContactData (those touched by copyBucket) and the
+// data array itself. allocateDataForContact's data array comes from malloc (not calloc), so
+// untouched slots hold garbage and must NOT be passed to freeContent; that is why we sweep
+// only the touched range here instead of calling ContactData::freeContent.
+static void releaseTouchedContactBuckets(ContactData* contactDataSlot, int failIdx)
+{
+    if (contactDataSlot == nullptr || contactDataSlot->data == nullptr) {
+        return;
+    }
+    for (int b = 0; b <= failIdx; b++) {
+        contactDataSlot->data[b].freeContent();
+    }
+    free(contactDataSlot->data);
+    contactDataSlot->data = nullptr;
+    contactDataSlot->bucketCount = 0;
 }
 
 // returns false when mem allocation failed
@@ -439,27 +545,46 @@ bool allocateDataForContact(ContactsData* allContacts, int contactIndex, Contact
         return false;
     }
 
-    copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, idBucket);
+    copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, idBucket, errCode);
+    idBucket.freeContent();
+    if (*errCode != SUCCESS) {
+        HILOG_ERROR("allocateDataForContact copyBucket failed for idBucket");
+        releaseTouchedContactBuckets(&allContacts->contactsData[contactIndex], bucketIndex);
+        searchKeyBucket.freeContent();
+        return false;
+    }
     bucketIndex++;
-    copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, searchKeyBucket);
+    copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, searchKeyBucket, errCode);
+    searchKeyBucket.freeContent();
+    if (*errCode != SUCCESS) {
+        HILOG_ERROR("allocateDataForContact copyBucket failed for searchKeyBucket");
+        releaseTouchedContactBuckets(&allContacts->contactsData[contactIndex], bucketIndex);
+        return false;
+    }
     bucketIndex++;
 
     // copy bucket pointers from vector
     for (std::vector<ValuesBucket>::size_type i = 0; i < contactInfo.contactDataVector.size(); i++, bucketIndex++) {
-        copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, contactInfo.contactDataVector[i]);
+        // deep copy: resultSetMap keeps ownership of the originals, allContacts owns its own copies
+        copyBucket(allContacts->contactsData[contactIndex].data, bucketIndex, contactInfo.contactDataVector[i],
+            errCode);
+        if (*errCode != SUCCESS) {
+            HILOG_ERROR("allocateDataForContact copyBucket failed at vector index %{public}zu", i);
+            releaseTouchedContactBuckets(&allContacts->contactsData[contactIndex], bucketIndex);
+            return false;
+        }
     }
 
     return true;
 }
 
-void releaseRresultSetMapBuckets(std::map<int, std::vector<ValuesBucket>> resultSetMap)
+void releaseRresultSetMapBuckets(std::map<int, std::vector<ValuesBucket>> &resultSetMap)
 {
     std::map<int, std::vector<ValuesBucket>>::iterator it;
     for (it = resultSetMap.begin(); it != resultSetMap.end(); it++) {
-        std::vector<ValuesBucket> contactDataVector = it->second;
+        std::vector<ValuesBucket> &contactDataVector = it->second;
         for (std::vector<ValuesBucket>::size_type i = 0; i < contactDataVector.size(); i++) {
-            ValuesBucket bucket = contactDataVector[i];
-            bucket.freeContent();
+            contactDataVector[i].freeContent();
         }
     }
 }
@@ -474,6 +599,8 @@ ContactsData* allocContactsDataHeader(size_t totalContacts, int32_t *errCode)
     }
 
     if (totalContacts == 0 || totalContacts > MAX_CONTACTS) {
+        HILOG_ERROR("ContactUtils::allocContactsDataHeader invalid totalContacts %{public}zu", totalContacts);
+        *errCode = ERROR;
         free(allContacts);
         return nullptr;
     }
@@ -539,6 +666,8 @@ ContactsData* allocCollectedContacts(std::map<int, std::vector<ValuesBucket>> &r
     }
 
     if (*errCode == SUCCESS) {
+        // allContacts holds deep copies; release the originals still owned by resultSetMap.
+        releaseRresultSetMapBuckets(resultSetMap);
         return allContacts;
     }
 
@@ -584,14 +713,7 @@ ContactsData* parseResultSetForContacts(std::shared_ptr<DataShareResultSet> &res
     resultSet->Close();
 
     if (*errCode != SUCCESS) {
-        std::map<int, std::vector<ValuesBucket>>::iterator it;
-        for (it = resultSetMap.begin(); it != resultSetMap.end(); it++) {
-            std::vector<ValuesBucket> contactDataVector = it->second;
-            for (std::vector<ValuesBucket>::size_type i = 0; i < contactDataVector.size(); i++) {
-                ValuesBucket bucket = contactDataVector[i];
-                bucket.freeContent();
-            }
-        }
+        releaseRresultSetMapBuckets(resultSetMap);
         return nullptr;
     }
     return allocCollectedContacts(resultSetMap, quickSearchMap, errCode);
@@ -604,15 +726,22 @@ void resultSetAsGroup(ValuesBucket* groups, int idx, std::shared_ptr<DataShareRe
 {
     std::vector<KeyWithValueType> bucketData;
     // content_type for group is redundant
-    PutResultValue(bucketData, "detail_info", resultSet, "id");
-    PutResultValue(bucketData, "group_name", resultSet, "group_name");
+    PutResultValue(bucketData, "detail_info", resultSet, "id", errCode);
+    PutResultValue(bucketData, "group_name", resultSet, "group_name", errCode);
 
     ValuesBucket bucket = allocBucketData(bucketData, errCode);
     if (*errCode != SUCCESS) {
         HILOG_ERROR("ContactUtils::resultSetAsGroup fail to mem alloc");
     } else {
-        copyBucket(groups, idx, bucket);
+        copyBucket(groups, idx, bucket, errCode);
+        if (*errCode != SUCCESS) {
+            // The caller sets bucketCount = count (excluding this slot) on failure, so its
+            // freeContent sweep would skip idx; release the partial deep copy here to avoid
+            // leaking the calloc'd key/value arrays of the failing slot.
+            groups[idx].freeContent();
+        }
     }
+    bucket.freeContent();
 }
 
 /**
@@ -623,16 +752,54 @@ void resultSetAsHolder(ValuesBucket* holders, int idx, std::shared_ptr<DataShare
 {
     std::vector<KeyWithValueType> bucketData;
     // content_type for holder is redundant
-    PutResultValue(bucketData, "detail_info", resultSet, "account_name");
-    PutResultValue(bucketData, "custom_data", resultSet, "account_type");
-    PutResultValue(bucketData, "extend7", resultSet, "id");
+    PutResultValue(bucketData, "detail_info", resultSet, "account_name", errCode);
+    PutResultValue(bucketData, "custom_data", resultSet, "account_type", errCode);
+    PutResultValue(bucketData, "extend7", resultSet, "id", errCode);
 
     ValuesBucket bucket = allocBucketData(bucketData, errCode);
     if (*errCode != SUCCESS) {
         HILOG_ERROR("ContactUtils::resultSetAsHolder fail to mem alloc");
     } else {
-        copyBucket(holders, idx, bucket);
+        copyBucket(holders, idx, bucket, errCode);
+        if (*errCode != SUCCESS) {
+            // The caller sets bucketCount = count (excluding this slot) on failure, so its
+            // freeContent sweep would skip idx; release the partial deep copy here to avoid
+            // leaking the calloc'd key/value arrays of the failing slot.
+            holders[idx].freeContent();
+        }
     }
+    bucket.freeContent();
+}
+
+// Allocates a Buckets header plus a zero-initialised ValuesBucket array of totalBuckets slots.
+// calloc zeroes both the header (so bucketCount=0/data=nullptr) and the array, making freeContent()
+// safe on slots not filled by copyBucket. Returns nullptr and sets *errCode on failure.
+// Shared by parseResultSetForGroups/Holders.
+static Buckets* allocBucketsHeader(size_t totalBuckets, int32_t *errCode)
+{
+    if (errCode == nullptr) {
+        HILOG_ERROR("ContactUtils::allocBucketsHeader errCode is nullptr");
+        return nullptr;
+    }
+    if (totalBuckets == 0 || totalBuckets > MAX_GROUPS_HOLDERS) {
+        HILOG_ERROR("ContactUtils::allocBucketsHeader invalid totalBuckets %{public}zu", totalBuckets);
+        *errCode = ERROR;
+        return nullptr;
+    }
+    Buckets* buckets = (Buckets*)calloc(1, sizeof(Buckets));
+    if (buckets == nullptr) {
+        HILOG_ERROR("ContactUtils::allocBucketsHeader fail to mem alloc");
+        *errCode = ERROR;
+        return nullptr;
+    }
+    buckets->data = (struct ValuesBucket*)calloc(totalBuckets, sizeof(struct ValuesBucket));
+    if (buckets->data == nullptr) {
+        free(buckets);
+        HILOG_ERROR("ContactUtils::allocBucketsHeader fail to mem alloc");
+        *errCode = ERROR;
+        return nullptr;
+    }
+    return buckets;
 }
 
 // it closes resultSet after parse
@@ -648,25 +815,19 @@ GroupsData* parseResultSetForGroups(std::shared_ptr<DataShareResultSet> &resultS
     if (totalGroups <= 0) {
         return nullptr;
     }
-
-    GroupsData* allGroups = (GroupsData*) malloc(sizeof(GroupsData));
+    // bucketCount is updated to the actually processed count after the loop.
+    GroupsData* allGroups = allocBucketsHeader(totalGroups, errCode);
     if (allGroups == nullptr) {
-        HILOG_ERROR("ContactUtils::parseResultSetForGroups fail to mem alloc");
-        *errCode = ERROR;
         return nullptr;
     }
-    allGroups->data = (struct ValuesBucket*) malloc(totalGroups * sizeof(struct ValuesBucket));
-    if (allGroups->data == nullptr) {
-        free(allGroups);
-        HILOG_ERROR("ContactUtils::parseResultSetForGroups fail to mem alloc");
-        *errCode = ERROR;
-        return NULL;
-    }
-    allGroups->bucketCount = static_cast<uint64_t>(totalGroups);
 
     int resultSetNum = resultSet->GoToFirstRow();
     int count = 0;
     while (resultSetNum == 0) {
+        if (count >= totalGroups) {
+            HILOG_ERROR("ContactUtils::parseResultSetForGroups row count exceeded totalGroups");
+            break;
+        }
         resultSetAsGroup(allGroups->data, count, resultSet, errCode);
         if (*errCode != SUCCESS) {
             break;
@@ -675,6 +836,7 @@ GroupsData* parseResultSetForGroups(std::shared_ptr<DataShareResultSet> &resultS
         count++;
     }
     resultSet->Close();
+    allGroups->bucketCount = static_cast<uint64_t>(count);
 
     if (*errCode != SUCCESS) {
         allGroups->freeContent();
@@ -698,25 +860,19 @@ HoldersData* parseResultSetForHolders(std::shared_ptr<DataShareResultSet> &resul
     if (totalHolders <= 0) {
         return nullptr;
     }
-
-    HoldersData* allHolders = (HoldersData*) malloc(sizeof(HoldersData));
+    // bucketCount is updated to the actually processed count after the loop.
+    HoldersData* allHolders = allocBucketsHeader(totalHolders, errCode);
     if (allHolders == nullptr) {
-        HILOG_ERROR("ContactUtils::parseResultSetForHolders fail to mem alloc");
-        *errCode = ERROR;
         return nullptr;
     }
-    allHolders->data = (struct ValuesBucket*) malloc(totalHolders * sizeof(struct ValuesBucket));
-    if (allHolders->data == nullptr) {
-        free(allHolders);
-        HILOG_ERROR("ContactUtils::parseResultSetForHolders fail to mem alloc");
-        *errCode = ERROR;
-        return nullptr;
-    }
-    allHolders->bucketCount = static_cast<uint64_t>(totalHolders);
 
     int resultSetNum = resultSet->GoToFirstRow();
     int count = 0;
     while (resultSetNum == 0) {
+        if (count >= totalHolders) {
+            HILOG_ERROR("ContactUtils::parseResultSetForHolders row count exceeded totalHolders");
+            break;
+        }
         resultSetAsHolder(allHolders->data, count, resultSet, errCode);
         if (*errCode != SUCCESS) {
             break;
@@ -725,6 +881,7 @@ HoldersData* parseResultSetForHolders(std::shared_ptr<DataShareResultSet> &resul
         count++;
     }
     resultSet->Close();
+    allHolders->bucketCount = static_cast<uint64_t>(count);
 
     if (*errCode != SUCCESS) {
         allHolders->freeContent();
