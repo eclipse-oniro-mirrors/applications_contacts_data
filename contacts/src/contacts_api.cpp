@@ -976,7 +976,6 @@ void HandleQueryContactCountExecuteErrorCode(napi_env env, ExecuteHelper *execut
         } else {
             result = ContactsNapiUtils::CreateErrorByVerification(env, PARAMETER_ERROR);
         }
-        result = ContactsNapiUtils::CreateErrorByVerification(env, INVALID_PARAMETER);
     } else if (executeHelper->resultData == RDB_PERMISSION_ERROR) {
         result = ContactsNapiUtils::CreateError(env, PERMISSION_ERROR);
     }
