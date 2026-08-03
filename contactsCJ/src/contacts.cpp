@@ -92,8 +92,14 @@ void Contacts::CJdeleteContact(int64_t contextId, int64_t predicatesId, int32_t 
         return;
     }
 
-    std::shared_ptr<DataSharePredicates> predicates =
-        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    sptr<DataSharePredicatesImpl> predicatesImpl = FFIData::GetData<DataSharePredicatesImpl>(predicatesId);
+    if (predicatesImpl == nullptr) {
+        HILOG_ERROR("CJdeleteContact predicates is null");
+        *errCode = PARAMETER_ERROR;
+        dataShareHelper->Release();
+        return;
+    }
+    std::shared_ptr<DataSharePredicates> predicates = predicatesImpl->GetPredicates();
 
     ContactsControl contactsControl;
     int code = contactsControl.ContactDelete(dataShareHelper, *predicates);
@@ -148,8 +154,14 @@ void Contacts::CJupdateContact(int64_t contextId, int64_t contactId, std::vector
         return;
     }
 
-    std::shared_ptr<DataSharePredicates> deletePredicates =
-        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    sptr<DataSharePredicatesImpl> predicatesImpl = FFIData::GetData<DataSharePredicatesImpl>(predicatesId);
+    if (predicatesImpl == nullptr) {
+        HILOG_ERROR("CJupdateContact predicates is null");
+        *errCode = PARAMETER_ERROR;
+        dataShareHelper->Release();
+        return;
+    }
+    std::shared_ptr<DataSharePredicates> deletePredicates = predicatesImpl->GetPredicates();
     ContactsControl contactsControl;
 
     // query raw_contact_id
@@ -231,6 +243,8 @@ bool Contacts::CJisLocalContact(int64_t contextId, int64_t contactId, int32_t *e
     std::vector<std::string> columns;
     std::shared_ptr<DataShareResultSet> resultSet = contactsControl.ContactQuery(dataShareHelper, columns, predicates);
     if (resultSet == nullptr) {
+        dataShareHelper->Release();
+        dataShareHelper = nullptr;
         return false;
     }
     int resultSetNum = resultSet->GoToFirstRow();
@@ -313,8 +327,14 @@ ContactsData* Contacts::CJqueryMyCard(int64_t contextId, int64_t predicatesId, i
         return nullptr;
     }
 
-    std::shared_ptr<DataSharePredicates> predicates =
-        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    sptr<DataSharePredicatesImpl> predicatesImpl = FFIData::GetData<DataSharePredicatesImpl>(predicatesId);
+    if (predicatesImpl == nullptr) {
+        HILOG_ERROR("CJqueryMyCard predicates is null");
+        *errCode = PARAMETER_ERROR;
+        dataShareHelper->Release();
+        return nullptr;
+    }
+    std::shared_ptr<DataSharePredicates> predicates = predicatesImpl->GetPredicates();
     ContactsControl contactsControl;
 
     std::vector<std::string> columns;
@@ -343,8 +363,14 @@ GroupsData* Contacts::CJqueryGroups(int64_t contextId, int64_t predicatesId, int
         return nullptr;
     }
 
-    std::shared_ptr<DataSharePredicates> predicates =
-        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    sptr<DataSharePredicatesImpl> predicatesImpl = FFIData::GetData<DataSharePredicatesImpl>(predicatesId);
+    if (predicatesImpl == nullptr) {
+        HILOG_ERROR("CJqueryGroups predicates is null");
+        *errCode = PARAMETER_ERROR;
+        dataShareHelper->Release();
+        return nullptr;
+    }
+    std::shared_ptr<DataSharePredicates> predicates = predicatesImpl->GetPredicates();
     ContactsControl contactsControl;
 
     std::vector<std::string> columns;
@@ -402,8 +428,14 @@ ContactsData* Contacts::CJqueryContacts(int64_t contextId, int64_t predicatesId,
         return nullptr;
     }
 
-    std::shared_ptr<DataSharePredicates> predicates =
-        FFIData::GetData<DataSharePredicatesImpl>(predicatesId)->GetPredicates();
+    sptr<DataSharePredicatesImpl> predicatesImpl = FFIData::GetData<DataSharePredicatesImpl>(predicatesId);
+    if (predicatesImpl == nullptr) {
+        HILOG_ERROR("CJqueryContacts predicates is null");
+        *errCode = PARAMETER_ERROR;
+        dataShareHelper->Release();
+        return nullptr;
+    }
+    std::shared_ptr<DataSharePredicates> predicates = predicatesImpl->GetPredicates();
     ContactsControl contactsControl;
 
     std::vector<std::string> columns;
