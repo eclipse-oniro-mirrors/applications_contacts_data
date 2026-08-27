@@ -27,6 +27,8 @@ ohos_shared_library("contact_cj") {
 
   include_dirs = [ "include" ]
 
+  version_script = "libcj_contact_ffi.map"
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true
