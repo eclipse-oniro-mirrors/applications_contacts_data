@@ -33,7 +33,7 @@ bool allocBucket(ValuesBucket* b, size_t total, int32_t *errCode)
         b->size = total;
         // calloc zeroes memory so that freeContent() is safe on partially filled buckets:
         // key[i]==nullptr and value[i].tag==TYPE_NULL/value[i].string==nullptr by default.
-        b->key = (char**) calloc(total, sizeof(char*));
+        b->key = static_cast<char**>(calloc(total, sizeof(char*)));
         if (b->key == nullptr) {
             *errCode = ERROR;
             b->freeContent(); // actually. there is nothing to free, just set size to 0
